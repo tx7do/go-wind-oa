@@ -1,0 +1,12 @@
+{
+  "moduleName": "Role",
+  "name": "Role Name",
+  "code": "Role Code",
+  "tenantName": "Tenant",
+  "permissions": "Permissions",
+  "sortOrder": "Sort Order",
+  "status": "Status",
+  "description": "Description",
+  "remark": "Remark",
+  "createdAt": "Created At"
+}

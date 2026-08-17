@@ -1,0 +1,10 @@
+swagger_parser:
+  # 指向 go-wind-oa 后端经 buf.oa.openapi.gen.yaml + protoc-gen-openapi 生成的 openapi.yaml。
+  # 路径相对本文件（frontend/mobile/）：../../backend/app/oa/service/cmd/server/assets/openapi.yaml
+  schema_path: ../../backend/app/oa/service/cmd/server/assets/openapi.yaml
+  output_directory: lib/generated/api
+  language: dart
+  client_api: dio
+  squash_clients: true
+  root_client: true
+

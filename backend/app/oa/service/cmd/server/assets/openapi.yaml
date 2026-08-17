@@ -1,0 +1,679 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /admin/v1/captcha:
+        get:
+            tags:
+                - AuthenticationService
+            description: 生成验证码。转发至 cms /admin/v1/captcha。
+            operationId: AuthenticationService_GenerateCaptcha
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GenerateCaptchaResponse'
+            security:
+                - {}
+    /admin/v1/captcha/verify:
+        post:
+            tags:
+                - AuthenticationService
+            description: 验证验证码。转发至 cms /admin/v1/captcha/verify。
+            operationId: AuthenticationService_VerifyCaptcha
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VerifyCaptchaRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/VerifyCaptchaResponse'
+            security:
+                - {}
+    /admin/v1/login:
+        post:
+            tags:
+                - AuthenticationService
+            description: 登录。转发至 cms /admin/v1/login。
+            operationId: AuthenticationService_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/LoginResponse'
+            security:
+                - {}
+    /admin/v1/logout:
+        post:
+            tags:
+                - AuthenticationService
+            description: 登出。转发至 cms /admin/v1/logout。
+            operationId: AuthenticationService_Logout
+            requestBody:
+                content:
+                    application/json: {}
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/oa/workflow/apply:
+        post:
+            tags:
+                - WorkflowService
+            description: 提交申请：发起一个工作流实例，按定义的首节点生成首条待办任务并通知该审批人。
+            operationId: WorkflowService_SubmitApply
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SubmitApplyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SubmitApplyResponse'
+    /admin/v1/oa/workflow/definitions:
+        get:
+            tags:
+                - WorkflowService
+            description: 查询工作流定义列表（管理端）。
+            operationId: WorkflowService_ListWorkflowDefinition
+            parameters:
+                - name: paging.page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: paging.limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: paging.noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: paging.query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: paging.filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: paging.filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: paging.orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: paging.fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListWorkflowDefinitionResponse'
+        post:
+            tags:
+                - WorkflowService
+            description: 创建工作流定义（管理端）。
+            operationId: WorkflowService_CreateWorkflowDefinition
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateWorkflowDefinitionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/WorkflowDefinition'
+    /admin/v1/oa/workflow/my-tasks:
+        get:
+            tags:
+                - WorkflowService
+            description: 获取当前用户的待办 / 已办 / 我的申请列表。
+            operationId: WorkflowService_GetMyTasks
+            parameters:
+                - name: listType
+                  in: query
+                  schema:
+                    enum:
+                        - PENDING
+                        - DONE
+                        - SUBMITTED
+                    type: string
+                    format: enum
+                - name: paging.page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: paging.limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: paging.noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: paging.query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: paging.filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: paging.filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: paging.orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: paging.fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetMyTasksResponse'
+    /admin/v1/oa/workflow/tasks/{taskId}:
+        get:
+            tags:
+                - WorkflowService
+            description: |-
+                获取单个待办任务详情：申请标题、申请表单数据、该实例的审批日志轨迹。
+
+                 鉴权：仅当前指派审批人可查其处于 PENDING 的任务（与 AuditTask 同款授权，
+                 IDEQ + AssigneeUserIDEQ(caller) + TaskStatusEQ(PENDING)，见
+                 WorkflowTaskRepo.GetDetailByAssignee）。其余字段（definition_id /
+                 current_node_index / tenant_id 等）不投影，对齐 MyTaskItem 的最小披露原则。
+            operationId: WorkflowService_GetTask
+            parameters:
+                - name: taskId
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetTaskResponse'
+    /admin/v1/oa/workflow/tasks/{taskId}/audit:
+        post:
+            tags:
+                - WorkflowService
+            description: 审批/驳回/转办当前待办任务。状态机在此推进实例状态、生成下一节点任务或终结实例。
+            operationId: WorkflowService_AuditTask
+            parameters:
+                - name: taskId
+                  in: path
+                  description: 绑定路径参数 {task_id}。
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AuditTaskRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/refresh-token:
+        post:
+            tags:
+                - AuthenticationService
+            description: 刷新认证令牌。转发至 cms /admin/v1/refresh-token。
+            operationId: AuthenticationService_RefreshToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/LoginResponse'
+components:
+    schemas:
+        AuditLogEntry:
+            type: object
+            properties:
+                actionLabel:
+                    type: string
+                comment:
+                    type: string
+                occurredAt:
+                    type: string
+                    format: date-time
+            description: |-
+                AuditLogEntry 审批日志轨迹条目。投影自 WorkflowLog，仅含审批类动作
+                 （APPROVE / REJECT / FORWARD），与 ListByActor 的过滤口径一致。
+        AuditTaskRequest:
+            type: object
+            properties:
+                taskId:
+                    type: integer
+                    description: 绑定路径参数 {task_id}。
+                    format: uint32
+                action:
+                    enum:
+                        - APPROVE
+                        - REJECT
+                        - FORWARD
+                    type: string
+                    format: enum
+                comment:
+                    type: string
+                forwardToUserId:
+                    type: integer
+                    description: 仅 action == FORWARD 时有效：被转办人 ID。
+                    format: uint32
+        CreateWorkflowDefinitionRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/WorkflowDefinition'
+        GenerateCaptchaResponse:
+            type: object
+            properties:
+                captchaId:
+                    type: string
+                    description: 验证码ID，客户端应在后续请求中提供该ID以验证用户输入的验证码
+                imageBase64:
+                    type: string
+                    description: 验证码图片的Base64编码字符串，客户端可以解码并显示给用户
+            description: 生成验证码 - 回应。与 cms GenerateCaptchaResponse 同构。
+        GetMyTasksResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MyTaskItem'
+                total:
+                    type: string
+        GetTaskResponse:
+            type: object
+            properties:
+                taskId:
+                    type: integer
+                    format: uint32
+                instanceId:
+                    type: integer
+                    format: uint32
+                title:
+                    type: string
+                formData:
+                    type: string
+                history:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AuditLogEntry'
+            description: |-
+                GetTaskResponse 投影待办任务详情。字段对齐详情页渲染所需，最小披露：
+                 申请标题、申请表单数据（原始 JSON 文本，引擎不解释）、该实例的审批日志轨迹。
+        ListWorkflowDefinitionResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/WorkflowDefinition'
+                total:
+                    type: string
+        LoginRequest:
+            required:
+                - grant_type
+            type: object
+            properties:
+                grant_type:
+                    enum:
+                        - password
+                        - client_credentials
+                        - authorization_code
+                        - refresh_token
+                        - implicit
+                    type: string
+                    default: password
+                    description: 授权类型，此处的值固定为"password"，必选项。
+                    format: enum
+                client_id:
+                    type: string
+                    description: 客户端ID
+                client_secret:
+                    type: string
+                    description: 客户端密钥
+                scope:
+                    type: string
+                    description: 以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。
+                redirect_uri:
+                    type: string
+                    description: 跳转链接
+                user_id:
+                    type: integer
+                    description: 用户ID
+                    format: uint32
+                username:
+                    type: string
+                    description: 用户名
+                email:
+                    type: string
+                    description: 电子邮件地址
+                mobile:
+                    type: string
+                    description: 手机号
+                password:
+                    type: string
+                    description: 用户的密码
+                refresh_token:
+                    type: string
+                    description: 更新令牌，用来获取下一次的访问令牌，可选项。如果访问令牌将过期，则返回刷新令牌很有用，应用程序可以使用该刷新令牌获取另一个访问令牌。但是，通过隐式授予颁发的令牌不能颁发刷新令牌。
+                code:
+                    type: string
+                    description: 授权请求中收到的一次性验证/认证码。(当使用授权码模式时)
+                client_type:
+                    enum:
+                        - admin
+                        - app
+                    type: string
+                    description: 客户端类型
+                    format: enum
+                device_id:
+                    type: string
+                    description: 设备唯一标识（可选），用于设备绑定、推送、风控等
+                jti:
+                    type: string
+                    description: 建议客户端生成并提供 jti（JWT ID）作为唯一标识，服务端可据此防止重放攻击
+                tenant_code:
+                    type: string
+                    description: 租户编号，留空表示平台登录（平台超级管理员）；非空时按该编号解析对应租户
+            description: |-
+                用户登录 - 请求。与 cms LoginRequest 同构（字段编号、json_name、OpenAPI
+                 描述逐字段对齐），仅剥离 (redact.value) 注解。
+        LoginResponse:
+            type: object
+            properties:
+                token_type:
+                    enum:
+                        - bearer
+                        - mac
+                    type: string
+                    default: Bearer
+                    description: 令牌的类型，该值大小写不敏感，必选项，可以是bearer类型或mac类型，通常只是字符串“Bearer”。
+                    format: enum
+                access_token:
+                    type: string
+                    description: 访问令牌，必选项。授权服务器颁发的访问令牌字符串。
+                expires_in:
+                    type: string
+                    description: 访问令牌过期时间（秒）
+                refresh_token:
+                    type: string
+                    description: 更新令牌，用来获取下一次的访问令牌，可选项。如果访问令牌将过期，则返回刷新令牌很有用，应用程序可以使用该刷新令牌获取另一个访问令牌。但是，通过隐性授予颁发的令牌不能颁发刷新令牌。
+                scope:
+                    type: string
+                    description: 以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。
+                refresh_expires_in:
+                    type: string
+                    description: 刷新令牌过期时间（秒）
+                id_token:
+                    type: string
+                    description: ID 令牌，OpenID Connect 扩展中定义的 JWT 格式令牌
+            description: 用户登录 - 回应。与 cms LoginResponse 同构。
+        MyTaskItem:
+            type: object
+            properties:
+                taskId:
+                    type: integer
+                    description: 各字段按 list_type 选择性填充。
+                    format: uint32
+                logId:
+                    type: integer
+                    format: uint32
+                instanceId:
+                    type: integer
+                    format: uint32
+                title:
+                    type: string
+                statusLabel:
+                    type: string
+                actionLabel:
+                    type: string
+                comment:
+                    type: string
+                occurredAt:
+                    type: string
+                    format: date-time
+        SubmitApplyRequest:
+            type: object
+            properties:
+                definitionCode:
+                    type: string
+                definitionVersion:
+                    type: integer
+                    format: uint32
+                title:
+                    type: string
+                formData:
+                    type: string
+                    description: 申请表单数据，原始 JSON 文本。
+        SubmitApplyResponse:
+            type: object
+            properties:
+                instanceId:
+                    type: integer
+                    format: uint32
+        VerifyCaptchaRequest:
+            type: object
+            properties:
+                captchaId:
+                    type: string
+                    description: 验证码ID，来自 GenerateCaptcha 响应
+                userInput:
+                    type: string
+                    description: 用户输入的验证码文本
+            description: 验证验证码 - 请求。与 cms VerifyCaptchaRequest 同构。
+        VerifyCaptchaResponse:
+            type: object
+            properties:
+                valid:
+                    type: boolean
+                    description: 验证码验证结果，true表示验证成功，false表示验证失败
+            description: 验证验证码 - 回应。与 cms VerifyCaptchaResponse 同构。
+        WorkflowDefinition:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                code:
+                    type: string
+                version:
+                    type: integer
+                    format: uint32
+                description:
+                    type: string
+                nodeConfig:
+                    type: string
+                    description: 节点配置，原始 JSON 文本。结构由引擎 internal/workflow 包解析。
+                formSchema:
+                    type: string
+                    description: 动态表单 schema，原始 JSON 文本，供前端按定义渲染。
+                definitionStatus:
+                    enum:
+                        - DRAFT
+                        - ENABLED
+                        - DISABLED
+                    type: string
+                    format: enum
+                tenantId:
+                    type: integer
+                    description: '---- 租户 / 审计字段（与 go-wind-cms 固定字段号对齐） ----'
+                    format: uint32
+                tenantName:
+                    type: string
+                createdBy:
+                    type: integer
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    format: uint32
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+                deletedAt:
+                    type: string
+                    format: date-time
+tags:
+    - name: AuthenticationService
+      description: |-
+        OA 鉴权服务。
+
+         该服务为单层服务：HTTP 注解与本消息定义同在一个 proto 中，由 buf 一次性
+         生成 gRPC 与 HTTP 双协议桩。
+
+         OA 后端不自建账号体系，登录/登出/验证码/令牌刷新均经此服务转发至
+         go-wind-cms 的 admin-service AuthenticationService（cms
+         authentication.proto / i_authentication.proto 的 admin 端 HTTP 包装）。
+         消息定义（LoginRequest/LoginResponse/GrantType/TokenType/ClientType/
+         GenerateCaptchaResponse/VerifyCaptchaRequest/VerifyCaptchaResponse）与
+         cms authentication.service.v1 同构——字段编号、json_name、gnostic
+         OpenAPI 描述均逐字段对齐，使 oa↔cms 的结构体翻译为零损耗。
+
+         与 cms 的差异：
+           - package 为 oa.v1（由 OA buf managed 映射至 go-wind-oa/api/gen/go/oa/v1）；
+           - 剥离 (redact.value) 注解——该注解仅用于 cms 服务端日志脱敏，OA 转发层
+             不落日志、不依赖 redact proto；
+           - 不含 RegisterUser / WhoAmI / BlockToken 等 cms 管理端专有 RPC（OA
+             仅需登录闭环）。
+    - name: WorkflowService
+      description: |-
+        OA 工作流审批服务。
+
+         该服务为单层服务：HTTP 注解与本消息定义同在一个 proto 中，由 buf 一次性
+         生成 gRPC 与 HTTP 双协议桩。所有 RPC 均需鉴权，租户/操作人上下文由
+         auth 中间件注入、由 OA viewer 中间件翻译为 ent viewer context，
+         供 TenantPrivacy 策略做行级租户隔离。

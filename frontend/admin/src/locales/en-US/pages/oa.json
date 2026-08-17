@@ -1,0 +1,23 @@
+{
+  "oa": {
+    "definition": {
+      "title": "Workflow Definition",
+      "searchName": "Name",
+      "searchStatus": "Status",
+      "colName": "Name",
+      "colCode": "Code",
+      "colVersion": "Version",
+      "colStatus": "Status",
+      "colCreatedAt": "Created At",
+      "create": "New Workflow Definition",
+      "fieldName": "Name",
+      "fieldCode": "Code",
+      "fieldVersion": "Version",
+      "fieldDescription": "Description",
+      "fieldNodeConfig": "Node Config (JSON)",
+      "fieldFormSchema": "Form Schema (JSON)",
+      "submit": "Submit",
+      "cancel": "Cancel"
+    }
+  }
+}

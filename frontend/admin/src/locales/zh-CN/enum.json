@@ -1,0 +1,19 @@
+{
+  "enable": {
+    "true": "启用",
+    "false": "禁用"
+  },
+  "successStatus": {
+    "success": "成功",
+    "failed": "失败"
+  },
+  "status": {
+    "ON": "开启",
+    "OFF": "关闭"
+  },
+  "definitionStatus": {
+    "DRAFT": "草稿",
+    "ENABLED": "已启用",
+    "DISABLED": "已禁用"
+  }
+}

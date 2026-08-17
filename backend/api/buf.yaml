@@ -1,0 +1,28 @@
+version: v2
+
+# 与 go-wind-cms/backend/api/buf.yaml 完全同构（含 modules.path=protos），
+# 仅新增 `oa/v1` 一组 proto。deps 一致，提供 google.api / errors /
+# pagination / validate 等 remote proto 依赖。
+modules:
+  - path: protos
+    lint:
+      use:
+        - STANDARD
+    breaking:
+      use:
+        - FILE
+deps:
+  - 'buf.build/googleapis/googleapis'
+  - 'buf.build/kratos/apis'
+  - 'buf.build/gnostic/gnostic'
+  - 'buf.build/tx7do/pagination'
+  - 'buf.build/go-wind/redact'
+  - 'buf.build/envoyproxy/protoc-gen-validate'
+
+breaking:
+  use:
+    - FILE
+
+lint:
+  use:
+    - DEFAULT

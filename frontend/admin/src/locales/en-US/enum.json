@@ -1,0 +1,19 @@
+{
+  "enable": {
+    "true": "Enabled",
+    "false": "Disabled"
+  },
+  "successStatus": {
+    "success": "Success",
+    "failed": "Failed"
+  },
+  "status": {
+    "ON": "On",
+    "OFF": "Off"
+  },
+  "definitionStatus": {
+    "DRAFT": "Draft",
+    "ENABLED": "Enabled",
+    "DISABLED": "Disabled"
+  }
+}

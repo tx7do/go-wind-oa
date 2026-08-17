@@ -1,0 +1,47 @@
+# OA 模块的 buf 代码生成配置。
+#
+# 与 go-wind-cms/backend/api/buf.gen.yaml 同构：
+#   - managed 模式按路径注入 go_package（源 proto 不写 go_package 选项）；
+#   - 插件栈：protoc-gen-go / -go-grpc / -go-http / -go-errors / -validate。
+#
+# 新增 oa/v1 路径的 go_package 覆盖，使生成代码落到
+# go-wind-oa/api/gen/go/oa/v1（包名 oav1）。
+version: v2
+clean: true
+managed:
+  enabled: true
+  # disable managed 模式对所有 remote 依赖模块生效 —— 与 go-wind-cms 同构。
+  # 否则 managed 会改写 google.api / pagination / validate 等远程 proto 的
+  # go_package，导致下游 import 路径错乱、编译失败。
+  disable:
+    - module: buf.build/googleapis/googleapis
+    - module: 'buf.build/envoyproxy/protoc-gen-validate'
+    - module: 'buf.build/kratos/apis'
+    - module: 'buf.build/gnostic/gnostic'
+    - module: 'buf.build/gogo/protobuf'
+    - module: 'buf.build/tx7do/pagination'
+    - module: 'buf.build/go-wind/redact'
+  override:
+    - file_option: go_package_prefix
+      value: go-wind-oa/api/gen/go
+    - file_option: go_package
+      # 模块内路径为 `oa/v1/...`（见 buf.yaml modules.path=protos），与 cms
+      # `<domain>/service/v1` 同构，覆盖匹配键为 `oa/v1`。
+      path: oa/v1
+      value: go-wind-oa/api/gen/go/oa/v1;oav1
+plugins:
+  - local: protoc-gen-go
+    out: gen/go
+    opt: paths=source_relative
+  - local: protoc-gen-go-grpc
+    out: gen/go
+    opt: [paths=source_relative]
+  - local: protoc-gen-go-http
+    out: gen/go
+    opt: [paths=source_relative]
+  - local: protoc-gen-go-errors
+    out: gen/go
+    opt: [paths=source_relative]
+  - local: protoc-gen-validate
+    out: gen/go
+    opt: [paths=source_relative, lang=go]

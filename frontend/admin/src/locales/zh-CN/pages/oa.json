@@ -1,0 +1,23 @@
+{
+  "oa": {
+    "definition": {
+      "title": "流程定义",
+      "searchName": "流程名称",
+      "searchStatus": "状态",
+      "colName": "名称",
+      "colCode": "编码",
+      "colVersion": "版本",
+      "colStatus": "状态",
+      "colCreatedAt": "创建时间",
+      "create": "新建流程定义",
+      "fieldName": "名称",
+      "fieldCode": "编码",
+      "fieldVersion": "版本",
+      "fieldDescription": "描述",
+      "fieldNodeConfig": "节点配置(JSON)",
+      "fieldFormSchema": "表单 Schema(JSON)",
+      "submit": "提交",
+      "cancel": "取消"
+    }
+  }
+}
