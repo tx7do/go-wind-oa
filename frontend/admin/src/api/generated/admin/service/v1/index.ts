@@ -28,6 +28,103 @@ export interface DuplexStream<TIn, TOut> extends ServerStream<TOut> {
   send(data: TIn): void;
 }
 
+// 后台错误定义
+export type AdminErrorReason =
+  // 502
+  | 'BAD_GATEWAY'
+  // 400
+  | 'BAD_REQUEST'
+  // 409
+  | 'CONFLICT'
+  // 417
+  | 'EXPECTATION_FAILED'
+  // 424
+  | 'FAILED_DEPENDENCY'
+  // 403
+  | 'FORBIDDEN'
+  // 504
+  | 'GATEWAY_TIMEOUT'
+  // 410
+  | 'GONE'
+  // 505
+  | 'HTTP_VERSION_NOT_SUPPORTED'
+  // 418
+  | 'IM_A_TEAPOT'
+  | 'INCORRECT_ACCESS_TOKEN'
+  | 'INCORRECT_APP_SECRET'
+  | 'INCORRECT_REFRESH_TOKEN'
+  // 507
+  | 'INSUFFICIENT_STORAGE'
+  // 500
+  | 'INTERNAL_SERVER_ERROR'
+  | 'INVALID_GRANT_TYPE'
+  | 'INVALID_PASSWORD'
+  | 'INVALID_TOKEN'
+  | 'INVALID_USERID'
+  // 411
+  | 'LENGTH_REQUIRED'
+  // 423
+  | 'LOCKED'
+  // 508
+  | 'LOOP_DETECTED'
+  // 405
+  | 'METHOD_NOT_ALLOWED'
+  // 421
+  | 'MISDIRECTED_REQUEST'
+  // 511
+  | 'NETWORK_AUTHENTICATION_REQUIRED'
+  // 599
+  | 'NETWORK_CONNECT_TIMEOUT_ERROR'
+  // 598
+  | 'NETWORK_READ_TIMEOUT_ERROR'
+  // 406
+  | 'NOT_ACCEPTABLE'
+  // 510
+  | 'NOT_EXTENDED'
+  // 404
+  | 'NOT_FOUND'
+  // 501
+  | 'NOT_IMPLEMENTED'
+  // 413
+  | 'PAYLOAD_TOO_LARGE'
+  // 402
+  | 'PAYMENT_REQUIRED'
+  // 412
+  | 'PRECONDITION_FAILED'
+  // 428
+  | 'PRECONDITION_REQUIRED'
+  // 407
+  | 'PROXY_AUTHENTICATION_REQUIRED'
+  // 416
+  | 'RANGE_NOT_SATISFIABLE'
+  // 431
+  | 'REQUEST_HEADER_FIELDS_TOO_LARGE'
+  // 408
+  | 'REQUEST_TIMEOUT'
+  // 503
+  | 'SERVICE_UNAVAILABLE'
+  | 'TOKEN_EXPIRED'
+  | 'TOKEN_NOT_EXIST'
+  // 425
+  | 'TOO_EARLY'
+  // 429
+  | 'TOO_MANY_REQUESTS'
+  // 401
+  | 'UNAUTHORIZED'
+  // 451
+  | 'UNAVAILABLE_FOR_LEGAL_REASONS'
+  // 422
+  | 'UNPROCESSABLE_ENTITY'
+  // 415
+  | 'UNSUPPORTED_MEDIA_TYPE'
+  // 426
+  | 'UPGRADE_REQUIRED'
+  // 414
+  | 'URI_TOO_LONG'
+  | 'USER_FREEZE'
+  | 'USER_NOT_FOUND'
+  // 506
+  | 'VARIANT_ALSO_NEGOTIATES';
 // 用户后台登录认证服务
 export interface AuthenticationService {
   // 登录
@@ -163,9 +260,1332 @@ export type authenticationservicev1_VerifyCaptchaResponse = {
   valid: boolean | undefined;
 };
 
+// 站内信消息管理服务
+export interface InternalMessageService {
+  // 查询站内信消息列表
+  ListMessage(
+    request: pagination_PagingRequest,
+  ): Promise<internal_messageservicev1_ListInternalMessageResponse>;
+  // 查询站内信消息详情
+  GetMessage(
+    request: internal_messageservicev1_GetInternalMessageRequest,
+  ): Promise<internal_messageservicev1_InternalMessage>;
+  // 更新站内信消息
+  UpdateMessage(
+    request: internal_messageservicev1_UpdateInternalMessageRequest,
+  ): Promise<wellKnownEmpty>;
+  // 删除站内信消息
+  DeleteMessage(
+    request: internal_messageservicev1_DeleteInternalMessageRequest,
+  ): Promise<wellKnownEmpty>;
+  // 发送消息
+  SendMessage(
+    request: internal_messageservicev1_SendMessageRequest,
+  ): Promise<internal_messageservicev1_SendMessageResponse>;
+  // 撤销某条消息
+  RevokeMessage(
+    request: internal_messageservicev1_RevokeMessageRequest,
+  ): Promise<wellKnownEmpty>;
+}
+
+export function createInternalMessageServiceClient(
+  transport: ClientTransport,
+): InternalMessageService {
+  return {
+    ListMessage(request) {
+      const path = `admin/v1/internal-message/messages`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      if (request.offset) {
+        queryParams.push(
+          `offset=${encodeURIComponent(request.offset.toString())}`,
+        );
+      }
+      if (request.limit) {
+        queryParams.push(
+          `limit=${encodeURIComponent(request.limit.toString())}`,
+        );
+      }
+      if (request.token) {
+        queryParams.push(
+          `token=${encodeURIComponent(request.token.toString())}`,
+        );
+      }
+      if (request.noPaging) {
+        queryParams.push(
+          `noPaging=${encodeURIComponent(request.noPaging.toString())}`,
+        );
+      }
+      if (request.query) {
+        queryParams.push(
+          `query=${encodeURIComponent(request.query.toString())}`,
+        );
+      }
+      if (request.filter) {
+        queryParams.push(
+          `filter=${encodeURIComponent(request.filter.toString())}`,
+        );
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(
+          `filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.orderBy) {
+        queryParams.push(
+          `orderBy=${encodeURIComponent(request.orderBy.toString())}`,
+        );
+      }
+      if (request.sorting?.field) {
+        queryParams.push(
+          `sorting.field=${encodeURIComponent(request.sorting.field.toString())}`,
+        );
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(
+          `sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`,
+        );
+      }
+      if (request.fieldMask) {
+        queryParams.push(
+          `fieldMask=${encodeURIComponent(request.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'InternalMessageService',
+        method: 'ListMessage',
+      }) as Promise<internal_messageservicev1_ListInternalMessageResponse>;
+    },
+    GetMessage(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/internal-message/messages/${request.id}`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(
+          `viewMask=${encodeURIComponent(request.viewMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'InternalMessageService',
+        method: 'GetMessage',
+      }) as Promise<internal_messageservicev1_InternalMessage>;
+    },
+    UpdateMessage(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/internal-message/messages/${request.id}`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'PUT', body, {
+        service: 'InternalMessageService',
+        method: 'UpdateMessage',
+      }) as Promise<wellKnownEmpty>;
+    },
+    DeleteMessage(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/internal-message/messages/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'InternalMessageService',
+        method: 'DeleteMessage',
+      }) as Promise<wellKnownEmpty>;
+    },
+    SendMessage(request) {
+      const path = `admin/v1/internal-message/send`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'InternalMessageService',
+        method: 'SendMessage',
+      }) as Promise<internal_messageservicev1_SendMessageResponse>;
+    },
+    RevokeMessage(request) {
+      const path = `admin/v1/internal-message/revoke`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'InternalMessageService',
+        method: 'RevokeMessage',
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// ------------------------------
+// 分页通用请求
+// ------------------------------
+export type pagination_PagingRequest = {
+  // 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+  fieldMask?: wellKnownFieldMask;
+  // Google AIP规范字符串过滤条件
+  filter?: string;
+  // 复杂过滤表达式（优先使用）
+  filterExpr?: pagination_FilterExpr;
+  // 最多返回的记录数（默认10，建议设置上限如100）
+  limit?: number;
+  // 是否不分页，如果为true，则page和pageSize参数无效。
+  noPaging?: boolean;
+  // 跳过的记录数（从0开始，默认0）
+  offset?: number;
+  // 排序条件
+  orderBy?: string;
+  // 当前页码（从1开始，默认1）
+  page?: number;
+  // 每页条数（默认10，建议设置上限如100）
+  pageSize?: number;
+  // JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+  query?: string;
+  // 排序规则
+  sorting: pagination_Sorting[] | undefined;
+  // 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+  token?: string;
+};
+
+// 过滤表达式
+export type pagination_FilterExpr = {
+  // 条件列表
+  conditions: pagination_FilterCondition[] | undefined;
+  // 子表达式列表
+  groups: pagination_FilterExpr[] | undefined;
+  // 过滤表达式类型
+  type: pagination_ExprType | undefined;
+};
+
+// 过滤表达式类型
+export type pagination_ExprType =
+  | 'AND'
+  | 'EXPR_TYPE_UNSPECIFIED'
+  | 'OR';
+// 过滤条件
+export type pagination_FilterCondition = {
+  // 日期时间部分（可选，仅在字段为日期时间类型时使用）
+  datePart?: pagination_DatePart;
+  // 过滤字段名
+  field: string | undefined;
+  // 当字段为 JSON/JSONB 类型时，可指定要抽取的子路径（例如: "meta.user.name" 或 JSONPath）
+  // 服务端应把此路径用于 JSON_EXTRACT / -> 操作，再对抽取结果应用 op。
+  jsonPath?: string;
+  // 当需要使用非字符串类型的比较值（对象/数组/数字/布尔）时使用此字段，
+  // 使用 google.protobuf.Value 能表达任意 JSON 值。
+  jsonValue?: wellKnownValue;
+  // 过滤操作符
+  op: pagination_Operator | undefined;
+  // 过滤值（单值）
+  value?: string;
+  // 过滤值（多值，如IN操作符）
+  values: string[] | undefined;
+};
+
+// 操作符枚举
+export type pagination_Operator =
+  | 'ARRAY_CONTAINS'
+  // 范围与正则
+  | 'BETWEEN'
+  // 语义化的字符串操作
+  | 'CONTAINS'
+  | 'ENDS_WITH'
+  // 基本比较
+  | 'EQ'
+  | 'EXACT'
+  | 'EXISTS'
+  | 'GT'
+  | 'GTE'
+  | 'ICONTAINS'
+  | 'IENDS_WITH'
+  | 'IEXACT'
+  | 'ILIKE'
+  // 集合操作
+  | 'IN'
+  | 'IREGEXP'
+  | 'IS_NOT_NULL'
+  // 空值判断
+  | 'IS_NULL'
+  | 'ISTARTS_WITH'
+  // JSON / 数组 / 集合相关（按需在服务端映射为具体 DB 运算）
+  | 'JSON_CONTAINS'
+  // 模糊 / 大小写不敏感模糊 / 非模糊
+  | 'LIKE'
+  | 'LT'
+  | 'LTE'
+  | 'NEQ'
+  | 'NIN'
+  | 'NOT_LIKE'
+  // 未指定
+  | 'OPERATOR_UNSPECIFIED'
+  | 'REGEXP'
+  | 'SEARCH'
+  | 'STARTS_WITH';
+type wellKnownValue = unknown;
+
+// 日期时间部分枚举
+export type pagination_DatePart =
+  | 'DATE'
+  | 'DATE_PART_UNSPECIFIED'
+  | 'DAY'
+  | 'HOUR'
+  | 'ISO_WEEK_DAY'
+  | 'ISO_YEAR'
+  | 'MICROSECOND'
+  | 'MINUTE'
+  | 'MONTH'
+  | 'QUARTER'
+  | 'SECOND'
+  | 'TIME'
+  | 'WEEK'
+  | 'WEEK_DAY'
+  | 'YEAR';
+// 排序规则（分页场景通常需配合排序保证结果稳定）
+export type pagination_Sorting = {
+  // 排序方向
+  direction: pagination_Sorting_Direction | undefined;
+  // 排序字段（如"id"、"create_time"）
+  field: string | undefined;
+};
+
+// 排序方向（ASC/DESC，默认ASC）
+export type pagination_Sorting_Direction =
+  | 'ASC'
+  | 'DESC';
+// In JSON, a field mask is encoded as a single string where paths are
+// separated by a comma. Fields name in each path are converted
+// to/from lower-camel naming conventions.
+// As an example, consider the following message declarations:
+//
+//     message Profile {
+//       User user = 1;
+//       Photo photo = 2;
+//     }
+//     message User {
+//       string display_name = 1;
+//       string address = 2;
+//     }
+//
+// In proto a field mask for `Profile` may look as such:
+//
+//     mask {
+//       paths: "user.display_name"
+//       paths: "photo"
+//     }
+//
+// In JSON, the same mask is represented as below:
+//
+//     {
+//       mask: "user.displayName,photo"
+//     }
+type wellKnownFieldMask = string;
+
+// 查询站内信消息列表 - 回应
+export type internal_messageservicev1_ListInternalMessageResponse = {
+  items: internal_messageservicev1_InternalMessage[] | undefined;
+  total: number | undefined;
+};
+
+// 站内信消息
+export type internal_messageservicev1_InternalMessage = {
+  categoryId?: number;
+  categoryName?: string;
+  content?: string;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  senderId?: number;
+  senderName?: string;
+  status?: internal_messageservicev1_InternalMessage_Status;
+  tenantId?: number;
+  tenantName?: string;
+  title?: string;
+  type?: internal_messageservicev1_InternalMessage_Type;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// 消息状态
+export type internal_messageservicev1_InternalMessage_Status =
+  | 'ARCHIVED'
+  | 'DELETED'
+  | 'DRAFT'
+  | 'PUBLISHED'
+  | 'REVOKED'
+  | 'SCHEDULED';
+// 消息类型
+export type internal_messageservicev1_InternalMessage_Type =
+  | 'GROUP'
+  | 'NOTIFICATION'
+  | 'PRIVATE';
+// Encoded using RFC 3339, where generated output will always be Z-normalized
+// and uses 0, 3, 6 or 9 fractional digits.
+// Offsets other than "Z" are also accepted.
+type wellKnownTimestamp = string;
+
+// 查询站内信消息详情 - 请求
+export type internal_messageservicev1_GetInternalMessageRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 更新站内信消息 - 请求
+export type internal_messageservicev1_UpdateInternalMessageRequest = {
+  allowMissing?: boolean;
+  data: internal_messageservicev1_InternalMessage | undefined;
+  id: number | undefined;
+  updateMask: undefined | wellKnownFieldMask;
+};
+
+// 删除站内信消息 - 请求
+export type internal_messageservicev1_DeleteInternalMessageRequest = {
+  id?: number;
+};
+
+export type internal_messageservicev1_SendMessageRequest = {
+  categoryId?: number;
+  content: string | undefined;
+  conversationId?: number;
+  recipientUserId?: number;
+  sendUserId?: number;
+  targetAll?: boolean;
+  targetUserIds: number[] | undefined;
+  title?: string;
+  type: internal_messageservicev1_InternalMessage_Type | undefined;
+};
+
+export type internal_messageservicev1_SendMessageResponse = {
+  messageId: number | undefined;
+};
+
+export type internal_messageservicev1_RevokeMessageRequest = {
+  messageId: number | undefined;
+  userId: number | undefined;
+};
+
+// 站内信消息分类管理服务
+export interface InternalMessageCategoryService {
+  // 查询站内信消息分类列表
+  List(
+    request: pagination_PagingRequest,
+  ): Promise<internal_messageservicev1_ListInternalMessageCategoryResponse>;
+  // 查询站内信消息分类详情
+  Get(
+    request: internal_messageservicev1_GetInternalMessageCategoryRequest,
+  ): Promise<internal_messageservicev1_InternalMessageCategory>;
+  // 创建站内信消息分类
+  Create(
+    request: internal_messageservicev1_CreateInternalMessageCategoryRequest,
+  ): Promise<wellKnownEmpty>;
+  // 更新站内信消息分类
+  Update(
+    request: internal_messageservicev1_UpdateInternalMessageCategoryRequest,
+  ): Promise<wellKnownEmpty>;
+  // 删除站内信消息分类
+  Delete(
+    request: internal_messageservicev1_DeleteInternalMessageCategoryRequest,
+  ): Promise<wellKnownEmpty>;
+}
+
+export function createInternalMessageCategoryServiceClient(
+  transport: ClientTransport,
+): InternalMessageCategoryService {
+  return {
+    List(request) {
+      const path = `admin/v1/internal-message/categories`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      if (request.offset) {
+        queryParams.push(
+          `offset=${encodeURIComponent(request.offset.toString())}`,
+        );
+      }
+      if (request.limit) {
+        queryParams.push(
+          `limit=${encodeURIComponent(request.limit.toString())}`,
+        );
+      }
+      if (request.token) {
+        queryParams.push(
+          `token=${encodeURIComponent(request.token.toString())}`,
+        );
+      }
+      if (request.noPaging) {
+        queryParams.push(
+          `noPaging=${encodeURIComponent(request.noPaging.toString())}`,
+        );
+      }
+      if (request.query) {
+        queryParams.push(
+          `query=${encodeURIComponent(request.query.toString())}`,
+        );
+      }
+      if (request.filter) {
+        queryParams.push(
+          `filter=${encodeURIComponent(request.filter.toString())}`,
+        );
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(
+          `filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.orderBy) {
+        queryParams.push(
+          `orderBy=${encodeURIComponent(request.orderBy.toString())}`,
+        );
+      }
+      if (request.sorting?.field) {
+        queryParams.push(
+          `sorting.field=${encodeURIComponent(request.sorting.field.toString())}`,
+        );
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(
+          `sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`,
+        );
+      }
+      if (request.fieldMask) {
+        queryParams.push(
+          `fieldMask=${encodeURIComponent(request.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'InternalMessageCategoryService',
+        method: 'List',
+      }) as Promise<internal_messageservicev1_ListInternalMessageCategoryResponse>;
+    },
+    Get(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/internal-message/categories/${request.id}`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(
+          `viewMask=${encodeURIComponent(request.viewMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'InternalMessageCategoryService',
+        method: 'Get',
+      }) as Promise<internal_messageservicev1_InternalMessageCategory>;
+    },
+    Create(request) {
+      const path = `admin/v1/internal-message/categories`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'InternalMessageCategoryService',
+        method: 'Create',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Update(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/internal-message/categories/${request.id}`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'PUT', body, {
+        service: 'InternalMessageCategoryService',
+        method: 'Update',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Delete(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/internal-message/categories/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'InternalMessageCategoryService',
+        method: 'Delete',
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// 查询站内信消息分类列表 - 回应
+export type internal_messageservicev1_ListInternalMessageCategoryResponse = {
+  items: internal_messageservicev1_InternalMessageCategory[] | undefined;
+  total: number | undefined;
+};
+
+// 站内信消息分类
+export type internal_messageservicev1_InternalMessageCategory = {
+  code?: string;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  iconUrl?: string;
+  id?: number;
+  isEnabled?: boolean;
+  name?: string;
+  sortOrder?: number;
+  tenantId?: number;
+  tenantName?: string;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// 查询站内信消息分类详情 - 请求
+export type internal_messageservicev1_GetInternalMessageCategoryRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建站内信消息分类 - 请求
+export type internal_messageservicev1_CreateInternalMessageCategoryRequest = {
+  data: internal_messageservicev1_InternalMessageCategory | undefined;
+};
+
+// 更新站内信消息分类 - 请求
+export type internal_messageservicev1_UpdateInternalMessageCategoryRequest = {
+  allowMissing?: boolean;
+  data: internal_messageservicev1_InternalMessageCategory | undefined;
+  id: number | undefined;
+  updateMask: undefined | wellKnownFieldMask;
+};
+
+// 删除站内信消息分类 - 请求
+export type internal_messageservicev1_DeleteInternalMessageCategoryRequest = {
+  id?: number;
+};
+
+// 站内信消息管理服务
+export interface InternalMessageRecipientService {
+  // 获取用户的收件箱列表 (通知类)
+  ListUserInbox(
+    request: pagination_PagingRequest,
+  ): Promise<internal_messageservicev1_ListUserInboxResponse>;
+  // 删除用户收件箱中的通知记录
+  DeleteNotificationFromInbox(
+    request: internal_messageservicev1_DeleteNotificationFromInboxRequest,
+  ): Promise<wellKnownEmpty>;
+  // 将通知标记为已读
+  MarkNotificationAsRead(
+    request: internal_messageservicev1_MarkNotificationAsReadRequest,
+  ): Promise<wellKnownEmpty>;
+}
+
+export function createInternalMessageRecipientServiceClient(
+  transport: ClientTransport,
+): InternalMessageRecipientService {
+  return {
+    ListUserInbox(request) {
+      const path = `admin/v1/internal-message/inbox`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      if (request.offset) {
+        queryParams.push(
+          `offset=${encodeURIComponent(request.offset.toString())}`,
+        );
+      }
+      if (request.limit) {
+        queryParams.push(
+          `limit=${encodeURIComponent(request.limit.toString())}`,
+        );
+      }
+      if (request.token) {
+        queryParams.push(
+          `token=${encodeURIComponent(request.token.toString())}`,
+        );
+      }
+      if (request.noPaging) {
+        queryParams.push(
+          `noPaging=${encodeURIComponent(request.noPaging.toString())}`,
+        );
+      }
+      if (request.query) {
+        queryParams.push(
+          `query=${encodeURIComponent(request.query.toString())}`,
+        );
+      }
+      if (request.filter) {
+        queryParams.push(
+          `filter=${encodeURIComponent(request.filter.toString())}`,
+        );
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(
+          `filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.orderBy) {
+        queryParams.push(
+          `orderBy=${encodeURIComponent(request.orderBy.toString())}`,
+        );
+      }
+      if (request.sorting?.field) {
+        queryParams.push(
+          `sorting.field=${encodeURIComponent(request.sorting.field.toString())}`,
+        );
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(
+          `sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`,
+        );
+      }
+      if (request.fieldMask) {
+        queryParams.push(
+          `fieldMask=${encodeURIComponent(request.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'InternalMessageRecipientService',
+        method: 'ListUserInbox',
+      }) as Promise<internal_messageservicev1_ListUserInboxResponse>;
+    },
+    DeleteNotificationFromInbox(request) {
+      const path = `admin/v1/internal-message/inbox/delete`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'InternalMessageRecipientService',
+        method: 'DeleteNotificationFromInbox',
+      }) as Promise<wellKnownEmpty>;
+    },
+    MarkNotificationAsRead(request) {
+      const path = `admin/v1/internal-message/read`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'InternalMessageRecipientService',
+        method: 'MarkNotificationAsRead',
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+export type internal_messageservicev1_ListUserInboxResponse = {
+  items: internal_messageservicev1_InternalMessageRecipient[] | undefined;
+  total: number | undefined;
+};
+
+// 站内信消息用户接收信息
+export type internal_messageservicev1_InternalMessageRecipient = {
+  content?: string;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  id?: number;
+  messageId?: number;
+  readAt?: wellKnownTimestamp;
+  receivedAt?: wellKnownTimestamp;
+  recipientUserId?: number;
+  status?: internal_messageservicev1_InternalMessageRecipient_Status;
+  tenantId?: number;
+  tenantName?: string;
+  title?: string;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// 消息状态
+export type internal_messageservicev1_InternalMessageRecipient_Status =
+  | 'DELETED'
+  | 'READ'
+  | 'RECEIVED'
+  | 'REVOKED'
+  | 'SENT';
+export type internal_messageservicev1_DeleteNotificationFromInboxRequest = {
+  recipientIds: number[] | undefined;
+  userId: number | undefined;
+};
+
+export type internal_messageservicev1_MarkNotificationAsReadRequest = {
+  recipientIds: number[] | undefined;
+  userId: number | undefined;
+};
+
+// OA 工作流管理服务（admin HTTP 边端）。
+// 对齐 cms admin/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
+// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
+// adminV1.WorkflowServiceHTTPServer，admin-service 注册并转发到 core gRPC。
+export interface WorkflowService {
+  // 创建工作流定义（管理端）。
+  CreateWorkflowDefinition(
+    request: oaservicev1_CreateWorkflowDefinitionRequest,
+  ): Promise<oaservicev1_WorkflowDefinition>;
+  // 查询工作流定义列表（管理端）。
+  ListWorkflowDefinition(
+    request: oaservicev1_ListWorkflowDefinitionRequest,
+  ): Promise<oaservicev1_ListWorkflowDefinitionResponse>;
+  // 提交申请：发起一个工作流实例。
+  SubmitApply(
+    request: oaservicev1_SubmitApplyRequest,
+  ): Promise<oaservicev1_SubmitApplyResponse>;
+  // 审批/驳回/转办当前待办任务。
+  AuditTask(
+    request: oaservicev1_AuditTaskRequest,
+  ): Promise<wellKnownEmpty>;
+  // 获取当前用户的待办 / 已办 / 我的申请列表。
+  GetMyTasks(
+    request: oaservicev1_GetMyTasksRequest,
+  ): Promise<oaservicev1_GetMyTasksResponse>;
+  // 获取单个待办任务详情。
+  GetTask(
+    request: oaservicev1_GetTaskRequest,
+  ): Promise<oaservicev1_GetTaskResponse>;
+}
+
+export function createWorkflowServiceClient(
+  transport: ClientTransport,
+): WorkflowService {
+  return {
+    CreateWorkflowDefinition(request) {
+      const path = `admin/v1/oa/workflow/definitions`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'WorkflowService',
+        method: 'CreateWorkflowDefinition',
+      }) as Promise<oaservicev1_WorkflowDefinition>;
+    },
+    ListWorkflowDefinition(request) {
+      const path = `admin/v1/oa/workflow/definitions`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.paging?.page) {
+        queryParams.push(
+          `paging.page=${encodeURIComponent(request.paging.page.toString())}`,
+        );
+      }
+      if (request.paging?.pageSize) {
+        queryParams.push(
+          `paging.pageSize=${encodeURIComponent(request.paging.pageSize.toString())}`,
+        );
+      }
+      if (request.paging?.offset) {
+        queryParams.push(
+          `paging.offset=${encodeURIComponent(request.paging.offset.toString())}`,
+        );
+      }
+      if (request.paging?.limit) {
+        queryParams.push(
+          `paging.limit=${encodeURIComponent(request.paging.limit.toString())}`,
+        );
+      }
+      if (request.paging?.token) {
+        queryParams.push(
+          `paging.token=${encodeURIComponent(request.paging.token.toString())}`,
+        );
+      }
+      if (request.paging?.noPaging) {
+        queryParams.push(
+          `paging.noPaging=${encodeURIComponent(request.paging.noPaging.toString())}`,
+        );
+      }
+      if (request.paging?.query) {
+        queryParams.push(
+          `paging.query=${encodeURIComponent(request.paging.query.toString())}`,
+        );
+      }
+      if (request.paging?.filter) {
+        queryParams.push(
+          `paging.filter=${encodeURIComponent(request.paging.filter.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.type) {
+        queryParams.push(
+          `paging.filterExpr.type=${encodeURIComponent(request.paging.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `paging.filterExpr.conditions.field=${encodeURIComponent(request.paging.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `paging.filterExpr.conditions.op=${encodeURIComponent(request.paging.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `paging.filterExpr.conditions.value=${encodeURIComponent(request.paging.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `paging.filterExpr.conditions.jsonValue=${encodeURIComponent(request.paging.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.values) {
+        request.paging.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `paging.filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.paging?.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `paging.filterExpr.conditions.datePart=${encodeURIComponent(request.paging.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `paging.filterExpr.conditions.jsonPath=${encodeURIComponent(request.paging.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.paging?.orderBy) {
+        queryParams.push(
+          `paging.orderBy=${encodeURIComponent(request.paging.orderBy.toString())}`,
+        );
+      }
+      if (request.paging?.sorting?.field) {
+        queryParams.push(
+          `paging.sorting.field=${encodeURIComponent(request.paging.sorting.field.toString())}`,
+        );
+      }
+      if (request.paging?.sorting?.direction) {
+        queryParams.push(
+          `paging.sorting.direction=${encodeURIComponent(request.paging.sorting.direction.toString())}`,
+        );
+      }
+      if (request.paging?.fieldMask) {
+        queryParams.push(
+          `paging.fieldMask=${encodeURIComponent(request.paging.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'WorkflowService',
+        method: 'ListWorkflowDefinition',
+      }) as Promise<oaservicev1_ListWorkflowDefinitionResponse>;
+    },
+    SubmitApply(request) {
+      const path = `admin/v1/oa/workflow/apply`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'WorkflowService',
+        method: 'SubmitApply',
+      }) as Promise<oaservicev1_SubmitApplyResponse>;
+    },
+    AuditTask(request) {
+      if (request.taskId === undefined || request.taskId === null) {
+        throw new Error('missing required field request.task_id');
+      }
+      const path = `admin/v1/oa/workflow/tasks/${request.taskId}/audit`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'WorkflowService',
+        method: 'AuditTask',
+      }) as Promise<wellKnownEmpty>;
+    },
+    GetMyTasks(request) {
+      const path = `admin/v1/oa/workflow/my-tasks`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.listType) {
+        queryParams.push(
+          `listType=${encodeURIComponent(request.listType.toString())}`,
+        );
+      }
+      if (request.paging?.page) {
+        queryParams.push(
+          `paging.page=${encodeURIComponent(request.paging.page.toString())}`,
+        );
+      }
+      if (request.paging?.pageSize) {
+        queryParams.push(
+          `paging.pageSize=${encodeURIComponent(request.paging.pageSize.toString())}`,
+        );
+      }
+      if (request.paging?.offset) {
+        queryParams.push(
+          `paging.offset=${encodeURIComponent(request.paging.offset.toString())}`,
+        );
+      }
+      if (request.paging?.limit) {
+        queryParams.push(
+          `paging.limit=${encodeURIComponent(request.paging.limit.toString())}`,
+        );
+      }
+      if (request.paging?.token) {
+        queryParams.push(
+          `paging.token=${encodeURIComponent(request.paging.token.toString())}`,
+        );
+      }
+      if (request.paging?.noPaging) {
+        queryParams.push(
+          `paging.noPaging=${encodeURIComponent(request.paging.noPaging.toString())}`,
+        );
+      }
+      if (request.paging?.query) {
+        queryParams.push(
+          `paging.query=${encodeURIComponent(request.paging.query.toString())}`,
+        );
+      }
+      if (request.paging?.filter) {
+        queryParams.push(
+          `paging.filter=${encodeURIComponent(request.paging.filter.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.type) {
+        queryParams.push(
+          `paging.filterExpr.type=${encodeURIComponent(request.paging.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `paging.filterExpr.conditions.field=${encodeURIComponent(request.paging.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `paging.filterExpr.conditions.op=${encodeURIComponent(request.paging.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `paging.filterExpr.conditions.value=${encodeURIComponent(request.paging.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `paging.filterExpr.conditions.jsonValue=${encodeURIComponent(request.paging.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.values) {
+        request.paging.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `paging.filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.paging?.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `paging.filterExpr.conditions.datePart=${encodeURIComponent(request.paging.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `paging.filterExpr.conditions.jsonPath=${encodeURIComponent(request.paging.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.paging?.orderBy) {
+        queryParams.push(
+          `paging.orderBy=${encodeURIComponent(request.paging.orderBy.toString())}`,
+        );
+      }
+      if (request.paging?.sorting?.field) {
+        queryParams.push(
+          `paging.sorting.field=${encodeURIComponent(request.paging.sorting.field.toString())}`,
+        );
+      }
+      if (request.paging?.sorting?.direction) {
+        queryParams.push(
+          `paging.sorting.direction=${encodeURIComponent(request.paging.sorting.direction.toString())}`,
+        );
+      }
+      if (request.paging?.fieldMask) {
+        queryParams.push(
+          `paging.fieldMask=${encodeURIComponent(request.paging.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'WorkflowService',
+        method: 'GetMyTasks',
+      }) as Promise<oaservicev1_GetMyTasksResponse>;
+    },
+    GetTask(request) {
+      if (request.taskId === undefined || request.taskId === null) {
+        throw new Error('missing required field request.task_id');
+      }
+      const path = `admin/v1/oa/workflow/tasks/${request.taskId}`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'WorkflowService',
+        method: 'GetTask',
+      }) as Promise<oaservicev1_GetTaskResponse>;
+    },
+  };
+}
+export type oaservicev1_CreateWorkflowDefinitionRequest = {
+  data: oaservicev1_WorkflowDefinition | undefined;
+};
+
+export type oaservicev1_WorkflowDefinition = {
+  code?: string;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  definitionStatus?: oaservicev1_WorkflowDefinition_DefinitionStatus;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  description?: string;
+  // 动态表单 schema，原始 JSON 文本，供前端按定义渲染。
+  formSchema?: string;
+  id?: number;
+  name?: string;
+  // 节点配置，原始 JSON 文本。结构由引擎 internal/workflow 包解析。
+  nodeConfig?: string;
+  // ---- 租户 / 审计字段（与 go-wind-cms 固定字段号对齐） ----
+  tenantId?: number;
+  tenantName?: string;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+  version?: number;
+};
+
+export type oaservicev1_WorkflowDefinition_DefinitionStatus =
+  | 'DISABLED'
+  | 'DRAFT'
+  | 'ENABLED';
+export type oaservicev1_ListWorkflowDefinitionRequest = {
+  paging: pagination_PagingRequest | undefined;
+};
+
+export type oaservicev1_ListWorkflowDefinitionResponse = {
+  items: oaservicev1_WorkflowDefinition[] | undefined;
+  total: number | undefined;
+};
+
+export type oaservicev1_SubmitApplyRequest = {
+  definitionCode: string | undefined;
+  definitionVersion: number | undefined;
+  // 申请表单数据，原始 JSON 文本。
+  formData: string | undefined;
+  title: string | undefined;
+};
+
+export type oaservicev1_SubmitApplyResponse = {
+  instanceId: number | undefined;
+};
+
+export type oaservicev1_AuditTaskRequest = {
+  action: oaservicev1_AuditTaskRequest_AuditAction | undefined;
+  comment?: string;
+  // 仅 action == FORWARD 时有效：被转办人 ID。
+  forwardToUserId?: number;
+  // 绑定路径参数 {task_id}。
+  taskId: number | undefined;
+};
+
+export type oaservicev1_AuditTaskRequest_AuditAction =
+  | 'APPROVE'
+  | 'FORWARD'
+  | 'REJECT';
+export type oaservicev1_GetMyTasksRequest = {
+  listType: oaservicev1_GetMyTasksRequest_ListType | undefined;
+  paging: pagination_PagingRequest | undefined;
+};
+
+export type oaservicev1_GetMyTasksRequest_ListType =
+  | 'DONE'
+  | 'PENDING'
+  | 'SUBMITTED';
+export type oaservicev1_GetMyTasksResponse = {
+  items: oaservicev1_MyTaskItem[] | undefined;
+  total: number | undefined;
+};
+
+export type oaservicev1_MyTaskItem = {
+  actionLabel?: string;
+  comment?: string;
+  instanceId?: number;
+  logId?: number;
+  occurredAt?: wellKnownTimestamp;
+  statusLabel?: string;
+  // 各字段按 list_type 选择性填充。
+  taskId?: number;
+  title?: string;
+};
+
+export type oaservicev1_GetTaskRequest = {
+  taskId: number | undefined;
+};
+
+// GetTaskResponse 投影待办任务详情。字段对齐详情页渲染所需，最小披露：
+// 申请标题、申请表单数据（原始 JSON 文本，引擎不解释）、该实例的审批日志轨迹。
+export type oaservicev1_GetTaskResponse = {
+  formData?: string;
+  history: oaservicev1_AuditLogEntry[] | undefined;
+  instanceId?: number;
+  taskId?: number;
+  title?: string;
+};
+
+// AuditLogEntry 审批日志轨迹条目。投影自 WorkflowLog，仅含审批类动作
+// （APPROVE / REJECT / FORWARD），与 ListByActor 的过滤口径一致。
+export type oaservicev1_AuditLogEntry = {
+  actionLabel?: string;
+  comment?: string;
+  occurredAt?: wellKnownTimestamp;
+};
+
 export class ApiClient {
   private _authenticationService?: AuthenticationService;
+  private _internalMessageCategoryService?: InternalMessageCategoryService;
+  private _internalMessageRecipientService?: InternalMessageRecipientService;
+  private _internalMessageService?: InternalMessageService;
   private readonly _transport: ClientTransport;
+  private _workflowService?: WorkflowService;
 
   constructor(transport: ClientTransport) {
     this._transport = transport;
@@ -173,6 +1593,22 @@ export class ApiClient {
 
   get authenticationService(): AuthenticationService {
     return this._authenticationService ??= createAuthenticationServiceClient(this._transport);
+  }
+
+  get internalMessageCategoryService(): InternalMessageCategoryService {
+    return this._internalMessageCategoryService ??= createInternalMessageCategoryServiceClient(this._transport);
+  }
+
+  get internalMessageRecipientService(): InternalMessageRecipientService {
+    return this._internalMessageRecipientService ??= createInternalMessageRecipientServiceClient(this._transport);
+  }
+
+  get internalMessageService(): InternalMessageService {
+    return this._internalMessageService ??= createInternalMessageServiceClient(this._transport);
+  }
+
+  get workflowService(): WorkflowService {
+    return this._workflowService ??= createWorkflowServiceClient(this._transport);
   }
 }
 

@@ -3,7 +3,7 @@
  *
  * 对齐 go-wind-admin/frontend/admin/vue-element/src/api/composables/auth.ts，
  * 差异：
- *  - 类型来源改为 @/api/generated/oa/v1（由 buf.vue-element.oa.typescript.gen.yaml
+ *  - 类型来源改为 @/api/generated/admin/service/v1（由 buf.vue-element.oa.typescript.gen.yaml
  *    从 OA backend api/protos/oa/v1/authentication.proto 生成）；
  *  - 删除 RegisterUser（依赖 cms user.proto，OA 鉴权转发层未含）。
  *
@@ -19,15 +19,15 @@ import {
   type UseQueryOptions,
 } from "@tanstack/vue-query";
 import type {
-  GenerateCaptchaResponse,
-  LoginRequest,
-  LoginResponse,
-} from "@/api/generated/oa/v1";
+  authenticationservicev1_GenerateCaptchaResponse,
+  authenticationservicev1_LoginRequest,
+  authenticationservicev1_LoginResponse,
+} from "@/api/generated/admin/service/v1";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
 
 // 直接导出函数，供非 Vue 上下文使用
-export async function login(request: LoginRequest) {
+export async function login(request: authenticationservicev1_LoginRequest) {
   return apiClient.authenticationService.Login(request);
 }
 
@@ -50,7 +50,7 @@ export async function refreshToken(refreshToken: string) {
 // 登录（Mutation）
 // ------------------------------
 export function useLogin(
-  options?: UseMutationOptions<LoginResponse, Error, LoginRequest>
+  options?: UseMutationOptions<authenticationservicev1_LoginResponse, Error, authenticationservicev1_LoginRequest>
 ) {
   return useMutation({
     mutationFn: (req) => login(req),
@@ -90,7 +90,7 @@ export const logoutMutation = queryClient.getMutationCache().build(queryClient, 
 // 刷新 Token（Mutation）
 // ------------------------------
 export function useRefreshToken(
-  options?: UseMutationOptions<LoginResponse, Error, LoginRequest>
+  options?: UseMutationOptions<authenticationservicev1_LoginResponse, Error, authenticationservicev1_LoginRequest>
 ) {
   return useMutation({
     mutationFn: (req) => refreshToken(req.refresh_token ?? ""),
@@ -113,7 +113,7 @@ export const refreshTokenMutation = queryClient
 // 获取验证码（Query - GET）
 // ------------------------------
 export function useGenerateCaptcha(
-  options?: UseQueryOptions<GenerateCaptchaResponse, Error>
+  options?: UseQueryOptions<authenticationservicev1_GenerateCaptchaResponse, Error>
 ) {
   return useQuery({
     queryKey: ["captcha"],

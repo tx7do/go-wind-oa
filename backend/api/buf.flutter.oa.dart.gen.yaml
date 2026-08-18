@@ -1,11 +1,11 @@
 # OA 移動端（Flutter 基座）Dart API 客户端生成模板。
 #
-# 與 go-wind-cms/backend/api/buf.app.dart.gen.yaml 同構，差異：
-#  - inputs 指向 OA 自有的 protos/oa/service/v1（工作流 HTTP 端點）；
-#  - out 指向 OA 移動端 frontend/mobile/lib/generated/api。
-#
-# 这是之前 OA 後端缺失的 Dart 生成链——補齊後移動端可由 buf 直接生成
-# 工作流 API 客户端，不再依賴 swagger_parser/openapi-generator 中轉。
+# 與 go-wind-cms/backend/api/buf.app.dart.gen.yaml 同構。
+# inputs 覆蓋 app/service/v1（鑑權 + 工作流的 app HTTP 端點包裝）。
+# 工作流的 HTTP 注解定義在 app/service/v1/i_workflow.proto，引用
+# oa.service.v1 的消息類型——Dart 生成器會自動跟隨 import 解析消息定義，
+# 但只在有 http annotation 的 app wrapper proto 上生成 service client。
+# 不含 oa/service/v1（core 純 gRPC proto，無 http annotation）。
 #
 # 运行：cd backend/api && buf generate --template buf.flutter.oa.dart.gen.yaml
 
@@ -28,7 +28,7 @@ managed:
 inputs:
   - directory: protos
     paths:
-      - protos/oa/service/v1
+      - protos/app/service/v1
 
 plugins:
   - local: protoc-gen-dart-http

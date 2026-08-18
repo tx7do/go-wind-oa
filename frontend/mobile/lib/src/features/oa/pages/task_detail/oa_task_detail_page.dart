@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/generated/l10n.dart';
 import 'package:flutter_app/src/features/oa/services/workflow_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
-import 'package:flutter_app/generated/api/oa/v1/index.dart' as oaApi;
+import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
 
 /// 任务详情页。
 ///
@@ -33,7 +33,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
     super.dispose();
   }
 
-  Future<void> _doAudit(oaApi.AuditTaskRequest_AuditAction action,
+  Future<void> _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction action,
       {int? forwardTo}) async {
     final result = await _service.audit(
       taskId: widget.taskId,
@@ -74,7 +74,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
               final fid = int.tryParse(_forwardToCtrl.text);
               Navigator.of(ctx).pop();
               if (fid != null && fid > 0) {
-                _doAudit(oaApi.AuditTaskRequest_AuditAction.FORWARD, forwardTo: fid);
+                _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.FORWARD, forwardTo: fid);
               }
             },
             child: Text(loc.oaTaskDetailConfirm),
@@ -121,7 +121,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
                             style: TextStyle(
                                 color: theme.colorScheme.error)));
                   }
-                  final detail = result as oaApi.GetTaskResponse?;
+                  final detail = result as oaApi.OaServiceV1GetTaskResponse?;
                   if (detail == null) {
                     return Center(
                         child: Text(loc.oaTaskDetailLoading,
@@ -146,7 +146,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
                 Expanded(
                   child: FilledButton(
                     onPressed: () =>
-                        _doAudit(oaApi.AuditTaskRequest_AuditAction.APPROVE),
+                        _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.APPROVE),
                     child: Text(loc.oaTaskDetailApprove),
                   ),
                 ),
@@ -154,7 +154,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
                 Expanded(
                   child: FilledButton.tonal(
                     onPressed: () =>
-                        _doAudit(oaApi.AuditTaskRequest_AuditAction.REJECT),
+                        _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.REJECT),
                     child: Text(loc.oaTaskDetailReject),
                   ),
                 ),
@@ -180,7 +180,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
 /// 审批类动作（APPROVE/REJECT/FORWARD），提交动作不在详情视图——与后端
 /// ListByInstance 过滤口径一致。
 class _DetailContent extends StatelessWidget {
-  final oaApi.GetTaskResponse detail;
+  final oaApi.OaServiceV1GetTaskResponse detail;
   final ThemeData theme;
   final S loc;
 
@@ -189,7 +189,7 @@ class _DetailContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final history = detail.history ?? <oaApi.AuditLogEntry>[];
+    final history = detail.history ?? <oaApi.OaServiceV1AuditLogEntry>[];
     return ListView(
       children: [
         Text(loc.oaTaskDetailSummaryTitle,
@@ -228,7 +228,7 @@ class _DetailContent extends StatelessWidget {
 }
 
 class _HistoryRow extends StatelessWidget {
-  final oaApi.AuditLogEntry entry;
+  final oaApi.OaServiceV1AuditLogEntry entry;
   final ThemeData theme;
 
   const _HistoryRow({required this.entry, required this.theme});

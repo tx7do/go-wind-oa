@@ -5,10 +5,10 @@ import 'package:cached_query/cached_query.dart' show Mutation, Query;
 import 'package:flutter_app/src/core/services/base_service.dart';
 import 'package:flutter_app/src/core/services/pagination_query.dart';
 
-// 生成代码的导入路径，由 swagger_parser 消费
-// backend/app/oa/service/cmd/server/assets/openapi.yaml 生成。
-// 若实际生成的路径不同，调整此处 import 即可。
-import 'package:flutter_app/generated/api/oa/v1/index.dart' as oaApi;
+// 生成代码由 buf.flutter.oa.dart.gen.yaml 生成于
+// generated/api/app/service/v1/index.dart。该包含 ApiClient（聚合所有
+// app HTTP service client）及 OA 工作流的消息类型（OaServiceV1* 前缀）。
+import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
 
 /// OA 工作流服务。
 ///
@@ -32,20 +32,20 @@ class WorkflowService extends BaseService {
   // ─── Queries ──────────────────────────────────────────
 
   /// 待我审批列表 Query。
-  Query<List<oaApi.MyTaskItem>> pendingTasksQuery([PaginationQuery? query]) {
+  Query<List<oaApi.OaServiceV1MyTaskItem>> pendingTasksQuery([PaginationQuery? query]) {
     final q = query ?? const PaginationQuery();
-    return Query<List<oaApi.MyTaskItem>>(
+    return Query<List<oaApi.OaServiceV1MyTaskItem>>(
       key: 'oa-pending-tasks',
-      queryFn: () => _api.getMyTasks(_toMyTasksRequest(q, oaApi.GetMyTasksRequest_ListType_PENDING)),
+      queryFn: () => _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.PENDING)),
     );
   }
 
   /// 我发起的列表 Query。
-  Query<List<oaApi.MyTaskItem>> submittedTasksQuery([PaginationQuery? query]) {
+  Query<List<oaApi.OaServiceV1MyTaskItem>> submittedTasksQuery([PaginationQuery? query]) {
     final q = query ?? const PaginationQuery();
-    return Query<List<oaApi.MyTaskItem>>(
+    return Query<List<oaApi.OaServiceV1MyTaskItem>>(
       key: 'oa-submitted-tasks',
-      queryFn: () => _api.getMyTasks(_toMyTasksRequest(q, oaApi.GetMyTasksRequest_ListType_SUBMITTED)),
+      queryFn: () => _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.SUBMITTED)),
     );
   }
 
@@ -54,11 +54,11 @@ class WorkflowService extends BaseService {
   /// 审批 Mutation（同意/驳回/转交）。
   ///
   /// invalidateQueries 指向待办列表，使审批完成后列表自动刷新。
-  Mutation<void, ({int taskId, oaApi.AuditTaskRequest_AuditAction action, String? comment, int? forwardToUserId})>
+  Mutation<void, ({int taskId, oaApi.OaServiceV1AuditTaskRequest$AuditAction action, String? comment, int? forwardToUserId})>
       auditMutation() {
     return Mutation<void,
-        ({int taskId, oaApi.AuditTaskRequest_AuditAction action, String? comment, int? forwardToUserId})>(
-      mutationFn: (p) => _api.auditTask(oaApi.AuditTaskRequest(
+        ({int taskId, oaApi.OaServiceV1AuditTaskRequest$AuditAction action, String? comment, int? forwardToUserId})>(
+      mutationFn: (p) => _api.auditTask(oaApi.OaServiceV1AuditTaskRequest(
         taskId: p.taskId,
         action: p.action,
         comment: p.comment,
@@ -71,12 +71,12 @@ class WorkflowService extends BaseService {
   /// 提交申请 Mutation。
   ///
   /// invalidateQueries 指向我发起的列表，使提交后该列表刷新出新建实例。
-  Mutation<oaApi.SubmitApplyResponse,
+  Mutation<oaApi.OaServiceV1SubmitApplyResponse,
       ({String definitionCode, int definitionVersion, String title, String formData})>
       submitApplyMutation() {
-    return Mutation<oaApi.SubmitApplyResponse,
+    return Mutation<oaApi.OaServiceV1SubmitApplyResponse,
         ({String definitionCode, int definitionVersion, String title, String formData})>(
-      mutationFn: (p) => _api.submitApply(oaApi.SubmitApplyRequest(
+      mutationFn: (p) => _api.submitApply(oaApi.OaServiceV1SubmitApplyRequest(
         definitionCode: p.definitionCode,
         definitionVersion: p.definitionVersion,
         title: p.title,
@@ -92,7 +92,7 @@ class WorkflowService extends BaseService {
   Future<dynamic> pendingTasks([PaginationQuery? query]) async {
     final q = query ?? const PaginationQuery();
     try {
-      return await _api.getMyTasks(_toMyTasksRequest(q, oaApi.GetMyTasksRequest_ListType_PENDING));
+      return await _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.PENDING));
     } on DioException catch (e) {
       return handleDioError(e);
     }
@@ -102,7 +102,7 @@ class WorkflowService extends BaseService {
   Future<dynamic> submittedTasks([PaginationQuery? query]) async {
     final q = query ?? const PaginationQuery();
     try {
-      return await _api.getMyTasks(_toMyTasksRequest(q, oaApi.GetMyTasksRequest_ListType_SUBMITTED));
+      return await _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.SUBMITTED));
     } on DioException catch (e) {
       return handleDioError(e);
     }
@@ -111,12 +111,12 @@ class WorkflowService extends BaseService {
   /// 审批（同意/驳回/转交）。直接调用版，供详情页按钮使用。
   Future<dynamic> audit({
     required int taskId,
-    required oaApi.AuditTaskRequest_AuditAction action,
+    required oaApi.OaServiceV1AuditTaskRequest$AuditAction action,
     String? comment,
     int? forwardToUserId,
   }) async {
     try {
-      return await _api.auditTask(oaApi.AuditTaskRequest(
+      return await _api.auditTask(oaApi.OaServiceV1AuditTaskRequest(
         taskId: taskId,
         action: action,
         comment: comment,
@@ -135,7 +135,7 @@ class WorkflowService extends BaseService {
     required String formData,
   }) async {
     try {
-      return await _api.submitApply(oaApi.SubmitApplyRequest(
+      return await _api.submitApply(oaApi.OaServiceV1SubmitApplyRequest(
         definitionCode: definitionCode,
         definitionVersion: definitionVersion,
         title: title,
@@ -153,7 +153,7 @@ class WorkflowService extends BaseService {
   /// NotFound/Forbidden）——前端无需二次校验。
   Future<dynamic> getTaskDetail({required int taskId}) async {
     try {
-      return await _api.getTask(oaApi.GetTaskRequest(taskId: taskId));
+      return await _api.getTask(oaApi.OaServiceV1GetTaskRequest(taskId: taskId));
     } on DioException catch (e) {
       return handleDioError(e);
     }
@@ -161,9 +161,9 @@ class WorkflowService extends BaseService {
 
   // ─── helpers ─────────────────────────────────────────
 
-  oaApi.GetMyTasksRequest _toMyTasksRequest(
-      PaginationQuery q, oaApi.GetMyTasksRequest_ListType lt) {
-    return oaApi.GetMyTasksRequest(
+  oaApi.OaServiceV1GetMyTasksRequest _toMyTasksRequest(
+      PaginationQuery q, oaApi.OaServiceV1GetMyTasksRequest$ListType lt) {
+    return oaApi.OaServiceV1GetMyTasksRequest(
       listType: lt,
       paging: q.toPagingRequest(),
     );

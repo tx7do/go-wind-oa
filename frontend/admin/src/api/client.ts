@@ -5,7 +5,7 @@
  * 这里将已有的 requestApi（基于 axios 的 RequestClient）适配为 ClientTransport，
  * 保留 token 注入、错误拦截、自动刷新等全部已有逻辑。
  */
-import { type ClientTransport, createApiClient } from "@/api/generated/oa/v1";
+import { type ClientTransport, createApiClient } from "@/api/generated/admin/service/v1";
 import { consumeCaptchaHeaders, requestApi } from "@/core/transport/rest";
 
 const transport: ClientTransport = {

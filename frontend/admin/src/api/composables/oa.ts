@@ -2,7 +2,7 @@
  * OA 工作流定义管理 composable。
  *
  * 对齐 cms internal-message.ts 模式：useQuery/fetchQuery 包列表查询，
- * useMutation 包创建。类型来自 @/api/generated/oa/v1（由
+ * useMutation 包创建。类型来自 @/api/generated/admin/service/v1（由
  * buf.vue-element.oa.typescript.gen.yaml 生成）。
  *
  * 注意：列表查询的 queryKey 为 ["listWorkflowDefinitions", query]，创建成功后
@@ -16,11 +16,11 @@ import {
   type UseQueryOptions,
 } from "@tanstack/vue-query";
 import type {
-  ListWorkflowDefinitionResponse,
-  CreateWorkflowDefinitionRequest,
-  WorkflowDefinition,
-  WorkflowDefinition_DefinitionStatus,
-} from "@/api/generated/oa/v1";
+  oaservicev1_ListWorkflowDefinitionResponse,
+  oaservicev1_CreateWorkflowDefinitionRequest,
+  oaservicev1_WorkflowDefinition,
+  oaservicev1_WorkflowDefinition_DefinitionStatus,
+} from "@/api/generated/admin/service/v1";
 import { type PaginationQuery } from "@/core/transport/rest";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
@@ -30,7 +30,7 @@ import { queryClient } from "@/plugins/vue-query";
 // ==============================
 export function useListWorkflowDefinitions(
   query: PaginationQuery,
-  options?: UseQueryOptions<ListWorkflowDefinitionResponse, Error>
+  options?: UseQueryOptions<oaservicev1_ListWorkflowDefinitionResponse, Error>
 ) {
   return useQuery({
     queryKey: ["listWorkflowDefinitions", query],
@@ -59,9 +59,9 @@ export async function fetchListWorkflowDefinitions(params: PaginationQuery) {
 // ==============================
 export function useCreateWorkflowDefinition(
   options?: UseMutationOptions<
-    WorkflowDefinition,
+    oaservicev1_WorkflowDefinition,
     Error,
-    CreateWorkflowDefinitionRequest
+    oaservicev1_CreateWorkflowDefinitionRequest
   >
 ) {
   return useMutation({
@@ -83,7 +83,7 @@ export const definitionStatusList = computed(() => [
 ]);
 
 export function definitionStatusLabel(
-  s: WorkflowDefinition_DefinitionStatus | undefined
+  s: oaservicev1_WorkflowDefinition_DefinitionStatus | undefined
 ): string {
   switch (s) {
     case 'DRAFT':
@@ -98,7 +98,7 @@ export function definitionStatusLabel(
 }
 
 export function definitionStatusColor(
-  s: WorkflowDefinition_DefinitionStatus | undefined
+  s: oaservicev1_WorkflowDefinition_DefinitionStatus | undefined
 ): string {
   switch (s) {
     case 'ENABLED':
