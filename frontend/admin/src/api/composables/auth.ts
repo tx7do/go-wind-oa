@@ -1,16 +1,10 @@
 /**
  * 认证 composable。
  *
- * 对齐 go-wind-admin/frontend/admin/vue-element/src/api/composables/auth.ts，
- * 差异：
- *  - 类型来源改为 @/api/generated/admin/service/v1（由 buf.vue-element.oa.typescript.gen.yaml
- *    从 OA backend api/protos/oa/v1/authentication.proto 生成）；
- *  - 删除 RegisterUser（依赖 cms user.proto，OA 鉴权转发层未含）。
- *
- * OA 后端 AuthenticationService 经 oa→cms proto 翻译（wire-compatible，
- * proto.Marshal/Unmarshal）转发至 cms admin-service 同名 RPC，故登录/登出/
- * 刷新令牌/验证码均与 go-wind-admin 同款语义。鉴权缺口已闭合——见
- * docs/oa-mobile-design.md §“鉴权缺口”（已更新为已解决）。
+ * 类型来源 @/api/generated/admin/service/v1，由 buf.admin.typescript.gen.yaml
+ * 从 api/protos/admin/service/v1/i_authentication.proto 生成。admin-service
+ * 的 AuthenticationService HTTP 边端将登录/登出/刷新令牌/验证码请求转发至
+ * core-service 的同名 gRPC 服务。
  */
 import {
   useMutation,

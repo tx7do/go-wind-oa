@@ -23,7 +23,7 @@ import (
 
 // WorkflowDefinitionRepo OA 工作流定义的数据访问层。
 //
-// 约定与 go-wind-cms 的 *_repo.go 同构：
+// 仓库约定：
 //   - entClient + mapper.CopierMapper + EnumTypeConverter + 泛型 entCrud.Repository；
 //   - Create 走手写 builder（Any 字段 node_config/form_schema 由 JSON 文本 ↔ any 显式转换）；
 //   - List 走泛型 ListWithPaging（tenant 由 TenantPrivacy 策略按 viewer 自动隔离）；

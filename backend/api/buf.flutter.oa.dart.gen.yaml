@@ -1,6 +1,5 @@
 # OA 移動端（Flutter 基座）Dart API 客户端生成模板。
 #
-# 與 go-wind-cms/backend/api/buf.app.dart.gen.yaml 同構。
 # inputs 覆蓋 app/service/v1（鑑權 + 工作流的 app HTTP 端點包裝）。
 # 工作流的 HTTP 注解定義在 app/service/v1/i_workflow.proto，引用
 # oa.service.v1 的消息類型——Dart 生成器會自動跟隨 import 解析消息定義，

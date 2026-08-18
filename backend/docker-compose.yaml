@@ -69,7 +69,7 @@ services:
     build:
       context: ./scripts/docker/opensearch
       dockerfile: Dockerfile
-    image: go-wind-cms/opensearch-smartcn:2.19.6
+    image: go-wind-oa/opensearch-smartcn:2.19.6
     container_name: opensearch
     hostname: opensearch
     restart: always
@@ -170,7 +170,7 @@ services:
       - COLLECTOR_OTLP_ENABLED=true
 
   admin-service:
-    image: go-wind-cms/admin-service:1.0.0
+    image: go-wind-oa/admin-service:1.0.0
     restart: always
     pull_policy: never
     networks:
@@ -194,7 +194,7 @@ services:
         APP_VERSION: 1.0.0
 
   app-service:
-    image: go-wind-cms/app-service:1.0.0
+    image: go-wind-oa/app-service:1.0.0
     pull_policy: never
     restart: always
     networks:
@@ -218,7 +218,7 @@ services:
         APP_VERSION: 1.0.0
 
   core-service:
-    image: go-wind-cms/core-service:1.0.0
+    image: go-wind-oa/core-service:1.0.0
     pull_policy: never
     restart: always
     networks:

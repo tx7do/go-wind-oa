@@ -24,7 +24,7 @@ const (
 
 // OaErrorReason OA 服务错误枚举。由 protoc-gen-go-errors 生成
 // oav1.ErrorBadRequest / ErrorForbidden / ... 等具名构造器，供服务层
-// 返回带 HTTP 状态码的 kratos 错误（与 go-wind-cms 各 *_error.proto 同构）。
+// 返回带 HTTP 状态码的 kratos 错误。
 type OaErrorReason int32
 
 const (

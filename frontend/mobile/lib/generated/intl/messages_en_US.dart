@@ -168,6 +168,73 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noSearchResults": m4,
     "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
+    "oaAttendanceCheckIn": MessageLookupByLibrary.simpleMessage("Check In"),
+    "oaAttendanceNotConfigured": MessageLookupByLibrary.simpleMessage(
+      "Attendance service not configured. See docs/oa-mobile-design.md.",
+    ),
+    "oaAttendanceTitle": MessageLookupByLibrary.simpleMessage("Attendance"),
+    "oaNotificationsNotConfigured": MessageLookupByLibrary.simpleMessage(
+      "Push channel not configured. See docs/oa-mobile-design.md.",
+    ),
+    "oaNotificationsTitle": MessageLookupByLibrary.simpleMessage(
+      "Notifications",
+    ),
+    "oaSubmitApplyDefinitionCode": MessageLookupByLibrary.simpleMessage(
+      "Definition Code",
+    ),
+    "oaSubmitApplyDefinitionVersion": MessageLookupByLibrary.simpleMessage(
+      "Definition Version",
+    ),
+    "oaSubmitApplyFormData": MessageLookupByLibrary.simpleMessage(
+      "Form Data (JSON)",
+    ),
+    "oaSubmitApplySubmit": MessageLookupByLibrary.simpleMessage("Submit"),
+    "oaSubmitApplyTitle": MessageLookupByLibrary.simpleMessage(
+      "New Workflow Apply",
+    ),
+    "oaSubmitApplyTitleField": MessageLookupByLibrary.simpleMessage("Title"),
+    "oaTabAttendance": MessageLookupByLibrary.simpleMessage("Attendance"),
+    "oaTabNotifications": MessageLookupByLibrary.simpleMessage("Notifications"),
+    "oaTabWorkflow": MessageLookupByLibrary.simpleMessage("Workflow"),
+    "oaTaskDetailApprove": MessageLookupByLibrary.simpleMessage("Approve"),
+    "oaTaskDetailCancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "oaTaskDetailComment": MessageLookupByLibrary.simpleMessage("Comment"),
+    "oaTaskDetailConfirm": MessageLookupByLibrary.simpleMessage("Confirm"),
+    "oaTaskDetailFormDataTitle": MessageLookupByLibrary.simpleMessage(
+      "Form Data",
+    ),
+    "oaTaskDetailForward": MessageLookupByLibrary.simpleMessage("Forward"),
+    "oaTaskDetailForwardDialogTitle": MessageLookupByLibrary.simpleMessage(
+      "Forward Task",
+    ),
+    "oaTaskDetailForwardTo": MessageLookupByLibrary.simpleMessage(
+      "Forward To User ID",
+    ),
+    "oaTaskDetailHistoryEmpty": MessageLookupByLibrary.simpleMessage(
+      "No approval history.",
+    ),
+    "oaTaskDetailHistoryTitle": MessageLookupByLibrary.simpleMessage(
+      "Approval History",
+    ),
+    "oaTaskDetailLoading": MessageLookupByLibrary.simpleMessage("Loading..."),
+    "oaTaskDetailReject": MessageLookupByLibrary.simpleMessage("Reject"),
+    "oaTaskDetailSummaryTitle": MessageLookupByLibrary.simpleMessage(
+      "Application Summary",
+    ),
+    "oaTaskDetailSummaryTitleField": MessageLookupByLibrary.simpleMessage(
+      "Title",
+    ),
+    "oaTaskDetailTitle": MessageLookupByLibrary.simpleMessage("Task Detail"),
+    "oaTaskListEmpty": MessageLookupByLibrary.simpleMessage("No items"),
+    "oaTaskListFabApply": MessageLookupByLibrary.simpleMessage("New Apply"),
+    "oaTaskListOccurredAt": MessageLookupByLibrary.simpleMessage("Occurred At"),
+    "oaTaskListStatus": MessageLookupByLibrary.simpleMessage("Status"),
+    "oaTaskListTitlePending": MessageLookupByLibrary.simpleMessage(
+      "Tasks Awaiting My Approval",
+    ),
+    "oaTaskListTitleSubmitted": MessageLookupByLibrary.simpleMessage(
+      "My Submissions",
+    ),
     "pageNotFound": MessageLookupByLibrary.simpleMessage("Page Not Found"),
     "pageNotFoundDesc": MessageLookupByLibrary.simpleMessage(
       "Sorry, the page you are looking for does not exist or has been moved.",

@@ -1485,7 +1485,7 @@ export type oaservicev1_WorkflowDefinition = {
   name?: string;
   // 节点配置，原始 JSON 文本。结构由引擎 internal/workflow 包解析。
   nodeConfig?: string;
-  // ---- 租户 / 审计字段（与 go-wind-cms 固定字段号对齐） ----
+  // ---- 租户 / 审计字段（固定字段号约定） ----
   tenantId?: number;
   tenantName?: string;
   updatedAt?: wellKnownTimestamp;

@@ -1440,7 +1440,7 @@ components:
                     format: enum
                 tenantId:
                     type: integer
-                    description: '---- 租户 / 审计字段（与 go-wind-cms 固定字段号对齐） ----'
+                    description: '---- 租户 / 审计字段（固定字段号约定） ----'
                     format: uint32
                 tenantName:
                     type: string

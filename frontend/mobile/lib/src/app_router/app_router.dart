@@ -13,7 +13,7 @@ import 'package:flutter_app/src/features/oa/pages/shell/oa_shell_page.dart';
 import 'package:flutter_app/src/features/oa/pages/task_list/oa_task_list_page.dart';
 import 'package:flutter_app/src/features/oa/pages/task_detail/oa_task_detail_page.dart';
 import 'package:flutter_app/src/features/oa/pages/submit_apply/oa_submit_apply_page.dart';
-import 'package/flutter_app/src/features/oa/pages/notifications/oa_notifications_page.dart';
+import 'package:flutter_app/src/features/oa/pages/notifications/oa_notifications_page.dart';
 import 'package:flutter_app/src/features/oa/pages/attendance/oa_attendance_page.dart';
 
 /// OA 移动端路由。

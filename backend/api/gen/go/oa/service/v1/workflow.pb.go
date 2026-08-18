@@ -343,7 +343,7 @@ type WorkflowDefinition struct {
 	// 动态表单 schema，原始 JSON 文本，供前端按定义渲染。
 	FormSchema       *string                              `protobuf:"bytes,7,opt,name=form_schema,json=formSchema,proto3,oneof" json:"form_schema,omitempty"`
 	DefinitionStatus *WorkflowDefinition_DefinitionStatus `protobuf:"varint,8,opt,name=definition_status,json=definitionStatus,proto3,enum=oa.service.v1.WorkflowDefinition_DefinitionStatus,oneof" json:"definition_status,omitempty"`
-	// ---- 租户 / 审计字段（与 go-wind-cms 固定字段号对齐） ----
+	// ---- 租户 / 审计字段（固定字段号约定） ----
 	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`
 	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`
 	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`

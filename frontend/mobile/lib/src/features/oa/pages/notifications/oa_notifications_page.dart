@@ -14,7 +14,7 @@ class OaNotificationsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final loc = S.of(context);
-    final service = NotificationService._();
+    final service = NotificationService.instance;
 
     return Scaffold(
       appBar: AppBar(

@@ -74,7 +74,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
               final fid = int.tryParse(_forwardToCtrl.text);
               Navigator.of(ctx).pop();
               if (fid != null && fid > 0) {
-                _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.FORWARD, forwardTo: fid);
+                _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.forward, forwardTo: fid);
               }
             },
             child: Text(loc.oaTaskDetailConfirm),
@@ -146,7 +146,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
                 Expanded(
                   child: FilledButton(
                     onPressed: () =>
-                        _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.APPROVE),
+                        _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.approve),
                     child: Text(loc.oaTaskDetailApprove),
                   ),
                 ),
@@ -154,7 +154,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
                 Expanded(
                   child: FilledButton.tonal(
                     onPressed: () =>
-                        _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.REJECT),
+                        _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.reject),
                     child: Text(loc.oaTaskDetailReject),
                   ),
                 ),
@@ -235,11 +235,7 @@ class _HistoryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ts = entry.occurredAt == null
-        ? '-'
-        : DateTime.fromMillisecondsSinceEpoch(
-                entry.occurredAt!.millisecondsSinceEpoch)
-            .toIso8601String();
+    final ts = entry.occurredAt ?? '-';
     return Card(
       child: ListTile(
         dense: true,
@@ -251,5 +247,4 @@ class _HistoryRow extends StatelessWidget {
       ),
     );
   }
-}
 }

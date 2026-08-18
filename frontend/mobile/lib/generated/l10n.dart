@@ -883,6 +883,276 @@ class S {
       args: [],
     );
   }
+
+  /// `工作流`
+  String get oaTabWorkflow {
+    return Intl.message('工作流', name: 'oaTabWorkflow', desc: '', args: []);
+  }
+
+  /// `通知`
+  String get oaTabNotifications {
+    return Intl.message('通知', name: 'oaTabNotifications', desc: '', args: []);
+  }
+
+  /// `考勤`
+  String get oaTabAttendance {
+    return Intl.message('考勤', name: 'oaTabAttendance', desc: '', args: []);
+  }
+
+  /// `待我审批`
+  String get oaTaskListTitlePending {
+    return Intl.message(
+      '待我审批',
+      name: 'oaTaskListTitlePending',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `我发起的`
+  String get oaTaskListTitleSubmitted {
+    return Intl.message(
+      '我发起的',
+      name: 'oaTaskListTitleSubmitted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `暂无内容`
+  String get oaTaskListEmpty {
+    return Intl.message('暂无内容', name: 'oaTaskListEmpty', desc: '', args: []);
+  }
+
+  /// `状态`
+  String get oaTaskListStatus {
+    return Intl.message('状态', name: 'oaTaskListStatus', desc: '', args: []);
+  }
+
+  /// `发生时间`
+  String get oaTaskListOccurredAt {
+    return Intl.message(
+      '发生时间',
+      name: 'oaTaskListOccurredAt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `发起申请`
+  String get oaTaskListFabApply {
+    return Intl.message('发起申请', name: 'oaTaskListFabApply', desc: '', args: []);
+  }
+
+  /// `任务详情`
+  String get oaTaskDetailTitle {
+    return Intl.message('任务详情', name: 'oaTaskDetailTitle', desc: '', args: []);
+  }
+
+  /// `同意`
+  String get oaTaskDetailApprove {
+    return Intl.message('同意', name: 'oaTaskDetailApprove', desc: '', args: []);
+  }
+
+  /// `驳回`
+  String get oaTaskDetailReject {
+    return Intl.message('驳回', name: 'oaTaskDetailReject', desc: '', args: []);
+  }
+
+  /// `转交`
+  String get oaTaskDetailForward {
+    return Intl.message('转交', name: 'oaTaskDetailForward', desc: '', args: []);
+  }
+
+  /// `审批意见`
+  String get oaTaskDetailComment {
+    return Intl.message(
+      '审批意见',
+      name: 'oaTaskDetailComment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `转交目标用户 ID`
+  String get oaTaskDetailForwardTo {
+    return Intl.message(
+      '转交目标用户 ID',
+      name: 'oaTaskDetailForwardTo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `确认`
+  String get oaTaskDetailConfirm {
+    return Intl.message('确认', name: 'oaTaskDetailConfirm', desc: '', args: []);
+  }
+
+  /// `取消`
+  String get oaTaskDetailCancel {
+    return Intl.message('取消', name: 'oaTaskDetailCancel', desc: '', args: []);
+  }
+
+  /// `转交任务`
+  String get oaTaskDetailForwardDialogTitle {
+    return Intl.message(
+      '转交任务',
+      name: 'oaTaskDetailForwardDialogTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `加载中...`
+  String get oaTaskDetailLoading {
+    return Intl.message(
+      '加载中...',
+      name: 'oaTaskDetailLoading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `申请摘要`
+  String get oaTaskDetailSummaryTitle {
+    return Intl.message(
+      '申请摘要',
+      name: 'oaTaskDetailSummaryTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `标题`
+  String get oaTaskDetailSummaryTitleField {
+    return Intl.message(
+      '标题',
+      name: 'oaTaskDetailSummaryTitleField',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `表单数据`
+  String get oaTaskDetailFormDataTitle {
+    return Intl.message(
+      '表单数据',
+      name: 'oaTaskDetailFormDataTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `审批历史`
+  String get oaTaskDetailHistoryTitle {
+    return Intl.message(
+      '审批历史',
+      name: 'oaTaskDetailHistoryTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `无审批历史。`
+  String get oaTaskDetailHistoryEmpty {
+    return Intl.message(
+      '无审批历史。',
+      name: 'oaTaskDetailHistoryEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `发起工作流申请`
+  String get oaSubmitApplyTitle {
+    return Intl.message(
+      '发起工作流申请',
+      name: 'oaSubmitApplyTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `流程定义编码`
+  String get oaSubmitApplyDefinitionCode {
+    return Intl.message(
+      '流程定义编码',
+      name: 'oaSubmitApplyDefinitionCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `流程定义版本`
+  String get oaSubmitApplyDefinitionVersion {
+    return Intl.message(
+      '流程定义版本',
+      name: 'oaSubmitApplyDefinitionVersion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `标题`
+  String get oaSubmitApplyTitleField {
+    return Intl.message(
+      '标题',
+      name: 'oaSubmitApplyTitleField',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `表单数据(JSON)`
+  String get oaSubmitApplyFormData {
+    return Intl.message(
+      '表单数据(JSON)',
+      name: 'oaSubmitApplyFormData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `提交`
+  String get oaSubmitApplySubmit {
+    return Intl.message('提交', name: 'oaSubmitApplySubmit', desc: '', args: []);
+  }
+
+  /// `通知`
+  String get oaNotificationsTitle {
+    return Intl.message('通知', name: 'oaNotificationsTitle', desc: '', args: []);
+  }
+
+  /// `推送通道未配置，详见 docs/oa-mobile-design.md。`
+  String get oaNotificationsNotConfigured {
+    return Intl.message(
+      '推送通道未配置，详见 docs/oa-mobile-design.md。',
+      name: 'oaNotificationsNotConfigured',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `考勤`
+  String get oaAttendanceTitle {
+    return Intl.message('考勤', name: 'oaAttendanceTitle', desc: '', args: []);
+  }
+
+  /// `打卡`
+  String get oaAttendanceCheckIn {
+    return Intl.message('打卡', name: 'oaAttendanceCheckIn', desc: '', args: []);
+  }
+
+  /// `考勤服务未配置，详见 docs/oa-mobile-design.md。`
+  String get oaAttendanceNotConfigured {
+    return Intl.message(
+      '考勤服务未配置，详见 docs/oa-mobile-design.md。',
+      name: 'oaAttendanceNotConfigured',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

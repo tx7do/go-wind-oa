@@ -37,7 +37,7 @@ class OaShellPage extends StatelessWidget {
     }
   }
 
-  void _onTap(int index) {
+  void _onTap(BuildContext context, int index) {
     switch (index) {
       case 0:
         GoRouter.of(context).goNamed(RouteNames.oaTaskList);
@@ -60,7 +60,7 @@ class OaShellPage extends StatelessWidget {
       body: child,
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex(),
-        onDestinationSelected: _onTap,
+        onDestinationSelected: (i) => _onTap(context, i),
         backgroundColor: theme.colorScheme.surface,
         destinations: [
           NavigationDestination(

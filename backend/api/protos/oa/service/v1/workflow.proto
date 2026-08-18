@@ -65,7 +65,7 @@ message WorkflowDefinition {
   optional string form_schema = 7;
   optional DefinitionStatus definition_status = 8;
 
-  // ---- 租户 / 审计字段（与 go-wind-cms 固定字段号对齐） ----
+  // ---- 租户 / 审计字段（固定字段号约定） ----
   optional uint32 tenant_id = 40;
   optional string tenant_name = 41;
   optional uint32 created_by = 100;

@@ -53,7 +53,7 @@ func (WorkflowInstance) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 实例必须归属一个定义；定义删除时级联清除实例。
 		// 反向边：外键列名 / Required 约束在正向 edge.To（WorkflowDefinition.Edges）侧声明，
-		// 此处仅 Ref + Unique，与 go-wind-cms 的 dict_entry→dict_type 同构。
+		// 此处仅声明 Ref + Unique；外键列名与 Required 约束在正向 edge.To 侧声明。
 		edge.From("definition", WorkflowDefinition.Type).
 			Ref("instances").
 			Unique(),

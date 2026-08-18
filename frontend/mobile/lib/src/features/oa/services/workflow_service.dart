@@ -36,7 +36,11 @@ class WorkflowService extends BaseService {
     final q = query ?? const PaginationQuery();
     return Query<List<oaApi.OaServiceV1MyTaskItem>>(
       key: 'oa-pending-tasks',
-      queryFn: () => _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.PENDING)),
+      queryFn: () async {
+        final resp = await _api.getMyTasks(
+            _toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.pending));
+        return resp.items ?? const <oaApi.OaServiceV1MyTaskItem>[];
+      },
     );
   }
 
@@ -45,7 +49,11 @@ class WorkflowService extends BaseService {
     final q = query ?? const PaginationQuery();
     return Query<List<oaApi.OaServiceV1MyTaskItem>>(
       key: 'oa-submitted-tasks',
-      queryFn: () => _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.SUBMITTED)),
+      queryFn: () async {
+        final resp = await _api.getMyTasks(
+            _toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.submitted));
+        return resp.items ?? const <oaApi.OaServiceV1MyTaskItem>[];
+      },
     );
   }
 
@@ -92,7 +100,7 @@ class WorkflowService extends BaseService {
   Future<dynamic> pendingTasks([PaginationQuery? query]) async {
     final q = query ?? const PaginationQuery();
     try {
-      return await _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.PENDING));
+      return await _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.pending));
     } on DioException catch (e) {
       return handleDioError(e);
     }
@@ -102,7 +110,7 @@ class WorkflowService extends BaseService {
   Future<dynamic> submittedTasks([PaginationQuery? query]) async {
     final q = query ?? const PaginationQuery();
     try {
-      return await _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.SUBMITTED));
+      return await _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.submitted));
     } on DioException catch (e) {
       return handleDioError(e);
     }

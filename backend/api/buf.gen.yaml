@@ -1,6 +1,6 @@
 # OA 模块的 buf Go 桩代码生成配置。
 #
-# 與 go-wind-cms/backend/api/buf.gen.yaml 同構，差異：
+# OA 專屬調整：
 #   - go_package_prefix 與所有 per-directory override 均指向 go-wind-oa/api/gen/go；
 #   - inputs.paths 過濾為 OA 保留的 6 個 proto 域，避免 buf 對已刪域報錯。
 #

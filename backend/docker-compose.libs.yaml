@@ -69,7 +69,7 @@ services:
     build:
       context: ./scripts/docker/opensearch
       dockerfile: Dockerfile
-    image: go-wind-cms/opensearch-smartcn:2.19.6
+    image: go-wind-oa/opensearch-smartcn:2.19.6
     container_name: opensearch
     hostname: opensearch
     restart: always
