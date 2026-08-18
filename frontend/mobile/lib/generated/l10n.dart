@@ -1124,6 +1124,16 @@ class S {
     return Intl.message('通知', name: 'oaNotificationsTitle', desc: '', args: []);
   }
 
+  /// `暂无站内信通知`
+  String get oaNotificationsEmpty {
+    return Intl.message(
+      '暂无站内信通知',
+      name: 'oaNotificationsEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `推送通道未配置，详见 docs/oa-mobile-design.md。`
   String get oaNotificationsNotConfigured {
     return Intl.message(

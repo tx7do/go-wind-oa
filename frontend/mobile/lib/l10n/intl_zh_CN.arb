@@ -233,6 +233,7 @@
   "oaSubmitApplyFormData": "表单数据(JSON)",
   "oaSubmitApplySubmit": "提交",
   "oaNotificationsTitle": "通知",
+  "oaNotificationsEmpty": "暂无站内信通知",
   "oaNotificationsNotConfigured": "推送通道未配置，详见 docs/oa-mobile-design.md。",
   "oaAttendanceTitle": "考勤",
   "oaAttendanceCheckIn": "打卡",

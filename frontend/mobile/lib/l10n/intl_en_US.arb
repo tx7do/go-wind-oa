@@ -233,6 +233,7 @@
   "oaSubmitApplyFormData": "Form Data (JSON)",
   "oaSubmitApplySubmit": "Submit",
   "oaNotificationsTitle": "Notifications",
+  "oaNotificationsEmpty": "No internal message notifications.",
   "oaNotificationsNotConfigured": "Push channel not configured. See docs/oa-mobile-design.md.",
   "oaAttendanceTitle": "Attendance",
   "oaAttendanceCheckIn": "Check In",

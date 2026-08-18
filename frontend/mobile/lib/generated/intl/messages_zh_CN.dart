@@ -143,6 +143,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "考勤服务未配置，详见 docs/oa-mobile-design.md。",
     ),
     "oaAttendanceTitle": MessageLookupByLibrary.simpleMessage("考勤"),
+    "oaNotificationsEmpty": MessageLookupByLibrary.simpleMessage("暂无站内信通知"),
     "oaNotificationsNotConfigured": MessageLookupByLibrary.simpleMessage(
       "推送通道未配置，详见 docs/oa-mobile-design.md。",
     ),

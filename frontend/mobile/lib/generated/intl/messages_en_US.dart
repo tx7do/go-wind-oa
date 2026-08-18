@@ -173,6 +173,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Attendance service not configured. See docs/oa-mobile-design.md.",
     ),
     "oaAttendanceTitle": MessageLookupByLibrary.simpleMessage("Attendance"),
+    "oaNotificationsEmpty": MessageLookupByLibrary.simpleMessage(
+      "No internal message notifications.",
+    ),
     "oaNotificationsNotConfigured": MessageLookupByLibrary.simpleMessage(
       "Push channel not configured. See docs/oa-mobile-design.md.",
     ),

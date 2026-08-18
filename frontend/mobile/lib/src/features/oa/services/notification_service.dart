@@ -1,20 +1,34 @@
-/// 通知服务（骨架）。
-///
-/// 后端待办（详见 docs/oa-mobile-design.md §"后端待办"）：
-///  - 对接 internal_message 的 SSE 推送通道（admin 竑关的
-///    InternalMessagePublisher），mobile 端需新增 SSE 客户端订阅
-///    /admin/v1/.../events，并将收到的 notification 事件投递到此 Stream。
-///  - FCM / JPush 集成（pubspec 预留依赖，未启用）：需要服务端 push token
-///    注册接口、设备令牌与用户绑定关系。
-///
-/// 当前实现：[notificationStream] 返回一个永不产出事件的空 Stream，
-/// UI 据此展示"推送未配置"占位。
-class NotificationService {
-  NotificationService._();
+import 'package:dio/dio.dart' show DioException;
+import 'package:get_it/get_it.dart' show GetIt;
 
-  /// 单例实例。UI 通过此访问 [notificationStream]。
-  static final NotificationService instance = NotificationService._();
+import 'package:flutter_app/src/core/services/base_service.dart';
+import 'package:flutter_app/src/core/services/pagination_query.dart';
 
-  /// 通知事件流。骨架阶段为空 Stream。
-  Stream<String> get notificationStream => const Stream.empty();
+// 生成代码由 buf.flutter.oa.dart.gen.yaml 生成于
+// generated/api/app/service/v1/index.dart。含 ApiClient.internalMessageService
+// 及站内信消息类型（Internal_messageServiceV1* 前缀）。
+import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+
+/// 站内信通知服务。
+///
+/// 经 [oaApi.ApiClient].internalMessageService 拉取当前用户收件箱的站内信列表。
+/// 站内信由 core-service 的工作流审批通知（notifyAsync）落库，此服务仅读取展示。
+class NotificationService extends BaseService {
+  NotificationService() : super(tag: 'NotificationService');
+
+  oaApi.InternalMessageServiceClient get _api =>
+      GetIt.instance<oaApi.ApiClient>().internalMessageService;
+
+  /// 拉取站内信列表（直接调用，供页面 FutureBuilder 消费）。
+  Future<List<oaApi.Internal_messageServiceV1InternalMessage>> listMessages(
+      [PaginationQuery? query]) async {
+    final q = query ?? const PaginationQuery();
+    try {
+      final resp = await _api.listMessage(q.toPagingRequest());
+      return resp.items ?? const <oaApi.Internal_messageServiceV1InternalMessage>[];
+    } on DioException catch (e) {
+      handleDioError(e);
+      return const <oaApi.Internal_messageServiceV1InternalMessage>[];
+    }
+  }
 }
