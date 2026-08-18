@@ -1,6 +1,6 @@
 <div align="center">
-  <img alt="go-wind-admin element-admin" width="80" height="80" src="./src/assets/images/logo.png">
-  <h1>GoWind Admin - Element Plus</h1>
+  <img alt="go-wind-oa admin" width="80" height="80" src="./src/assets/images/logo.png">
+  <h1>go-wind-oa Admin</h1>
 
   <img src="https://img.shields.io/badge/Vue-3.5.30-brightgreen.svg"/>
   <img src="https://img.shields.io/badge/Vite-8.0.0-green.svg"/>
@@ -11,7 +11,7 @@
 
 ## 项目简介
 
-[GoWind Admin - Element Plus](https://github.com/tx7do/go-wind-admin/tree/main/frontend/admin/vue-element) 是一个基于 Vue3、Vite 8、TypeScript 和 Element Plus 构建的企业级后台管理系统，适配 Go-Wind 后端 gRPC 服务。
+go-wind-oa 的管理前端，基于 Vue3、Vite 8、TypeScript 和 Element Plus 构建，对接 OA 后端 admin-service 的 HTTP 边端。
 
 **核心技术栈：**
 

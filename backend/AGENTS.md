@@ -371,7 +371,7 @@ func (User) Indexes() []ent.Index {
 package providers
 
 import "github.com/google/wire"
-import "go-wind-cms/app/core/service/internal/data"
+import "go-wind-oa/app/core/service/internal/data"
 
 var ProviderSet = wire.NewSet(
     data.NewRedisClient,

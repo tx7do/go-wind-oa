@@ -1,5 +1,7 @@
 # go-wind-oa 移动端架构设计文档
 
+> ⚠️ **本文档已过时。** 撰写于旧的单 service 架构时期（`app/oa/service`），描述的是 `swagger_parser` 消费 openapi 生成 Dart 客户端的链路、`oa/v1` proto 路径、`oa/v1/authentication.proto` 等。当前实际架构为 core/admin/app 三 service 分離，Dart 客户端由 `buf.flutter.oa.dart.gen.yaml` 直接生成于 `app/service/v1`，鉴權走 cms `i_authentication.proto` wrapper，无 swagger_parser 中间层。以 `README.md` 与代码为权威架构来源。
+>
 > 本文档面向维护者，记录 OA 移动端（Flutter）的架构决策、与基座的关系、四功能的实现状态与后端待办。读者应已熟悉 Flutter + go_router + cached_query + dio 的基本范式。
 
 ---

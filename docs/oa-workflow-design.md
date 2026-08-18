@@ -1,5 +1,7 @@
 # go-wind-oa · 轻量级工作流审批引擎 — 架构设计文档
 
+> ⚠️ **本文档已过时。** 撰写于旧的单 service 架构时期（`app/oa/service`），描述的是「OA 模块作为 go-wind-cms 的扩展」模型。当前实际架构为 core/admin/app 三 service 分離，proto 域分離，`pkg/` 自包含——与本文描述的目录结构、proto 路径（`oa/v1`）、生成模板名（`buf.vue-element.oa.typescript.gen.yaml`）、`swagger_parser` 链等均不符。以 `README.md` 与代码为权威架构来源。
+>
 > 本文档面向维护者，记录 `go-wind-oa` 工作流模块的架构决策、与 `go-wind-cms` 底座的集成点，以及当前实现的边界与已知约束。读者应已熟悉 Kratos + Wire + Ent 的基本范式。
 
 ---

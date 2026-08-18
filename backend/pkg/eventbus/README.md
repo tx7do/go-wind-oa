@@ -15,7 +15,7 @@ A flexible and powerful event bus implementation for Go that enables loose coupl
 ## Installation
 
 ```bash
-go get go-wind-cms/pkg/eventbus
+go get go-wind-oa/pkg/eventbus
 ```
 
 ## Quick Start
@@ -26,7 +26,7 @@ go get go-wind-cms/pkg/eventbus
 import (
     "context"
     "github.com/go-kratos/kratos/v2/log"
-    "go-wind-cms/pkg/eventbus"
+    "go-wind-oa/pkg/eventbus"
 )
 
 // Create a new event bus
@@ -105,7 +105,7 @@ emailBus.Subscribe("email.received", handler)
 ### Using Middlewares
 
 ```go
-import "go-wind-cms/pkg/eventbus"
+import "go-wind-oa/pkg/eventbus"
 
 logger := log.NewHelper(log.DefaultLogger)
 
