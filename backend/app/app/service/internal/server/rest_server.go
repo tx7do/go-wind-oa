@@ -72,6 +72,7 @@ func NewRestMiddleware(
 // OA app-service 的 HTTP 邊端僅註冊兩類服務：
 //   - AuthenticationService（鑑權：登錄/登出/令牌刷新，轉發 core gRPC）
 //   - WorkflowService（工作流申請/審批/任務查詢，轉發 core gRPC）
+//   - InternalMessageService（站內信查詢，轉發 core gRPC）
 func NewRestServer(
 	ctx *bootstrap.Context,
 
@@ -80,6 +81,8 @@ func NewRestServer(
 	authenticationService *service.AuthenticationService,
 
 	workflowService *service.WorkflowService,
+
+	internalMessageService *service.InternalMessageService,
 ) *http.Server {
 	cfg := ctx.GetConfig()
 
@@ -94,6 +97,7 @@ func NewRestServer(
 
 	appV1.RegisterAuthenticationServiceHTTPServer(srv, authenticationService)
 	appV1.RegisterWorkflowServiceHTTPServer(srv, workflowService)
+	appV1.RegisterInternalMessageServiceHTTPServer(srv, internalMessageService)
 
 	if cfg.GetServer().GetRest().GetEnableSwagger() {
 		swaggerUI.RegisterSwaggerUIServerWithOption(

@@ -23,6 +23,8 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	WorkflowService_CreateWorkflowDefinition_FullMethodName = "/admin.service.v1.WorkflowService/CreateWorkflowDefinition"
 	WorkflowService_ListWorkflowDefinition_FullMethodName   = "/admin.service.v1.WorkflowService/ListWorkflowDefinition"
+	WorkflowService_UpdateWorkflowDefinition_FullMethodName = "/admin.service.v1.WorkflowService/UpdateWorkflowDefinition"
+	WorkflowService_GetWorkflowDefinition_FullMethodName    = "/admin.service.v1.WorkflowService/GetWorkflowDefinition"
 	WorkflowService_SubmitApply_FullMethodName              = "/admin.service.v1.WorkflowService/SubmitApply"
 	WorkflowService_AuditTask_FullMethodName                = "/admin.service.v1.WorkflowService/AuditTask"
 	WorkflowService_GetMyTasks_FullMethodName               = "/admin.service.v1.WorkflowService/GetMyTasks"
@@ -43,6 +45,10 @@ type WorkflowServiceClient interface {
 	CreateWorkflowDefinition(ctx context.Context, in *v1.CreateWorkflowDefinitionRequest, opts ...grpc.CallOption) (*v1.WorkflowDefinition, error)
 	// 查询工作流定义列表（管理端）。
 	ListWorkflowDefinition(ctx context.Context, in *v1.ListWorkflowDefinitionRequest, opts ...grpc.CallOption) (*v1.ListWorkflowDefinitionResponse, error)
+	// 更新工作流定义状态（启用/禁用）。update_mask 须仅含 definition_status。
+	UpdateWorkflowDefinition(ctx context.Context, in *v1.UpdateWorkflowDefinitionRequest, opts ...grpc.CallOption) (*v1.WorkflowDefinition, error)
+	// 获取单个工作流定义详情（含 node_config / form_schema）。
+	GetWorkflowDefinition(ctx context.Context, in *v1.GetWorkflowDefinitionRequest, opts ...grpc.CallOption) (*v1.WorkflowDefinition, error)
 	// 提交申请：发起一个工作流实例。
 	SubmitApply(ctx context.Context, in *v1.SubmitApplyRequest, opts ...grpc.CallOption) (*v1.SubmitApplyResponse, error)
 	// 审批/驳回/转办当前待办任务。
@@ -75,6 +81,26 @@ func (c *workflowServiceClient) ListWorkflowDefinition(ctx context.Context, in *
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(v1.ListWorkflowDefinitionResponse)
 	err := c.cc.Invoke(ctx, WorkflowService_ListWorkflowDefinition_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workflowServiceClient) UpdateWorkflowDefinition(ctx context.Context, in *v1.UpdateWorkflowDefinitionRequest, opts ...grpc.CallOption) (*v1.WorkflowDefinition, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.WorkflowDefinition)
+	err := c.cc.Invoke(ctx, WorkflowService_UpdateWorkflowDefinition_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workflowServiceClient) GetWorkflowDefinition(ctx context.Context, in *v1.GetWorkflowDefinitionRequest, opts ...grpc.CallOption) (*v1.WorkflowDefinition, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.WorkflowDefinition)
+	err := c.cc.Invoke(ctx, WorkflowService_GetWorkflowDefinition_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -135,6 +161,10 @@ type WorkflowServiceServer interface {
 	CreateWorkflowDefinition(context.Context, *v1.CreateWorkflowDefinitionRequest) (*v1.WorkflowDefinition, error)
 	// 查询工作流定义列表（管理端）。
 	ListWorkflowDefinition(context.Context, *v1.ListWorkflowDefinitionRequest) (*v1.ListWorkflowDefinitionResponse, error)
+	// 更新工作流定义状态（启用/禁用）。update_mask 须仅含 definition_status。
+	UpdateWorkflowDefinition(context.Context, *v1.UpdateWorkflowDefinitionRequest) (*v1.WorkflowDefinition, error)
+	// 获取单个工作流定义详情（含 node_config / form_schema）。
+	GetWorkflowDefinition(context.Context, *v1.GetWorkflowDefinitionRequest) (*v1.WorkflowDefinition, error)
 	// 提交申请：发起一个工作流实例。
 	SubmitApply(context.Context, *v1.SubmitApplyRequest) (*v1.SubmitApplyResponse, error)
 	// 审批/驳回/转办当前待办任务。
@@ -158,6 +188,12 @@ func (UnimplementedWorkflowServiceServer) CreateWorkflowDefinition(context.Conte
 }
 func (UnimplementedWorkflowServiceServer) ListWorkflowDefinition(context.Context, *v1.ListWorkflowDefinitionRequest) (*v1.ListWorkflowDefinitionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListWorkflowDefinition not implemented")
+}
+func (UnimplementedWorkflowServiceServer) UpdateWorkflowDefinition(context.Context, *v1.UpdateWorkflowDefinitionRequest) (*v1.WorkflowDefinition, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateWorkflowDefinition not implemented")
+}
+func (UnimplementedWorkflowServiceServer) GetWorkflowDefinition(context.Context, *v1.GetWorkflowDefinitionRequest) (*v1.WorkflowDefinition, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetWorkflowDefinition not implemented")
 }
 func (UnimplementedWorkflowServiceServer) SubmitApply(context.Context, *v1.SubmitApplyRequest) (*v1.SubmitApplyResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SubmitApply not implemented")
@@ -224,6 +260,42 @@ func _WorkflowService_ListWorkflowDefinition_Handler(srv interface{}, ctx contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WorkflowServiceServer).ListWorkflowDefinition(ctx, req.(*v1.ListWorkflowDefinitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkflowService_UpdateWorkflowDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.UpdateWorkflowDefinitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).UpdateWorkflowDefinition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_UpdateWorkflowDefinition_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).UpdateWorkflowDefinition(ctx, req.(*v1.UpdateWorkflowDefinitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkflowService_GetWorkflowDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.GetWorkflowDefinitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).GetWorkflowDefinition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_GetWorkflowDefinition_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).GetWorkflowDefinition(ctx, req.(*v1.GetWorkflowDefinitionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -314,6 +386,14 @@ var WorkflowService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListWorkflowDefinition",
 			Handler:    _WorkflowService_ListWorkflowDefinition_Handler,
+		},
+		{
+			MethodName: "UpdateWorkflowDefinition",
+			Handler:    _WorkflowService_UpdateWorkflowDefinition_Handler,
+		},
+		{
+			MethodName: "GetWorkflowDefinition",
+			Handler:    _WorkflowService_GetWorkflowDefinition_Handler,
 		},
 		{
 			MethodName: "SubmitApply",

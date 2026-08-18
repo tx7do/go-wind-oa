@@ -12,16 +12,50 @@
           {{ definitionStatusLabel(scope.row.definition_status) }}
         </ElTag>
       </template>
+      <!-- 操作列：查看 / 启用/禁用切换 -->
+      <template #operation="scope: any">
+        <ElButton
+          size="small"
+          type="primary"
+          link
+          @click="handleView(scope.row)"
+        >
+          {{ $t("common.view") }}
+        </ElButton>
+        <ElButton
+          v-if="scope.row.definition_status !== 'ENABLED'"
+          size="small"
+          type="success"
+          link
+          @click="handleToggleStatus(scope.row, 'ENABLED')"
+        >
+          {{ $t("pages.oa.definition.enable") }}
+        </ElButton>
+        <ElButton
+          v-else
+          size="small"
+          type="warning"
+          link
+          @click="handleToggleStatus(scope.row, 'DISABLED')"
+        >
+          {{ $t("pages.oa.definition.disable") }}
+        </ElButton>
+      </template>
     </ProPage>
 
     <!-- 抽屉 -->
     <DefinitionDrawer ref="drawerRef" @success="handleSuccess" />
+    <DetailDrawer ref="detailDrawerRef" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import { ElTag } from "element-plus";
+import { ElTag, ElButton, ElMessageBox, ElMessage } from "element-plus";
+import type {
+  oaservicev1_WorkflowDefinition,
+  oaservicev1_WorkflowDefinition_DefinitionStatus,
+} from "@/api/generated/admin/service/v1";
 
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
@@ -30,14 +64,29 @@ import {
   definitionStatusLabel,
   definitionStatusColor,
   fetchListWorkflowDefinitions,
+  useUpdateWorkflowDefinitionStatus,
 } from "@/api/composables";
+import { queryClient } from "@/plugins/vue-query";
 import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/core/i18n";
 
 import DefinitionDrawer from "./definition-drawer.vue";
+import DetailDrawer from "./detail-drawer.vue";
 
 const pageRef = ref();
 const drawerRef = ref();
+const detailDrawerRef = ref();
+
+const toggleStatusMutation = useUpdateWorkflowDefinitionStatus({
+  onSuccess: () => {
+    ElMessage.success($t("common.success"));
+    queryClient.invalidateQueries({ queryKey: ["listWorkflowDefinitions"] });
+    pageRef.value?.refresh();
+  },
+  onError: (err: Error) => {
+    ElMessage.error(err.message || $t("common.error"));
+  },
+});
 
 const pageConfig = computed<ProPageConfig>(() => ({
   skeleton: true,
@@ -102,6 +151,12 @@ const pageConfig = computed<ProPageConfig>(() => ({
         slotName: "definition_status",
       },
       {
+        prop: "operation",
+        label: $t("pages.oa.definition.colOperation"),
+        width: 160,
+        slotName: "operation",
+      },
+      {
         prop: "created_at",
         label: $t("pages.oa.definition.colCreatedAt"),
         width: 160,
@@ -114,6 +169,32 @@ const pageConfig = computed<ProPageConfig>(() => ({
 
 function handleAdd() {
   drawerRef.value?.open();
+}
+
+function handleView(row: oaservicev1_WorkflowDefinition) {
+  detailDrawerRef.value?.open(row.id as number);
+}
+
+function handleToggleStatus(
+  row: oaservicev1_WorkflowDefinition,
+  target: oaservicev1_WorkflowDefinition_DefinitionStatus
+) {
+  const isEnable = target === "ENABLED";
+  const title = isEnable
+    ? $t("pages.oa.definition.enableConfirmTitle")
+    : $t("pages.oa.definition.disableConfirmTitle");
+  const content = isEnable
+    ? $t("pages.oa.definition.enableConfirmContent")
+    : $t("pages.oa.definition.disableConfirmContent");
+  ElMessageBox.confirm(content, title, {
+    confirmButtonText: $t("common.confirm"),
+    cancelButtonText: $t("common.cancel"),
+    type: isEnable ? "warning" : "warning",
+  })
+    .then(() => {
+      toggleStatusMutation.mutate({ id: row.id as number, status: target });
+    })
+    .catch(() => {});
 }
 
 function handleSuccess() {

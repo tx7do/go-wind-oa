@@ -50,6 +50,14 @@ func (s *WorkflowService) ListWorkflowDefinition(ctx context.Context, req *oaV1.
 	return s.workflowServiceClient.ListWorkflowDefinition(ctx, req)
 }
 
+func (s *WorkflowService) UpdateWorkflowDefinition(ctx context.Context, req *oaV1.UpdateWorkflowDefinitionRequest) (*oaV1.WorkflowDefinition, error) {
+	return s.workflowServiceClient.UpdateWorkflowDefinition(ctx, req)
+}
+
+func (s *WorkflowService) GetWorkflowDefinition(ctx context.Context, req *oaV1.GetWorkflowDefinitionRequest) (*oaV1.WorkflowDefinition, error) {
+	return s.workflowServiceClient.GetWorkflowDefinition(ctx, req)
+}
+
 func (s *WorkflowService) SubmitApply(ctx context.Context, req *oaV1.SubmitApplyRequest) (*oaV1.SubmitApplyResponse, error) {
 	return s.workflowServiceClient.SubmitApply(ctx, req)
 }

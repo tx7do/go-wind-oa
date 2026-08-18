@@ -424,375 +424,84 @@ enum AuthenticationServiceV1TokenType {
 ///
 /// Maps to Dart: `Map<String, dynamic>`.
 
-/// OA 工作流服务（app HTTP 边端，供移动端调用）。
+/// 站内信消息服务（app HTTP 边端，只读）。
 /// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-/// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
-/// appV1.WorkflowServiceHTTPServer，app-service 注册并转发到 core gRPC。
-/// 路径前缀 /app/v1/oa/workflow/，与 cms app 的 /app/v1/ 同构。
-class WorkflowServiceClient {
+/// 消息类型引用自 internal_message.service.v1（core-service 的 gRPC 实现）。
+/// 移动端经此接口查询其收件箱消息。仅暴露 List/Get，写操作（Send/Update/Delete/
+/// Revoke）不经 app 边端。
+class InternalMessageServiceClient {
   final ClientTransport _transport;
 
-  WorkflowServiceClient(this._transport);
+  InternalMessageServiceClient(this._transport);
 
-  /// 提交申请：发起一个工作流实例。
-  Future<OaServiceV1SubmitApplyResponse> submitApply(OaServiceV1SubmitApplyRequest request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/oa/workflow/apply';
-    final body = jsonEncode(request.toJson());
-    final result = await _transport.unary(path, 'POST', body, TransportMeta(
-      service: 'WorkflowService',
-      method: 'SubmitApply',
-    ), headers: headers);
-    return OaServiceV1SubmitApplyResponse.fromJson(result as Map<String, dynamic>);
-  }
-
-  /// 审批/驳回/转办当前待办任务。
-  Future<Map<String, dynamic>> auditTask(OaServiceV1AuditTaskRequest request, {Map<String, String>? headers}) async {
-    if (request.taskId == null) {
-      throw ArgumentError('missing required field request.task_id');
-    }
-    final path = '/app/v1/oa/workflow/tasks/${request.taskId}/audit';
-    final body = jsonEncode(request.toJson());
-    final result = await _transport.unary(path, 'POST', body, TransportMeta(
-      service: 'WorkflowService',
-      method: 'AuditTask',
-    ), headers: headers);
-    return result as Map<String, dynamic>;
-  }
-
-  /// 获取当前用户的待办 / 已办 / 我的申请列表。
-  Future<OaServiceV1GetMyTasksResponse> getMyTasks(OaServiceV1GetMyTasksRequest request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/oa/workflow/my-tasks';
+  /// 查询站内信消息列表
+  Future<Internal_messageServiceV1ListInternalMessageResponse> listMessage(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/internal-message/messages';
     final queryParams = <String>[];
-    if (request.listType != null) {
-      queryParams.add('listType=${Uri.encodeComponent(request.listType!.toString())}');
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
     }
-    if (request.paging?.page != null) {
-      queryParams.add('paging.page=${Uri.encodeComponent(request.paging!.page!.toString())}');
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
     }
-    if (request.paging?.pageSize != null) {
-      queryParams.add('paging.pageSize=${Uri.encodeComponent(request.paging!.pageSize!.toString())}');
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
     }
-    if (request.paging?.offset != null) {
-      queryParams.add('paging.offset=${Uri.encodeComponent(request.paging!.offset!.toString())}');
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
     }
-    if (request.paging?.limit != null) {
-      queryParams.add('paging.limit=${Uri.encodeComponent(request.paging!.limit!.toString())}');
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
     }
-    if (request.paging?.token != null) {
-      queryParams.add('paging.token=${Uri.encodeComponent(request.paging!.token!.toString())}');
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
     }
-    if (request.paging?.noPaging != null) {
-      queryParams.add('paging.noPaging=${Uri.encodeComponent(request.paging!.noPaging!.toString())}');
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
     }
-    if (request.paging?.query != null) {
-      queryParams.add('paging.query=${Uri.encodeComponent(request.paging!.query!.toString())}');
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
     }
-    if (request.paging?.filter != null) {
-      queryParams.add('paging.filter=${Uri.encodeComponent(request.paging!.filter!.toString())}');
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
     }
-    if (request.paging?.filterExpr?.type != null) {
-      queryParams.add('paging.filterExpr.type=${Uri.encodeComponent(request.paging!.filterExpr!.type!.toString())}');
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
     }
-    if (request.paging?.orderBy != null) {
-      queryParams.add('paging.orderBy=${Uri.encodeComponent(request.paging!.orderBy!.toString())}');
-    }
-    if (request.paging?.fieldMask != null) {
-      queryParams.add('paging.fieldMask=${Uri.encodeComponent(request.paging!.fieldMask!.toString())}');
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
     }
     var uri = path;
     if (queryParams.isNotEmpty) {
       uri += '?${queryParams.join("&")}';
     }
     final result = await _transport.unary(uri, 'GET', null, TransportMeta(
-      service: 'WorkflowService',
-      method: 'GetMyTasks',
+      service: 'InternalMessageService',
+      method: 'ListMessage',
     ), headers: headers);
-    return OaServiceV1GetMyTasksResponse.fromJson(result as Map<String, dynamic>);
+    return Internal_messageServiceV1ListInternalMessageResponse.fromJson(result as Map<String, dynamic>);
   }
 
-  /// 获取单个待办任务详情。
-  Future<OaServiceV1GetTaskResponse> getTask(OaServiceV1GetTaskRequest request, {Map<String, String>? headers}) async {
-    if (request.taskId == null) {
-      throw ArgumentError('missing required field request.task_id');
+  /// 查询站内信消息详情
+  Future<Internal_messageServiceV1InternalMessage> getMessage(Internal_messageServiceV1GetInternalMessageRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
     }
-    final path = '/app/v1/oa/workflow/tasks/${request.taskId}';
-    final result = await _transport.unary(path, 'GET', null, TransportMeta(
-      service: 'WorkflowService',
-      method: 'GetTask',
+    final path = '/app/v1/internal-message/messages/${request.id}';
+    final queryParams = <String>[];
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'InternalMessageService',
+      method: 'GetMessage',
     ), headers: headers);
-    return OaServiceV1GetTaskResponse.fromJson(result as Map<String, dynamic>);
+    return Internal_messageServiceV1InternalMessage.fromJson(result as Map<String, dynamic>);
   }
-}
-
-class OaServiceV1SubmitApplyRequest {
-  String? definitionCode;
-  int? definitionVersion;
-  /// 申请表单数据，原始 JSON 文本。
-  String? formData;
-  String? title;
-
-  OaServiceV1SubmitApplyRequest({
-    this.definitionCode,
-    this.definitionVersion,
-    this.formData,
-    this.title,
-  });
-
-  factory OaServiceV1SubmitApplyRequest.fromJson(Map<String, dynamic> json) {
-    return OaServiceV1SubmitApplyRequest(
-      definitionCode: json['definitionCode'] as String?,
-      definitionVersion: json['definitionVersion'] as int?,
-      formData: json['formData'] as String?,
-      title: json['title'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final json = <String, dynamic>{};
-    if (definitionCode != null) json['definitionCode'] = definitionCode;
-    if (definitionVersion != null) json['definitionVersion'] = definitionVersion;
-    if (formData != null) json['formData'] = formData;
-    if (title != null) json['title'] = title;
-    return json;
-  }
-
-  @override
-  String toString() {
-    return 'OaServiceV1SubmitApplyRequest(definitionCode: $definitionCode, definitionVersion: $definitionVersion, formData: $formData, title: $title)';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is OaServiceV1SubmitApplyRequest &&
-      runtimeType == other.runtimeType
-      && definitionCode == other.definitionCode
-      && definitionVersion == other.definitionVersion
-      && formData == other.formData
-      && title == other.title
-    ;
-
-  @override
-  int get hashCode => Object.hashAll([
-    definitionCode,
-    definitionVersion,
-    formData,
-    title,
-  ]);
-
-  OaServiceV1SubmitApplyRequest copyWith({
-    String? definitionCode,
-    int? definitionVersion,
-    String? formData,
-    String? title,
-  }) {
-    return OaServiceV1SubmitApplyRequest(
-      definitionCode: definitionCode ?? this.definitionCode,
-      definitionVersion: definitionVersion ?? this.definitionVersion,
-      formData: formData ?? this.formData,
-      title: title ?? this.title,
-    );
-  }
-}
-
-class OaServiceV1SubmitApplyResponse {
-  int? instanceId;
-
-  OaServiceV1SubmitApplyResponse({
-    this.instanceId,
-  });
-
-  factory OaServiceV1SubmitApplyResponse.fromJson(Map<String, dynamic> json) {
-    return OaServiceV1SubmitApplyResponse(
-      instanceId: json['instanceId'] as int?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final json = <String, dynamic>{};
-    if (instanceId != null) json['instanceId'] = instanceId;
-    return json;
-  }
-
-  @override
-  String toString() {
-    return 'OaServiceV1SubmitApplyResponse(instanceId: $instanceId)';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is OaServiceV1SubmitApplyResponse &&
-      runtimeType == other.runtimeType
-      && instanceId == other.instanceId
-    ;
-
-  @override
-  int get hashCode => Object.hashAll([
-    instanceId,
-  ]);
-
-  OaServiceV1SubmitApplyResponse copyWith({
-    int? instanceId,
-  }) {
-    return OaServiceV1SubmitApplyResponse(
-      instanceId: instanceId ?? this.instanceId,
-    );
-  }
-}
-
-class OaServiceV1AuditTaskRequest {
-  OaServiceV1AuditTaskRequest$AuditAction? action;
-  String? comment;
-  /// 仅 action == FORWARD 时有效：被转办人 ID。
-  int? forwardToUserId;
-  /// 绑定路径参数 {task_id}。
-  int? taskId;
-
-  OaServiceV1AuditTaskRequest({
-    this.action,
-    this.comment,
-    this.forwardToUserId,
-    this.taskId,
-  });
-
-  factory OaServiceV1AuditTaskRequest.fromJson(Map<String, dynamic> json) {
-    return OaServiceV1AuditTaskRequest(
-      action: json['action'] != null ? OaServiceV1AuditTaskRequest$AuditAction.fromString(json['action'] as String) : null,
-      comment: json['comment'] as String?,
-      forwardToUserId: json['forwardToUserId'] as int?,
-      taskId: json['taskId'] as int?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final json = <String, dynamic>{};
-    if (action != null) json['action'] = action!.value;
-    if (comment != null) json['comment'] = comment;
-    if (forwardToUserId != null) json['forwardToUserId'] = forwardToUserId;
-    if (taskId != null) json['taskId'] = taskId;
-    return json;
-  }
-
-  @override
-  String toString() {
-    return 'OaServiceV1AuditTaskRequest(action: $action, comment: $comment, forwardToUserId: $forwardToUserId, taskId: $taskId)';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is OaServiceV1AuditTaskRequest &&
-      runtimeType == other.runtimeType
-      && action == other.action
-      && comment == other.comment
-      && forwardToUserId == other.forwardToUserId
-      && taskId == other.taskId
-    ;
-
-  @override
-  int get hashCode => Object.hashAll([
-    action,
-    comment,
-    forwardToUserId,
-    taskId,
-  ]);
-
-  OaServiceV1AuditTaskRequest copyWith({
-    OaServiceV1AuditTaskRequest$AuditAction? action,
-    String? comment,
-    int? forwardToUserId,
-    int? taskId,
-  }) {
-    return OaServiceV1AuditTaskRequest(
-      action: action ?? this.action,
-      comment: comment ?? this.comment,
-      forwardToUserId: forwardToUserId ?? this.forwardToUserId,
-      taskId: taskId ?? this.taskId,
-    );
-  }
-}
-
-enum OaServiceV1AuditTaskRequest$AuditAction {
-  approve('APPROVE'),
-  forward('FORWARD'),
-  reject('REJECT');
-
-  final String value;
-  const OaServiceV1AuditTaskRequest$AuditAction(this.value);
-
-  static OaServiceV1AuditTaskRequest$AuditAction fromString(String v) =>
-    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1AuditTaskRequest\$AuditAction value: ' + v));
-  @override
-  String toString() => value;
-}
-
-class OaServiceV1GetMyTasksRequest {
-  OaServiceV1GetMyTasksRequest$ListType? listType;
-  PaginationPagingRequest? paging;
-
-  OaServiceV1GetMyTasksRequest({
-    this.listType,
-    this.paging,
-  });
-
-  factory OaServiceV1GetMyTasksRequest.fromJson(Map<String, dynamic> json) {
-    return OaServiceV1GetMyTasksRequest(
-      listType: json['listType'] != null ? OaServiceV1GetMyTasksRequest$ListType.fromString(json['listType'] as String) : null,
-      paging: json['paging'] != null ? PaginationPagingRequest.fromJson(json['paging'] as Map<String, dynamic>) : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final json = <String, dynamic>{};
-    if (listType != null) json['listType'] = listType!.value;
-    if (paging != null) json['paging'] = paging!.toJson();
-    return json;
-  }
-
-  @override
-  String toString() {
-    return 'OaServiceV1GetMyTasksRequest(listType: $listType, paging: $paging)';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is OaServiceV1GetMyTasksRequest &&
-      runtimeType == other.runtimeType
-      && listType == other.listType
-      && paging == other.paging
-    ;
-
-  @override
-  int get hashCode => Object.hashAll([
-    listType,
-    paging,
-  ]);
-
-  OaServiceV1GetMyTasksRequest copyWith({
-    OaServiceV1GetMyTasksRequest$ListType? listType,
-    PaginationPagingRequest? paging,
-  }) {
-    return OaServiceV1GetMyTasksRequest(
-      listType: listType ?? this.listType,
-      paging: paging ?? this.paging,
-    );
-  }
-}
-
-enum OaServiceV1GetMyTasksRequest$ListType {
-  done('DONE'),
-  pending('PENDING'),
-  submitted('SUBMITTED');
-
-  final String value;
-  const OaServiceV1GetMyTasksRequest$ListType(this.value);
-
-  static OaServiceV1GetMyTasksRequest$ListType fromString(String v) =>
-    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1GetMyTasksRequest\$ListType value: ' + v));
-  @override
-  String toString() => value;
 }
 
 /// ------------------------------
@@ -1276,6 +985,701 @@ enum PaginationSorting$Direction {
 ///
 /// Maps to Dart: `String` (comma-separated camelCase paths).
 
+/// 查询站内信消息列表 - 回应
+class Internal_messageServiceV1ListInternalMessageResponse {
+  List<Internal_messageServiceV1InternalMessage>? items;
+  int? total;
+
+  Internal_messageServiceV1ListInternalMessageResponse({
+    this.items,
+    this.total,
+  });
+
+  factory Internal_messageServiceV1ListInternalMessageResponse.fromJson(Map<String, dynamic> json) {
+    return Internal_messageServiceV1ListInternalMessageResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => Internal_messageServiceV1InternalMessage.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'Internal_messageServiceV1ListInternalMessageResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is Internal_messageServiceV1ListInternalMessageResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  Internal_messageServiceV1ListInternalMessageResponse copyWith({
+    List<Internal_messageServiceV1InternalMessage>? items,
+    int? total,
+  }) {
+    return Internal_messageServiceV1ListInternalMessageResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 站内信消息
+class Internal_messageServiceV1InternalMessage {
+  int? categoryId;
+  String? categoryName;
+  String? content;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? senderId;
+  String? senderName;
+  Internal_messageServiceV1InternalMessage$Status? status;
+  int? tenantId;
+  String? tenantName;
+  String? title;
+  Internal_messageServiceV1InternalMessage$Type? type;
+  String? updatedAt;
+  int? updatedBy;
+
+  Internal_messageServiceV1InternalMessage({
+    this.categoryId,
+    this.categoryName,
+    this.content,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.id,
+    this.senderId,
+    this.senderName,
+    this.status,
+    this.tenantId,
+    this.tenantName,
+    this.title,
+    this.type,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory Internal_messageServiceV1InternalMessage.fromJson(Map<String, dynamic> json) {
+    return Internal_messageServiceV1InternalMessage(
+      categoryId: json['categoryId'] as int?,
+      categoryName: json['categoryName'] as String?,
+      content: json['content'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      id: json['id'] as int?,
+      senderId: json['senderId'] as int?,
+      senderName: json['senderName'] as String?,
+      status: json['status'] != null ? Internal_messageServiceV1InternalMessage$Status.fromString(json['status'] as String) : null,
+      tenantId: json['tenantId'] as int?,
+      tenantName: json['tenantName'] as String?,
+      title: json['title'] as String?,
+      type: json['type'] != null ? Internal_messageServiceV1InternalMessage$Type.fromString(json['type'] as String) : null,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (categoryId != null) json['categoryId'] = categoryId;
+    if (categoryName != null) json['categoryName'] = categoryName;
+    if (content != null) json['content'] = content;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (id != null) json['id'] = id;
+    if (senderId != null) json['senderId'] = senderId;
+    if (senderName != null) json['senderName'] = senderName;
+    if (status != null) json['status'] = status!.value;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantName != null) json['tenantName'] = tenantName;
+    if (title != null) json['title'] = title;
+    if (type != null) json['type'] = type!.value;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'Internal_messageServiceV1InternalMessage(categoryId: $categoryId, categoryName: $categoryName, content: $content, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, senderId: $senderId, senderName: $senderName, status: $status, tenantId: $tenantId, tenantName: $tenantName, title: $title, type: $type, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is Internal_messageServiceV1InternalMessage &&
+      runtimeType == other.runtimeType
+      && categoryId == other.categoryId
+      && categoryName == other.categoryName
+      && content == other.content
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && id == other.id
+      && senderId == other.senderId
+      && senderName == other.senderName
+      && status == other.status
+      && tenantId == other.tenantId
+      && tenantName == other.tenantName
+      && title == other.title
+      && type == other.type
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    categoryId,
+    categoryName,
+    content,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    id,
+    senderId,
+    senderName,
+    status,
+    tenantId,
+    tenantName,
+    title,
+    type,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  Internal_messageServiceV1InternalMessage copyWith({
+    int? categoryId,
+    String? categoryName,
+    String? content,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    int? id,
+    int? senderId,
+    String? senderName,
+    Internal_messageServiceV1InternalMessage$Status? status,
+    int? tenantId,
+    String? tenantName,
+    String? title,
+    Internal_messageServiceV1InternalMessage$Type? type,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return Internal_messageServiceV1InternalMessage(
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
+      content: content ?? this.content,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      id: id ?? this.id,
+      senderId: senderId ?? this.senderId,
+      senderName: senderName ?? this.senderName,
+      status: status ?? this.status,
+      tenantId: tenantId ?? this.tenantId,
+      tenantName: tenantName ?? this.tenantName,
+      title: title ?? this.title,
+      type: type ?? this.type,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 消息状态
+enum Internal_messageServiceV1InternalMessage$Status {
+  archived('ARCHIVED'),
+  deleted('DELETED'),
+  draft('DRAFT'),
+  published('PUBLISHED'),
+  revoked('REVOKED'),
+  scheduled('SCHEDULED');
+
+  final String value;
+  const Internal_messageServiceV1InternalMessage$Status(this.value);
+
+  static Internal_messageServiceV1InternalMessage$Status fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown Internal_messageServiceV1InternalMessage\$Status value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 消息类型
+enum Internal_messageServiceV1InternalMessage$Type {
+  group('GROUP'),
+  notification('NOTIFICATION'),
+  private('PRIVATE');
+
+  final String value;
+  const Internal_messageServiceV1InternalMessage$Type(this.value);
+
+  static Internal_messageServiceV1InternalMessage$Type fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown Internal_messageServiceV1InternalMessage\$Type value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// Well-known type: Timestamp
+///
+/// Maps to Dart: `String` (RFC 3339, e.g. `"2021-01-01T00:00:00Z"`).
+
+/// 查询站内信消息详情 - 请求
+class Internal_messageServiceV1GetInternalMessageRequest {
+  int? id;
+  String? viewMask;
+
+  Internal_messageServiceV1GetInternalMessageRequest({
+    this.id,
+    this.viewMask,
+  });
+
+  factory Internal_messageServiceV1GetInternalMessageRequest.fromJson(Map<String, dynamic> json) {
+    return Internal_messageServiceV1GetInternalMessageRequest(
+      id: json['id'] as int?,
+      viewMask: json['viewMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (viewMask != null) json['viewMask'] = viewMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'Internal_messageServiceV1GetInternalMessageRequest(id: $id, viewMask: $viewMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is Internal_messageServiceV1GetInternalMessageRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && viewMask == other.viewMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    viewMask,
+  ]);
+
+  Internal_messageServiceV1GetInternalMessageRequest copyWith({
+    int? id,
+    String? viewMask,
+  }) {
+    return Internal_messageServiceV1GetInternalMessageRequest(
+      id: id ?? this.id,
+      viewMask: viewMask ?? this.viewMask,
+    );
+  }
+}
+
+/// OA 工作流服务（app HTTP 边端，供移动端调用）。
+/// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
+/// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
+/// appV1.WorkflowServiceHTTPServer，app-service 注册并转发到 core gRPC。
+/// 路径前缀 /app/v1/oa/workflow/，与 cms app 的 /app/v1/ 同构。
+class WorkflowServiceClient {
+  final ClientTransport _transport;
+
+  WorkflowServiceClient(this._transport);
+
+  /// 提交申请：发起一个工作流实例。
+  Future<OaServiceV1SubmitApplyResponse> submitApply(OaServiceV1SubmitApplyRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/workflow/apply';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'WorkflowService',
+      method: 'SubmitApply',
+    ), headers: headers);
+    return OaServiceV1SubmitApplyResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 审批/驳回/转办当前待办任务。
+  Future<Map<String, dynamic>> auditTask(OaServiceV1AuditTaskRequest request, {Map<String, String>? headers}) async {
+    if (request.taskId == null) {
+      throw ArgumentError('missing required field request.task_id');
+    }
+    final path = '/app/v1/oa/workflow/tasks/${request.taskId}/audit';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'WorkflowService',
+      method: 'AuditTask',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 获取当前用户的待办 / 已办 / 我的申请列表。
+  Future<OaServiceV1GetMyTasksResponse> getMyTasks(OaServiceV1GetMyTasksRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/workflow/my-tasks';
+    final queryParams = <String>[];
+    if (request.listType != null) {
+      queryParams.add('listType=${Uri.encodeComponent(request.listType!.toString())}');
+    }
+    if (request.paging?.page != null) {
+      queryParams.add('paging.page=${Uri.encodeComponent(request.paging!.page!.toString())}');
+    }
+    if (request.paging?.pageSize != null) {
+      queryParams.add('paging.pageSize=${Uri.encodeComponent(request.paging!.pageSize!.toString())}');
+    }
+    if (request.paging?.offset != null) {
+      queryParams.add('paging.offset=${Uri.encodeComponent(request.paging!.offset!.toString())}');
+    }
+    if (request.paging?.limit != null) {
+      queryParams.add('paging.limit=${Uri.encodeComponent(request.paging!.limit!.toString())}');
+    }
+    if (request.paging?.token != null) {
+      queryParams.add('paging.token=${Uri.encodeComponent(request.paging!.token!.toString())}');
+    }
+    if (request.paging?.noPaging != null) {
+      queryParams.add('paging.noPaging=${Uri.encodeComponent(request.paging!.noPaging!.toString())}');
+    }
+    if (request.paging?.query != null) {
+      queryParams.add('paging.query=${Uri.encodeComponent(request.paging!.query!.toString())}');
+    }
+    if (request.paging?.filter != null) {
+      queryParams.add('paging.filter=${Uri.encodeComponent(request.paging!.filter!.toString())}');
+    }
+    if (request.paging?.filterExpr?.type != null) {
+      queryParams.add('paging.filterExpr.type=${Uri.encodeComponent(request.paging!.filterExpr!.type!.toString())}');
+    }
+    if (request.paging?.orderBy != null) {
+      queryParams.add('paging.orderBy=${Uri.encodeComponent(request.paging!.orderBy!.toString())}');
+    }
+    if (request.paging?.fieldMask != null) {
+      queryParams.add('paging.fieldMask=${Uri.encodeComponent(request.paging!.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'WorkflowService',
+      method: 'GetMyTasks',
+    ), headers: headers);
+    return OaServiceV1GetMyTasksResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 获取单个待办任务详情。
+  Future<OaServiceV1GetTaskResponse> getTask(OaServiceV1GetTaskRequest request, {Map<String, String>? headers}) async {
+    if (request.taskId == null) {
+      throw ArgumentError('missing required field request.task_id');
+    }
+    final path = '/app/v1/oa/workflow/tasks/${request.taskId}';
+    final result = await _transport.unary(path, 'GET', null, TransportMeta(
+      service: 'WorkflowService',
+      method: 'GetTask',
+    ), headers: headers);
+    return OaServiceV1GetTaskResponse.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+class OaServiceV1SubmitApplyRequest {
+  String? definitionCode;
+  int? definitionVersion;
+  /// 申请表单数据，原始 JSON 文本。
+  String? formData;
+  String? title;
+
+  OaServiceV1SubmitApplyRequest({
+    this.definitionCode,
+    this.definitionVersion,
+    this.formData,
+    this.title,
+  });
+
+  factory OaServiceV1SubmitApplyRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitApplyRequest(
+      definitionCode: json['definitionCode'] as String?,
+      definitionVersion: json['definitionVersion'] as int?,
+      formData: json['formData'] as String?,
+      title: json['title'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (definitionCode != null) json['definitionCode'] = definitionCode;
+    if (definitionVersion != null) json['definitionVersion'] = definitionVersion;
+    if (formData != null) json['formData'] = formData;
+    if (title != null) json['title'] = title;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitApplyRequest(definitionCode: $definitionCode, definitionVersion: $definitionVersion, formData: $formData, title: $title)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitApplyRequest &&
+      runtimeType == other.runtimeType
+      && definitionCode == other.definitionCode
+      && definitionVersion == other.definitionVersion
+      && formData == other.formData
+      && title == other.title
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    definitionCode,
+    definitionVersion,
+    formData,
+    title,
+  ]);
+
+  OaServiceV1SubmitApplyRequest copyWith({
+    String? definitionCode,
+    int? definitionVersion,
+    String? formData,
+    String? title,
+  }) {
+    return OaServiceV1SubmitApplyRequest(
+      definitionCode: definitionCode ?? this.definitionCode,
+      definitionVersion: definitionVersion ?? this.definitionVersion,
+      formData: formData ?? this.formData,
+      title: title ?? this.title,
+    );
+  }
+}
+
+class OaServiceV1SubmitApplyResponse {
+  int? instanceId;
+
+  OaServiceV1SubmitApplyResponse({
+    this.instanceId,
+  });
+
+  factory OaServiceV1SubmitApplyResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitApplyResponse(
+      instanceId: json['instanceId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (instanceId != null) json['instanceId'] = instanceId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitApplyResponse(instanceId: $instanceId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitApplyResponse &&
+      runtimeType == other.runtimeType
+      && instanceId == other.instanceId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    instanceId,
+  ]);
+
+  OaServiceV1SubmitApplyResponse copyWith({
+    int? instanceId,
+  }) {
+    return OaServiceV1SubmitApplyResponse(
+      instanceId: instanceId ?? this.instanceId,
+    );
+  }
+}
+
+class OaServiceV1AuditTaskRequest {
+  OaServiceV1AuditTaskRequest$AuditAction? action;
+  String? comment;
+  /// 仅 action == FORWARD 时有效：被转办人 ID。
+  int? forwardToUserId;
+  /// 绑定路径参数 {task_id}。
+  int? taskId;
+
+  OaServiceV1AuditTaskRequest({
+    this.action,
+    this.comment,
+    this.forwardToUserId,
+    this.taskId,
+  });
+
+  factory OaServiceV1AuditTaskRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1AuditTaskRequest(
+      action: json['action'] != null ? OaServiceV1AuditTaskRequest$AuditAction.fromString(json['action'] as String) : null,
+      comment: json['comment'] as String?,
+      forwardToUserId: json['forwardToUserId'] as int?,
+      taskId: json['taskId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (action != null) json['action'] = action!.value;
+    if (comment != null) json['comment'] = comment;
+    if (forwardToUserId != null) json['forwardToUserId'] = forwardToUserId;
+    if (taskId != null) json['taskId'] = taskId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1AuditTaskRequest(action: $action, comment: $comment, forwardToUserId: $forwardToUserId, taskId: $taskId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1AuditTaskRequest &&
+      runtimeType == other.runtimeType
+      && action == other.action
+      && comment == other.comment
+      && forwardToUserId == other.forwardToUserId
+      && taskId == other.taskId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    action,
+    comment,
+    forwardToUserId,
+    taskId,
+  ]);
+
+  OaServiceV1AuditTaskRequest copyWith({
+    OaServiceV1AuditTaskRequest$AuditAction? action,
+    String? comment,
+    int? forwardToUserId,
+    int? taskId,
+  }) {
+    return OaServiceV1AuditTaskRequest(
+      action: action ?? this.action,
+      comment: comment ?? this.comment,
+      forwardToUserId: forwardToUserId ?? this.forwardToUserId,
+      taskId: taskId ?? this.taskId,
+    );
+  }
+}
+
+enum OaServiceV1AuditTaskRequest$AuditAction {
+  approve('APPROVE'),
+  forward('FORWARD'),
+  reject('REJECT');
+
+  final String value;
+  const OaServiceV1AuditTaskRequest$AuditAction(this.value);
+
+  static OaServiceV1AuditTaskRequest$AuditAction fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1AuditTaskRequest\$AuditAction value: ' + v));
+  @override
+  String toString() => value;
+}
+
+class OaServiceV1GetMyTasksRequest {
+  OaServiceV1GetMyTasksRequest$ListType? listType;
+  PaginationPagingRequest? paging;
+
+  OaServiceV1GetMyTasksRequest({
+    this.listType,
+    this.paging,
+  });
+
+  factory OaServiceV1GetMyTasksRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1GetMyTasksRequest(
+      listType: json['listType'] != null ? OaServiceV1GetMyTasksRequest$ListType.fromString(json['listType'] as String) : null,
+      paging: json['paging'] != null ? PaginationPagingRequest.fromJson(json['paging'] as Map<String, dynamic>) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (listType != null) json['listType'] = listType!.value;
+    if (paging != null) json['paging'] = paging!.toJson();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1GetMyTasksRequest(listType: $listType, paging: $paging)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1GetMyTasksRequest &&
+      runtimeType == other.runtimeType
+      && listType == other.listType
+      && paging == other.paging
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    listType,
+    paging,
+  ]);
+
+  OaServiceV1GetMyTasksRequest copyWith({
+    OaServiceV1GetMyTasksRequest$ListType? listType,
+    PaginationPagingRequest? paging,
+  }) {
+    return OaServiceV1GetMyTasksRequest(
+      listType: listType ?? this.listType,
+      paging: paging ?? this.paging,
+    );
+  }
+}
+
+enum OaServiceV1GetMyTasksRequest$ListType {
+  done('DONE'),
+  pending('PENDING'),
+  submitted('SUBMITTED');
+
+  final String value;
+  const OaServiceV1GetMyTasksRequest$ListType(this.value);
+
+  static OaServiceV1GetMyTasksRequest$ListType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1GetMyTasksRequest\$ListType value: ' + v));
+  @override
+  String toString() => value;
+}
+
 class OaServiceV1GetMyTasksResponse {
   List<OaServiceV1MyTaskItem>? items;
   int? total;
@@ -1432,10 +1836,6 @@ class OaServiceV1MyTaskItem {
     );
   }
 }
-
-/// Well-known type: Timestamp
-///
-/// Maps to Dart: `String` (RFC 3339, e.g. `"2021-01-01T00:00:00Z"`).
 
 class OaServiceV1GetTaskRequest {
   int? taskId;
@@ -1631,6 +2031,7 @@ class ApiClient {
   final ClientTransport _transport;
 
   AuthenticationServiceClient? _authenticationService;
+  InternalMessageServiceClient? _internalMessageService;
   WorkflowServiceClient? _workflowService;
 
   ApiClient(this._transport);
@@ -1638,6 +2039,11 @@ class ApiClient {
   AuthenticationServiceClient get authenticationService {
     _authenticationService ??= AuthenticationServiceClient(_transport);
     return _authenticationService!;
+  }
+
+  InternalMessageServiceClient get internalMessageService {
+    _internalMessageService ??= InternalMessageServiceClient(_transport);
+    return _internalMessageService!;
   }
 
   WorkflowServiceClient get workflowService {
@@ -1648,6 +2054,7 @@ class ApiClient {
   /// Closes all service clients and releases resources.
   void dispose() {
     _authenticationService = null;
+    _internalMessageService = null;
     _workflowService = null;
   }
 }

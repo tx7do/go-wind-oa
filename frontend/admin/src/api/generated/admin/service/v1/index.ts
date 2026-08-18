@@ -1170,6 +1170,14 @@ export interface WorkflowService {
   ListWorkflowDefinition(
     request: oaservicev1_ListWorkflowDefinitionRequest,
   ): Promise<oaservicev1_ListWorkflowDefinitionResponse>;
+  // 更新工作流定义状态（启用/禁用）。update_mask 须仅含 definition_status。
+  UpdateWorkflowDefinition(
+    request: oaservicev1_UpdateWorkflowDefinitionRequest,
+  ): Promise<oaservicev1_WorkflowDefinition>;
+  // 获取单个工作流定义详情（含 node_config / form_schema）。
+  GetWorkflowDefinition(
+    request: oaservicev1_GetWorkflowDefinitionRequest,
+  ): Promise<oaservicev1_WorkflowDefinition>;
   // 提交申请：发起一个工作流实例。
   SubmitApply(
     request: oaservicev1_SubmitApplyRequest,
@@ -1314,6 +1322,28 @@ export function createWorkflowServiceClient(
         service: 'WorkflowService',
         method: 'ListWorkflowDefinition',
       }) as Promise<oaservicev1_ListWorkflowDefinitionResponse>;
+    },
+    UpdateWorkflowDefinition(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/workflow/definitions/${request.id}`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'PUT', body, {
+        service: 'WorkflowService',
+        method: 'UpdateWorkflowDefinition',
+      }) as Promise<oaservicev1_WorkflowDefinition>;
+    },
+    GetWorkflowDefinition(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/workflow/definitions/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'WorkflowService',
+        method: 'GetWorkflowDefinition',
+      }) as Promise<oaservicev1_WorkflowDefinition>;
     },
     SubmitApply(request) {
       const path = `admin/v1/oa/workflow/apply`;
@@ -1504,6 +1534,16 @@ export type oaservicev1_ListWorkflowDefinitionRequest = {
 export type oaservicev1_ListWorkflowDefinitionResponse = {
   items: oaservicev1_WorkflowDefinition[] | undefined;
   total: number | undefined;
+};
+
+export type oaservicev1_UpdateWorkflowDefinitionRequest = {
+  data: oaservicev1_WorkflowDefinition | undefined;
+  id: number | undefined;
+  updateMask: undefined | wellKnownFieldMask;
+};
+
+export type oaservicev1_GetWorkflowDefinitionRequest = {
+  id: number | undefined;
 };
 
 export type oaservicev1_SubmitApplyRequest = {

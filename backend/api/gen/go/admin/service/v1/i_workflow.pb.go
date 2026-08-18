@@ -28,10 +28,12 @@ var File_admin_service_v1_i_workflow_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_workflow_proto_rawDesc = "" +
 	"\n" +
-	"!admin/service/v1/i_workflow.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1coa/service/v1/workflow.proto2\xc2\x06\n" +
+	"!admin/service/v1/i_workflow.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1coa/service/v1/workflow.proto2\xff\b\n" +
 	"\x0fWorkflowService\x12\x9b\x01\n" +
 	"\x18CreateWorkflowDefinition\x12..oa.service.v1.CreateWorkflowDefinitionRequest\x1a!.oa.service.v1.WorkflowDefinition\",\x82\xd3\xe4\x93\x02&:\x01*\"!/admin/v1/oa/workflow/definitions\x12\xa0\x01\n" +
-	"\x16ListWorkflowDefinition\x12,.oa.service.v1.ListWorkflowDefinitionRequest\x1a-.oa.service.v1.ListWorkflowDefinitionResponse\")\x82\xd3\xe4\x93\x02#\x12!/admin/v1/oa/workflow/definitions\x12|\n" +
+	"\x16ListWorkflowDefinition\x12,.oa.service.v1.ListWorkflowDefinitionRequest\x1a-.oa.service.v1.ListWorkflowDefinitionResponse\")\x82\xd3\xe4\x93\x02#\x12!/admin/v1/oa/workflow/definitions\x12\xa0\x01\n" +
+	"\x18UpdateWorkflowDefinition\x12..oa.service.v1.UpdateWorkflowDefinitionRequest\x1a!.oa.service.v1.WorkflowDefinition\"1\x82\xd3\xe4\x93\x02+:\x01*\x1a&/admin/v1/oa/workflow/definitions/{id}\x12\x97\x01\n" +
+	"\x15GetWorkflowDefinition\x12+.oa.service.v1.GetWorkflowDefinitionRequest\x1a!.oa.service.v1.WorkflowDefinition\".\x82\xd3\xe4\x93\x02(\x12&/admin/v1/oa/workflow/definitions/{id}\x12|\n" +
 	"\vSubmitApply\x12!.oa.service.v1.SubmitApplyRequest\x1a\".oa.service.v1.SubmitApplyResponse\"&\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/admin/v1/oa/workflow/apply\x12|\n" +
 	"\tAuditTask\x12\x1f.oa.service.v1.AuditTaskRequest\x1a\x16.google.protobuf.Empty\"6\x82\xd3\xe4\x93\x020:\x01*\"+/admin/v1/oa/workflow/tasks/{task_id}/audit\x12y\n" +
 	"\n" +
@@ -42,32 +44,38 @@ const file_admin_service_v1_i_workflow_proto_rawDesc = "" +
 var file_admin_service_v1_i_workflow_proto_goTypes = []any{
 	(*v1.CreateWorkflowDefinitionRequest)(nil), // 0: oa.service.v1.CreateWorkflowDefinitionRequest
 	(*v1.ListWorkflowDefinitionRequest)(nil),   // 1: oa.service.v1.ListWorkflowDefinitionRequest
-	(*v1.SubmitApplyRequest)(nil),              // 2: oa.service.v1.SubmitApplyRequest
-	(*v1.AuditTaskRequest)(nil),                // 3: oa.service.v1.AuditTaskRequest
-	(*v1.GetMyTasksRequest)(nil),               // 4: oa.service.v1.GetMyTasksRequest
-	(*v1.GetTaskRequest)(nil),                  // 5: oa.service.v1.GetTaskRequest
-	(*v1.WorkflowDefinition)(nil),              // 6: oa.service.v1.WorkflowDefinition
-	(*v1.ListWorkflowDefinitionResponse)(nil),  // 7: oa.service.v1.ListWorkflowDefinitionResponse
-	(*v1.SubmitApplyResponse)(nil),             // 8: oa.service.v1.SubmitApplyResponse
-	(*emptypb.Empty)(nil),                      // 9: google.protobuf.Empty
-	(*v1.GetMyTasksResponse)(nil),              // 10: oa.service.v1.GetMyTasksResponse
-	(*v1.GetTaskResponse)(nil),                 // 11: oa.service.v1.GetTaskResponse
+	(*v1.UpdateWorkflowDefinitionRequest)(nil), // 2: oa.service.v1.UpdateWorkflowDefinitionRequest
+	(*v1.GetWorkflowDefinitionRequest)(nil),    // 3: oa.service.v1.GetWorkflowDefinitionRequest
+	(*v1.SubmitApplyRequest)(nil),              // 4: oa.service.v1.SubmitApplyRequest
+	(*v1.AuditTaskRequest)(nil),                // 5: oa.service.v1.AuditTaskRequest
+	(*v1.GetMyTasksRequest)(nil),               // 6: oa.service.v1.GetMyTasksRequest
+	(*v1.GetTaskRequest)(nil),                  // 7: oa.service.v1.GetTaskRequest
+	(*v1.WorkflowDefinition)(nil),              // 8: oa.service.v1.WorkflowDefinition
+	(*v1.ListWorkflowDefinitionResponse)(nil),  // 9: oa.service.v1.ListWorkflowDefinitionResponse
+	(*v1.SubmitApplyResponse)(nil),             // 10: oa.service.v1.SubmitApplyResponse
+	(*emptypb.Empty)(nil),                      // 11: google.protobuf.Empty
+	(*v1.GetMyTasksResponse)(nil),              // 12: oa.service.v1.GetMyTasksResponse
+	(*v1.GetTaskResponse)(nil),                 // 13: oa.service.v1.GetTaskResponse
 }
 var file_admin_service_v1_i_workflow_proto_depIdxs = []int32{
 	0,  // 0: admin.service.v1.WorkflowService.CreateWorkflowDefinition:input_type -> oa.service.v1.CreateWorkflowDefinitionRequest
 	1,  // 1: admin.service.v1.WorkflowService.ListWorkflowDefinition:input_type -> oa.service.v1.ListWorkflowDefinitionRequest
-	2,  // 2: admin.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
-	3,  // 3: admin.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
-	4,  // 4: admin.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
-	5,  // 5: admin.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
-	6,  // 6: admin.service.v1.WorkflowService.CreateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
-	7,  // 7: admin.service.v1.WorkflowService.ListWorkflowDefinition:output_type -> oa.service.v1.ListWorkflowDefinitionResponse
-	8,  // 8: admin.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
-	9,  // 9: admin.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
-	10, // 10: admin.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
-	11, // 11: admin.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
-	6,  // [6:12] is the sub-list for method output_type
-	0,  // [0:6] is the sub-list for method input_type
+	2,  // 2: admin.service.v1.WorkflowService.UpdateWorkflowDefinition:input_type -> oa.service.v1.UpdateWorkflowDefinitionRequest
+	3,  // 3: admin.service.v1.WorkflowService.GetWorkflowDefinition:input_type -> oa.service.v1.GetWorkflowDefinitionRequest
+	4,  // 4: admin.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
+	5,  // 5: admin.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
+	6,  // 6: admin.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
+	7,  // 7: admin.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
+	8,  // 8: admin.service.v1.WorkflowService.CreateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	9,  // 9: admin.service.v1.WorkflowService.ListWorkflowDefinition:output_type -> oa.service.v1.ListWorkflowDefinitionResponse
+	8,  // 10: admin.service.v1.WorkflowService.UpdateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	8,  // 11: admin.service.v1.WorkflowService.GetWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	10, // 12: admin.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
+	11, // 13: admin.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
+	12, // 14: admin.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
+	13, // 15: admin.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
+	8,  // [8:16] is the sub-list for method output_type
+	0,  // [0:8] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

@@ -14,6 +14,7 @@ import (
 	"github.com/tx7do/kratos-bootstrap/rpc"
 
 	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
+	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
 	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
 
 	"go-wind-oa/pkg/serviceid"
@@ -82,4 +83,17 @@ func NewWorkflowServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1
 	}
 
 	return oaV1.NewWorkflowServiceClient(cli)
+}
+
+// NewInternalMessageServiceClient 创建对 OA core-service 站内信的 gRPC 客户端。
+//
+// app-service 的 HTTP 邊端收到站內信查詢請求後，經此客戶端轉發到 core-service
+// 的 InternalMessageService gRPC 實現。構造方式與 NewWorkflowServiceClient 同構。
+func NewInternalMessageServiceClient(ctx *bootstrap.Context, r registry.Discovery) internalMessageV1.InternalMessageServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return internalMessageV1.NewInternalMessageServiceClient(cli)
 }

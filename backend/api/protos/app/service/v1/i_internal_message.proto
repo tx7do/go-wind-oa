@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package app.service.v1;
+
+import "google/api/annotations.proto";
+
+import "pagination/v1/pagination.proto";
+
+import "internal_message/service/v1/internal_message.proto";
+
+// 站内信消息服务（app HTTP 边端，只读）。
+//
+// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
+// 消息类型引用自 internal_message.service.v1（core-service 的 gRPC 实现）。
+// 移动端经此接口查询其收件箱消息。仅暴露 List/Get，写操作（Send/Update/Delete/
+// Revoke）不经 app 边端。
+service InternalMessageService {
+  // 查询站内信消息列表
+  rpc ListMessage(pagination.PagingRequest) returns (internal_message.service.v1.ListInternalMessageResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/internal-message/messages"
+    };
+  }
+
+  // 查询站内信消息详情
+  rpc GetMessage(internal_message.service.v1.GetInternalMessageRequest) returns (internal_message.service.v1.InternalMessage) {
+    option (google.api.http) = {
+      get: "/app/v1/internal-message/messages/{id}"
+    };
+  }
+}

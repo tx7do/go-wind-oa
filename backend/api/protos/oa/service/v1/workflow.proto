@@ -23,6 +23,16 @@ service WorkflowService {
   rpc ListWorkflowDefinition(ListWorkflowDefinitionRequest) returns (ListWorkflowDefinitionResponse) {
   }
 
+  // 更新工作流定义（管理端）。当前仅允许切换 definition_status（启用/禁用），
+  // 由 update_mask 限定字段；其余字段忽略。状态机对 ENABLED 定义才允许提交申请。
+  rpc UpdateWorkflowDefinition(UpdateWorkflowDefinitionRequest) returns (WorkflowDefinition) {
+  }
+
+  // 获取单个工作流定义详情（管理端）。含 node_config / form_schema 原始 JSON 文本，
+  // 供管理端查看节点配置与表单 schema。仅本租户定义可达（TenantPrivacy 隔离）。
+  rpc GetWorkflowDefinition(GetWorkflowDefinitionRequest) returns (WorkflowDefinition) {
+  }
+
   // 提交申请：发起一个工作流实例，按定义的首节点生成首条待办任务并通知该审批人。
   rpc SubmitApply(SubmitApplyRequest) returns (SubmitApplyResponse) {
   }
@@ -87,6 +97,18 @@ message ListWorkflowDefinitionRequest {
 message ListWorkflowDefinitionResponse {
   repeated WorkflowDefinition items = 1;
   uint64 total = 2;
+}
+
+message UpdateWorkflowDefinitionRequest {
+  uint32 id = 1;
+
+  WorkflowDefinition data = 2;
+
+  google.protobuf.FieldMask update_mask = 3;
+}
+
+message GetWorkflowDefinitionRequest {
+  uint32 id = 1;
 }
 
 // ---- 工作流实例 ----

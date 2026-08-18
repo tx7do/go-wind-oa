@@ -139,7 +139,7 @@ func (s *WorkflowService) CreateWorkflowDefinition(ctx context.Context, req *oav
 	if !ok {
 		return nil, oav1.ErrorBadRequest("missing viewer context")
 	}
-	// 新建定义一律落 DRAFT，启用为独立流程（本文未实现）。
+	// 新建定义一律落 DRAFT；启用/禁用经 UpdateWorkflowDefinition 切换。
 	req.Data.TenantId = ptr(tenantID)
 	req.Data.CreatedBy = ptr(userID)
 	req.Data.DefinitionStatus = ptr(oav1.WorkflowDefinition_DRAFT)
@@ -154,6 +154,45 @@ func (s *WorkflowService) ListWorkflowDefinition(ctx context.Context, req *oav1.
 		return nil, oav1.ErrorBadRequest("missing viewer context")
 	}
 	return s.definitionRepo.List(ctx, req.Paging)
+}
+
+// UpdateWorkflowDefinition 切换定义状态（启用/禁用）。
+//
+// 仅允许 update_mask 含 "definition_status"——其余字段路径一律拒绝，
+// 防止经此接口篡改 node_config / form_schema 等业务字段。状态转换合法性：
+//   - DRAFT → ENABLED：启用，SubmitApply 后续可对 ENABLED 定义提交申请；
+//   - ENABLED → DISABLED：禁用，已存在的 PENDING 实例不受影响，但新申请被拒；
+//   - DISABLED → ENABLED：重新启用。
+//
+// 调用者须为同租户成员（tenant 由 TenantPrivacy + 仓库层 TenantIDEQ 双重隔离）。
+func (s *WorkflowService) UpdateWorkflowDefinition(ctx context.Context, req *oav1.UpdateWorkflowDefinitionRequest) (*oav1.WorkflowDefinition, error) {
+	if req == nil || req.Id == 0 {
+		return nil, oav1.ErrorBadRequest("invalid parameter")
+	}
+	if _, _, ok := callerFromContext(ctx); !ok {
+		return nil, oav1.ErrorBadRequest("missing viewer context")
+	}
+	// update_mask 严格限定为 definition_status，且须存在该字段路径。
+	mask := req.GetUpdateMask()
+	if mask == nil || len(mask.GetPaths()) != 1 || mask.GetPaths()[0] != "definition_status" {
+		return nil, oav1.ErrorBadRequest("update_mask must contain only definition_status")
+	}
+	if req.Data == nil || req.Data.DefinitionStatus == nil {
+		return nil, oav1.ErrorBadRequest("missing definition_status")
+	}
+	return s.definitionRepo.UpdateStatus(ctx, req.Id, *req.Data.DefinitionStatus)
+}
+
+// GetWorkflowDefinition 取单个定义详情（含 node_config / form_schema）。
+// 调用者须为同租户成员（tenant 由 TenantPrivacy 隔离）。
+func (s *WorkflowService) GetWorkflowDefinition(ctx context.Context, req *oav1.GetWorkflowDefinitionRequest) (*oav1.WorkflowDefinition, error) {
+	if req == nil || req.Id == 0 {
+		return nil, oav1.ErrorBadRequest("invalid parameter")
+	}
+	if _, _, ok := callerFromContext(ctx); !ok {
+		return nil, oav1.ErrorBadRequest("missing viewer context")
+	}
+	return s.definitionRepo.GetByID(ctx, req.Id)
 }
 
 // ---- 业务端：提交申请 ----

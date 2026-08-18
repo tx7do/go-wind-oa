@@ -22,4 +22,6 @@ import (
 var ProviderSet = wire.NewSet(
 	service.NewAuthenticationService,
 	service.NewWorkflowService,
+
+	service.NewInternalMessageService,
 )

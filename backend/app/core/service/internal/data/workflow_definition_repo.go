@@ -102,6 +102,40 @@ func (r *WorkflowDefinitionRepo) GetByCodeVersion(ctx context.Context, code stri
 	return dto, nil
 }
 
+// GetByID 按 id 取定义详情，供管理端查看。tenant 由 TenantPrivacy 按 viewer 自动过滤。
+// 与 GetByCodeVersion 不同，此处同时落回 node_config 与 form_schema（管理端需查看两者）。
+func (r *WorkflowDefinitionRepo) GetByID(ctx context.Context, id uint32) (*oav1.WorkflowDefinition, error) {
+	if id == 0 {
+		return nil, oav1.ErrorBadRequest("invalid parameter")
+	}
+	entity, err := r.entClient.Client().WorkflowDefinition.Query().
+		Where(workflowdefinition.IDEQ(id)).
+		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, oav1.ErrorNotFound("workflow definition not found")
+		}
+		r.log.Errorf("query workflow definition failed: %s", err)
+		return nil, oav1.ErrorInternalError("query workflow definition failed")
+	}
+
+	dto := r.mapper.ToDTO(entity)
+	// node_config / form_schema：entity any → DTO JSON 文本。
+	if v := entity.NodeConfig; v != nil {
+		if b, mErr := json.Marshal(v); mErr == nil {
+			p := string(b)
+			dto.NodeConfig = &p
+		}
+	}
+	if v := entity.FormSchema; v != nil {
+		if b, mErr := json.Marshal(v); mErr == nil {
+			p := string(b)
+			dto.FormSchema = &p
+		}
+	}
+	return dto, nil
+}
+
 func (r *WorkflowDefinitionRepo) Create(ctx context.Context, req *oav1.WorkflowDefinition) (*oav1.WorkflowDefinition, error) {
 	if req == nil {
 		return nil, oav1.ErrorBadRequest("invalid parameter")
@@ -151,4 +185,40 @@ func (r *WorkflowDefinitionRepo) List(ctx context.Context, req *paginationV1.Pag
 		return &oav1.ListWorkflowDefinitionResponse{Total: 0, Items: nil}, nil
 	}
 	return &oav1.ListWorkflowDefinitionResponse{Total: ret.Total, Items: ret.Items}, nil
+}
+
+// UpdateStatus 切换指定定义的 definition_status（DRAFT↔ENABLED↔DISABLED）。
+//
+// 鉴权：tenant 谓词显式叠加（IDEQ + TenantIDEQ），与 cms internal_message_repo.Update
+// 同款口径——即使 TenantPrivacy 钩子失效，DB 层仍拒绝跨租户写入。updated_at /
+// updated_by 强制由服务端 viewer context 推导，忽略客户端传入值。仅更新
+// definition_status 与审计字段，其余字段不动。
+func (r *WorkflowDefinitionRepo) UpdateStatus(ctx context.Context, id uint32, status oav1.WorkflowDefinition_DefinitionStatus) (*oav1.WorkflowDefinition, error) {
+	if id == 0 {
+		return nil, oav1.ErrorBadRequest("invalid parameter")
+	}
+
+	tid, hasTenant := maybeTenantFromViewer(ctx)
+	callerUserID, hasUser := viewerUserIDFromContext(ctx)
+
+	builder := r.entClient.Client().WorkflowDefinition.UpdateOneID(id).
+		Where(workflowdefinition.IDEQ(id))
+	if hasTenant {
+		builder.Where(workflowdefinition.TenantIDEQ(tid))
+	}
+	builder.SetNillableDefinitionStatus(r.definitionStatusConverter.ToEntity(&status))
+	builder.SetUpdatedAt(time.Now())
+	if hasUser {
+		builder.SetUpdatedBy(callerUserID)
+	}
+
+	entity, err := builder.Save(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, oav1.ErrorNotFound("workflow definition not found")
+		}
+		r.log.Errorf("update workflow definition status failed: %s", err)
+		return nil, oav1.ErrorInternalError("update workflow definition status failed")
+	}
+	return r.mapper.ToDTO(entity), nil
 }

@@ -11,7 +11,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	_ "google.golang.org/protobuf/types/known/fieldmaskpb"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -123,7 +123,7 @@ func (x WorkflowInstance_InstanceStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WorkflowInstance_InstanceStatus.Descriptor instead.
 func (WorkflowInstance_InstanceStatus) EnumDescriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{4, 0}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{6, 0}
 }
 
 type WorkflowTask_TaskStatus int32
@@ -175,7 +175,7 @@ func (x WorkflowTask_TaskStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WorkflowTask_TaskStatus.Descriptor instead.
 func (WorkflowTask_TaskStatus) EnumDescriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{7, 0}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{9, 0}
 }
 
 type AuditTaskRequest_AuditAction int32
@@ -224,7 +224,7 @@ func (x AuditTaskRequest_AuditAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AuditTaskRequest_AuditAction.Descriptor instead.
 func (AuditTaskRequest_AuditAction) EnumDescriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{8, 0}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{10, 0}
 }
 
 type WorkflowLog_LogAction int32
@@ -279,7 +279,7 @@ func (x WorkflowLog_LogAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WorkflowLog_LogAction.Descriptor instead.
 func (WorkflowLog_LogAction) EnumDescriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{9, 0}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{11, 0}
 }
 
 type GetMyTasksRequest_ListType int32
@@ -328,7 +328,7 @@ func (x GetMyTasksRequest_ListType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GetMyTasksRequest_ListType.Descriptor instead.
 func (GetMyTasksRequest_ListType) EnumDescriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{10, 0}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{12, 0}
 }
 
 type WorkflowDefinition struct {
@@ -638,6 +638,110 @@ func (x *ListWorkflowDefinitionResponse) GetTotal() uint64 {
 	return 0
 }
 
+type UpdateWorkflowDefinitionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Data          *WorkflowDefinition    `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateWorkflowDefinitionRequest) Reset() {
+	*x = UpdateWorkflowDefinitionRequest{}
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateWorkflowDefinitionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateWorkflowDefinitionRequest) ProtoMessage() {}
+
+func (x *UpdateWorkflowDefinitionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateWorkflowDefinitionRequest.ProtoReflect.Descriptor instead.
+func (*UpdateWorkflowDefinitionRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateWorkflowDefinitionRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpdateWorkflowDefinitionRequest) GetData() *WorkflowDefinition {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *UpdateWorkflowDefinitionRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+type GetWorkflowDefinitionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetWorkflowDefinitionRequest) Reset() {
+	*x = GetWorkflowDefinitionRequest{}
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetWorkflowDefinitionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetWorkflowDefinitionRequest) ProtoMessage() {}
+
+func (x *GetWorkflowDefinitionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetWorkflowDefinitionRequest.ProtoReflect.Descriptor instead.
+func (*GetWorkflowDefinitionRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetWorkflowDefinitionRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
 type WorkflowInstance struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	Id           *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -662,7 +766,7 @@ type WorkflowInstance struct {
 
 func (x *WorkflowInstance) Reset() {
 	*x = WorkflowInstance{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[4]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -674,7 +778,7 @@ func (x *WorkflowInstance) String() string {
 func (*WorkflowInstance) ProtoMessage() {}
 
 func (x *WorkflowInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[4]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -687,7 +791,7 @@ func (x *WorkflowInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowInstance.ProtoReflect.Descriptor instead.
 func (*WorkflowInstance) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{4}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *WorkflowInstance) GetId() uint32 {
@@ -801,7 +905,7 @@ type SubmitApplyRequest struct {
 
 func (x *SubmitApplyRequest) Reset() {
 	*x = SubmitApplyRequest{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[5]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -813,7 +917,7 @@ func (x *SubmitApplyRequest) String() string {
 func (*SubmitApplyRequest) ProtoMessage() {}
 
 func (x *SubmitApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[5]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -826,7 +930,7 @@ func (x *SubmitApplyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitApplyRequest.ProtoReflect.Descriptor instead.
 func (*SubmitApplyRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{5}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SubmitApplyRequest) GetDefinitionCode() string {
@@ -866,7 +970,7 @@ type SubmitApplyResponse struct {
 
 func (x *SubmitApplyResponse) Reset() {
 	*x = SubmitApplyResponse{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[6]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -878,7 +982,7 @@ func (x *SubmitApplyResponse) String() string {
 func (*SubmitApplyResponse) ProtoMessage() {}
 
 func (x *SubmitApplyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[6]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -891,7 +995,7 @@ func (x *SubmitApplyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitApplyResponse.ProtoReflect.Descriptor instead.
 func (*SubmitApplyResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{6}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SubmitApplyResponse) GetInstanceId() uint32 {
@@ -923,7 +1027,7 @@ type WorkflowTask struct {
 
 func (x *WorkflowTask) Reset() {
 	*x = WorkflowTask{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[7]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -935,7 +1039,7 @@ func (x *WorkflowTask) String() string {
 func (*WorkflowTask) ProtoMessage() {}
 
 func (x *WorkflowTask) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[7]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -948,7 +1052,7 @@ func (x *WorkflowTask) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowTask.ProtoReflect.Descriptor instead.
 func (*WorkflowTask) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{7}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *WorkflowTask) GetId() uint32 {
@@ -1056,7 +1160,7 @@ type AuditTaskRequest struct {
 
 func (x *AuditTaskRequest) Reset() {
 	*x = AuditTaskRequest{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[8]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1068,7 +1172,7 @@ func (x *AuditTaskRequest) String() string {
 func (*AuditTaskRequest) ProtoMessage() {}
 
 func (x *AuditTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[8]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1081,7 +1185,7 @@ func (x *AuditTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuditTaskRequest.ProtoReflect.Descriptor instead.
 func (*AuditTaskRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{8}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *AuditTaskRequest) GetTaskId() uint32 {
@@ -1134,7 +1238,7 @@ type WorkflowLog struct {
 
 func (x *WorkflowLog) Reset() {
 	*x = WorkflowLog{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[9]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1146,7 +1250,7 @@ func (x *WorkflowLog) String() string {
 func (*WorkflowLog) ProtoMessage() {}
 
 func (x *WorkflowLog) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[9]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1159,7 +1263,7 @@ func (x *WorkflowLog) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowLog.ProtoReflect.Descriptor instead.
 func (*WorkflowLog) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{9}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *WorkflowLog) GetId() uint32 {
@@ -1263,7 +1367,7 @@ type GetMyTasksRequest struct {
 
 func (x *GetMyTasksRequest) Reset() {
 	*x = GetMyTasksRequest{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[10]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1275,7 +1379,7 @@ func (x *GetMyTasksRequest) String() string {
 func (*GetMyTasksRequest) ProtoMessage() {}
 
 func (x *GetMyTasksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[10]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1288,7 +1392,7 @@ func (x *GetMyTasksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMyTasksRequest.ProtoReflect.Descriptor instead.
 func (*GetMyTasksRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{10}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetMyTasksRequest) GetListType() GetMyTasksRequest_ListType {
@@ -1322,7 +1426,7 @@ type MyTaskItem struct {
 
 func (x *MyTaskItem) Reset() {
 	*x = MyTaskItem{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[11]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1334,7 +1438,7 @@ func (x *MyTaskItem) String() string {
 func (*MyTaskItem) ProtoMessage() {}
 
 func (x *MyTaskItem) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[11]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1347,7 +1451,7 @@ func (x *MyTaskItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MyTaskItem.ProtoReflect.Descriptor instead.
 func (*MyTaskItem) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{11}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *MyTaskItem) GetTaskId() uint32 {
@@ -1416,7 +1520,7 @@ type GetMyTasksResponse struct {
 
 func (x *GetMyTasksResponse) Reset() {
 	*x = GetMyTasksResponse{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[12]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1428,7 +1532,7 @@ func (x *GetMyTasksResponse) String() string {
 func (*GetMyTasksResponse) ProtoMessage() {}
 
 func (x *GetMyTasksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[12]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1441,7 +1545,7 @@ func (x *GetMyTasksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMyTasksResponse.ProtoReflect.Descriptor instead.
 func (*GetMyTasksResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{12}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetMyTasksResponse) GetItems() []*MyTaskItem {
@@ -1467,7 +1571,7 @@ type GetTaskRequest struct {
 
 func (x *GetTaskRequest) Reset() {
 	*x = GetTaskRequest{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[13]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1479,7 +1583,7 @@ func (x *GetTaskRequest) String() string {
 func (*GetTaskRequest) ProtoMessage() {}
 
 func (x *GetTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[13]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1492,7 +1596,7 @@ func (x *GetTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskRequest.ProtoReflect.Descriptor instead.
 func (*GetTaskRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{13}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetTaskRequest) GetTaskId() uint32 {
@@ -1517,7 +1621,7 @@ type GetTaskResponse struct {
 
 func (x *GetTaskResponse) Reset() {
 	*x = GetTaskResponse{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[14]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1529,7 +1633,7 @@ func (x *GetTaskResponse) String() string {
 func (*GetTaskResponse) ProtoMessage() {}
 
 func (x *GetTaskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[14]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1542,7 +1646,7 @@ func (x *GetTaskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskResponse.ProtoReflect.Descriptor instead.
 func (*GetTaskResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{14}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetTaskResponse) GetTaskId() uint32 {
@@ -1593,7 +1697,7 @@ type AuditLogEntry struct {
 
 func (x *AuditLogEntry) Reset() {
 	*x = AuditLogEntry{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[15]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1605,7 +1709,7 @@ func (x *AuditLogEntry) String() string {
 func (*AuditLogEntry) ProtoMessage() {}
 
 func (x *AuditLogEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[15]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1618,7 +1722,7 @@ func (x *AuditLogEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuditLogEntry.ProtoReflect.Descriptor instead.
 func (*AuditLogEntry) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{15}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *AuditLogEntry) GetActionLabel() string {
@@ -1702,7 +1806,14 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\x06paging\x18\x01 \x01(\v2\x19.pagination.PagingRequestR\x06paging\"o\n" +
 	"\x1eListWorkflowDefinitionResponse\x127\n" +
 	"\x05items\x18\x01 \x03(\v2!.oa.service.v1.WorkflowDefinitionR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xb3\a\n" +
+	"\x05total\x18\x02 \x01(\x04R\x05total\"\xa5\x01\n" +
+	"\x1fUpdateWorkflowDefinitionRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\x125\n" +
+	"\x04data\x18\x02 \x01(\v2!.oa.service.v1.WorkflowDefinitionR\x04data\x12;\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
+	"updateMask\".\n" +
+	"\x1cGetWorkflowDefinitionRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"\xb3\a\n" +
 	"\x10WorkflowInstance\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\rH\x00R\x02id\x88\x01\x01\x12(\n" +
 	"\rdefinition_id\x18\x02 \x01(\rH\x01R\fdefinitionId\x88\x01\x01\x12\x19\n" +
@@ -1917,10 +2028,12 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\r_action_labelB\n" +
 	"\n" +
 	"\b_commentB\x0e\n" +
-	"\f_occurred_at2\xbc\x04\n" +
+	"\f_occurred_at2\x98\x06\n" +
 	"\x0fWorkflowService\x12o\n" +
 	"\x18CreateWorkflowDefinition\x12..oa.service.v1.CreateWorkflowDefinitionRequest\x1a!.oa.service.v1.WorkflowDefinition\"\x00\x12w\n" +
-	"\x16ListWorkflowDefinition\x12,.oa.service.v1.ListWorkflowDefinitionRequest\x1a-.oa.service.v1.ListWorkflowDefinitionResponse\"\x00\x12V\n" +
+	"\x16ListWorkflowDefinition\x12,.oa.service.v1.ListWorkflowDefinitionRequest\x1a-.oa.service.v1.ListWorkflowDefinitionResponse\"\x00\x12o\n" +
+	"\x18UpdateWorkflowDefinition\x12..oa.service.v1.UpdateWorkflowDefinitionRequest\x1a!.oa.service.v1.WorkflowDefinition\"\x00\x12i\n" +
+	"\x15GetWorkflowDefinition\x12+.oa.service.v1.GetWorkflowDefinitionRequest\x1a!.oa.service.v1.WorkflowDefinition\"\x00\x12V\n" +
 	"\vSubmitApply\x12!.oa.service.v1.SubmitApplyRequest\x1a\".oa.service.v1.SubmitApplyResponse\"\x00\x12F\n" +
 	"\tAuditTask\x12\x1f.oa.service.v1.AuditTaskRequest\x1a\x16.google.protobuf.Empty\"\x00\x12S\n" +
 	"\n" +
@@ -1941,7 +2054,7 @@ func file_oa_service_v1_workflow_proto_rawDescGZIP() []byte {
 }
 
 var file_oa_service_v1_workflow_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_oa_service_v1_workflow_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_oa_service_v1_workflow_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_oa_service_v1_workflow_proto_goTypes = []any{
 	(WorkflowDefinition_DefinitionStatus)(0), // 0: oa.service.v1.WorkflowDefinition.DefinitionStatus
 	(WorkflowInstance_InstanceStatus)(0),     // 1: oa.service.v1.WorkflowInstance.InstanceStatus
@@ -1953,66 +2066,75 @@ var file_oa_service_v1_workflow_proto_goTypes = []any{
 	(*CreateWorkflowDefinitionRequest)(nil),  // 7: oa.service.v1.CreateWorkflowDefinitionRequest
 	(*ListWorkflowDefinitionRequest)(nil),    // 8: oa.service.v1.ListWorkflowDefinitionRequest
 	(*ListWorkflowDefinitionResponse)(nil),   // 9: oa.service.v1.ListWorkflowDefinitionResponse
-	(*WorkflowInstance)(nil),                 // 10: oa.service.v1.WorkflowInstance
-	(*SubmitApplyRequest)(nil),               // 11: oa.service.v1.SubmitApplyRequest
-	(*SubmitApplyResponse)(nil),              // 12: oa.service.v1.SubmitApplyResponse
-	(*WorkflowTask)(nil),                     // 13: oa.service.v1.WorkflowTask
-	(*AuditTaskRequest)(nil),                 // 14: oa.service.v1.AuditTaskRequest
-	(*WorkflowLog)(nil),                      // 15: oa.service.v1.WorkflowLog
-	(*GetMyTasksRequest)(nil),                // 16: oa.service.v1.GetMyTasksRequest
-	(*MyTaskItem)(nil),                       // 17: oa.service.v1.MyTaskItem
-	(*GetMyTasksResponse)(nil),               // 18: oa.service.v1.GetMyTasksResponse
-	(*GetTaskRequest)(nil),                   // 19: oa.service.v1.GetTaskRequest
-	(*GetTaskResponse)(nil),                  // 20: oa.service.v1.GetTaskResponse
-	(*AuditLogEntry)(nil),                    // 21: oa.service.v1.AuditLogEntry
-	(*timestamppb.Timestamp)(nil),            // 22: google.protobuf.Timestamp
-	(*v1.PagingRequest)(nil),                 // 23: pagination.PagingRequest
-	(*emptypb.Empty)(nil),                    // 24: google.protobuf.Empty
+	(*UpdateWorkflowDefinitionRequest)(nil),  // 10: oa.service.v1.UpdateWorkflowDefinitionRequest
+	(*GetWorkflowDefinitionRequest)(nil),     // 11: oa.service.v1.GetWorkflowDefinitionRequest
+	(*WorkflowInstance)(nil),                 // 12: oa.service.v1.WorkflowInstance
+	(*SubmitApplyRequest)(nil),               // 13: oa.service.v1.SubmitApplyRequest
+	(*SubmitApplyResponse)(nil),              // 14: oa.service.v1.SubmitApplyResponse
+	(*WorkflowTask)(nil),                     // 15: oa.service.v1.WorkflowTask
+	(*AuditTaskRequest)(nil),                 // 16: oa.service.v1.AuditTaskRequest
+	(*WorkflowLog)(nil),                      // 17: oa.service.v1.WorkflowLog
+	(*GetMyTasksRequest)(nil),                // 18: oa.service.v1.GetMyTasksRequest
+	(*MyTaskItem)(nil),                       // 19: oa.service.v1.MyTaskItem
+	(*GetMyTasksResponse)(nil),               // 20: oa.service.v1.GetMyTasksResponse
+	(*GetTaskRequest)(nil),                   // 21: oa.service.v1.GetTaskRequest
+	(*GetTaskResponse)(nil),                  // 22: oa.service.v1.GetTaskResponse
+	(*AuditLogEntry)(nil),                    // 23: oa.service.v1.AuditLogEntry
+	(*timestamppb.Timestamp)(nil),            // 24: google.protobuf.Timestamp
+	(*v1.PagingRequest)(nil),                 // 25: pagination.PagingRequest
+	(*fieldmaskpb.FieldMask)(nil),            // 26: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),                    // 27: google.protobuf.Empty
 }
 var file_oa_service_v1_workflow_proto_depIdxs = []int32{
 	0,  // 0: oa.service.v1.WorkflowDefinition.definition_status:type_name -> oa.service.v1.WorkflowDefinition.DefinitionStatus
-	22, // 1: oa.service.v1.WorkflowDefinition.created_at:type_name -> google.protobuf.Timestamp
-	22, // 2: oa.service.v1.WorkflowDefinition.updated_at:type_name -> google.protobuf.Timestamp
-	22, // 3: oa.service.v1.WorkflowDefinition.deleted_at:type_name -> google.protobuf.Timestamp
+	24, // 1: oa.service.v1.WorkflowDefinition.created_at:type_name -> google.protobuf.Timestamp
+	24, // 2: oa.service.v1.WorkflowDefinition.updated_at:type_name -> google.protobuf.Timestamp
+	24, // 3: oa.service.v1.WorkflowDefinition.deleted_at:type_name -> google.protobuf.Timestamp
 	6,  // 4: oa.service.v1.CreateWorkflowDefinitionRequest.data:type_name -> oa.service.v1.WorkflowDefinition
-	23, // 5: oa.service.v1.ListWorkflowDefinitionRequest.paging:type_name -> pagination.PagingRequest
+	25, // 5: oa.service.v1.ListWorkflowDefinitionRequest.paging:type_name -> pagination.PagingRequest
 	6,  // 6: oa.service.v1.ListWorkflowDefinitionResponse.items:type_name -> oa.service.v1.WorkflowDefinition
-	1,  // 7: oa.service.v1.WorkflowInstance.instance_status:type_name -> oa.service.v1.WorkflowInstance.InstanceStatus
-	22, // 8: oa.service.v1.WorkflowInstance.created_at:type_name -> google.protobuf.Timestamp
-	22, // 9: oa.service.v1.WorkflowInstance.updated_at:type_name -> google.protobuf.Timestamp
-	22, // 10: oa.service.v1.WorkflowInstance.deleted_at:type_name -> google.protobuf.Timestamp
-	2,  // 11: oa.service.v1.WorkflowTask.task_status:type_name -> oa.service.v1.WorkflowTask.TaskStatus
-	22, // 12: oa.service.v1.WorkflowTask.created_at:type_name -> google.protobuf.Timestamp
-	22, // 13: oa.service.v1.WorkflowTask.updated_at:type_name -> google.protobuf.Timestamp
-	22, // 14: oa.service.v1.WorkflowTask.deleted_at:type_name -> google.protobuf.Timestamp
-	3,  // 15: oa.service.v1.AuditTaskRequest.action:type_name -> oa.service.v1.AuditTaskRequest.AuditAction
-	4,  // 16: oa.service.v1.WorkflowLog.log_action:type_name -> oa.service.v1.WorkflowLog.LogAction
-	22, // 17: oa.service.v1.WorkflowLog.created_at:type_name -> google.protobuf.Timestamp
-	22, // 18: oa.service.v1.WorkflowLog.updated_at:type_name -> google.protobuf.Timestamp
-	22, // 19: oa.service.v1.WorkflowLog.deleted_at:type_name -> google.protobuf.Timestamp
-	5,  // 20: oa.service.v1.GetMyTasksRequest.list_type:type_name -> oa.service.v1.GetMyTasksRequest.ListType
-	23, // 21: oa.service.v1.GetMyTasksRequest.paging:type_name -> pagination.PagingRequest
-	22, // 22: oa.service.v1.MyTaskItem.occurred_at:type_name -> google.protobuf.Timestamp
-	17, // 23: oa.service.v1.GetMyTasksResponse.items:type_name -> oa.service.v1.MyTaskItem
-	21, // 24: oa.service.v1.GetTaskResponse.history:type_name -> oa.service.v1.AuditLogEntry
-	22, // 25: oa.service.v1.AuditLogEntry.occurred_at:type_name -> google.protobuf.Timestamp
-	7,  // 26: oa.service.v1.WorkflowService.CreateWorkflowDefinition:input_type -> oa.service.v1.CreateWorkflowDefinitionRequest
-	8,  // 27: oa.service.v1.WorkflowService.ListWorkflowDefinition:input_type -> oa.service.v1.ListWorkflowDefinitionRequest
-	11, // 28: oa.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
-	14, // 29: oa.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
-	16, // 30: oa.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
-	19, // 31: oa.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
-	6,  // 32: oa.service.v1.WorkflowService.CreateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
-	9,  // 33: oa.service.v1.WorkflowService.ListWorkflowDefinition:output_type -> oa.service.v1.ListWorkflowDefinitionResponse
-	12, // 34: oa.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
-	24, // 35: oa.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
-	18, // 36: oa.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
-	20, // 37: oa.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
-	32, // [32:38] is the sub-list for method output_type
-	26, // [26:32] is the sub-list for method input_type
-	26, // [26:26] is the sub-list for extension type_name
-	26, // [26:26] is the sub-list for extension extendee
-	0,  // [0:26] is the sub-list for field type_name
+	6,  // 7: oa.service.v1.UpdateWorkflowDefinitionRequest.data:type_name -> oa.service.v1.WorkflowDefinition
+	26, // 8: oa.service.v1.UpdateWorkflowDefinitionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	1,  // 9: oa.service.v1.WorkflowInstance.instance_status:type_name -> oa.service.v1.WorkflowInstance.InstanceStatus
+	24, // 10: oa.service.v1.WorkflowInstance.created_at:type_name -> google.protobuf.Timestamp
+	24, // 11: oa.service.v1.WorkflowInstance.updated_at:type_name -> google.protobuf.Timestamp
+	24, // 12: oa.service.v1.WorkflowInstance.deleted_at:type_name -> google.protobuf.Timestamp
+	2,  // 13: oa.service.v1.WorkflowTask.task_status:type_name -> oa.service.v1.WorkflowTask.TaskStatus
+	24, // 14: oa.service.v1.WorkflowTask.created_at:type_name -> google.protobuf.Timestamp
+	24, // 15: oa.service.v1.WorkflowTask.updated_at:type_name -> google.protobuf.Timestamp
+	24, // 16: oa.service.v1.WorkflowTask.deleted_at:type_name -> google.protobuf.Timestamp
+	3,  // 17: oa.service.v1.AuditTaskRequest.action:type_name -> oa.service.v1.AuditTaskRequest.AuditAction
+	4,  // 18: oa.service.v1.WorkflowLog.log_action:type_name -> oa.service.v1.WorkflowLog.LogAction
+	24, // 19: oa.service.v1.WorkflowLog.created_at:type_name -> google.protobuf.Timestamp
+	24, // 20: oa.service.v1.WorkflowLog.updated_at:type_name -> google.protobuf.Timestamp
+	24, // 21: oa.service.v1.WorkflowLog.deleted_at:type_name -> google.protobuf.Timestamp
+	5,  // 22: oa.service.v1.GetMyTasksRequest.list_type:type_name -> oa.service.v1.GetMyTasksRequest.ListType
+	25, // 23: oa.service.v1.GetMyTasksRequest.paging:type_name -> pagination.PagingRequest
+	24, // 24: oa.service.v1.MyTaskItem.occurred_at:type_name -> google.protobuf.Timestamp
+	19, // 25: oa.service.v1.GetMyTasksResponse.items:type_name -> oa.service.v1.MyTaskItem
+	23, // 26: oa.service.v1.GetTaskResponse.history:type_name -> oa.service.v1.AuditLogEntry
+	24, // 27: oa.service.v1.AuditLogEntry.occurred_at:type_name -> google.protobuf.Timestamp
+	7,  // 28: oa.service.v1.WorkflowService.CreateWorkflowDefinition:input_type -> oa.service.v1.CreateWorkflowDefinitionRequest
+	8,  // 29: oa.service.v1.WorkflowService.ListWorkflowDefinition:input_type -> oa.service.v1.ListWorkflowDefinitionRequest
+	10, // 30: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:input_type -> oa.service.v1.UpdateWorkflowDefinitionRequest
+	11, // 31: oa.service.v1.WorkflowService.GetWorkflowDefinition:input_type -> oa.service.v1.GetWorkflowDefinitionRequest
+	13, // 32: oa.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
+	16, // 33: oa.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
+	18, // 34: oa.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
+	21, // 35: oa.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
+	6,  // 36: oa.service.v1.WorkflowService.CreateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	9,  // 37: oa.service.v1.WorkflowService.ListWorkflowDefinition:output_type -> oa.service.v1.ListWorkflowDefinitionResponse
+	6,  // 38: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	6,  // 39: oa.service.v1.WorkflowService.GetWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	14, // 40: oa.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
+	27, // 41: oa.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
+	20, // 42: oa.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
+	22, // 43: oa.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
+	36, // [36:44] is the sub-list for method output_type
+	28, // [28:36] is the sub-list for method input_type
+	28, // [28:28] is the sub-list for extension type_name
+	28, // [28:28] is the sub-list for extension extendee
+	0,  // [0:28] is the sub-list for field type_name
 }
 
 func init() { file_oa_service_v1_workflow_proto_init() }
@@ -2021,20 +2143,20 @@ func file_oa_service_v1_workflow_proto_init() {
 		return
 	}
 	file_oa_service_v1_workflow_proto_msgTypes[0].OneofWrappers = []any{}
-	file_oa_service_v1_workflow_proto_msgTypes[4].OneofWrappers = []any{}
-	file_oa_service_v1_workflow_proto_msgTypes[7].OneofWrappers = []any{}
-	file_oa_service_v1_workflow_proto_msgTypes[8].OneofWrappers = []any{}
+	file_oa_service_v1_workflow_proto_msgTypes[6].OneofWrappers = []any{}
 	file_oa_service_v1_workflow_proto_msgTypes[9].OneofWrappers = []any{}
+	file_oa_service_v1_workflow_proto_msgTypes[10].OneofWrappers = []any{}
 	file_oa_service_v1_workflow_proto_msgTypes[11].OneofWrappers = []any{}
-	file_oa_service_v1_workflow_proto_msgTypes[14].OneofWrappers = []any{}
-	file_oa_service_v1_workflow_proto_msgTypes[15].OneofWrappers = []any{}
+	file_oa_service_v1_workflow_proto_msgTypes[13].OneofWrappers = []any{}
+	file_oa_service_v1_workflow_proto_msgTypes[16].OneofWrappers = []any{}
+	file_oa_service_v1_workflow_proto_msgTypes[17].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_oa_service_v1_workflow_proto_rawDesc), len(file_oa_service_v1_workflow_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   16,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

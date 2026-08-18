@@ -35,4 +35,6 @@ var ProviderSet = wire.NewSet(
 	data.NewAuthenticationServiceClient,
 
 	data.NewWorkflowServiceClient,
+
+	data.NewInternalMessageServiceClient,
 )

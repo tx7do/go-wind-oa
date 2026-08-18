@@ -30,6 +30,21 @@ service WorkflowService {
     };
   }
 
+  // 更新工作流定义状态（启用/禁用）。update_mask 须仅含 definition_status。
+  rpc UpdateWorkflowDefinition(oa.service.v1.UpdateWorkflowDefinitionRequest) returns (oa.service.v1.WorkflowDefinition) {
+    option (google.api.http) = {
+      put: "/admin/v1/oa/workflow/definitions/{id}"
+      body: "*"
+    };
+  }
+
+  // 获取单个工作流定义详情（含 node_config / form_schema）。
+  rpc GetWorkflowDefinition(oa.service.v1.GetWorkflowDefinitionRequest) returns (oa.service.v1.WorkflowDefinition) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/workflow/definitions/{id}"
+    };
+  }
+
   // 提交申请：发起一个工作流实例。
   rpc SubmitApply(oa.service.v1.SubmitApplyRequest) returns (oa.service.v1.SubmitApplyResponse) {
     option (google.api.http) = {

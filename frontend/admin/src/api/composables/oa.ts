@@ -18,6 +18,7 @@ import {
 import type {
   oaservicev1_ListWorkflowDefinitionResponse,
   oaservicev1_CreateWorkflowDefinitionRequest,
+  oaservicev1_UpdateWorkflowDefinitionRequest,
   oaservicev1_WorkflowDefinition,
   oaservicev1_WorkflowDefinition_DefinitionStatus,
 } from "@/api/generated/admin/service/v1";
@@ -55,6 +56,21 @@ export async function fetchListWorkflowDefinitions(params: PaginationQuery) {
 }
 
 // ==============================
+// 流程定义详情
+// ==============================
+export async function fetchWorkflowDefinition(id: number) {
+  return queryClient.fetchQuery({
+    queryKey: ["workflowDefinition", id],
+    queryFn: () =>
+      apiClient.workflowService.GetWorkflowDefinition({
+        id,
+      }),
+    staleTime: 0,
+    retry: 0,
+  });
+}
+
+// ==============================
 // 创建流程定义
 // ==============================
 export function useCreateWorkflowDefinition(
@@ -66,6 +82,31 @@ export function useCreateWorkflowDefinition(
 ) {
   return useMutation({
     mutationFn: (req) => apiClient.workflowService.CreateWorkflowDefinition(req),
+    ...options,
+  });
+}
+
+// ==============================
+// 启用/禁用流程定义
+// ==============================
+export function useUpdateWorkflowDefinitionStatus(
+  options?: UseMutationOptions<
+    oaservicev1_WorkflowDefinition,
+    Error,
+    { id: number; status: oaservicev1_WorkflowDefinition_DefinitionStatus }
+  >
+) {
+  return useMutation({
+    mutationFn: ({ id, status }) => {
+      const req: oaservicev1_UpdateWorkflowDefinitionRequest = {
+        id,
+        data: {
+          definitionStatus: status,
+        },
+        updateMask: "definition_status",
+      };
+      return apiClient.workflowService.UpdateWorkflowDefinition(req);
+    },
     ...options,
   });
 }

@@ -642,6 +642,51 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/WorkflowDefinition'
+    /admin/v1/oa/workflow/definitions/{id}:
+        get:
+            tags:
+                - WorkflowService
+            description: 获取单个工作流定义详情（含 node_config / form_schema）。
+            operationId: WorkflowService_GetWorkflowDefinition
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/WorkflowDefinition'
+        put:
+            tags:
+                - WorkflowService
+            description: 更新工作流定义状态（启用/禁用）。update_mask 须仅含 definition_status。
+            operationId: WorkflowService_UpdateWorkflowDefinition
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateWorkflowDefinitionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/WorkflowDefinition'
     /admin/v1/oa/workflow/my-tasks:
         get:
             tags:
@@ -1395,6 +1440,17 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新站内信消息 - 请求
+        UpdateWorkflowDefinitionRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                data:
+                    $ref: '#/components/schemas/WorkflowDefinition'
+                updateMask:
+                    type: string
+                    format: field-mask
         VerifyCaptchaRequest:
             type: object
             properties:

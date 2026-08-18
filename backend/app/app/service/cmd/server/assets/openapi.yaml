@@ -14,6 +14,109 @@ info:
         url: https://github.com/tx7do/go-wind-oa/blob/master/LICENSE
     version: "1.0"
 paths:
+    /app/v1/internal-message/messages:
+        get:
+            tags:
+                - InternalMessageService
+            description: 查询站内信消息列表
+            operationId: InternalMessageService_ListMessage
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListInternalMessageResponse'
+    /app/v1/internal-message/messages/{id}:
+        get:
+            tags:
+                - InternalMessageService
+            description: 查询站内信消息详情
+            operationId: InternalMessageService_GetMessage
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: viewMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InternalMessage'
     /app/v1/login:
         post:
             tags:
@@ -282,6 +385,84 @@ components:
             description: |-
                 GetTaskResponse 投影待办任务详情。字段对齐详情页渲染所需，最小披露：
                  申请标题、申请表单数据（原始 JSON 文本，引擎不解释）、该实例的审批日志轨迹。
+        InternalMessage:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 消息ID
+                    format: uint32
+                title:
+                    type: string
+                    description: 消息标题
+                content:
+                    type: string
+                    description: 消息内容
+                status:
+                    enum:
+                        - DRAFT
+                        - PUBLISHED
+                        - SCHEDULED
+                        - REVOKED
+                        - ARCHIVED
+                        - DELETED
+                    type: string
+                    description: 消息状态
+                    format: enum
+                type:
+                    enum:
+                        - NOTIFICATION
+                        - PRIVATE
+                        - GROUP
+                    type: string
+                    description: 消息类型
+                    format: enum
+                senderId:
+                    type: integer
+                    description: 发送者 ID（用户 ID，系统消息为0）
+                    format: uint32
+                senderName:
+                    type: string
+                    description: 发送者名称
+                categoryId:
+                    type: integer
+                    description: 分类ID
+                    format: uint32
+                categoryName:
+                    type: string
+                    description: 分类名称
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
+                createdBy:
+                    type: integer
+                    description: 创建者用户ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者用户ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 站内信消息
         KratosStatus:
             type: object
             properties:
@@ -299,6 +480,16 @@ components:
                     type: object
                     description: 元数据
             description: Kratos错误返回
+        ListInternalMessageResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/InternalMessage'
+                total:
+                    type: string
+            description: 查询站内信消息列表 - 回应
         LoginRequest:
             required:
                 - grant_type
@@ -459,6 +650,14 @@ security:
 tags:
     - name: AuthenticationService
       description: 用户前台登录认证服务
+    - name: InternalMessageService
+      description: |-
+        站内信消息服务（app HTTP 边端，只读）。
+
+         对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
+         消息类型引用自 internal_message.service.v1（core-service 的 gRPC 实现）。
+         移动端经此接口查询其收件箱消息。仅暴露 List/Get，写操作（Send/Update/Delete/
+         Revoke）不经 app 边端。
     - name: WorkflowService
       description: |-
         OA 工作流服务（app HTTP 边端，供移动端调用）。
