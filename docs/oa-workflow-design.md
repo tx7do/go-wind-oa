@@ -1,96 +1,98 @@
 # go-wind-oa · 轻量级工作流审批引擎 — 架构设计文档
 
-> ⚠️ **本文档已过时。** 撰写于旧的单 service 架构时期（`app/oa/service`），描述的是「OA 模块作为 go-wind-cms 的扩展」模型。当前实际架构为 core/admin/app 三 service 分離，proto 域分離，`pkg/` 自包含——与本文描述的目录结构、proto 路径（`oa/v1`）、生成模板名（`buf.vue-element.oa.typescript.gen.yaml`）、`swagger_parser` 链等均不符。以 `README.md` 与代码为权威架构来源。
+> 本文档面向维护者，记录 `go-wind-oa` 后端的架构决策、三 service 分離結構、proto 域分離，以及当前实现的边界与已知约束。读者应已熟悉 Kratos + Wire + Ent 的基本范式。
 >
-> 本文档面向维护者，记录 `go-wind-oa` 工作流模块的架构决策、与 `go-wind-cms` 底座的集成点，以及当前实现的边界与已知约束。读者应已熟悉 Kratos + Wire + Ent 的基本范式。
+> 本文与代码同步，权威架构来源为代码本身；本文為導覽性說明。
 
 ---
 
 ## 1. 设计目标与范围
 
-`go-wind-oa` 在 `go-wind-cms` 底座之上扩展出一个**轻量级、线性、状态机驱动**的工作流审批引擎。它复用 cms 既有的多租户隔离、鉴权与站内信通知组件，不自建通知通道、不重写租户策略，遵循“积木式架构(bricket-like architecture)”。
+`go-wind-oa` 是一个**轻量级、线性、状态机驱动**的工作流审批引擎，以 `go-wind-cms` 的 core/admin/app 三 service 架構為基座，自包含 `pkg/`（無 cms 模塊依賴）。
 
 **范围内（v1）**
 - 流程定义（含节点序列、动态表单 schema）的存储与查询。
 - 申请提交 → 首节点任务派生 → 审批/驳回/转办 → 状态机推进或终结。
 - “我的待办 / 已办 / 我的申请”三类列表。
-- 审批流转的异步通知，复用 cms `internal_message` 站内信通道（落库 + SSE 推送）。
+- 审批流转的异步通知，經 `internal_message` 站內信通道（落库 + SSE 推送）。
 
 **范围外（v1，刻意未实现）**
 - 会签 / 并行分支 / 子流程 —— 当前为严格线性状态机。
-- 角色级 / 部门主管级审批人指派 —— `node_config` 仅支持 `approver_type=="USER"` 指定用户。对接 cms identity（角色、组织树）以支持更丰富的指派策略是后续工作。
+- 角色级 / 部门主管级审批人指派 —— `node_config` 仅支持 `approver_type=="USER"` 指定用户。
 - 流程定义的启用/禁用独立接口（定义落 `DRAFT`，校验 `ENABLED`；切换接口未提供）。
 - 流程定义的版本管理 UI、回滚等。
 
 ---
 
-## 2. 与 go-wind-cms 的集成点（砖块复用）
+## 2. 三 service 架構
 
-OA 模块作为独立 Go module（`go-wind-oa`），通过 `go.mod` 依赖 `go-wind-cms`，复用其以下组件，**不在 OA 内重写**：
+仿 `go-wind-cms` 的 core/admin/app 模式，三 service 各司其職：
 
-| 组件 | 来源（go-wind-cms 路径） | OA 中的用途 |
-|---|---|---|
-| `auth.Server` 鉴权中间件 | `pkg/middleware/auth/auth.go` | HTTP 请求 JWT 校验，注入 `OperatorMetadata` |
-| `entmiddleware.Server` viewer 中间件 | `pkg/middleware/ent/ent.go` | 依 `OperatorMetadata` 构建带租户作用域的 `UserViewer`，驱动 `TenantPrivacy` |
-| `TenantID` / `TimeAt` / `OperatorID` / `AutoIncrementId` mixins | `github.com/tx7do/go-crud/entgo/mixin` | 为四张表注入 `tenant_id` 等审计列与租户策略 |
-| `entCrud.EntClient` / `entCrud.Repository` / `mapper` | `github.com/tx7do/go-crud/entgo`、`go-utils` | ORM 会话与 DTO↔entity 映射（与 cms repos 同构） |
-| `internal_message` gRPC 客户端 | `api/gen/go/internal_message/service/v1` | `SendMessage` 投递审批通知（NOTIFICATION 类型） |
-| 服务发现 | `github.com/tx7do/kratos-bootstrap/registry` | 经 `core-service` 定位 cms 以建上述 gRPC 连接 |
-| `kratos-bootstrap` 应用骨架 | `github.com/tx7do/kratos-bootstrap/bootstrap` | `NewApp` / `RunApp` / 配置加载 |
+### 2.1 core-service（純 gRPC，工作流引擎落點）
 
-**关键安全约束：中间件顺序不可颠倒。** HTTP 中间件链必须是 `logging → auth.Server → entmiddleware.Server`。理由见 `app/oa/service/internal/server/rest_server.go` 注释：`auth.Server` 对非白名单请求注入 `OperatorMetadata`，`entmiddleware.Server` 据此构建 `UserViewer`，`TenantPrivacy` 策略才生效。顺序颠倒则 `entmiddleware` 以 `md==nil` 兜底为 `SystemViewer`，**租户隔离失效**。
+`backend/app/core/service/`，`appid = serviceid.CoreService`，consul key `go-wind-oa/core/service`。
 
-OA 的 HTTP 白名单为空 —— 所有工作流接口都必须携带有效 JWT，无公开端点。
+- `internal/server/grpc_server.go`：創建 gRPC server，中間件鏈 `logging + ent`（core 是被 admin/app 調用的後端，無 auth/authz）。註冊四個 gRPC 服務：
+  - `internalMessageV1.RegisterInternalMessageServiceServer` + Category + Recipient（`internal_message.service.v1`，站內信）
+  - `oaV1.RegisterWorkflowServiceServer`（`oa.service.v1`，工作流引擎）
+- `internal/data/`：ent 倉庫層。infra 客戶端（`client.NewRedisClient` / `NewEntClient` / `NewDiscovery`）+ 四個 workflow 倉庫 + 三個 internal_message 倉庫。ProviderSet 見 `data/providers/wire_set.go`。
+- `internal/data/ent/schema/`：四張 workflow 表 schema + 三張 internal_message 表 schema（見 §3）。
+- `internal/service/`：四個 gRPC 服務實現——`WorkflowService`（狀態機驅動，見 §4）+ 三個 `InternalMessageService`（含 `InternalMessagePublisher` SSE 推送）。ProviderSet 見 `service/providers/wire_set.go`。
+- 無 HTTP 端點、無 openapi 生成（core 為 gRPC-only）。
+
+### 2.2 admin-service（HTTP 边端，admin 前端轉發）
+
+`backend/app/admin/service/`，`appid = serviceid.AdminService`，consul key `go-wind-oa/admin/service`。
+
+- `internal/server/rest_server.go`：創建 HTTP server，中間件鏈 `logging → auth.Server + authz.Server（白名單匹配）→ entmiddleware.Server()`。**auth 必須在 ent 之前**：`auth.Server` 對非白名單請求注入 `OperatorMetadata`，`entmiddleware.Server` 據此構建 `UserViewer`，`TenantPrivacy` 策略才生效；順序顛倒則 ent 兜底 `SystemViewer`，租戶隔離失效。
+  - 註冊五個 HTTP 服務（`adminV1.Register*HTTPServer`）：
+    - `AuthenticationService`（鑑權轉發，`admin.service.v1.i_authentication.proto`）
+    - `InternalMessageService` / Category / Recipient（站內信轉發）
+    - `WorkflowService`（工作流轉發，`admin.service.v1.i_workflow.proto`）
+  - 白名單：`Login` / `GenerateCaptcha` / `VerifyCaptcha` 經 `rpc.AddWhiteList` 放行（雞生蛋：獲取驗證碼時無 token）。
+- `internal/data/`：data 層持 gRPC 客戶端打 core-service（`NewAuthenticationServiceClient` / `NewInternalMessage*ServiceClient` / `NewWorkflowServiceClient`），經服務發現定位 `CoreService`。infra：`NewRedisClient` / `NewCaptcha` / `NewDiscovery` / `NewClientType` / `NewAuthorizer` / `NewTranslator` + `auth.NewTokenChecker`。ProviderSet 見 `data/providers/wire_set.go`。
+- `internal/service/`：五個轉發層 service（各方法為 HTTP 請求 → gRPC 調 core）。ProviderSet 見 `service/providers/wire_set.go`。
+- `cmd/server/assets/`：`openapi.yaml` 由 `buf.admin.openapi.gen.yaml` 生成，`assets.go` embed 供 swagger UI。
+
+### 2.3 app-service（HTTP 边端，移动端轉發）
+
+`backend/app/app/service/`，`appid = serviceid.AppService`，consul key `go-wind-oa/app/service`。
+
+- `internal/server/rest_server.go`：同 admin 中間件鏈與白名單模式。
+  - 註冊兩個 HTTP 服務（`appV1.Register*HTTPServer`）：
+    - `AuthenticationService`（鑑權轉發）
+    - `WorkflowService`（工作流轉發，4 RPC：SubmitApply / AuditTask / GetMyTasks / GetTask）
+  - 白名單：僅 `OperationAuthenticationServiceLogin`。
+- `internal/data/`：data 層持 `NewAuthenticationServiceClient` + `NewWorkflowServiceClient`（打 core-service）。infra 無 `NewCaptcha` / `NewTranslator`（app 端不用）。ProviderSet 見 `data/providers/wire_set.go`。
+- `internal/service/`：兩個轉發層 service。ProviderSet 見 `service/providers/wire_set.go`。
+- `cmd/server/assets/`：`openapi.yaml` 由 `buf.app.openapi.gen.yaml` 生成。
+
+### 2.4 sse_server.go
+
+`app/app/service/internal/server/sse_server.go` 持 `AuthenticationServiceClient`，其 `WithAuthorizeFunc` 調 `ValidateToken` 驗 SSE 訂閱的 access token（admin-service 無此端點，因 admin 前端走輪詢不走 SSE）。
 
 ---
 
-## 3. 目录结构
+## 3. proto 域分離
 
-```
-go-wind-oa/
-├── backend/
-│   ├── api/
-│   │   ├── oa/v1/
-│   │   │   ├── workflow.proto        # 服务 + 全部消息（含 http 注解，单层）
-│   │   │   └── oa_error.proto        # OaErrorReason → protoc-gen-go-errors
-│   │   ├── buf.gen.yaml              # managed go_package: oa/v1 → oav1
-│   │   └── buf.yaml
-│   │   └── gen/go/oa/v1/             # buf 生成产物（不入库）
-│   └── app/oa/service/
-│       ├── Makefile                  # 仅 include 自带目标（ent/api/build/run）
-│       ├── cmd/server/
-│       │   ├── main.go               # kratos-bootstrap 应用入口
-│       │   └── wire.go               # wire 注入器（wireinject tag）
-│       └── internal/
-│           ├── data/                 # ent 仓库层
-│           │   ├── client/ent_client.go          # NewEntClient（复用 cms core 构造）
-│           │   ├── discovery.go                   # NewDiscovery（服务发现）
-│           │   ├── notification_client.go        # cms internal_message gRPC 客户端
-│           │   ├── viewer.go                     # ViewerUserIDFromContext
-│           │   ├── workflow_definition_repo.go
-│           │   ├── workflow_instance_repo.go
-│           │   ├── workflow_task_repo.go
-│           │   ├── workflow_log_repo.go
-│           │   ├── ent/schema/                   # 四张表 schema（见下节）
-│           │   │   ├── workflow_definition.go
-│           │   │   ├── workflow_instance.go
-│           │   │   ├── workflow_task.go
-│           │   │   └── workflow_log.go
-│           │   └── providers/wire_set.go         # data ProviderSet（wireinject）
-│           ├── server/
-│           │   ├── rest_server.go                # 中间件链 + Register*HTTPServer
-│           │   └── providers/wire_set.go         # server ProviderSet
-│           └── service/
-│               ├── workflow_service.go           # 状态机驱动（见 §5）
-│               └── providers/wire_set.go         # service ProviderSet
-└── docs/oa-workflow-design.md        # 本文档
-```
+`backend/api/protos/` 下六個保留域：
+
+| 域 | 包名 | 內容 | 性質 |
+|---|---|---|---|
+| `oa/service/v1/` | `oa.service.v1` | `workflow.proto` + `oa_error.proto` | core 純 gRPC，**無 http annotation** |
+| `admin/service/v1/` | `admin.service.v1` | `i_authentication.proto` + `i_internal_message*.proto` + `i_workflow.proto` + `admin_doc.proto` + `admin_error.proto` | HTTP wrapper，引用 oa.service.v1 / internal_message.service.v1 / authentication.service.v1 消息類型 |
+| `app/service/v1/` | `app.service.v1` | `i_authentication.proto` + `i_workflow.proto` + `app_doc.proto` + `app_error.proto` | HTTP wrapper，引用 oa.service.v1 / authentication.service.v1 消息類型 |
+| `internal_message/service/v1/` | `internal_message.service.v1` | 4 檔（cms 原樣保留） | 站內信消息類型，core 註冊 gRPC |
+| `authentication/service/v1/` | `authentication.service.v1` | 9 檔（cms 原樣保留） | 鑑權消息類型，admin/app wrapper 引用 |
+| `identity/service/v1/` | `identity.service.v1` | `user.proto` + `types.proto`（cms 原樣保留） | authentication 的傳遞閉包依賴 |
+
+**核心分離原則**：core 的 `oa/service/v1/workflow.proto` 已剝離所有 `google.api.http` annotation，為純 gRPC。HTTP 路由注解定義在 `admin/service/v1/i_workflow.proto` 與 `app/service/v1/i_workflow.proto` wrapper proto，這兩者 `import "oa/service/v1/workflow.proto"` 僅引用消息類型，自身定義帶 http annotation 的 service。鑑權同理：`i_authentication.proto` 引用 cms `authentication.service.v1` 消息類型。
 
 ---
 
 ## 4. 数据模型（Ent Schema）
 
-四张表，均通过 `mixin.TenantID[uint32]{}` 注入 `tenant_id` 列并附加 `rule.TenantPrivacy` 策略。该策略由 `entmiddleware.Server` 注入的 `UserViewer.TenantID()` 驱动，自动在所有查询/写入上叠加 `tenant_id = viewer.tenant` 谓词 —— **代码层无需手写 tenant 过滤**，仓库层的 `Where(...)` 仅叠加业务谓词。
+四張 workflow 表，均通过 `mixin.TenantID[uint32]{}` 注入 `tenant_id` 列并附加 `rule.TenantPrivacy` 策略。该策略由 `entmiddleware.Server` 注入的 `UserViewer.TenantID()` 驱动，自动在所有查询/写入上叠加 `tenant_id = viewer.tenant` 谓词 —— **代码层无需手写 tenant 过滤**。
 
 | 表 | 说明 | 关键字段 | Mixin 组成 |
 |---|---|---|---|
@@ -99,17 +101,19 @@ go-wind-oa/
 | `WorkflowTask` | 节点上对指派审批人产生的待办 | `node_index`, `assignee_user_id`, `task_status` | AutoIncrementId / TimeAt / OperatorID / TenantID |
 | `WorkflowLog` | append-only 审计日志 | `node_index`, `log_action`, `comment` | 同上 |
 
-**`field.Any` 的选择**：`node_config` / `form_schema` / `form_data` 结构动态，采用 ent 官方推荐的 `field.Any(name)`（`schema/field/field.go:114`），DB 以 JSON 落盘、Go 侧 `any`。仓库层在 `Create` 时 `json.Unmarshal` 文本→any、在定向查询时 `json.Marshal` any→文本，显式转换，不依赖 mapper。状态机推进时**不读 `form_data`**，只读节点配置 —— 故 `WorkflowInstance.GetState` 经 mapper 取 status/指针，`form_data` 由 mapper 跳过。
+此外 core-service `ent/schema/` 还含三張 cms 保留的 internal_message schema（`internal_message` / `internal_message_category` / `internal_message_recipient`），供 `InternalMessageService` 落庫。
 
-**外键与级联**：`Definition 1—N Instance`、`Instance 1—N Task`、`Instance 1—N Log` 均以 `edge.To(...).Required().Annotations(entsql.Annotation{OnDelete: entsql.Cascade})` 声明，父行删除时级联清子行，避免孤儿。
+**`field.Any` 的选择**：`node_config` / `form_schema` / `form_data` 结构动态，采用 ent `field.Any(name)`，DB 以 JSON 落盘、Go 侧 `any`。仓库层在 `Create` 时 `json.Unmarshal` 文本→any、在定向查询时 `json.Marshal` any→文本，显式转换，不依赖 mapper。
 
-**索引**：每张表都有 `idx_*_tenant`（按 tenant 检索）；`WorkflowDefinition` 另有 `(tenant_id, code, version)` 唯一索引防止同租户重复定义；`WorkflowTask` / `WorkflowLog` / `WorkflowInstance` 各有按 `(tenant_id, assignee_user_id, task_status)` / `(tenant_id, created_by)` 的检索索引，对应“待办 / 已办 / 我的申请”三类视图。
+**外键与级联**：`Definition 1—N Instance`、`Instance 1—N Task`、`Instance 1—N Log` 均以 `edge.To(...).Required().Annotations(entsql.Annotation{OnDelete: entsql.DeleteCascade})` 声明，父行删除时级联清子行。
+
+**索引**：每张表都有 `idx_*_tenant`；`WorkflowDefinition` 另有 `(tenant_id, code, version)` 唯一索引；`WorkflowTask` / `WorkflowLog` / `WorkflowInstance` 各有按 `(tenant_id, assignee_user_id, task_status)` / `(tenant_id, created_by)` 的检索索引，对应待办/已办/我的申请三类视图。
 
 ---
 
-## 5. 状态机与服务层（`workflow_service.go`）
+## 5. 状态机与服务层（core `workflow_service.go`）
 
-`WorkflowService` 实现 kratos 生成的 `WorkflowServiceHTTPServer`，注入四个仓库 + cms `internal_message` gRPC 客户端。状态机为**线性、单实例单活跃任务**模型：
+`WorkflowService` 实现 kratos 生成的 `WorkflowServiceServer`（gRPC，`oa.service.v1`），注入四个仓库 + `*InternalMessageService`（同進程直接調用，非跨進程 gRPC 客戶端）。状态机为**线性、单实例单活跃任务**模型：
 
 ```
 SubmitApply ──> Instance(PENDING, idx=0) + Task(node=0, assignee=A0, PENDING) + Log(SUBMIT) + notify(A0)
@@ -126,58 +130,70 @@ AuditTask(FORWARD) → Task.assignee ← forwardTo（状态保持 PENDING，idx 
 ```
 
 **关键不变量与校验**：
-- 任务关闭与实例状态推进在 service 层成对发生（`handleApprove`/`handleReject` 同时调 `taskRepo.UpdateStatus(taskID,...)` 与 `instanceRepo.UpdateStatus(instanceID,...)`；`handleForward` 仅 `taskRepo.UpdateAssignee(taskID,...)`）。
+- 任务关闭与实例状态推进在 service 层成对发生。
 - `GetState` 直读 entity 的 status/指针，绕过 mapper，避免 `field.Any` 的不确定指针行为影响状态判断。
-- `current_node_index` 仅在 `instance_status==PENDING` 时有意义；终结态（APPROVED/REJECTED）写 `nil` 清空。
-- `callerFromContext` 从 viewer context 取 `(tenantID, userID)`，二者任一为 0 即 fail-closed（`ErrorBadRequest("missing viewer context")`）。
-- `AuditTask` 强校验 `task.assignee == caller` 且 `task.PENDING`，否则 `ErrorForbidden("not your pending task")` —— 防止越权审批他人任务。
-- 申请表单数据 `form_data` 仅在 `SubmitApply` 时透传落盘，**后续审批流程不读不写**，故其结构对引擎透明。
+- `current_node_index` 仅在 `instance_status==PENDING` 时有意义；终结态写 `nil` 清空。
+- `callerFromContext` 从 viewer context 取 `(tenantID, userID)`，二者任一为 0 即 fail-closed。
+- `AuditTask` 强校验 `task.assignee == caller` 且 `task.PENDING`，否则 `ErrorForbidden`。
+- 申请表单数据 `form_data` 仅在 `SubmitApply` 时透传落盘，后续审批流程不读不写。
 
-**异步通知**：`notifyAsync` 用 `context.WithoutCancel(ctx)` + 5s 超时 + `recover`，fire-and-forget 调用 `internalMessageV1.SendMessage`（`Type=NOTIFICATION`、`TargetUserIds=[recipient]`）。经 cms core 落 `internal_message_recipient` 收件箱行，并由 cms admin 网关的 SSE publisher 推送给在线客户端。通知失败不回滚状态机 —— 审批结果已持久化，通知仅为辅助提示。
-
-**已办/我的申请视图的字段填充差异**：
-- `ListType_PENDING`：`WorkflowTask` 行 → `MyTaskItem{task_id, instance_id, status_label, occurred_at=task.created_at}`。
-- `ListType_DONE`：`WorkflowLog` 行（仅 APPROVE/REJECT/FORWARD，排除 SUBMIT）→ `MyTaskItem{log_id, instance_id, action_label, occurred_at=log.created_at}`。
-- `ListType_SUBMITTED`：`WorkflowInstance` 行 → `MyTaskItem{instance_id, title, status_label, occurred_at=instance.created_at}`。
+**异步通知**：`notifyAsync` 用 `context.WithoutCancel(ctx)` + 5s 超时 + `recover`，fire-and-forget 調用同進程 `InternalMessageService` 的 `SendMessage`（`Type=NOTIFICATION`、`RecipientUserId`/`TargetUserIds` 指向 recipient）。通知落 `internal_message_recipient` 表，並由 `InternalMessagePublisher` SSE 推送給在線客戶端。通知失败不回滚状态机。
 
 ---
 
 ## 6. 代码生成
 
+每個 service 目錄的 `Makefile` 為 `include ../../../app.mk`，`SERVICE_NAME` 決定 buf openapi 模板選擇（core 跳過）。
+
 | 目标 | 命令 | 产物 |
 |---|---|---|
-| ent ORM | `make ent`（`app/oa/service/Makefile`）| `internal/data/ent/` 下全套生成代码 |
-| proto 桩 | `make api`（`cd ../../../api && buf generate`）| `api/gen/go/oa/v1/*.pb.go`、`*_http.pb.go`、`*_grpc.pb.go`、`oa_error_errors.pb.go`、`*.pb.validate.go` |
-| wire DI | `make wire`（`go run github.com/google/wire/cmd/wire ./cmd/server`）| `cmd/server/wire_gen.go`（提供 `main.go` 引用的 `initApp`） |
+| ent ORM | `make ent`（各 service）| `internal/data/ent/` 下全套生成代码 |
+| proto 桩（Go）| `make api`（`cd ../../../api && buf generate`）| `api/gen/go/{oa,internal_message,authentication,identity,admin,app}/service/v1/*.pb.go` + `*_grpc.pb.go` + `*_errors.pb.go` + `*.pb.validate.go` |
+| openapi v3 | `make openapi`（admin/app，core 跳過）| `app/{admin,app}/service/cmd/server/assets/openapi.yaml` |
+| wire DI | `make wire`（各 service）| `cmd/server/wire_gen.go` |
 
-`buf.gen.yaml` 与 cms 同构，唯一差异是新增 `oa/v1` 路径的 managed `go_package` 覆盖，指向 `go-wind-oa/api/gen/go/oa/v1;oav1`。源 proto 不写 `go_package` 选项，由 managed 模式注入 —— 与 cms 各 `*_service` 路径处理一致。`buf.yaml` 同样与 cms 同构（`modules.path: protos`、相同的 `deps` 列表与 `disable` 块），proto 源码落 `api/protos/oa/v1/`，对齐 cms 的 `api/protos/<domain>/service/v1/` 布局；首次拉取远程 proto 依赖须执行 `buf dep update`（生成 `buf.lock`）。
+### 6.1 buf 模板
 
-`ent` 目标的五个 feature 标志（`privacy` / `entql` / `sql/modifier` / `sql/upsert` / `sql/lock`）与 cms 完全相同。**`privacy` 不可省略** —— 它是 `TenantID` mixin 附着的 `rule.TenantPrivacy` 策略生效的前提，省略后 `tenant_id` 列仍存在但无行级隔离，等于退化为软隔离。
+`backend/api/` 下五個 buf 模板：
 
-`wire` 目标与 `go-wind-cms/backend/app.mk` 的同名目标同构。生成的 `wire_gen.go` 具现化完整依赖图：ent 客户端 → 四个仓库 + 两个 cms gRPC 客户端（`internal_message` 定位 `core-service`、`authentication` 定位 `admin-service`，均经服务发现）→ `WorkflowService` + `AuthenticationService` → `http.Server`。依赖图能成功解析本身即是对所有构造函数签名与 provider set 一致性的强校验。`wire.go` 携带 `//go:build wireinject` 标签，正常构建时由 `wire_gen.go` 提供实体；`wire_gen.go` 不入库则 `main.go` 的 `initApp` 无定义，构建失败。
-
-### 6.1 前端客户端生成链（2026-08-17 新增）
-
-OA 后端除了上述 Go 桩/wire 生成，还为两套前端各提供一条生成链，均经 buf 模板驱动，源 proto 同为 `api/protos/oa/v1/`：
-
-| 目标 | 模板 | 命令 | 产物 |
+| 模板 | 生成器 | inputs | out |
 |---|---|---|---|
-| Admin TS 客户端 | `buf.vue-element.oa.typescript.gen.yaml` | `cd backend/api && buf generate --template buf.vue-element.oa.typescript.gen.yaml` | `frontend/admin/src/api/generated/oa/v1/index.ts`（含 `ApiClient.workflowService` 与 `ApiClient.authenticationService`，分别供 `src/api/composables/oa.ts` 与 `auth.ts` 封装为 Vue Query hooks） |
-| Mobile OpenAPI v3 文档 | `buf.oa.openapi.gen.yaml` | `cd backend/app/oa/service && make openapi` | `backend/app/oa/service/cmd/server/assets/openapi.yaml`（供 `frontend/mobile` 的 swagger_parser 消费，生成 Dart 客户端） |
+| `buf.gen.yaml` | protoc-gen-go*（Go 桩）| 6 個保留域（`inputs.paths` 過濾）| `api/gen/go/`（per-domain `go_package` override 全指 `go-wind-oa/api/gen/go/...`）|
+| `buf.admin.openapi.gen.yaml` | protoc-gen-openapi | `protos/admin/service/v1` | `app/admin/service/cmd/server/assets/` |
+| `buf.app.openapi.gen.yaml` | protoc-gen-openapi | `protos/app/service/v1` | `app/app/service/cmd/server/assets/` |
+| `buf.admin.typescript.gen.yaml` | protoc-gen-typescript-http | `protos/admin/service/v1` | `frontend/admin/src/api/generated/admin/service/v1/` |
+| `buf.flutter.oa.dart.gen.yaml` | protoc-gen-dart-http | `protos/app/service/v1` | `frontend/mobile/lib/generated/api/app/service/v1/` |
 
-两条链分别对齐 `go-wind-admin` 与 `go-wind-cms` 的同名模板，差异仅在 `inputs`/`out` 指向 OA 自有 proto/产物路径。前端侧的代码归属、基座拷贝决策与四功能范围见 `docs/oa-mobile-design.md`（mobile）与本仓 `frontend/admin/` 的实现（admin）。
+`buf.yaml`（v2，`modules.path: protos`）deps 含 googleapis / kratos / gnostic / pagination / protoc-gen-validate / redact 六個 remote。首次拉取須 `buf dep update` 生成 `buf.lock`。
 
-> 注：mobile 的 swagger_parser 执行依赖 Flutter SDK，当前开发机未安装；admin 的 TS 客户端已在仓内验证生成成功。
+### 6.2 ent feature 标志
+
+`make ent` 的五個 feature（`privacy` / `entql` / `sql/modifier` / `sql/upsert` / `sql/lock`）。**`privacy` 不可省略** —— 它是 `TenantID` mixin 附着的 `rule.TenantPrivacy` 策略生效的前提。
+
+### 6.3 wire
+
+`wire_gen.go` 具現化依賴圖：server ProviderSet + service ProviderSet + data ProviderSet + `newApp`。`wire.go` 攜帶 `//go:build wireinject` 標籤，正常構建時由 `wire_gen.go` 提供實體。
 
 ---
 
-## 7. 已知边界与后续工作
+## 7. 前端生成链
 
-1. **节点指派仅支持指定用户**。`resolveApprover` 拒绝非 `USER` 类型。扩展为角色/部门主管指派需：(a) `node_config` 增 `approver_role` / `approver_dept` 字段；(b) service 层调 cms `identity` 服务解析具体用户ID；(c) 处理“多候选审批人”时的任务派生策略（会签或选一）。
+### 7.1 Admin TS 客户端
+
+`buf.admin.typescript.gen.yaml` 生成 `frontend/admin/src/api/generated/admin/service/v1/index.ts`，含 `ApiClient.workflowService` / `authenticationService` / `internalMessageService` 等。Composables（`src/api/composables/{oa,auth}.ts`）封裝為 Vue Query hooks。類型名帶包前綴（`oaservicev1_*` / `authenticationservicev1_*`）。
+
+### 7.2 Mobile Dart 客户端
+
+`buf.flutter.oa.dart.gen.yaml` 生成 `frontend/mobile/lib/generated/api/app/service/v1/index.dart`，含 `ApiClient.workflowService` / `authenticationService`。类型名带包前缀（`OaServiceV1*`）。枚举成员为小写（`pending` / `submitted` / `approve` / `reject` / `forward`）。
+
+> 注：mobile 的 Dart 客户端由 buf 模板直接生成，无 swagger_parser 中间层。移动端架构细节见 `docs/oa-mobile-design.md`。
+
+---
+
+## 8. 已知边界与后续工作
+
+1. **节点指派仅支持指定用户**。`resolveApprover` 拒绝非 `USER` 类型。扩展为角色/部门主管指派需：(a) `node_config` 增 `approver_role` / `approver_dept` 字段；(b) service 层調 `identity` 服務解析具体用户ID。
 2. **定义启用/禁用接口未提供**。`CreateWorkflowDefinition` 一律落 `DRAFT`，`SubmitApply` 校验 `ENABLED`。需补 `UpdateWorkflowDefinition`（带 `update_mask` 限定 `definition_status`）或专用启用接口。
-3. **无定时任务 / 超时处理**。长期 PENDING 任务不会自动催办或超时终结，需接 cms `task` 模块的定时调度。
-4. **无会签 / 并行 / 回退**。线性状态机的硬约束；扩展需重设计 `current_node_index` 为节点集合，并改造 `WorkflowTask` 的“一实例一活跃任务”不变量。
-5. **通知仅文本**。`notifyAsync` 的 title/content 为固定文案；如需携带申请详情链接，需扩 `SendMessageRequest` 或前端按 `instance_id` 自取。
-6. **未接入 cms 审计日志**（`audit` 模块）。OA 的所有写操作目前只落 `WorkflowLog`，未额外写 cms `operation_audit_log`。如需统一审计，可在 service 层按 cms admin 网关的 `applogging` 模式接 `OperationAuditLogServiceClient`。
-
-> 注：`make wire` 目标与 `wire_gen.go` 生成流程已在本轮接入（见 §6），不再列入待办。
+3. **无定时任务 / 超时处理**。长期 PENDING 任务不会自动催办或超时终结。
+4. **无会签 / 并行 / 回退**。线性状态机的硬约束。
+5. **通知仅文本**。`notifyAsync` 的 title/content 为固定文案。
