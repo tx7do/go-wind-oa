@@ -1,8 +1,9 @@
 version: v2
 
-# 与 go-wind-cms/backend/api/buf.yaml 完全同构（含 modules.path=protos），
-# 仅新增 `oa/v1` 一组 proto。deps 一致，提供 google.api / errors /
-# pagination / validate 等 remote proto 依赖。
+# 與 go-wind-cms/backend/api/buf.yaml 同構（modules.path=protos）。
+# deps 提供google.api / errors / pagination / validate / redact 等 remote proto 依賴。
+# OA 保留的 proto 域見 api/buf.gen.yaml 的 inputs.paths（oa/internal_message/
+# authentication/identity/admin/app 各 service/v1）。
 modules:
   - path: protos
     lint:

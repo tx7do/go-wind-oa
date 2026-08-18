@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package app.service.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination/v1/pagination.proto";
+
+import "oa/service/v1/workflow.proto";
+
+// OA 工作流服务（app HTTP 边端，供移动端调用）。
+//
+// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
+// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
+// appV1.WorkflowServiceHTTPServer，app-service 注册并转发到 core gRPC。
+//
+// 路径前缀 /app/v1/oa/workflow/，与 cms app 的 /app/v1/ 同构。
+service WorkflowService {
+  // 提交申请：发起一个工作流实例。
+  rpc SubmitApply(oa.service.v1.SubmitApplyRequest) returns (oa.service.v1.SubmitApplyResponse) {
+    option (google.api.http) = {
+      post: "/app/v1/oa/workflow/apply"
+      body: "*"
+    };
+  }
+
+  // 审批/驳回/转办当前待办任务。
+  rpc AuditTask(oa.service.v1.AuditTaskRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/app/v1/oa/workflow/tasks/{task_id}/audit"
+      body: "*"
+    };
+  }
+
+  // 获取当前用户的待办 / 已办 / 我的申请列表。
+  rpc GetMyTasks(oa.service.v1.GetMyTasksRequest) returns (oa.service.v1.GetMyTasksResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/workflow/my-tasks"
+    };
+  }
+
+  // 获取单个待办任务详情。
+  rpc GetTask(oa.service.v1.GetTaskRequest) returns (oa.service.v1.GetTaskResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/workflow/tasks/{task_id}"
+    };
+  }
+}

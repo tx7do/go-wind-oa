@@ -1,0 +1,44 @@
+# OA app OpenAPI v3 文档生成模板。
+#
+# 與 go-wind-cms/backend/api/buf.app.openapi.gen.yaml 同構。
+# inputs 覆蓋 app/service/v1（鑑權 + 工作流的 app HTTP 端點包裝）。
+# out 指向 OA app-service 的 assets 目錄，openapi.yaml 由 assets.go embed。
+#
+# 运行：cd backend/app/app/service && make openapi
+
+version: v2
+
+clean: false
+
+managed:
+  enabled: true
+
+  disable:
+    - module: buf.build/googleapis/googleapis
+    - module: 'buf.build/envoyproxy/protoc-gen-validate'
+    - module: buf.build/kratos/apis
+    - module: buf.build/gnostic/gnostic
+    - module: buf.build/gogo/protobuf
+    - module: buf.build/tx7do/pagination
+    - module: buf.build/go-wind/redact
+
+  override:
+    - file_option: go_package_prefix
+      value: go-wind-oa/api/gen/go
+
+inputs:
+  - directory: protos
+    paths:
+      - protos/app/service/v1
+
+plugins:
+  # generate openapi v3 yaml doc
+  - local: protoc-gen-openapi
+    out: ../app/app/service/cmd/server/assets
+    opt:
+      - naming=json
+      - depth=2
+      - default_response=false
+      - enum_type=string
+      - output_mode=merged
+      - fq_schema_naming=false

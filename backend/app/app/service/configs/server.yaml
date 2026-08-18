@@ -1,0 +1,46 @@
+server:
+  rest:
+    addr: "0.0.0.0:6700"
+    timeout: 10s
+    enable_swagger: false
+    cors:
+      headers:
+        - "X-Requested-With"
+        - "X-Request-ID"
+        - "Content-Type"
+        - "Authorization"
+      methods:
+        - "GET"
+        - "POST"
+        - "PUT"
+        - "DELETE"
+        - "HEAD"
+        - "OPTIONS"
+      origins:
+        - "http://localhost:5001"
+        - "http://localhost:5011"
+        - "http://localhost:5021"
+        - "http://localhost:10086"
+        - "https://api.cms.gowind.cloud"
+    middleware:
+      auth:
+        method: "HS256"
+        key: "${jwt_signing_key:dev_only_change_me_in_prod}"
+
+  sse:
+    addr: ":6701"
+    codec: "json"
+    path: "/events"
+    auto_stream: true
+    auto_reply: false
+
+  grpc:
+    addr: "0.0.0.0:0"
+    timeout: 10s
+    middleware:
+      enable_logging: true
+      enable_recovery: true
+      enable_tracing: true
+      enable_validate: true
+      enable_circuit_breaker: true
+      enable_metadata: true

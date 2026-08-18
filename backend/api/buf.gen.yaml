@@ -1,47 +1,83 @@
-# OA 模块的 buf 代码生成配置。
+# OA 模块的 buf Go 桩代码生成配置。
 #
-# 与 go-wind-cms/backend/api/buf.gen.yaml 同构：
-#   - managed 模式按路径注入 go_package（源 proto 不写 go_package 选项）；
-#   - 插件栈：protoc-gen-go / -go-grpc / -go-http / -go-errors / -validate。
+# 與 go-wind-cms/backend/api/buf.gen.yaml 同構，差異：
+#   - go_package_prefix 與所有 per-directory override 均指向 go-wind-oa/api/gen/go；
+#   - inputs.paths 過濾為 OA 保留的 6 個 proto 域，避免 buf 對已刪域報錯。
 #
-# 新增 oa/v1 路径的 go_package 覆盖，使生成代码落到
-# go-wind-oa/api/gen/go/oa/v1（包名 oav1）。
+# 保留域（對應 api/protos/ 下的實際 proto）：
+#   oa/service/v1, internal_message/service/v1, authentication/service/v1,
+#   identity/service/v1, admin/service/v1, app/service/v1
+#
+# 插件栈：protoc-gen-go / -go-grpc / -go-http / -go-errors / -validate。
 version: v2
 clean: true
 managed:
   enabled: true
-  # disable managed 模式对所有 remote 依赖模块生效 —— 与 go-wind-cms 同构。
+  # disable managed 模式对所有 remote 依赖模块生效 —— 與 cms 同構。
   # 否则 managed 会改写 google.api / pagination / validate 等远程 proto 的
   # go_package，导致下游 import 路径错乱、编译失败。
   disable:
     - module: buf.build/googleapis/googleapis
     - module: 'buf.build/envoyproxy/protoc-gen-validate'
     - module: 'buf.build/kratos/apis'
-    - module: 'buf.build/gnostic/gnostic'
-    - module: 'buf.build/gogo/protobuf'
-    - module: 'buf.build/tx7do/pagination'
-    - module: 'buf.build/go-wind/redact'
+    - module: buf.build/gnostic/gnostic
+    - module: buf.build/gogo/protobuf
+    - module: buf.build/tx7do/pagination
+    - module: buf.build/go-wind/redact
   override:
     - file_option: go_package_prefix
       value: go-wind-oa/api/gen/go
+    # per-directory go_package：value 第一部分是生成代碼的包路徑，第二部分是 go 包名。
+    # 5 個保留域全部指向 go-wind-oa 倉內（這些 proto 已從 cms 拷到 OA 倉，生成樁也該在 OA 倉）。
     - file_option: go_package
-      # 模块内路径为 `oa/v1/...`（见 buf.yaml modules.path=protos），与 cms
-      # `<domain>/service/v1` 同构，覆盖匹配键为 `oa/v1`。
-      path: oa/v1
-      value: go-wind-oa/api/gen/go/oa/v1;oav1
+      path: oa/service/v1
+      value: go-wind-oa/api/gen/go/oa/service/v1;oapb
+    - file_option: go_package
+      path: internal_message/service/v1
+      value: go-wind-oa/api/gen/go/internal_message/service/v1;internalmessagepb
+    - file_option: go_package
+      path: authentication/service/v1
+      value: go-wind-oa/api/gen/go/authentication/service/v1;authenticationpb
+    - file_option: go_package
+      path: identity/service/v1
+      value: go-wind-oa/api/gen/go/identity/service/v1;identitypb
+    - file_option: go_package
+      path: admin/service/v1
+      value: go-wind-oa/api/gen/go/admin/service/v1;adminpb
+    - file_option: go_package
+      path: app/service/v1
+      value: go-wind-oa/api/gen/go/app/service/v1;apppb
+
+inputs:
+  - directory: protos
+    paths:
+      - protos/oa/service/v1
+      - protos/internal_message/service/v1
+      - protos/authentication/service/v1
+      - protos/identity/service/v1
+      - protos/admin/service/v1
+      - protos/app/service/v1
+
 plugins:
+  # generate go code
   - local: protoc-gen-go
     out: gen/go
     opt: paths=source_relative
+  # generate grpc service code
   - local: protoc-gen-go-grpc
     out: gen/go
     opt: [paths=source_relative]
+  # generate rest service code
   - local: protoc-gen-go-http
     out: gen/go
     opt: [paths=source_relative]
+  # generate kratos errors code
   - local: protoc-gen-go-errors
     out: gen/go
     opt: [paths=source_relative]
+  # generate message validator code
   - local: protoc-gen-validate
     out: gen/go
-    opt: [paths=source_relative, lang=go]
+    opt:
+      - paths=source_relative
+      - lang=go
