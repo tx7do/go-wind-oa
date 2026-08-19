@@ -9,6 +9,99 @@ import (
 )
 
 var (
+	// OaAttendanceFenceColumns holds the columns for the "oa_attendance_fence" table.
+	OaAttendanceFenceColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "围栏名称"},
+		{Name: "longitude", Type: field.TypeFloat64, Nullable: true, Comment: "中心经度"},
+		{Name: "latitude", Type: field.TypeFloat64, Nullable: true, Comment: "中心纬度"},
+		{Name: "radius", Type: field.TypeFloat64, Nullable: true, Comment: "围栏半径(米)"},
+	}
+	// OaAttendanceFenceTable holds the schema information for the "oa_attendance_fence" table.
+	OaAttendanceFenceTable = &schema.Table{
+		Name:       "oa_attendance_fence",
+		Comment:    "OA考勤地理围栏表",
+		Columns:    OaAttendanceFenceColumns,
+		PrimaryKey: []*schema.Column{OaAttendanceFenceColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_att_fence_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaAttendanceFenceColumns[7]},
+			},
+		},
+	}
+	// OaAttendanceRecordColumns holds the columns for the "oa_attendance_record" table.
+	OaAttendanceRecordColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
+		{Name: "check_result", Type: field.TypeEnum, Nullable: true, Comment: "打卡判定结果", Enums: []string{"IN_FENCE", "IN_WIFI", "DENIED"}, Default: "DENIED"},
+		{Name: "longitude", Type: field.TypeFloat64, Nullable: true, Comment: "提交经度"},
+		{Name: "latitude", Type: field.TypeFloat64, Nullable: true, Comment: "提交纬度"},
+		{Name: "bssid", Type: field.TypeString, Nullable: true, Comment: "提交BSSID"},
+	}
+	// OaAttendanceRecordTable holds the schema information for the "oa_attendance_record" table.
+	OaAttendanceRecordTable = &schema.Table{
+		Name:       "oa_attendance_record",
+		Comment:    "OA考勤打卡记录表",
+		Columns:    OaAttendanceRecordColumns,
+		PrimaryKey: []*schema.Column{OaAttendanceRecordColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_att_rec_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaAttendanceRecordColumns[7]},
+			},
+			{
+				Name:    "idx_oa_att_rec_tenant_user",
+				Unique:  false,
+				Columns: []*schema.Column{OaAttendanceRecordColumns[7], OaAttendanceRecordColumns[4]},
+			},
+		},
+	}
+	// OaAttendanceWifiColumns holds the columns for the "oa_attendance_wifi" table.
+	OaAttendanceWifiColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
+		{Name: "ssid", Type: field.TypeString, Nullable: true, Comment: "允许的SSID"},
+		{Name: "bssid", Type: field.TypeString, Nullable: true, Comment: "允许的BSSID"},
+	}
+	// OaAttendanceWifiTable holds the schema information for the "oa_attendance_wifi" table.
+	OaAttendanceWifiTable = &schema.Table{
+		Name:       "oa_attendance_wifi",
+		Comment:    "OA考勤Wi-Fi指纹白名单表",
+		Columns:    OaAttendanceWifiColumns,
+		PrimaryKey: []*schema.Column{OaAttendanceWifiColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_att_wifi_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaAttendanceWifiColumns[7]},
+			},
+		},
+	}
 	// InternalMessagesColumns holds the columns for the "internal_messages" table.
 	InternalMessagesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -331,6 +424,9 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		OaAttendanceFenceTable,
+		OaAttendanceRecordTable,
+		OaAttendanceWifiTable,
 		InternalMessagesTable,
 		InternalMessageCategoriesTable,
 		InternalMessageRecipientsTable,
@@ -342,6 +438,21 @@ var (
 )
 
 func init() {
+	OaAttendanceFenceTable.Annotation = &entsql.Annotation{
+		Table:     "oa_attendance_fence",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaAttendanceRecordTable.Annotation = &entsql.Annotation{
+		Table:     "oa_attendance_record",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaAttendanceWifiTable.Annotation = &entsql.Annotation{
+		Table:     "oa_attendance_wifi",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
 	InternalMessagesTable.Annotation = &entsql.Annotation{
 		Table:     "internal_messages",
 		Charset:   "utf8mb4",

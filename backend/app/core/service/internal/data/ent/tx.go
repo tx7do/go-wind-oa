@@ -12,6 +12,12 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// AttendanceFence is the client for interacting with the AttendanceFence builders.
+	AttendanceFence *AttendanceFenceClient
+	// AttendanceRecord is the client for interacting with the AttendanceRecord builders.
+	AttendanceRecord *AttendanceRecordClient
+	// AttendanceWifi is the client for interacting with the AttendanceWifi builders.
+	AttendanceWifi *AttendanceWifiClient
 	// InternalMessage is the client for interacting with the InternalMessage builders.
 	InternalMessage *InternalMessageClient
 	// InternalMessageCategory is the client for interacting with the InternalMessageCategory builders.
@@ -157,6 +163,9 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.AttendanceFence = NewAttendanceFenceClient(tx.config)
+	tx.AttendanceRecord = NewAttendanceRecordClient(tx.config)
+	tx.AttendanceWifi = NewAttendanceWifiClient(tx.config)
 	tx.InternalMessage = NewInternalMessageClient(tx.config)
 	tx.InternalMessageCategory = NewInternalMessageCategoryClient(tx.config)
 	tx.InternalMessageRecipient = NewInternalMessageRecipientClient(tx.config)
@@ -173,7 +182,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: InternalMessage.QueryXXX(), the query will be executed
+// applies a query, for example: AttendanceFence.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

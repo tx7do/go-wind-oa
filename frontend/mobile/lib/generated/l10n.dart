@@ -1154,11 +1154,81 @@ class S {
     return Intl.message('打卡', name: 'oaAttendanceCheckIn', desc: '', args: []);
   }
 
-  /// `考勤服务未配置，详见 docs/oa-mobile-design.md。`
-  String get oaAttendanceNotConfigured {
+  /// `打卡将校验您的位置与 Wi-Fi 是否在公司围栏白名单内。`
+  String get oaAttendanceHint {
     return Intl.message(
-      '考勤服务未配置，详见 docs/oa-mobile-design.md。',
-      name: 'oaAttendanceNotConfigured',
+      '打卡将校验您的位置与 Wi-Fi 是否在公司围栏白名单内。',
+      name: 'oaAttendanceHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `定位中…`
+  String get oaAttendanceLocating {
+    return Intl.message(
+      '定位中…',
+      name: 'oaAttendanceLocating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `提交中…`
+  String get oaAttendanceSubmitting {
+    return Intl.message(
+      '提交中…',
+      name: 'oaAttendanceSubmitting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `已打卡：位于公司地理围栏内。`
+  String get oaAttendanceResultInFence {
+    return Intl.message(
+      '已打卡：位于公司地理围栏内。',
+      name: 'oaAttendanceResultInFence',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `已打卡：匹配公司 Wi-Fi 白名单。`
+  String get oaAttendanceResultInWifi {
+    return Intl.message(
+      '已打卡：匹配公司 Wi-Fi 白名单。',
+      name: 'oaAttendanceResultInWifi',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `打卡被拒：不在公司围栏或 Wi-Fi 白名单内。`
+  String get oaAttendanceResultDenied {
+    return Intl.message(
+      '打卡被拒：不在公司围栏或 Wi-Fi 白名单内。',
+      name: 'oaAttendanceResultDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `定位权限被拒，打卡需要定位权限。`
+  String get oaAttendancePermissionDenied {
+    return Intl.message(
+      '定位权限被拒，打卡需要定位权限。',
+      name: 'oaAttendancePermissionDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `无法获取当前位置，请重试。`
+  String get oaAttendanceLocationUnavailable {
+    return Intl.message(
+      '无法获取当前位置，请重试。',
+      name: 'oaAttendanceLocationUnavailable',
       desc: '',
       args: [],
     );

@@ -26,6 +26,34 @@
       "fieldFormSchema": "表单 Schema(JSON)",
       "submit": "提交",
       "cancel": "取消"
+    },
+    "attendance": {
+      "fenceTitle": "考勤地理围栏",
+      "wifiTitle": "考勤 Wi-Fi 指纹",
+      "fenceColName": "名称",
+      "fenceColLongitude": "经度",
+      "fenceColLatitude": "纬度",
+      "fenceColRadius": "半径(米)",
+      "fenceColCreatedAt": "创建时间",
+      "colOperation": "操作",
+      "wifiColSsid": "SSID",
+      "wifiColBssid": "BSSID",
+      "wifiColCreatedAt": "创建时间",
+      "createFence": "新建围栏",
+      "editFence": "编辑围栏",
+      "createWifi": "新建 Wi-Fi 指纹",
+      "fieldName": "名称",
+      "fieldLongitude": "经度",
+      "fieldLatitude": "纬度",
+      "fieldRadius": "半径(米)",
+      "fieldSsid": "SSID",
+      "fieldBssid": "BSSID",
+      "submit": "提交",
+      "cancel": "取消",
+      "deleteFenceConfirmTitle": "删除围栏",
+      "deleteFenceConfirmContent": "删除后，该围栏不再参与打卡判定。确认删除？",
+      "deleteWifiConfirmTitle": "删除 Wi-Fi 指纹",
+      "deleteWifiConfirmContent": "删除后，该指纹不再参与打卡判定。确认删除？"
     }
   }
 }

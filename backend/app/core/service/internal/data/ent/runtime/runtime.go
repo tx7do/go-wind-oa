@@ -4,6 +4,9 @@ package runtime
 
 import (
 	"context"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancefence"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancewifi"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagerecipient"
@@ -21,6 +24,78 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	attendancefenceMixin := schema.AttendanceFence{}.Mixin()
+	attendancefence.Policy = privacy.NewPolicies(attendancefenceMixin[3], schema.AttendanceFence{})
+	attendancefence.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := attendancefence.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	attendancefenceMixinFields0 := attendancefenceMixin[0].Fields()
+	_ = attendancefenceMixinFields0
+	attendancefenceMixinFields3 := attendancefenceMixin[3].Fields()
+	_ = attendancefenceMixinFields3
+	attendancefenceFields := schema.AttendanceFence{}.Fields()
+	_ = attendancefenceFields
+	// attendancefenceDescTenantID is the schema descriptor for tenant_id field.
+	attendancefenceDescTenantID := attendancefenceMixinFields3[0].Descriptor()
+	// attendancefence.DefaultTenantID holds the default value on creation for the tenant_id field.
+	attendancefence.DefaultTenantID = attendancefenceDescTenantID.Default.(uint32)
+	// attendancefenceDescID is the schema descriptor for id field.
+	attendancefenceDescID := attendancefenceMixinFields0[0].Descriptor()
+	// attendancefence.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	attendancefence.IDValidator = attendancefenceDescID.Validators[0].(func(uint32) error)
+	attendancerecordMixin := schema.AttendanceRecord{}.Mixin()
+	attendancerecord.Policy = privacy.NewPolicies(attendancerecordMixin[3], schema.AttendanceRecord{})
+	attendancerecord.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := attendancerecord.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	attendancerecordMixinFields0 := attendancerecordMixin[0].Fields()
+	_ = attendancerecordMixinFields0
+	attendancerecordMixinFields3 := attendancerecordMixin[3].Fields()
+	_ = attendancerecordMixinFields3
+	attendancerecordFields := schema.AttendanceRecord{}.Fields()
+	_ = attendancerecordFields
+	// attendancerecordDescTenantID is the schema descriptor for tenant_id field.
+	attendancerecordDescTenantID := attendancerecordMixinFields3[0].Descriptor()
+	// attendancerecord.DefaultTenantID holds the default value on creation for the tenant_id field.
+	attendancerecord.DefaultTenantID = attendancerecordDescTenantID.Default.(uint32)
+	// attendancerecordDescID is the schema descriptor for id field.
+	attendancerecordDescID := attendancerecordMixinFields0[0].Descriptor()
+	// attendancerecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	attendancerecord.IDValidator = attendancerecordDescID.Validators[0].(func(uint32) error)
+	attendancewifiMixin := schema.AttendanceWifi{}.Mixin()
+	attendancewifi.Policy = privacy.NewPolicies(attendancewifiMixin[3], schema.AttendanceWifi{})
+	attendancewifi.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := attendancewifi.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	attendancewifiMixinFields0 := attendancewifiMixin[0].Fields()
+	_ = attendancewifiMixinFields0
+	attendancewifiMixinFields3 := attendancewifiMixin[3].Fields()
+	_ = attendancewifiMixinFields3
+	attendancewifiFields := schema.AttendanceWifi{}.Fields()
+	_ = attendancewifiFields
+	// attendancewifiDescTenantID is the schema descriptor for tenant_id field.
+	attendancewifiDescTenantID := attendancewifiMixinFields3[0].Descriptor()
+	// attendancewifi.DefaultTenantID holds the default value on creation for the tenant_id field.
+	attendancewifi.DefaultTenantID = attendancewifiDescTenantID.Default.(uint32)
+	// attendancewifiDescID is the schema descriptor for id field.
+	attendancewifiDescID := attendancewifiMixinFields0[0].Descriptor()
+	// attendancewifi.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	attendancewifi.IDValidator = attendancewifiDescID.Validators[0].(func(uint32) error)
 	internalmessageMixin := schema.InternalMessage{}.Mixin()
 	internalmessage.Policy = privacy.NewPolicies(internalmessageMixin[3], schema.InternalMessage{})
 	internalmessage.Hooks[0] = func(next ent.Mutator) ent.Mutator {

@@ -97,3 +97,16 @@ func NewInternalMessageServiceClient(ctx *bootstrap.Context, r registry.Discover
 
 	return internalMessageV1.NewInternalMessageServiceClient(cli)
 }
+
+// NewAttendanceServiceClient 创建对 OA core-service 考勤服務的 gRPC 客戶端。
+//
+// app-service 的 HTTP 邊端收到移動打卡請求後，經此客戶端轉發到 core-service
+// 的 AttendanceService gRPC 實現。構造方式與 NewWorkflowServiceClient 同構。
+func NewAttendanceServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1.AttendanceServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return oaV1.NewAttendanceServiceClient(cli)
+}

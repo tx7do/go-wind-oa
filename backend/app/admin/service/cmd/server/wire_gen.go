@@ -44,7 +44,9 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	internalMessageRecipientService := service.NewInternalMessageRecipientService(context, internalMessageServiceClient, internalMessageRecipientServiceClient)
 	workflowServiceClient := data.NewWorkflowServiceClient(context, discovery)
 	workflowService := service.NewWorkflowService(context, workflowServiceClient)
-	httpServer := server.NewRestServer(context, v, authenticationService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService, workflowService)
+	attendanceServiceClient := data.NewAttendanceServiceClient(context, discovery)
+	attendanceService := service.NewAttendanceService(context, attendanceServiceClient)
+	httpServer := server.NewRestServer(context, v, authenticationService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService, workflowService, attendanceService)
 	grpcMiddlewares := server.NewGrpcMiddleware(context)
 	grpcServer, err := server.NewGrpcServer(context, grpcMiddlewares)
 	if err != nil {

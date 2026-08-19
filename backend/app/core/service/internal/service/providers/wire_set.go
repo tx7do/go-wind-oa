@@ -24,4 +24,6 @@ var ProviderSet = wire.NewSet(
 	service.NewInternalMessageCategoryService,
 	service.NewInternalMessageRecipientService,
 	service.NewWorkflowService,
+
+	service.NewAttendanceService,
 )

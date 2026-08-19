@@ -125,6 +125,570 @@ export type AdminErrorReason =
   | 'USER_NOT_FOUND'
   // 506
   | 'VARIANT_ALSO_NEGOTIATES';
+// OA 考勤围栏库管理服务（admin HTTP 边端）。
+// 对齐 cms admin/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
+// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
+// adminV1.AttendanceServiceHTTPServer，admin-service 注册并转发到 core gRPC。
+// 仅暴露围栏库与 Wi-Fi 指纹库的 CRUD（管理端），打卡端点不经 admin 边端。
+export interface AttendanceService {
+  // 创建围栏
+  CreateAttendanceFence(
+    request: oaservicev1_CreateAttendanceFenceRequest,
+  ): Promise<oaservicev1_AttendanceFence>;
+  // 查询围栏列表
+  ListAttendanceFence(
+    request: oaservicev1_ListAttendanceFenceRequest,
+  ): Promise<oaservicev1_ListAttendanceFenceResponse>;
+  // 更新围栏
+  UpdateAttendanceFence(
+    request: oaservicev1_UpdateAttendanceFenceRequest,
+  ): Promise<oaservicev1_AttendanceFence>;
+  // 删除围栏
+  DeleteAttendanceFence(
+    request: oaservicev1_DeleteAttendanceFenceRequest,
+  ): Promise<wellKnownEmpty>;
+  // 创建 Wi-Fi 指纹
+  CreateAttendanceWifi(
+    request: oaservicev1_CreateAttendanceWifiRequest,
+  ): Promise<oaservicev1_AttendanceWifi>;
+  // 查询 Wi-Fi 指纹列表
+  ListAttendanceWifi(
+    request: oaservicev1_ListAttendanceWifiRequest,
+  ): Promise<oaservicev1_ListAttendanceWifiResponse>;
+  // 删除 Wi-Fi 指纹
+  DeleteAttendanceWifi(
+    request: oaservicev1_DeleteAttendanceWifiRequest,
+  ): Promise<wellKnownEmpty>;
+}
+
+export function createAttendanceServiceClient(
+  transport: ClientTransport,
+): AttendanceService {
+  return {
+    CreateAttendanceFence(request) {
+      const path = `admin/v1/oa/attendance/fences`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'AttendanceService',
+        method: 'CreateAttendanceFence',
+      }) as Promise<oaservicev1_AttendanceFence>;
+    },
+    ListAttendanceFence(request) {
+      const path = `admin/v1/oa/attendance/fences`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.paging?.page) {
+        queryParams.push(
+          `paging.page=${encodeURIComponent(request.paging.page.toString())}`,
+        );
+      }
+      if (request.paging?.pageSize) {
+        queryParams.push(
+          `paging.pageSize=${encodeURIComponent(request.paging.pageSize.toString())}`,
+        );
+      }
+      if (request.paging?.offset) {
+        queryParams.push(
+          `paging.offset=${encodeURIComponent(request.paging.offset.toString())}`,
+        );
+      }
+      if (request.paging?.limit) {
+        queryParams.push(
+          `paging.limit=${encodeURIComponent(request.paging.limit.toString())}`,
+        );
+      }
+      if (request.paging?.token) {
+        queryParams.push(
+          `paging.token=${encodeURIComponent(request.paging.token.toString())}`,
+        );
+      }
+      if (request.paging?.noPaging) {
+        queryParams.push(
+          `paging.noPaging=${encodeURIComponent(request.paging.noPaging.toString())}`,
+        );
+      }
+      if (request.paging?.query) {
+        queryParams.push(
+          `paging.query=${encodeURIComponent(request.paging.query.toString())}`,
+        );
+      }
+      if (request.paging?.filter) {
+        queryParams.push(
+          `paging.filter=${encodeURIComponent(request.paging.filter.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.type) {
+        queryParams.push(
+          `paging.filterExpr.type=${encodeURIComponent(request.paging.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `paging.filterExpr.conditions.field=${encodeURIComponent(request.paging.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `paging.filterExpr.conditions.op=${encodeURIComponent(request.paging.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `paging.filterExpr.conditions.value=${encodeURIComponent(request.paging.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `paging.filterExpr.conditions.jsonValue=${encodeURIComponent(request.paging.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.values) {
+        request.paging.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `paging.filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.paging?.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `paging.filterExpr.conditions.datePart=${encodeURIComponent(request.paging.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `paging.filterExpr.conditions.jsonPath=${encodeURIComponent(request.paging.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.paging?.orderBy) {
+        queryParams.push(
+          `paging.orderBy=${encodeURIComponent(request.paging.orderBy.toString())}`,
+        );
+      }
+      if (request.paging?.sorting?.field) {
+        queryParams.push(
+          `paging.sorting.field=${encodeURIComponent(request.paging.sorting.field.toString())}`,
+        );
+      }
+      if (request.paging?.sorting?.direction) {
+        queryParams.push(
+          `paging.sorting.direction=${encodeURIComponent(request.paging.sorting.direction.toString())}`,
+        );
+      }
+      if (request.paging?.fieldMask) {
+        queryParams.push(
+          `paging.fieldMask=${encodeURIComponent(request.paging.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'AttendanceService',
+        method: 'ListAttendanceFence',
+      }) as Promise<oaservicev1_ListAttendanceFenceResponse>;
+    },
+    UpdateAttendanceFence(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/attendance/fences/${request.id}`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'PUT', body, {
+        service: 'AttendanceService',
+        method: 'UpdateAttendanceFence',
+      }) as Promise<oaservicev1_AttendanceFence>;
+    },
+    DeleteAttendanceFence(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/attendance/fences/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'AttendanceService',
+        method: 'DeleteAttendanceFence',
+      }) as Promise<wellKnownEmpty>;
+    },
+    CreateAttendanceWifi(request) {
+      const path = `admin/v1/oa/attendance/wifis`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'AttendanceService',
+        method: 'CreateAttendanceWifi',
+      }) as Promise<oaservicev1_AttendanceWifi>;
+    },
+    ListAttendanceWifi(request) {
+      const path = `admin/v1/oa/attendance/wifis`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.paging?.page) {
+        queryParams.push(
+          `paging.page=${encodeURIComponent(request.paging.page.toString())}`,
+        );
+      }
+      if (request.paging?.pageSize) {
+        queryParams.push(
+          `paging.pageSize=${encodeURIComponent(request.paging.pageSize.toString())}`,
+        );
+      }
+      if (request.paging?.offset) {
+        queryParams.push(
+          `paging.offset=${encodeURIComponent(request.paging.offset.toString())}`,
+        );
+      }
+      if (request.paging?.limit) {
+        queryParams.push(
+          `paging.limit=${encodeURIComponent(request.paging.limit.toString())}`,
+        );
+      }
+      if (request.paging?.token) {
+        queryParams.push(
+          `paging.token=${encodeURIComponent(request.paging.token.toString())}`,
+        );
+      }
+      if (request.paging?.noPaging) {
+        queryParams.push(
+          `paging.noPaging=${encodeURIComponent(request.paging.noPaging.toString())}`,
+        );
+      }
+      if (request.paging?.query) {
+        queryParams.push(
+          `paging.query=${encodeURIComponent(request.paging.query.toString())}`,
+        );
+      }
+      if (request.paging?.filter) {
+        queryParams.push(
+          `paging.filter=${encodeURIComponent(request.paging.filter.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.type) {
+        queryParams.push(
+          `paging.filterExpr.type=${encodeURIComponent(request.paging.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `paging.filterExpr.conditions.field=${encodeURIComponent(request.paging.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `paging.filterExpr.conditions.op=${encodeURIComponent(request.paging.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `paging.filterExpr.conditions.value=${encodeURIComponent(request.paging.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `paging.filterExpr.conditions.jsonValue=${encodeURIComponent(request.paging.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.values) {
+        request.paging.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `paging.filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.paging?.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `paging.filterExpr.conditions.datePart=${encodeURIComponent(request.paging.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.paging?.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `paging.filterExpr.conditions.jsonPath=${encodeURIComponent(request.paging.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.paging?.orderBy) {
+        queryParams.push(
+          `paging.orderBy=${encodeURIComponent(request.paging.orderBy.toString())}`,
+        );
+      }
+      if (request.paging?.sorting?.field) {
+        queryParams.push(
+          `paging.sorting.field=${encodeURIComponent(request.paging.sorting.field.toString())}`,
+        );
+      }
+      if (request.paging?.sorting?.direction) {
+        queryParams.push(
+          `paging.sorting.direction=${encodeURIComponent(request.paging.sorting.direction.toString())}`,
+        );
+      }
+      if (request.paging?.fieldMask) {
+        queryParams.push(
+          `paging.fieldMask=${encodeURIComponent(request.paging.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'AttendanceService',
+        method: 'ListAttendanceWifi',
+      }) as Promise<oaservicev1_ListAttendanceWifiResponse>;
+    },
+    DeleteAttendanceWifi(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/attendance/wifis/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'AttendanceService',
+        method: 'DeleteAttendanceWifi',
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+export type oaservicev1_CreateAttendanceFenceRequest = {
+  data: oaservicev1_AttendanceFence | undefined;
+};
+
+export type oaservicev1_AttendanceFence = {
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  id?: number;
+  latitude?: number;
+  longitude?: number;
+  name?: string;
+  radius?: number;
+  // ---- 租户 / 审计字段（固定字段号约定） ----
+  tenantId?: number;
+  tenantName?: string;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// Encoded using RFC 3339, where generated output will always be Z-normalized
+// and uses 0, 3, 6 or 9 fractional digits.
+// Offsets other than "Z" are also accepted.
+type wellKnownTimestamp = string;
+
+export type oaservicev1_ListAttendanceFenceRequest = {
+  paging: pagination_PagingRequest | undefined;
+};
+
+// ------------------------------
+// 分页通用请求
+// ------------------------------
+export type pagination_PagingRequest = {
+  // 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+  fieldMask?: wellKnownFieldMask;
+  // Google AIP规范字符串过滤条件
+  filter?: string;
+  // 复杂过滤表达式（优先使用）
+  filterExpr?: pagination_FilterExpr;
+  // 最多返回的记录数（默认10，建议设置上限如100）
+  limit?: number;
+  // 是否不分页，如果为true，则page和pageSize参数无效。
+  noPaging?: boolean;
+  // 跳过的记录数（从0开始，默认0）
+  offset?: number;
+  // 排序条件
+  orderBy?: string;
+  // 当前页码（从1开始，默认1）
+  page?: number;
+  // 每页条数（默认10，建议设置上限如100）
+  pageSize?: number;
+  // JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+  query?: string;
+  // 排序规则
+  sorting: pagination_Sorting[] | undefined;
+  // 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+  token?: string;
+};
+
+// 过滤表达式
+export type pagination_FilterExpr = {
+  // 条件列表
+  conditions: pagination_FilterCondition[] | undefined;
+  // 子表达式列表
+  groups: pagination_FilterExpr[] | undefined;
+  // 过滤表达式类型
+  type: pagination_ExprType | undefined;
+};
+
+// 过滤表达式类型
+export type pagination_ExprType =
+  | 'AND'
+  | 'EXPR_TYPE_UNSPECIFIED'
+  | 'OR';
+// 过滤条件
+export type pagination_FilterCondition = {
+  // 日期时间部分（可选，仅在字段为日期时间类型时使用）
+  datePart?: pagination_DatePart;
+  // 过滤字段名
+  field: string | undefined;
+  // 当字段为 JSON/JSONB 类型时，可指定要抽取的子路径（例如: "meta.user.name" 或 JSONPath）
+  // 服务端应把此路径用于 JSON_EXTRACT / -> 操作，再对抽取结果应用 op。
+  jsonPath?: string;
+  // 当需要使用非字符串类型的比较值（对象/数组/数字/布尔）时使用此字段，
+  // 使用 google.protobuf.Value 能表达任意 JSON 值。
+  jsonValue?: wellKnownValue;
+  // 过滤操作符
+  op: pagination_Operator | undefined;
+  // 过滤值（单值）
+  value?: string;
+  // 过滤值（多值，如IN操作符）
+  values: string[] | undefined;
+};
+
+// 操作符枚举
+export type pagination_Operator =
+  | 'ARRAY_CONTAINS'
+  // 范围与正则
+  | 'BETWEEN'
+  // 语义化的字符串操作
+  | 'CONTAINS'
+  | 'ENDS_WITH'
+  // 基本比较
+  | 'EQ'
+  | 'EXACT'
+  | 'EXISTS'
+  | 'GT'
+  | 'GTE'
+  | 'ICONTAINS'
+  | 'IENDS_WITH'
+  | 'IEXACT'
+  | 'ILIKE'
+  // 集合操作
+  | 'IN'
+  | 'IREGEXP'
+  | 'IS_NOT_NULL'
+  // 空值判断
+  | 'IS_NULL'
+  | 'ISTARTS_WITH'
+  // JSON / 数组 / 集合相关（按需在服务端映射为具体 DB 运算）
+  | 'JSON_CONTAINS'
+  // 模糊 / 大小写不敏感模糊 / 非模糊
+  | 'LIKE'
+  | 'LT'
+  | 'LTE'
+  | 'NEQ'
+  | 'NIN'
+  | 'NOT_LIKE'
+  // 未指定
+  | 'OPERATOR_UNSPECIFIED'
+  | 'REGEXP'
+  | 'SEARCH'
+  | 'STARTS_WITH';
+type wellKnownValue = unknown;
+
+// 日期时间部分枚举
+export type pagination_DatePart =
+  | 'DATE'
+  | 'DATE_PART_UNSPECIFIED'
+  | 'DAY'
+  | 'HOUR'
+  | 'ISO_WEEK_DAY'
+  | 'ISO_YEAR'
+  | 'MICROSECOND'
+  | 'MINUTE'
+  | 'MONTH'
+  | 'QUARTER'
+  | 'SECOND'
+  | 'TIME'
+  | 'WEEK'
+  | 'WEEK_DAY'
+  | 'YEAR';
+// 排序规则（分页场景通常需配合排序保证结果稳定）
+export type pagination_Sorting = {
+  // 排序方向
+  direction: pagination_Sorting_Direction | undefined;
+  // 排序字段（如"id"、"create_time"）
+  field: string | undefined;
+};
+
+// 排序方向（ASC/DESC，默认ASC）
+export type pagination_Sorting_Direction =
+  | 'ASC'
+  | 'DESC';
+// In JSON, a field mask is encoded as a single string where paths are
+// separated by a comma. Fields name in each path are converted
+// to/from lower-camel naming conventions.
+// As an example, consider the following message declarations:
+//
+//     message Profile {
+//       User user = 1;
+//       Photo photo = 2;
+//     }
+//     message User {
+//       string display_name = 1;
+//       string address = 2;
+//     }
+//
+// In proto a field mask for `Profile` may look as such:
+//
+//     mask {
+//       paths: "user.display_name"
+//       paths: "photo"
+//     }
+//
+// In JSON, the same mask is represented as below:
+//
+//     {
+//       mask: "user.displayName,photo"
+//     }
+type wellKnownFieldMask = string;
+
+export type oaservicev1_ListAttendanceFenceResponse = {
+  items: oaservicev1_AttendanceFence[] | undefined;
+  total: number | undefined;
+};
+
+export type oaservicev1_UpdateAttendanceFenceRequest = {
+  data: oaservicev1_AttendanceFence | undefined;
+  id: number | undefined;
+  updateMask: undefined | wellKnownFieldMask;
+};
+
+export type oaservicev1_DeleteAttendanceFenceRequest = {
+  id: number | undefined;
+};
+
+// An empty JSON object
+type wellKnownEmpty = Record<never, never>;
+
+export type oaservicev1_CreateAttendanceWifiRequest = {
+  data: oaservicev1_AttendanceWifi | undefined;
+};
+
+export type oaservicev1_AttendanceWifi = {
+  bssid?: string;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  id?: number;
+  ssid?: string;
+  // ---- 租户 / 审计字段（固定字段号约定） ----
+  tenantId?: number;
+  tenantName?: string;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+export type oaservicev1_ListAttendanceWifiRequest = {
+  paging: pagination_PagingRequest | undefined;
+};
+
+export type oaservicev1_ListAttendanceWifiResponse = {
+  items: oaservicev1_AttendanceWifi[] | undefined;
+  total: number | undefined;
+};
+
+export type oaservicev1_DeleteAttendanceWifiRequest = {
+  id: number | undefined;
+};
+
 // 用户后台登录认证服务
 export interface AuthenticationService {
   // 登录
@@ -243,9 +807,6 @@ export type authenticationservicev1_LoginResponse = {
 export type authenticationservicev1_TokenType =
   | 'bearer'
   | 'mac';
-// An empty JSON object
-type wellKnownEmpty = Record<never, never>;
-
 export type authenticationservicev1_GenerateCaptchaResponse = {
   captchaId: string | undefined;
   imageBase64: string | undefined;
@@ -468,169 +1029,6 @@ export function createInternalMessageServiceClient(
     },
   };
 }
-// ------------------------------
-// 分页通用请求
-// ------------------------------
-export type pagination_PagingRequest = {
-  // 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
-  fieldMask?: wellKnownFieldMask;
-  // Google AIP规范字符串过滤条件
-  filter?: string;
-  // 复杂过滤表达式（优先使用）
-  filterExpr?: pagination_FilterExpr;
-  // 最多返回的记录数（默认10，建议设置上限如100）
-  limit?: number;
-  // 是否不分页，如果为true，则page和pageSize参数无效。
-  noPaging?: boolean;
-  // 跳过的记录数（从0开始，默认0）
-  offset?: number;
-  // 排序条件
-  orderBy?: string;
-  // 当前页码（从1开始，默认1）
-  page?: number;
-  // 每页条数（默认10，建议设置上限如100）
-  pageSize?: number;
-  // JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
-  query?: string;
-  // 排序规则
-  sorting: pagination_Sorting[] | undefined;
-  // 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
-  token?: string;
-};
-
-// 过滤表达式
-export type pagination_FilterExpr = {
-  // 条件列表
-  conditions: pagination_FilterCondition[] | undefined;
-  // 子表达式列表
-  groups: pagination_FilterExpr[] | undefined;
-  // 过滤表达式类型
-  type: pagination_ExprType | undefined;
-};
-
-// 过滤表达式类型
-export type pagination_ExprType =
-  | 'AND'
-  | 'EXPR_TYPE_UNSPECIFIED'
-  | 'OR';
-// 过滤条件
-export type pagination_FilterCondition = {
-  // 日期时间部分（可选，仅在字段为日期时间类型时使用）
-  datePart?: pagination_DatePart;
-  // 过滤字段名
-  field: string | undefined;
-  // 当字段为 JSON/JSONB 类型时，可指定要抽取的子路径（例如: "meta.user.name" 或 JSONPath）
-  // 服务端应把此路径用于 JSON_EXTRACT / -> 操作，再对抽取结果应用 op。
-  jsonPath?: string;
-  // 当需要使用非字符串类型的比较值（对象/数组/数字/布尔）时使用此字段，
-  // 使用 google.protobuf.Value 能表达任意 JSON 值。
-  jsonValue?: wellKnownValue;
-  // 过滤操作符
-  op: pagination_Operator | undefined;
-  // 过滤值（单值）
-  value?: string;
-  // 过滤值（多值，如IN操作符）
-  values: string[] | undefined;
-};
-
-// 操作符枚举
-export type pagination_Operator =
-  | 'ARRAY_CONTAINS'
-  // 范围与正则
-  | 'BETWEEN'
-  // 语义化的字符串操作
-  | 'CONTAINS'
-  | 'ENDS_WITH'
-  // 基本比较
-  | 'EQ'
-  | 'EXACT'
-  | 'EXISTS'
-  | 'GT'
-  | 'GTE'
-  | 'ICONTAINS'
-  | 'IENDS_WITH'
-  | 'IEXACT'
-  | 'ILIKE'
-  // 集合操作
-  | 'IN'
-  | 'IREGEXP'
-  | 'IS_NOT_NULL'
-  // 空值判断
-  | 'IS_NULL'
-  | 'ISTARTS_WITH'
-  // JSON / 数组 / 集合相关（按需在服务端映射为具体 DB 运算）
-  | 'JSON_CONTAINS'
-  // 模糊 / 大小写不敏感模糊 / 非模糊
-  | 'LIKE'
-  | 'LT'
-  | 'LTE'
-  | 'NEQ'
-  | 'NIN'
-  | 'NOT_LIKE'
-  // 未指定
-  | 'OPERATOR_UNSPECIFIED'
-  | 'REGEXP'
-  | 'SEARCH'
-  | 'STARTS_WITH';
-type wellKnownValue = unknown;
-
-// 日期时间部分枚举
-export type pagination_DatePart =
-  | 'DATE'
-  | 'DATE_PART_UNSPECIFIED'
-  | 'DAY'
-  | 'HOUR'
-  | 'ISO_WEEK_DAY'
-  | 'ISO_YEAR'
-  | 'MICROSECOND'
-  | 'MINUTE'
-  | 'MONTH'
-  | 'QUARTER'
-  | 'SECOND'
-  | 'TIME'
-  | 'WEEK'
-  | 'WEEK_DAY'
-  | 'YEAR';
-// 排序规则（分页场景通常需配合排序保证结果稳定）
-export type pagination_Sorting = {
-  // 排序方向
-  direction: pagination_Sorting_Direction | undefined;
-  // 排序字段（如"id"、"create_time"）
-  field: string | undefined;
-};
-
-// 排序方向（ASC/DESC，默认ASC）
-export type pagination_Sorting_Direction =
-  | 'ASC'
-  | 'DESC';
-// In JSON, a field mask is encoded as a single string where paths are
-// separated by a comma. Fields name in each path are converted
-// to/from lower-camel naming conventions.
-// As an example, consider the following message declarations:
-//
-//     message Profile {
-//       User user = 1;
-//       Photo photo = 2;
-//     }
-//     message User {
-//       string display_name = 1;
-//       string address = 2;
-//     }
-//
-// In proto a field mask for `Profile` may look as such:
-//
-//     mask {
-//       paths: "user.display_name"
-//       paths: "photo"
-//     }
-//
-// In JSON, the same mask is represented as below:
-//
-//     {
-//       mask: "user.displayName,photo"
-//     }
-type wellKnownFieldMask = string;
-
 // 查询站内信消息列表 - 回应
 export type internal_messageservicev1_ListInternalMessageResponse = {
   items: internal_messageservicev1_InternalMessage[] | undefined;
@@ -673,11 +1071,6 @@ export type internal_messageservicev1_InternalMessage_Type =
   | 'GROUP'
   | 'NOTIFICATION'
   | 'PRIVATE';
-// Encoded using RFC 3339, where generated output will always be Z-normalized
-// and uses 0, 3, 6 or 9 fractional digits.
-// Offsets other than "Z" are also accepted.
-type wellKnownTimestamp = string;
-
 // 查询站内信消息详情 - 请求
 export type internal_messageservicev1_GetInternalMessageRequest = {
   id?: number;
@@ -1620,6 +2013,7 @@ export type oaservicev1_AuditLogEntry = {
 };
 
 export class ApiClient {
+  private _attendanceService?: AttendanceService;
   private _authenticationService?: AuthenticationService;
   private _internalMessageCategoryService?: InternalMessageCategoryService;
   private _internalMessageRecipientService?: InternalMessageRecipientService;
@@ -1629,6 +2023,10 @@ export class ApiClient {
 
   constructor(transport: ClientTransport) {
     this._transport = transport;
+  }
+
+  get attendanceService(): AttendanceService {
+    return this._attendanceService ??= createAttendanceServiceClient(this._transport);
   }
 
   get authenticationService(): AuthenticationService {

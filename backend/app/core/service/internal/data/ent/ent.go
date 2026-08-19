@@ -6,6 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancefence"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancewifi"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagerecipient"
@@ -79,6 +82,9 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			attendancefence.Table:          attendancefence.ValidColumn,
+			attendancerecord.Table:         attendancerecord.ValidColumn,
+			attendancewifi.Table:           attendancewifi.ValidColumn,
 			internalmessage.Table:          internalmessage.ValidColumn,
 			internalmessagecategory.Table:  internalmessagecategory.ValidColumn,
 			internalmessagerecipient.Table: internalmessagerecipient.ValidColumn,

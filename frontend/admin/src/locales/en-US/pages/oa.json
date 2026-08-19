@@ -26,6 +26,34 @@
       "fieldFormSchema": "Form Schema (JSON)",
       "submit": "Submit",
       "cancel": "Cancel"
+    },
+    "attendance": {
+      "fenceTitle": "Attendance Geofence",
+      "wifiTitle": "Attendance Wi-Fi Fingerprint",
+      "fenceColName": "Name",
+      "fenceColLongitude": "Longitude",
+      "fenceColLatitude": "Latitude",
+      "fenceColRadius": "Radius (m)",
+      "fenceColCreatedAt": "Created At",
+      "colOperation": "Action",
+      "wifiColSsid": "SSID",
+      "wifiColBssid": "BSSID",
+      "wifiColCreatedAt": "Created At",
+      "createFence": "New Fence",
+      "editFence": "Edit Fence",
+      "createWifi": "New Wi-Fi Fingerprint",
+      "fieldName": "Name",
+      "fieldLongitude": "Longitude",
+      "fieldLatitude": "Latitude",
+      "fieldRadius": "Radius (m)",
+      "fieldSsid": "SSID",
+      "fieldBssid": "BSSID",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "deleteFenceConfirmTitle": "Delete Fence",
+      "deleteFenceConfirmContent": "Once deleted, this fence will no longer participate in check-in evaluation. Confirm delete?",
+      "deleteWifiConfirmTitle": "Delete Wi-Fi Fingerprint",
+      "deleteWifiConfirmContent": "Once deleted, this fingerprint will no longer participate in check-in evaluation. Confirm delete?"
     }
   }
 }

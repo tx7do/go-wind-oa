@@ -237,5 +237,12 @@
   "oaNotificationsNotConfigured": "Push channel not configured. See docs/oa-mobile-design.md.",
   "oaAttendanceTitle": "Attendance",
   "oaAttendanceCheckIn": "Check In",
-  "oaAttendanceNotConfigured": "Attendance service not configured. See docs/oa-mobile-design.md."
+  "oaAttendanceHint": "Check-in verifies your location and Wi-Fi against the company fence whitelist.",
+  "oaAttendanceLocating": "Locating…",
+  "oaAttendanceSubmitting": "Submitting…",
+  "oaAttendanceResultInFence": "Checked in: inside company geofence.",
+  "oaAttendanceResultInWifi": "Checked in: matched company Wi-Fi whitelist.",
+  "oaAttendanceResultDenied": "Check-in denied: not in company fence nor Wi-Fi whitelist.",
+  "oaAttendancePermissionDenied": "Location permission denied. Check-in requires location access.",
+  "oaAttendanceLocationUnavailable": "Unable to obtain current location. Please retry."
 }

@@ -8,6 +8,42 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent"
 )
 
+// The AttendanceFenceFunc type is an adapter to allow the use of ordinary
+// function as AttendanceFence mutator.
+type AttendanceFenceFunc func(context.Context, *ent.AttendanceFenceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AttendanceFenceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AttendanceFenceMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AttendanceFenceMutation", m)
+}
+
+// The AttendanceRecordFunc type is an adapter to allow the use of ordinary
+// function as AttendanceRecord mutator.
+type AttendanceRecordFunc func(context.Context, *ent.AttendanceRecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AttendanceRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AttendanceRecordMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AttendanceRecordMutation", m)
+}
+
+// The AttendanceWifiFunc type is an adapter to allow the use of ordinary
+// function as AttendanceWifi mutator.
+type AttendanceWifiFunc func(context.Context, *ent.AttendanceWifiMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AttendanceWifiFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AttendanceWifiMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AttendanceWifiMutation", m)
+}
+
 // The InternalMessageFunc type is an adapter to allow the use of ordinary
 // function as InternalMessage mutator.
 type InternalMessageFunc func(context.Context, *ent.InternalMessageMutation) (ent.Value, error)

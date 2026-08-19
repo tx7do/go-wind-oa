@@ -81,6 +81,10 @@ dependencies:
   package_info_plus: ^10.1.0
   connectivity_plus: ^7.1.1
 
+  # 考勤打卡定位 / Wi-Fi 指纹采集
+  geolocator: ^13.0.4
+  network_info_plus: ^8.2.1
+
   xid: ^1.2.1
   uuid: ^4.4.0
   meta: ^1.11.0

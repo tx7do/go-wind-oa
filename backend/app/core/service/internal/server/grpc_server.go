@@ -25,9 +25,10 @@ func NewGrpcMiddleware(ctx *bootstrap.Context) []middleware.Middleware {
 
 // NewGrpcServer new a gRPC server.
 //
-// OA core-service 為 gRPC-only，僅註冊兩類服務：
+// OA core-service 為 gRPC-only，僅註冊三類服務：
 //   - internal_message（站內信，工作流通知落庫用）
 //   - workflow（工作流引擎狀態機）
+//   - attendance（移動打卡判定 + 圍欄/Wi-Fi 指紋庫 CRUD）
 //
 // 中間件鏈為 logging + ent：前者記錄調用，後者按 auth 中間件注入的
 // viewer context 做租戶/操作人隔離（core 本身不驗 token，由上游 admin
@@ -41,6 +42,8 @@ func NewGrpcServer(
 	internalMessageRecipientService *service.InternalMessageRecipientService,
 
 	workflowService *service.WorkflowService,
+
+	attendanceService *service.AttendanceService,
 ) (*grpc.Server, error) {
 	cfg := ctx.GetConfig()
 
@@ -58,6 +61,8 @@ func NewGrpcServer(
 	internalMessageV1.RegisterInternalMessageRecipientServiceServer(srv, internalMessageRecipientService)
 
 	oaV1.RegisterWorkflowServiceServer(srv, workflowService)
+
+	oaV1.RegisterAttendanceServiceServer(srv, attendanceService)
 
 	return srv, nil
 }

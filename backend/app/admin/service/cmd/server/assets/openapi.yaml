@@ -527,6 +527,257 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/oa/attendance/fences:
+        get:
+            tags:
+                - AttendanceService
+            description: 查询围栏列表
+            operationId: AttendanceService_ListAttendanceFence
+            parameters:
+                - name: paging.page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: paging.limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: paging.noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: paging.query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: paging.filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: paging.filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: paging.orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: paging.fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAttendanceFenceResponse'
+        post:
+            tags:
+                - AttendanceService
+            description: 创建围栏
+            operationId: AttendanceService_CreateAttendanceFence
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateAttendanceFenceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AttendanceFence'
+    /admin/v1/oa/attendance/fences/{id}:
+        put:
+            tags:
+                - AttendanceService
+            description: 更新围栏
+            operationId: AttendanceService_UpdateAttendanceFence
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateAttendanceFenceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AttendanceFence'
+        delete:
+            tags:
+                - AttendanceService
+            description: 删除围栏
+            operationId: AttendanceService_DeleteAttendanceFence
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/oa/attendance/wifis:
+        get:
+            tags:
+                - AttendanceService
+            description: 查询 Wi-Fi 指纹列表
+            operationId: AttendanceService_ListAttendanceWifi
+            parameters:
+                - name: paging.page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: paging.limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: paging.token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: paging.noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: paging.query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: paging.filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: paging.filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: paging.orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: paging.fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAttendanceWifiResponse'
+        post:
+            tags:
+                - AttendanceService
+            description: 创建 Wi-Fi 指纹
+            operationId: AttendanceService_CreateAttendanceWifi
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateAttendanceWifiRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AttendanceWifi'
+    /admin/v1/oa/attendance/wifis/{id}:
+        delete:
+            tags:
+                - AttendanceService
+            description: 删除 Wi-Fi 指纹
+            operationId: AttendanceService_DeleteAttendanceWifi
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/oa/workflow/apply:
         post:
             tags:
@@ -839,6 +1090,81 @@ paths:
                                 $ref: '#/components/schemas/LoginResponse'
 components:
     schemas:
+        AttendanceFence:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                longitude:
+                    type: number
+                    format: double
+                latitude:
+                    type: number
+                    format: double
+                radius:
+                    type: number
+                    format: double
+                tenantId:
+                    type: integer
+                    description: '---- 租户 / 审计字段（固定字段号约定） ----'
+                    format: uint32
+                tenantName:
+                    type: string
+                createdBy:
+                    type: integer
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    format: uint32
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+                deletedAt:
+                    type: string
+                    format: date-time
+        AttendanceWifi:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                ssid:
+                    type: string
+                bssid:
+                    type: string
+                tenantId:
+                    type: integer
+                    description: '---- 租户 / 审计字段（固定字段号约定） ----'
+                    format: uint32
+                tenantName:
+                    type: string
+                createdBy:
+                    type: integer
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    format: uint32
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+                deletedAt:
+                    type: string
+                    format: date-time
         AuditLogEntry:
             type: object
             properties:
@@ -872,6 +1198,16 @@ components:
                     type: integer
                     description: 仅 action == FORWARD 时有效：被转办人 ID。
                     format: uint32
+        CreateAttendanceFenceRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/AttendanceFence'
+        CreateAttendanceWifiRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/AttendanceWifi'
         CreateInternalMessageCategoryRequest:
             type: object
             properties:
@@ -1155,6 +1491,24 @@ components:
                     type: object
                     description: 元数据
             description: Kratos错误返回
+        ListAttendanceFenceResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AttendanceFence'
+                total:
+                    type: string
+        ListAttendanceWifiResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AttendanceWifi'
+                total:
+                    type: string
         ListInternalMessageCategoryResponse:
             type: object
             properties:
@@ -1406,6 +1760,17 @@ components:
                 instanceId:
                     type: integer
                     format: uint32
+        UpdateAttendanceFenceRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                data:
+                    $ref: '#/components/schemas/AttendanceFence'
+                updateMask:
+                    type: string
+                    format: field-mask
         UpdateInternalMessageCategoryRequest:
             type: object
             properties:
@@ -1536,6 +1901,14 @@ components:
 security:
     - OAuth2PasswordBearer: []
 tags:
+    - name: AttendanceService
+      description: |-
+        OA 考勤围栏库管理服务（admin HTTP 边端）。
+
+         对齐 cms admin/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
+         消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
+         adminV1.AttendanceServiceHTTPServer，admin-service 注册并转发到 core gRPC。
+         仅暴露围栏库与 Wi-Fi 指纹库的 CRUD（管理端），打卡端点不经 admin 边端。
     - name: AuthenticationService
       description: 用户后台登录认证服务
     - name: InternalMessageCategoryService

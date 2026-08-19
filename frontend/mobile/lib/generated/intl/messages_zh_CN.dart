@@ -139,9 +139,26 @@ class MessageLookup extends MessageLookupByLibrary {
     "noSearchResults": m4,
     "notifications": MessageLookupByLibrary.simpleMessage("消息通知"),
     "oaAttendanceCheckIn": MessageLookupByLibrary.simpleMessage("打卡"),
-    "oaAttendanceNotConfigured": MessageLookupByLibrary.simpleMessage(
-      "考勤服务未配置，详见 docs/oa-mobile-design.md。",
+    "oaAttendanceHint": MessageLookupByLibrary.simpleMessage(
+      "打卡将校验您的位置与 Wi-Fi 是否在公司围栏白名单内。",
     ),
+    "oaAttendanceLocating": MessageLookupByLibrary.simpleMessage("定位中…"),
+    "oaAttendanceLocationUnavailable": MessageLookupByLibrary.simpleMessage(
+      "无法获取当前位置，请重试。",
+    ),
+    "oaAttendancePermissionDenied": MessageLookupByLibrary.simpleMessage(
+      "定位权限被拒，打卡需要定位权限。",
+    ),
+    "oaAttendanceResultDenied": MessageLookupByLibrary.simpleMessage(
+      "打卡被拒：不在公司围栏或 Wi-Fi 白名单内。",
+    ),
+    "oaAttendanceResultInFence": MessageLookupByLibrary.simpleMessage(
+      "已打卡：位于公司地理围栏内。",
+    ),
+    "oaAttendanceResultInWifi": MessageLookupByLibrary.simpleMessage(
+      "已打卡：匹配公司 Wi-Fi 白名单。",
+    ),
+    "oaAttendanceSubmitting": MessageLookupByLibrary.simpleMessage("提交中…"),
     "oaAttendanceTitle": MessageLookupByLibrary.simpleMessage("考勤"),
     "oaNotificationsEmpty": MessageLookupByLibrary.simpleMessage("暂无站内信通知"),
     "oaNotificationsNotConfigured": MessageLookupByLibrary.simpleMessage(

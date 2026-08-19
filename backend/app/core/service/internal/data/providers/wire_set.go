@@ -36,4 +36,8 @@ var ProviderSet = wire.NewSet(
 	data.NewWorkflowInstanceRepo,
 	data.NewWorkflowTaskRepo,
 	data.NewWorkflowLogRepo,
+
+	data.NewAttendanceFenceRepo,
+	data.NewAttendanceWifiRepo,
+	data.NewAttendanceRecordRepo,
 )

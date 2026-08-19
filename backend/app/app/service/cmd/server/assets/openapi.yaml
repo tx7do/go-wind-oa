@@ -152,6 +152,25 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /app/v1/oa/attendance/check-in:
+        post:
+            tags:
+                - AttendanceService
+            description: 打卡
+            operationId: AttendanceService_CheckIn
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CheckInRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckInResponse'
     /app/v1/oa/workflow/apply:
         post:
             tags:
@@ -356,6 +375,31 @@ components:
                     type: integer
                     description: 仅 action == FORWARD 时有效：被转办人 ID。
                     format: uint32
+        CheckInRequest:
+            type: object
+            properties:
+                longitude:
+                    type: number
+                    description: 打卡提交的 GPS 坐标（WGS84）。
+                    format: double
+                latitude:
+                    type: number
+                    format: double
+                bssid:
+                    type: string
+                    description: 打卡时连接 Wi-Fi 的 BSSID（如可用）。
+        CheckInResponse:
+            type: object
+            properties:
+                checkResult:
+                    enum:
+                        - DENIED
+                        - IN_FENCE
+                        - IN_WIFI
+                    type: string
+                    format: enum
+                message:
+                    type: string
         GetMyTasksResponse:
             type: object
             properties:
@@ -648,6 +692,13 @@ components:
 security:
     - OAuth2PasswordBearer: []
 tags:
+    - name: AttendanceService
+      description: |-
+        OA 考勤打卡服务（app HTTP 边端，移动端）。
+
+         对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
+         消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。仅暴露 CheckIn
+         端点供移动端打卡，围栏库 CRUD 不经 app 边端。
     - name: AuthenticationService
       description: 用户前台登录认证服务
     - name: InternalMessageService

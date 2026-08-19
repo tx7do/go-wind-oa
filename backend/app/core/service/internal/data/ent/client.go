@@ -11,6 +11,9 @@ import (
 
 	"go-wind-oa/app/core/service/internal/data/ent/migrate"
 
+	"go-wind-oa/app/core/service/internal/data/ent/attendancefence"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancewifi"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagerecipient"
@@ -30,6 +33,12 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// AttendanceFence is the client for interacting with the AttendanceFence builders.
+	AttendanceFence *AttendanceFenceClient
+	// AttendanceRecord is the client for interacting with the AttendanceRecord builders.
+	AttendanceRecord *AttendanceRecordClient
+	// AttendanceWifi is the client for interacting with the AttendanceWifi builders.
+	AttendanceWifi *AttendanceWifiClient
 	// InternalMessage is the client for interacting with the InternalMessage builders.
 	InternalMessage *InternalMessageClient
 	// InternalMessageCategory is the client for interacting with the InternalMessageCategory builders.
@@ -55,6 +64,9 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.AttendanceFence = NewAttendanceFenceClient(c.config)
+	c.AttendanceRecord = NewAttendanceRecordClient(c.config)
+	c.AttendanceWifi = NewAttendanceWifiClient(c.config)
 	c.InternalMessage = NewInternalMessageClient(c.config)
 	c.InternalMessageCategory = NewInternalMessageCategoryClient(c.config)
 	c.InternalMessageRecipient = NewInternalMessageRecipientClient(c.config)
@@ -154,6 +166,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                      ctx,
 		config:                   cfg,
+		AttendanceFence:          NewAttendanceFenceClient(cfg),
+		AttendanceRecord:         NewAttendanceRecordClient(cfg),
+		AttendanceWifi:           NewAttendanceWifiClient(cfg),
 		InternalMessage:          NewInternalMessageClient(cfg),
 		InternalMessageCategory:  NewInternalMessageCategoryClient(cfg),
 		InternalMessageRecipient: NewInternalMessageRecipientClient(cfg),
@@ -180,6 +195,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:                      ctx,
 		config:                   cfg,
+		AttendanceFence:          NewAttendanceFenceClient(cfg),
+		AttendanceRecord:         NewAttendanceRecordClient(cfg),
+		AttendanceWifi:           NewAttendanceWifiClient(cfg),
 		InternalMessage:          NewInternalMessageClient(cfg),
 		InternalMessageCategory:  NewInternalMessageCategoryClient(cfg),
 		InternalMessageRecipient: NewInternalMessageRecipientClient(cfg),
@@ -193,7 +211,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		InternalMessage.
+//		AttendanceFence.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -216,8 +234,9 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.InternalMessage, c.InternalMessageCategory, c.InternalMessageRecipient,
-		c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
+		c.AttendanceFence, c.AttendanceRecord, c.AttendanceWifi, c.InternalMessage,
+		c.InternalMessageCategory, c.InternalMessageRecipient, c.WorkflowDefinition,
+		c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
 	} {
 		n.Use(hooks...)
 	}
@@ -227,8 +246,9 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.InternalMessage, c.InternalMessageCategory, c.InternalMessageRecipient,
-		c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
+		c.AttendanceFence, c.AttendanceRecord, c.AttendanceWifi, c.InternalMessage,
+		c.InternalMessageCategory, c.InternalMessageRecipient, c.WorkflowDefinition,
+		c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -237,6 +257,12 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AttendanceFenceMutation:
+		return c.AttendanceFence.mutate(ctx, m)
+	case *AttendanceRecordMutation:
+		return c.AttendanceRecord.mutate(ctx, m)
+	case *AttendanceWifiMutation:
+		return c.AttendanceWifi.mutate(ctx, m)
 	case *InternalMessageMutation:
 		return c.InternalMessage.mutate(ctx, m)
 	case *InternalMessageCategoryMutation:
@@ -253,6 +279,408 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.WorkflowTask.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AttendanceFenceClient is a client for the AttendanceFence schema.
+type AttendanceFenceClient struct {
+	config
+}
+
+// NewAttendanceFenceClient returns a client for the AttendanceFence from the given config.
+func NewAttendanceFenceClient(c config) *AttendanceFenceClient {
+	return &AttendanceFenceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `attendancefence.Hooks(f(g(h())))`.
+func (c *AttendanceFenceClient) Use(hooks ...Hook) {
+	c.hooks.AttendanceFence = append(c.hooks.AttendanceFence, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `attendancefence.Intercept(f(g(h())))`.
+func (c *AttendanceFenceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AttendanceFence = append(c.inters.AttendanceFence, interceptors...)
+}
+
+// Create returns a builder for creating a AttendanceFence entity.
+func (c *AttendanceFenceClient) Create() *AttendanceFenceCreate {
+	mutation := newAttendanceFenceMutation(c.config, OpCreate)
+	return &AttendanceFenceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AttendanceFence entities.
+func (c *AttendanceFenceClient) CreateBulk(builders ...*AttendanceFenceCreate) *AttendanceFenceCreateBulk {
+	return &AttendanceFenceCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AttendanceFenceClient) MapCreateBulk(slice any, setFunc func(*AttendanceFenceCreate, int)) *AttendanceFenceCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AttendanceFenceCreateBulk{err: fmt.Errorf("calling to AttendanceFenceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AttendanceFenceCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AttendanceFenceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AttendanceFence.
+func (c *AttendanceFenceClient) Update() *AttendanceFenceUpdate {
+	mutation := newAttendanceFenceMutation(c.config, OpUpdate)
+	return &AttendanceFenceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AttendanceFenceClient) UpdateOne(_m *AttendanceFence) *AttendanceFenceUpdateOne {
+	mutation := newAttendanceFenceMutation(c.config, OpUpdateOne, withAttendanceFence(_m))
+	return &AttendanceFenceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AttendanceFenceClient) UpdateOneID(id uint32) *AttendanceFenceUpdateOne {
+	mutation := newAttendanceFenceMutation(c.config, OpUpdateOne, withAttendanceFenceID(id))
+	return &AttendanceFenceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AttendanceFence.
+func (c *AttendanceFenceClient) Delete() *AttendanceFenceDelete {
+	mutation := newAttendanceFenceMutation(c.config, OpDelete)
+	return &AttendanceFenceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AttendanceFenceClient) DeleteOne(_m *AttendanceFence) *AttendanceFenceDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AttendanceFenceClient) DeleteOneID(id uint32) *AttendanceFenceDeleteOne {
+	builder := c.Delete().Where(attendancefence.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AttendanceFenceDeleteOne{builder}
+}
+
+// Query returns a query builder for AttendanceFence.
+func (c *AttendanceFenceClient) Query() *AttendanceFenceQuery {
+	return &AttendanceFenceQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAttendanceFence},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AttendanceFence entity by its id.
+func (c *AttendanceFenceClient) Get(ctx context.Context, id uint32) (*AttendanceFence, error) {
+	return c.Query().Where(attendancefence.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AttendanceFenceClient) GetX(ctx context.Context, id uint32) *AttendanceFence {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AttendanceFenceClient) Hooks() []Hook {
+	hooks := c.hooks.AttendanceFence
+	return append(hooks[:len(hooks):len(hooks)], attendancefence.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *AttendanceFenceClient) Interceptors() []Interceptor {
+	return c.inters.AttendanceFence
+}
+
+func (c *AttendanceFenceClient) mutate(ctx context.Context, m *AttendanceFenceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AttendanceFenceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AttendanceFenceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AttendanceFenceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AttendanceFenceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AttendanceFence mutation op: %q", m.Op())
+	}
+}
+
+// AttendanceRecordClient is a client for the AttendanceRecord schema.
+type AttendanceRecordClient struct {
+	config
+}
+
+// NewAttendanceRecordClient returns a client for the AttendanceRecord from the given config.
+func NewAttendanceRecordClient(c config) *AttendanceRecordClient {
+	return &AttendanceRecordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `attendancerecord.Hooks(f(g(h())))`.
+func (c *AttendanceRecordClient) Use(hooks ...Hook) {
+	c.hooks.AttendanceRecord = append(c.hooks.AttendanceRecord, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `attendancerecord.Intercept(f(g(h())))`.
+func (c *AttendanceRecordClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AttendanceRecord = append(c.inters.AttendanceRecord, interceptors...)
+}
+
+// Create returns a builder for creating a AttendanceRecord entity.
+func (c *AttendanceRecordClient) Create() *AttendanceRecordCreate {
+	mutation := newAttendanceRecordMutation(c.config, OpCreate)
+	return &AttendanceRecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AttendanceRecord entities.
+func (c *AttendanceRecordClient) CreateBulk(builders ...*AttendanceRecordCreate) *AttendanceRecordCreateBulk {
+	return &AttendanceRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AttendanceRecordClient) MapCreateBulk(slice any, setFunc func(*AttendanceRecordCreate, int)) *AttendanceRecordCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AttendanceRecordCreateBulk{err: fmt.Errorf("calling to AttendanceRecordClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AttendanceRecordCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AttendanceRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AttendanceRecord.
+func (c *AttendanceRecordClient) Update() *AttendanceRecordUpdate {
+	mutation := newAttendanceRecordMutation(c.config, OpUpdate)
+	return &AttendanceRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AttendanceRecordClient) UpdateOne(_m *AttendanceRecord) *AttendanceRecordUpdateOne {
+	mutation := newAttendanceRecordMutation(c.config, OpUpdateOne, withAttendanceRecord(_m))
+	return &AttendanceRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AttendanceRecordClient) UpdateOneID(id uint32) *AttendanceRecordUpdateOne {
+	mutation := newAttendanceRecordMutation(c.config, OpUpdateOne, withAttendanceRecordID(id))
+	return &AttendanceRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AttendanceRecord.
+func (c *AttendanceRecordClient) Delete() *AttendanceRecordDelete {
+	mutation := newAttendanceRecordMutation(c.config, OpDelete)
+	return &AttendanceRecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AttendanceRecordClient) DeleteOne(_m *AttendanceRecord) *AttendanceRecordDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AttendanceRecordClient) DeleteOneID(id uint32) *AttendanceRecordDeleteOne {
+	builder := c.Delete().Where(attendancerecord.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AttendanceRecordDeleteOne{builder}
+}
+
+// Query returns a query builder for AttendanceRecord.
+func (c *AttendanceRecordClient) Query() *AttendanceRecordQuery {
+	return &AttendanceRecordQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAttendanceRecord},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AttendanceRecord entity by its id.
+func (c *AttendanceRecordClient) Get(ctx context.Context, id uint32) (*AttendanceRecord, error) {
+	return c.Query().Where(attendancerecord.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AttendanceRecordClient) GetX(ctx context.Context, id uint32) *AttendanceRecord {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AttendanceRecordClient) Hooks() []Hook {
+	hooks := c.hooks.AttendanceRecord
+	return append(hooks[:len(hooks):len(hooks)], attendancerecord.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *AttendanceRecordClient) Interceptors() []Interceptor {
+	return c.inters.AttendanceRecord
+}
+
+func (c *AttendanceRecordClient) mutate(ctx context.Context, m *AttendanceRecordMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AttendanceRecordCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AttendanceRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AttendanceRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AttendanceRecordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AttendanceRecord mutation op: %q", m.Op())
+	}
+}
+
+// AttendanceWifiClient is a client for the AttendanceWifi schema.
+type AttendanceWifiClient struct {
+	config
+}
+
+// NewAttendanceWifiClient returns a client for the AttendanceWifi from the given config.
+func NewAttendanceWifiClient(c config) *AttendanceWifiClient {
+	return &AttendanceWifiClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `attendancewifi.Hooks(f(g(h())))`.
+func (c *AttendanceWifiClient) Use(hooks ...Hook) {
+	c.hooks.AttendanceWifi = append(c.hooks.AttendanceWifi, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `attendancewifi.Intercept(f(g(h())))`.
+func (c *AttendanceWifiClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AttendanceWifi = append(c.inters.AttendanceWifi, interceptors...)
+}
+
+// Create returns a builder for creating a AttendanceWifi entity.
+func (c *AttendanceWifiClient) Create() *AttendanceWifiCreate {
+	mutation := newAttendanceWifiMutation(c.config, OpCreate)
+	return &AttendanceWifiCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AttendanceWifi entities.
+func (c *AttendanceWifiClient) CreateBulk(builders ...*AttendanceWifiCreate) *AttendanceWifiCreateBulk {
+	return &AttendanceWifiCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AttendanceWifiClient) MapCreateBulk(slice any, setFunc func(*AttendanceWifiCreate, int)) *AttendanceWifiCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AttendanceWifiCreateBulk{err: fmt.Errorf("calling to AttendanceWifiClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AttendanceWifiCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AttendanceWifiCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AttendanceWifi.
+func (c *AttendanceWifiClient) Update() *AttendanceWifiUpdate {
+	mutation := newAttendanceWifiMutation(c.config, OpUpdate)
+	return &AttendanceWifiUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AttendanceWifiClient) UpdateOne(_m *AttendanceWifi) *AttendanceWifiUpdateOne {
+	mutation := newAttendanceWifiMutation(c.config, OpUpdateOne, withAttendanceWifi(_m))
+	return &AttendanceWifiUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AttendanceWifiClient) UpdateOneID(id uint32) *AttendanceWifiUpdateOne {
+	mutation := newAttendanceWifiMutation(c.config, OpUpdateOne, withAttendanceWifiID(id))
+	return &AttendanceWifiUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AttendanceWifi.
+func (c *AttendanceWifiClient) Delete() *AttendanceWifiDelete {
+	mutation := newAttendanceWifiMutation(c.config, OpDelete)
+	return &AttendanceWifiDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AttendanceWifiClient) DeleteOne(_m *AttendanceWifi) *AttendanceWifiDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AttendanceWifiClient) DeleteOneID(id uint32) *AttendanceWifiDeleteOne {
+	builder := c.Delete().Where(attendancewifi.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AttendanceWifiDeleteOne{builder}
+}
+
+// Query returns a query builder for AttendanceWifi.
+func (c *AttendanceWifiClient) Query() *AttendanceWifiQuery {
+	return &AttendanceWifiQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAttendanceWifi},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AttendanceWifi entity by its id.
+func (c *AttendanceWifiClient) Get(ctx context.Context, id uint32) (*AttendanceWifi, error) {
+	return c.Query().Where(attendancewifi.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AttendanceWifiClient) GetX(ctx context.Context, id uint32) *AttendanceWifi {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AttendanceWifiClient) Hooks() []Hook {
+	hooks := c.hooks.AttendanceWifi
+	return append(hooks[:len(hooks):len(hooks)], attendancewifi.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *AttendanceWifiClient) Interceptors() []Interceptor {
+	return c.inters.AttendanceWifi
+}
+
+func (c *AttendanceWifiClient) mutate(ctx context.Context, m *AttendanceWifiMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AttendanceWifiCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AttendanceWifiUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AttendanceWifiUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AttendanceWifiDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AttendanceWifi mutation op: %q", m.Op())
 	}
 }
 
@@ -1293,12 +1721,13 @@ func (c *WorkflowTaskClient) mutate(ctx context.Context, m *WorkflowTaskMutation
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		InternalMessage, InternalMessageCategory, InternalMessageRecipient,
-		WorkflowDefinition, WorkflowInstance, WorkflowLog, WorkflowTask []ent.Hook
+		AttendanceFence, AttendanceRecord, AttendanceWifi, InternalMessage,
+		InternalMessageCategory, InternalMessageRecipient, WorkflowDefinition,
+		WorkflowInstance, WorkflowLog, WorkflowTask []ent.Hook
 	}
 	inters struct {
-		InternalMessage, InternalMessageCategory, InternalMessageRecipient,
-		WorkflowDefinition, WorkflowInstance, WorkflowLog,
-		WorkflowTask []ent.Interceptor
+		AttendanceFence, AttendanceRecord, AttendanceWifi, InternalMessage,
+		InternalMessageCategory, InternalMessageRecipient, WorkflowDefinition,
+		WorkflowInstance, WorkflowLog, WorkflowTask []ent.Interceptor
 	}
 )

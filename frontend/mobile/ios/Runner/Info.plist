@@ -70,5 +70,8 @@
 		<true/>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<!-- 考勤打卡定位说明 -->
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>考勤打卡需要获取您的位置以判定是否在公司围栏内。</string>
 	</dict>
 </plist>

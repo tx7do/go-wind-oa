@@ -6,6 +6,15 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// AttendanceFence is the predicate function for attendancefence builders.
+type AttendanceFence func(*sql.Selector)
+
+// AttendanceRecord is the predicate function for attendancerecord builders.
+type AttendanceRecord func(*sql.Selector)
+
+// AttendanceWifi is the predicate function for attendancewifi builders.
+type AttendanceWifi func(*sql.Selector)
+
 // InternalMessage is the predicate function for internalmessage builders.
 type InternalMessage func(*sql.Selector)
 

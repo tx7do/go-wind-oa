@@ -40,7 +40,11 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	workflowTaskRepo := data.NewWorkflowTaskRepo(context, entClient)
 	workflowLogRepo := data.NewWorkflowLogRepo(context, entClient)
 	workflowService := service.NewWorkflowService(context, workflowDefinitionRepo, workflowInstanceRepo, workflowTaskRepo, workflowLogRepo, internalMessageService)
-	grpcServer, err := server.NewGrpcServer(context, v, internalMessageService, internalMessageCategoryService, internalMessageRecipientService, workflowService)
+	attendanceFenceRepo := data.NewAttendanceFenceRepo(context, entClient)
+	attendanceWifiRepo := data.NewAttendanceWifiRepo(context, entClient)
+	attendanceRecordRepo := data.NewAttendanceRecordRepo(context, entClient)
+	attendanceService := service.NewAttendanceService(context, attendanceFenceRepo, attendanceWifiRepo, attendanceRecordRepo)
+	grpcServer, err := server.NewGrpcServer(context, v, internalMessageService, internalMessageCategoryService, internalMessageRecipientService, workflowService, attendanceService)
 	if err != nil {
 		cleanup()
 		return nil, nil, err

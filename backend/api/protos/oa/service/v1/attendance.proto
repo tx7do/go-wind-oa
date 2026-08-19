@@ -1,0 +1,140 @@
+syntax = "proto3";
+
+package oa.service.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "pagination/v1/pagination.proto";
+
+// OA 考勤服务（core-service gRPC 實現）。
+//
+// 純 gRPC 服務——HTTP 注解由 admin/service/v1/i_attendance.proto（管理端
+// 圍欄庫 CRUD）與 app/service/v1/i_attendance.proto（移動端打卡）分別包裝，
+// 對齊 cms core/admin/app 三層分離模式。所有 RPC 均需鑑權，租戶/操作人
+// 上下文由 auth 中間件注入、由 ent viewer 中間件翻譯，供 TenantPrivacy
+// 策略做行級租戶隔離。
+service AttendanceService {
+  // 打卡（移動端）。上傳當前 GPS 坐標與連接 Wi-Fi 的 BSSID，服務端按本
+  // 租戶圍欄庫與 Wi-Fi 指紋庫判定是否允許，並落打卡記錄。返回判定結果。
+  rpc CheckIn(CheckInRequest) returns (CheckInResponse) {
+  }
+
+  // ---- 围栏库 CRUD（管理端） ----
+  rpc CreateAttendanceFence(CreateAttendanceFenceRequest) returns (AttendanceFence) {
+  }
+  rpc ListAttendanceFence(ListAttendanceFenceRequest) returns (ListAttendanceFenceResponse) {
+  }
+  rpc UpdateAttendanceFence(UpdateAttendanceFenceRequest) returns (AttendanceFence) {
+  }
+  rpc DeleteAttendanceFence(DeleteAttendanceFenceRequest) returns (google.protobuf.Empty) {
+  }
+
+  // ---- Wi-Fi 指纹库 CRUD（管理端） ----
+  rpc CreateAttendanceWifi(CreateAttendanceWifiRequest) returns (AttendanceWifi) {
+  }
+  rpc ListAttendanceWifi(ListAttendanceWifiRequest) returns (ListAttendanceWifiResponse) {
+  }
+  rpc DeleteAttendanceWifi(DeleteAttendanceWifiRequest) returns (google.protobuf.Empty) {
+  }
+}
+
+// ---- 打卡 ----
+
+message CheckInRequest {
+  // 打卡提交的 GPS 坐标（WGS84）。
+  optional double longitude = 1;
+  optional double latitude = 2;
+  // 打卡时连接 Wi-Fi 的 BSSID（如可用）。
+  optional string bssid = 3;
+}
+
+message CheckInResponse {
+  enum CheckResult {
+    DENIED = 0;
+    IN_FENCE = 1;
+    IN_WIFI = 2;
+  }
+  optional CheckResult check_result = 1;
+  optional string message = 2;
+}
+
+// ---- 围栏 ----
+
+message AttendanceFence {
+  optional uint32 id = 1;
+  optional string name = 2;
+  optional double longitude = 3;
+  optional double latitude = 4;
+  optional double radius = 5;
+
+  // ---- 租户 / 审计字段（固定字段号约定） ----
+  optional uint32 tenant_id = 40;
+  optional string tenant_name = 41;
+  optional uint32 created_by = 100;
+  optional uint32 updated_by = 101;
+  optional uint32 deleted_by = 102;
+  optional google.protobuf.Timestamp created_at = 200;
+  optional google.protobuf.Timestamp updated_at = 201;
+  optional google.protobuf.Timestamp deleted_at = 202;
+}
+
+message CreateAttendanceFenceRequest {
+  AttendanceFence data = 1;
+}
+
+message ListAttendanceFenceRequest {
+  pagination.PagingRequest paging = 1;
+}
+
+message ListAttendanceFenceResponse {
+  repeated AttendanceFence items = 1;
+  uint64 total = 2;
+}
+
+message UpdateAttendanceFenceRequest {
+  uint32 id = 1;
+
+  AttendanceFence data = 2;
+
+  google.protobuf.FieldMask update_mask = 3;
+}
+
+message DeleteAttendanceFenceRequest {
+  uint32 id = 1;
+}
+
+// ---- Wi-Fi 指纹 ----
+
+message AttendanceWifi {
+  optional uint32 id = 1;
+  optional string ssid = 2;
+  optional string bssid = 3;
+
+  // ---- 租户 / 审计字段（固定字段号约定） ----
+  optional uint32 tenant_id = 40;
+  optional string tenant_name = 41;
+  optional uint32 created_by = 100;
+  optional uint32 updated_by = 101;
+  optional uint32 deleted_by = 102;
+  optional google.protobuf.Timestamp created_at = 200;
+  optional google.protobuf.Timestamp updated_at = 201;
+  optional google.protobuf.Timestamp deleted_at = 202;
+}
+
+message CreateAttendanceWifiRequest {
+  AttendanceWifi data = 1;
+}
+
+message ListAttendanceWifiRequest {
+  pagination.PagingRequest paging = 1;
+}
+
+message ListAttendanceWifiResponse {
+  repeated AttendanceWifi items = 1;
+  uint64 total = 2;
+}
+
+message DeleteAttendanceWifiRequest {
+  uint32 id = 1;
+}

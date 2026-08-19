@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 考勤打卡：GPS 定位（geolocator）+ Wi-Fi BSSID 采集（network_info_plus）。
+         Android 10+ 获取 BSSID 同样要求精确定位权限。 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <application
         android:label="flutter_app"
         android:name="${applicationName}"

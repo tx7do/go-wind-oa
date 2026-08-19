@@ -169,8 +169,27 @@ class MessageLookup extends MessageLookupByLibrary {
     "noSearchResults": m4,
     "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
     "oaAttendanceCheckIn": MessageLookupByLibrary.simpleMessage("Check In"),
-    "oaAttendanceNotConfigured": MessageLookupByLibrary.simpleMessage(
-      "Attendance service not configured. See docs/oa-mobile-design.md.",
+    "oaAttendanceHint": MessageLookupByLibrary.simpleMessage(
+      "Check-in verifies your location and Wi-Fi against the company fence whitelist.",
+    ),
+    "oaAttendanceLocating": MessageLookupByLibrary.simpleMessage("Locating…"),
+    "oaAttendanceLocationUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Unable to obtain current location. Please retry.",
+    ),
+    "oaAttendancePermissionDenied": MessageLookupByLibrary.simpleMessage(
+      "Location permission denied. Check-in requires location access.",
+    ),
+    "oaAttendanceResultDenied": MessageLookupByLibrary.simpleMessage(
+      "Check-in denied: not in company fence nor Wi-Fi whitelist.",
+    ),
+    "oaAttendanceResultInFence": MessageLookupByLibrary.simpleMessage(
+      "Checked in: inside company geofence.",
+    ),
+    "oaAttendanceResultInWifi": MessageLookupByLibrary.simpleMessage(
+      "Checked in: matched company Wi-Fi whitelist.",
+    ),
+    "oaAttendanceSubmitting": MessageLookupByLibrary.simpleMessage(
+      "Submitting…",
     ),
     "oaAttendanceTitle": MessageLookupByLibrary.simpleMessage("Attendance"),
     "oaNotificationsEmpty": MessageLookupByLibrary.simpleMessage(

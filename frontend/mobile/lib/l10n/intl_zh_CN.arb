@@ -237,5 +237,12 @@
   "oaNotificationsNotConfigured": "推送通道未配置，详见 docs/oa-mobile-design.md。",
   "oaAttendanceTitle": "考勤",
   "oaAttendanceCheckIn": "打卡",
-  "oaAttendanceNotConfigured": "考勤服务未配置，详见 docs/oa-mobile-design.md。"
+  "oaAttendanceHint": "打卡将校验您的位置与 Wi-Fi 是否在公司围栏白名单内。",
+  "oaAttendanceLocating": "定位中…",
+  "oaAttendanceSubmitting": "提交中…",
+  "oaAttendanceResultInFence": "已打卡：位于公司地理围栏内。",
+  "oaAttendanceResultInWifi": "已打卡：匹配公司 Wi-Fi 白名单。",
+  "oaAttendanceResultDenied": "打卡被拒：不在公司围栏或 Wi-Fi 白名单内。",
+  "oaAttendancePermissionDenied": "定位权限被拒，打卡需要定位权限。",
+  "oaAttendanceLocationUnavailable": "无法获取当前位置，请重试。"
 }

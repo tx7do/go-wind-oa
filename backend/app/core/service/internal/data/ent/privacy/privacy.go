@@ -111,6 +111,78 @@ func DenyMutationOperationRule(op ent.Op) MutationRule {
 	return OnMutationOperation(rule, op)
 }
 
+// The AttendanceFenceQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AttendanceFenceQueryRuleFunc func(context.Context, *ent.AttendanceFenceQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AttendanceFenceQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AttendanceFenceQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AttendanceFenceQuery", q)
+}
+
+// The AttendanceFenceMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AttendanceFenceMutationRuleFunc func(context.Context, *ent.AttendanceFenceMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AttendanceFenceMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AttendanceFenceMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AttendanceFenceMutation", m)
+}
+
+// The AttendanceRecordQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AttendanceRecordQueryRuleFunc func(context.Context, *ent.AttendanceRecordQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AttendanceRecordQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AttendanceRecordQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AttendanceRecordQuery", q)
+}
+
+// The AttendanceRecordMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AttendanceRecordMutationRuleFunc func(context.Context, *ent.AttendanceRecordMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AttendanceRecordMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AttendanceRecordMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AttendanceRecordMutation", m)
+}
+
+// The AttendanceWifiQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AttendanceWifiQueryRuleFunc func(context.Context, *ent.AttendanceWifiQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AttendanceWifiQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AttendanceWifiQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AttendanceWifiQuery", q)
+}
+
+// The AttendanceWifiMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AttendanceWifiMutationRuleFunc func(context.Context, *ent.AttendanceWifiMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AttendanceWifiMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AttendanceWifiMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AttendanceWifiMutation", m)
+}
+
 // The InternalMessageQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type InternalMessageQueryRuleFunc func(context.Context, *ent.InternalMessageQuery) error
@@ -314,6 +386,12 @@ var _ QueryMutationRule = FilterFunc(nil)
 
 func queryFilter(q ent.Query) (Filter, error) {
 	switch q := q.(type) {
+	case *ent.AttendanceFenceQuery:
+		return q.Filter(), nil
+	case *ent.AttendanceRecordQuery:
+		return q.Filter(), nil
+	case *ent.AttendanceWifiQuery:
+		return q.Filter(), nil
 	case *ent.InternalMessageQuery:
 		return q.Filter(), nil
 	case *ent.InternalMessageCategoryQuery:
@@ -335,6 +413,12 @@ func queryFilter(q ent.Query) (Filter, error) {
 
 func mutationFilter(m ent.Mutation) (Filter, error) {
 	switch m := m.(type) {
+	case *ent.AttendanceFenceMutation:
+		return m.Filter(), nil
+	case *ent.AttendanceRecordMutation:
+		return m.Filter(), nil
+	case *ent.AttendanceWifiMutation:
+		return m.Filter(), nil
 	case *ent.InternalMessageMutation:
 		return m.Filter(), nil
 	case *ent.InternalMessageCategoryMutation:

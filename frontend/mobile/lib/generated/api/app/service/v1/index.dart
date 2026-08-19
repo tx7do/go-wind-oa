@@ -71,6 +71,159 @@ enum AppErrorReason {
   String toString() => value;
 }
 
+/// OA 考勤打卡服务（app HTTP 边端，移动端）。
+/// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
+/// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。仅暴露 CheckIn
+/// 端点供移动端打卡，围栏库 CRUD 不经 app 边端。
+class AttendanceServiceClient {
+  final ClientTransport _transport;
+
+  AttendanceServiceClient(this._transport);
+
+  /// 打卡
+  Future<OaServiceV1CheckInResponse> checkIn(OaServiceV1CheckInRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/attendance/check-in';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'AttendanceService',
+      method: 'CheckIn',
+    ), headers: headers);
+    return OaServiceV1CheckInResponse.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+class OaServiceV1CheckInRequest {
+  /// 打卡时连接 Wi-Fi 的 BSSID（如可用）。
+  String? bssid;
+  double? latitude;
+  /// 打卡提交的 GPS 坐标（WGS84）。
+  double? longitude;
+
+  OaServiceV1CheckInRequest({
+    this.bssid,
+    this.latitude,
+    this.longitude,
+  });
+
+  factory OaServiceV1CheckInRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1CheckInRequest(
+      bssid: json['bssid'] as String?,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (bssid != null) json['bssid'] = bssid;
+    if (latitude != null) json['latitude'] = latitude;
+    if (longitude != null) json['longitude'] = longitude;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1CheckInRequest(bssid: $bssid, latitude: $latitude, longitude: $longitude)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1CheckInRequest &&
+      runtimeType == other.runtimeType
+      && bssid == other.bssid
+      && latitude == other.latitude
+      && longitude == other.longitude
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    bssid,
+    latitude,
+    longitude,
+  ]);
+
+  OaServiceV1CheckInRequest copyWith({
+    String? bssid,
+    double? latitude,
+    double? longitude,
+  }) {
+    return OaServiceV1CheckInRequest(
+      bssid: bssid ?? this.bssid,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+    );
+  }
+}
+
+class OaServiceV1CheckInResponse {
+  OaServiceV1CheckInResponse$CheckResult? checkResult;
+  String? message;
+
+  OaServiceV1CheckInResponse({
+    this.checkResult,
+    this.message,
+  });
+
+  factory OaServiceV1CheckInResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1CheckInResponse(
+      checkResult: json['checkResult'] != null ? OaServiceV1CheckInResponse$CheckResult.fromString(json['checkResult'] as String) : null,
+      message: json['message'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (checkResult != null) json['checkResult'] = checkResult!.value;
+    if (message != null) json['message'] = message;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1CheckInResponse(checkResult: $checkResult, message: $message)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1CheckInResponse &&
+      runtimeType == other.runtimeType
+      && checkResult == other.checkResult
+      && message == other.message
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    checkResult,
+    message,
+  ]);
+
+  OaServiceV1CheckInResponse copyWith({
+    OaServiceV1CheckInResponse$CheckResult? checkResult,
+    String? message,
+  }) {
+    return OaServiceV1CheckInResponse(
+      checkResult: checkResult ?? this.checkResult,
+      message: message ?? this.message,
+    );
+  }
+}
+
+enum OaServiceV1CheckInResponse$CheckResult {
+  denied('DENIED'),
+  inFence('IN_FENCE'),
+  inWifi('IN_WIFI');
+
+  final String value;
+  const OaServiceV1CheckInResponse$CheckResult(this.value);
+
+  static OaServiceV1CheckInResponse$CheckResult fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1CheckInResponse\$CheckResult value: ' + v));
+  @override
+  String toString() => value;
+}
+
 /// 用户前台登录认证服务
 class AuthenticationServiceClient {
   final ClientTransport _transport;
@@ -2030,11 +2183,17 @@ class OaServiceV1AuditLogEntry {
 class ApiClient {
   final ClientTransport _transport;
 
+  AttendanceServiceClient? _attendanceService;
   AuthenticationServiceClient? _authenticationService;
   InternalMessageServiceClient? _internalMessageService;
   WorkflowServiceClient? _workflowService;
 
   ApiClient(this._transport);
+
+  AttendanceServiceClient get attendanceService {
+    _attendanceService ??= AttendanceServiceClient(_transport);
+    return _attendanceService!;
+  }
 
   AuthenticationServiceClient get authenticationService {
     _authenticationService ??= AuthenticationServiceClient(_transport);
@@ -2053,6 +2212,7 @@ class ApiClient {
 
   /// Closes all service clients and releases resources.
   void dispose() {
+    _attendanceService = null;
     _authenticationService = null;
     _internalMessageService = null;
     _workflowService = null;

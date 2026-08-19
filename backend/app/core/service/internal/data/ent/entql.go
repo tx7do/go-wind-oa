@@ -3,6 +3,9 @@
 package ent
 
 import (
+	"go-wind-oa/app/core/service/internal/data/ent/attendancefence"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancewifi"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagerecipient"
@@ -20,8 +23,81 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 7)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 10)}
 	graph.Nodes[0] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   attendancefence.Table,
+			Columns: attendancefence.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint32,
+				Column: attendancefence.FieldID,
+			},
+		},
+		Type: "AttendanceFence",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			attendancefence.FieldCreatedAt: {Type: field.TypeTime, Column: attendancefence.FieldCreatedAt},
+			attendancefence.FieldUpdatedAt: {Type: field.TypeTime, Column: attendancefence.FieldUpdatedAt},
+			attendancefence.FieldDeletedAt: {Type: field.TypeTime, Column: attendancefence.FieldDeletedAt},
+			attendancefence.FieldCreatedBy: {Type: field.TypeUint32, Column: attendancefence.FieldCreatedBy},
+			attendancefence.FieldUpdatedBy: {Type: field.TypeUint32, Column: attendancefence.FieldUpdatedBy},
+			attendancefence.FieldDeletedBy: {Type: field.TypeUint32, Column: attendancefence.FieldDeletedBy},
+			attendancefence.FieldTenantID:  {Type: field.TypeUint32, Column: attendancefence.FieldTenantID},
+			attendancefence.FieldRemark:    {Type: field.TypeString, Column: attendancefence.FieldRemark},
+			attendancefence.FieldName:      {Type: field.TypeString, Column: attendancefence.FieldName},
+			attendancefence.FieldLongitude: {Type: field.TypeFloat64, Column: attendancefence.FieldLongitude},
+			attendancefence.FieldLatitude:  {Type: field.TypeFloat64, Column: attendancefence.FieldLatitude},
+			attendancefence.FieldRadius:    {Type: field.TypeFloat64, Column: attendancefence.FieldRadius},
+		},
+	}
+	graph.Nodes[1] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   attendancerecord.Table,
+			Columns: attendancerecord.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint32,
+				Column: attendancerecord.FieldID,
+			},
+		},
+		Type: "AttendanceRecord",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			attendancerecord.FieldCreatedAt:   {Type: field.TypeTime, Column: attendancerecord.FieldCreatedAt},
+			attendancerecord.FieldUpdatedAt:   {Type: field.TypeTime, Column: attendancerecord.FieldUpdatedAt},
+			attendancerecord.FieldDeletedAt:   {Type: field.TypeTime, Column: attendancerecord.FieldDeletedAt},
+			attendancerecord.FieldCreatedBy:   {Type: field.TypeUint32, Column: attendancerecord.FieldCreatedBy},
+			attendancerecord.FieldUpdatedBy:   {Type: field.TypeUint32, Column: attendancerecord.FieldUpdatedBy},
+			attendancerecord.FieldDeletedBy:   {Type: field.TypeUint32, Column: attendancerecord.FieldDeletedBy},
+			attendancerecord.FieldTenantID:    {Type: field.TypeUint32, Column: attendancerecord.FieldTenantID},
+			attendancerecord.FieldRemark:      {Type: field.TypeString, Column: attendancerecord.FieldRemark},
+			attendancerecord.FieldCheckResult: {Type: field.TypeEnum, Column: attendancerecord.FieldCheckResult},
+			attendancerecord.FieldLongitude:   {Type: field.TypeFloat64, Column: attendancerecord.FieldLongitude},
+			attendancerecord.FieldLatitude:    {Type: field.TypeFloat64, Column: attendancerecord.FieldLatitude},
+			attendancerecord.FieldBssid:       {Type: field.TypeString, Column: attendancerecord.FieldBssid},
+		},
+	}
+	graph.Nodes[2] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   attendancewifi.Table,
+			Columns: attendancewifi.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint32,
+				Column: attendancewifi.FieldID,
+			},
+		},
+		Type: "AttendanceWifi",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			attendancewifi.FieldCreatedAt: {Type: field.TypeTime, Column: attendancewifi.FieldCreatedAt},
+			attendancewifi.FieldUpdatedAt: {Type: field.TypeTime, Column: attendancewifi.FieldUpdatedAt},
+			attendancewifi.FieldDeletedAt: {Type: field.TypeTime, Column: attendancewifi.FieldDeletedAt},
+			attendancewifi.FieldCreatedBy: {Type: field.TypeUint32, Column: attendancewifi.FieldCreatedBy},
+			attendancewifi.FieldUpdatedBy: {Type: field.TypeUint32, Column: attendancewifi.FieldUpdatedBy},
+			attendancewifi.FieldDeletedBy: {Type: field.TypeUint32, Column: attendancewifi.FieldDeletedBy},
+			attendancewifi.FieldTenantID:  {Type: field.TypeUint32, Column: attendancewifi.FieldTenantID},
+			attendancewifi.FieldRemark:    {Type: field.TypeString, Column: attendancewifi.FieldRemark},
+			attendancewifi.FieldSsid:      {Type: field.TypeString, Column: attendancewifi.FieldSsid},
+			attendancewifi.FieldBssid:     {Type: field.TypeString, Column: attendancewifi.FieldBssid},
+		},
+	}
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   internalmessage.Table,
 			Columns: internalmessage.Columns,
@@ -47,7 +123,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			internalmessage.FieldType:       {Type: field.TypeEnum, Column: internalmessage.FieldType},
 		},
 	}
-	graph.Nodes[1] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   internalmessagecategory.Table,
 			Columns: internalmessagecategory.Columns,
@@ -73,7 +149,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			internalmessagecategory.FieldIconURL:   {Type: field.TypeString, Column: internalmessagecategory.FieldIconURL},
 		},
 	}
-	graph.Nodes[2] = &sqlgraph.Node{
+	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   internalmessagerecipient.Table,
 			Columns: internalmessagerecipient.Columns,
@@ -95,7 +171,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			internalmessagerecipient.FieldReadAt:          {Type: field.TypeTime, Column: internalmessagerecipient.FieldReadAt},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowdefinition.Table,
 			Columns: workflowdefinition.Columns,
@@ -123,7 +199,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			workflowdefinition.FieldDefinitionStatus: {Type: field.TypeEnum, Column: workflowdefinition.FieldDefinitionStatus},
 		},
 	}
-	graph.Nodes[4] = &sqlgraph.Node{
+	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowinstance.Table,
 			Columns: workflowinstance.Columns,
@@ -148,7 +224,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			workflowinstance.FieldCurrentNodeIndex: {Type: field.TypeInt32, Column: workflowinstance.FieldCurrentNodeIndex},
 		},
 	}
-	graph.Nodes[5] = &sqlgraph.Node{
+	graph.Nodes[8] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowlog.Table,
 			Columns: workflowlog.Columns,
@@ -171,7 +247,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			workflowlog.FieldComment:   {Type: field.TypeString, Column: workflowlog.FieldComment},
 		},
 	}
-	graph.Nodes[6] = &sqlgraph.Node{
+	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowtask.Table,
 			Columns: workflowtask.Columns,
@@ -276,6 +352,296 @@ type predicateAdder interface {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (_q *AttendanceFenceQuery) addPredicate(pred func(s *sql.Selector)) {
+	_q.predicates = append(_q.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the AttendanceFenceQuery builder.
+func (_q *AttendanceFenceQuery) Filter() *AttendanceFenceFilter {
+	return &AttendanceFenceFilter{config: _q.config, predicateAdder: _q}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *AttendanceFenceMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the AttendanceFenceMutation builder.
+func (m *AttendanceFenceMutation) Filter() *AttendanceFenceFilter {
+	return &AttendanceFenceFilter{config: m.config, predicateAdder: m}
+}
+
+// AttendanceFenceFilter provides a generic filtering capability at runtime for AttendanceFenceQuery.
+type AttendanceFenceFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *AttendanceFenceFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *AttendanceFenceFilter) WhereID(p entql.Uint32P) {
+	f.Where(p.Field(attendancefence.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *AttendanceFenceFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(attendancefence.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *AttendanceFenceFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(attendancefence.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *AttendanceFenceFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(attendancefence.FieldDeletedAt))
+}
+
+// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
+func (f *AttendanceFenceFilter) WhereCreatedBy(p entql.Uint32P) {
+	f.Where(p.Field(attendancefence.FieldCreatedBy))
+}
+
+// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
+func (f *AttendanceFenceFilter) WhereUpdatedBy(p entql.Uint32P) {
+	f.Where(p.Field(attendancefence.FieldUpdatedBy))
+}
+
+// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
+func (f *AttendanceFenceFilter) WhereDeletedBy(p entql.Uint32P) {
+	f.Where(p.Field(attendancefence.FieldDeletedBy))
+}
+
+// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
+func (f *AttendanceFenceFilter) WhereTenantID(p entql.Uint32P) {
+	f.Where(p.Field(attendancefence.FieldTenantID))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *AttendanceFenceFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(attendancefence.FieldRemark))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *AttendanceFenceFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(attendancefence.FieldName))
+}
+
+// WhereLongitude applies the entql float64 predicate on the longitude field.
+func (f *AttendanceFenceFilter) WhereLongitude(p entql.Float64P) {
+	f.Where(p.Field(attendancefence.FieldLongitude))
+}
+
+// WhereLatitude applies the entql float64 predicate on the latitude field.
+func (f *AttendanceFenceFilter) WhereLatitude(p entql.Float64P) {
+	f.Where(p.Field(attendancefence.FieldLatitude))
+}
+
+// WhereRadius applies the entql float64 predicate on the radius field.
+func (f *AttendanceFenceFilter) WhereRadius(p entql.Float64P) {
+	f.Where(p.Field(attendancefence.FieldRadius))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (_q *AttendanceRecordQuery) addPredicate(pred func(s *sql.Selector)) {
+	_q.predicates = append(_q.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the AttendanceRecordQuery builder.
+func (_q *AttendanceRecordQuery) Filter() *AttendanceRecordFilter {
+	return &AttendanceRecordFilter{config: _q.config, predicateAdder: _q}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *AttendanceRecordMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the AttendanceRecordMutation builder.
+func (m *AttendanceRecordMutation) Filter() *AttendanceRecordFilter {
+	return &AttendanceRecordFilter{config: m.config, predicateAdder: m}
+}
+
+// AttendanceRecordFilter provides a generic filtering capability at runtime for AttendanceRecordQuery.
+type AttendanceRecordFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *AttendanceRecordFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *AttendanceRecordFilter) WhereID(p entql.Uint32P) {
+	f.Where(p.Field(attendancerecord.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *AttendanceRecordFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(attendancerecord.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *AttendanceRecordFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(attendancerecord.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *AttendanceRecordFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(attendancerecord.FieldDeletedAt))
+}
+
+// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
+func (f *AttendanceRecordFilter) WhereCreatedBy(p entql.Uint32P) {
+	f.Where(p.Field(attendancerecord.FieldCreatedBy))
+}
+
+// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
+func (f *AttendanceRecordFilter) WhereUpdatedBy(p entql.Uint32P) {
+	f.Where(p.Field(attendancerecord.FieldUpdatedBy))
+}
+
+// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
+func (f *AttendanceRecordFilter) WhereDeletedBy(p entql.Uint32P) {
+	f.Where(p.Field(attendancerecord.FieldDeletedBy))
+}
+
+// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
+func (f *AttendanceRecordFilter) WhereTenantID(p entql.Uint32P) {
+	f.Where(p.Field(attendancerecord.FieldTenantID))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *AttendanceRecordFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(attendancerecord.FieldRemark))
+}
+
+// WhereCheckResult applies the entql string predicate on the check_result field.
+func (f *AttendanceRecordFilter) WhereCheckResult(p entql.StringP) {
+	f.Where(p.Field(attendancerecord.FieldCheckResult))
+}
+
+// WhereLongitude applies the entql float64 predicate on the longitude field.
+func (f *AttendanceRecordFilter) WhereLongitude(p entql.Float64P) {
+	f.Where(p.Field(attendancerecord.FieldLongitude))
+}
+
+// WhereLatitude applies the entql float64 predicate on the latitude field.
+func (f *AttendanceRecordFilter) WhereLatitude(p entql.Float64P) {
+	f.Where(p.Field(attendancerecord.FieldLatitude))
+}
+
+// WhereBssid applies the entql string predicate on the bssid field.
+func (f *AttendanceRecordFilter) WhereBssid(p entql.StringP) {
+	f.Where(p.Field(attendancerecord.FieldBssid))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (_q *AttendanceWifiQuery) addPredicate(pred func(s *sql.Selector)) {
+	_q.predicates = append(_q.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the AttendanceWifiQuery builder.
+func (_q *AttendanceWifiQuery) Filter() *AttendanceWifiFilter {
+	return &AttendanceWifiFilter{config: _q.config, predicateAdder: _q}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *AttendanceWifiMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the AttendanceWifiMutation builder.
+func (m *AttendanceWifiMutation) Filter() *AttendanceWifiFilter {
+	return &AttendanceWifiFilter{config: m.config, predicateAdder: m}
+}
+
+// AttendanceWifiFilter provides a generic filtering capability at runtime for AttendanceWifiQuery.
+type AttendanceWifiFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *AttendanceWifiFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *AttendanceWifiFilter) WhereID(p entql.Uint32P) {
+	f.Where(p.Field(attendancewifi.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *AttendanceWifiFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(attendancewifi.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *AttendanceWifiFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(attendancewifi.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *AttendanceWifiFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(attendancewifi.FieldDeletedAt))
+}
+
+// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
+func (f *AttendanceWifiFilter) WhereCreatedBy(p entql.Uint32P) {
+	f.Where(p.Field(attendancewifi.FieldCreatedBy))
+}
+
+// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
+func (f *AttendanceWifiFilter) WhereUpdatedBy(p entql.Uint32P) {
+	f.Where(p.Field(attendancewifi.FieldUpdatedBy))
+}
+
+// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
+func (f *AttendanceWifiFilter) WhereDeletedBy(p entql.Uint32P) {
+	f.Where(p.Field(attendancewifi.FieldDeletedBy))
+}
+
+// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
+func (f *AttendanceWifiFilter) WhereTenantID(p entql.Uint32P) {
+	f.Where(p.Field(attendancewifi.FieldTenantID))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *AttendanceWifiFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(attendancewifi.FieldRemark))
+}
+
+// WhereSsid applies the entql string predicate on the ssid field.
+func (f *AttendanceWifiFilter) WhereSsid(p entql.StringP) {
+	f.Where(p.Field(attendancewifi.FieldSsid))
+}
+
+// WhereBssid applies the entql string predicate on the bssid field.
+func (f *AttendanceWifiFilter) WhereBssid(p entql.StringP) {
+	f.Where(p.Field(attendancewifi.FieldBssid))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (_q *InternalMessageQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -304,7 +670,7 @@ type InternalMessageFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *InternalMessageFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -409,7 +775,7 @@ type InternalMessageCategoryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *InternalMessageCategoryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -514,7 +880,7 @@ type InternalMessageRecipientFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *InternalMessageRecipientFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -599,7 +965,7 @@ type WorkflowDefinitionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowDefinitionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -728,7 +1094,7 @@ type WorkflowInstanceFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowInstanceFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -870,7 +1236,7 @@ type WorkflowLogFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowLogFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -974,7 +1340,7 @@ type WorkflowTaskFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowTaskFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

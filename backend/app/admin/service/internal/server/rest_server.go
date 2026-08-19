@@ -72,10 +72,11 @@ func NewRestMiddleware(
 
 // NewRestServer new an REST server.
 //
-// OA admin-service 的 HTTP 邊端註冊三類轉發服務：
+// OA admin-service 的 HTTP 邊端註冊的轉發服務：
 //   - AuthenticationService（鑑權：登錄/登出/驗證碼/令牌刷新，轉發 core gRPC）
 //   - InternalMessage × 3（站內信通知，轉發 core gRPC + SSE 推送）
 //   - WorkflowService（工作流定義/申請/審批/任務查詢，轉發 core gRPC）
+//   - AttendanceService（圍欄 / Wi-Fi 指紋庫 CRUD，轉發 core gRPC）
 //
 // 其餘 cms 業務域的 HTTP 註冊均已隨 service 刪除而去除。
 func NewRestServer(
@@ -90,6 +91,8 @@ func NewRestServer(
 	internalMessageRecipientService *service.InternalMessageRecipientService,
 
 	workflowService *service.WorkflowService,
+
+	attendanceService *service.AttendanceService,
 ) *http.Server {
 	cfg := ctx.GetConfig()
 
@@ -109,6 +112,8 @@ func NewRestServer(
 	adminV1.RegisterInternalMessageRecipientServiceHTTPServer(srv, internalMessageRecipientService)
 
 	adminV1.RegisterWorkflowServiceHTTPServer(srv, workflowService)
+
+	adminV1.RegisterAttendanceServiceHTTPServer(srv, attendanceService)
 
 	if cfg.GetServer().GetRest().GetEnableSwagger() {
 		swaggerUI.RegisterSwaggerUIServerWithOption(
