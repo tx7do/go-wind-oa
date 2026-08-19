@@ -4,6 +4,7 @@ import 'package:flutter_app/generated/l10n.dart';
 import 'package:flutter_app/src/features/oa/services/workflow_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/src/app_router/route_names.dart';
+import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
 import 'package:go_router/go_router.dart';
 
 /// 工作流任务列表页（两 Tab：“待我审批” / “我发起的”）。
@@ -24,8 +25,8 @@ class _OaTaskListPageState extends State<OaTaskListPage>
   final _service = WorkflowService();
 
   // 两 Tab 各自的列表数据
-  List<dynamic> _pending = [];
-  List<dynamic> _submitted = [];
+  List<oaApi.OaServiceV1MyTaskItem> _pending = const [];
+  List<oaApi.OaServiceV1MyTaskItem> _submitted = const [];
   bool _loadingPending = true;
   bool _loadingSubmitted = true;
 
@@ -54,7 +55,10 @@ class _OaTaskListPageState extends State<OaTaskListPage>
     final result = await _service.pendingTasks();
     if (!mounted) return;
     setState(() {
-      _pending = (result is Status) ? [] : (result as dynamic)?.items ?? [];
+      _pending = (result is Status)
+          ? const []
+          : (result as oaApi.OaServiceV1GetMyTasksResponse?)?.items ??
+              const [];
       _loadingPending = false;
     });
   }
@@ -63,7 +67,10 @@ class _OaTaskListPageState extends State<OaTaskListPage>
     final result = await _service.submittedTasks();
     if (!mounted) return;
     setState(() {
-      _submitted = (result is Status) ? [] : (result as dynamic)?.items ?? [];
+      _submitted = (result is Status)
+          ? const []
+          : (result as oaApi.OaServiceV1GetMyTasksResponse?)?.items ??
+              const [];
       _loadingSubmitted = false;
     });
   }
@@ -104,7 +111,9 @@ class _OaTaskListPageState extends State<OaTaskListPage>
   }
 
   Widget _buildList(
-      List<dynamic> items, bool loading, Future<void> Function() onRefresh) {
+      List<oaApi.OaServiceV1MyTaskItem> items,
+      bool loading,
+      Future<void> Function() onRefresh) {
     final theme = Theme.of(context);
     final loc = S.of(context);
 
@@ -124,16 +133,16 @@ class _OaTaskListPageState extends State<OaTaskListPage>
         itemCount: items.length,
         separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (context, i) {
-          final row = items[i] as Map<String, dynamic>? ?? const {};
-          final int taskId = (row['task_id'] as int?) ?? 0;
+          final row = items[i];
+          final int taskId = row.taskId ?? 0;
           return ListTile(
-            title: Text(row['title'] as String? ?? ''),
+            title: Text(row.title ?? ''),
             subtitle: Text(
-              '${loc.oaTaskListStatus}: ${row['status_label'] ?? ''}',
+              '${loc.oaTaskListStatus}: ${row.statusLabel ?? ''}',
               style: const TextStyle(fontSize: 12),
             ),
             trailing: Text(
-              '${row['occurred_at'] ?? ''}',
+              '${row.occurredAt ?? ''}',
               style: const TextStyle(fontSize: 11),
             ),
             onTap: () {

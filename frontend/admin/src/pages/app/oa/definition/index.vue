@@ -61,6 +61,7 @@ import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 
 import {
+  definitionStatusList,
   definitionStatusLabel,
   definitionStatusColor,
   fetchListWorkflowDefinitions,
@@ -108,7 +109,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
           clearable: true,
           filterable: true,
         },
-        options: [],
+        options: definitionStatusList.value,
       },
     ],
   },
@@ -189,7 +190,7 @@ function handleToggleStatus(
   ElMessageBox.confirm(content, title, {
     confirmButtonText: $t("common.confirm"),
     cancelButtonText: $t("common.cancel"),
-    type: isEnable ? "warning" : "warning",
+    type: isEnable ? "warning" : "error",
   })
     .then(() => {
       toggleStatusMutation.mutate({ id: row.id as number, status: target });

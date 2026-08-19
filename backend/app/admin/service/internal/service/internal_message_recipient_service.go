@@ -71,8 +71,3 @@ func (s *InternalMessageRecipientService) DeleteNotificationFromInbox(ctx contex
 func (s *InternalMessageRecipientService) MarkNotificationAsRead(ctx context.Context, req *internalMessageV1.MarkNotificationAsReadRequest) (*emptypb.Empty, error) {
 	return s.messageRecipientServiceClient.MarkNotificationAsRead(ctx, req)
 }
-
-// MarkNotificationsStatus 标记特定用户的某些或所有通知的状态
-func (s *InternalMessageRecipientService) MarkNotificationsStatus(ctx context.Context, req *internalMessageV1.MarkNotificationsStatusRequest) (*emptypb.Empty, error) {
-	return s.messageRecipientServiceClient.MarkNotificationsStatus(ctx, req)
-}

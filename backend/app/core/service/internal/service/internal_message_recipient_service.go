@@ -75,10 +75,3 @@ func (s *InternalMessageRecipientService) MarkNotificationAsRead(ctx context.Con
 	err = s.internalMessageRecipientRepo.MarkNotificationAsRead(ctx, req)
 	return &emptypb.Empty{}, err
 }
-
-// MarkNotificationsStatus 标记特定用户的某些或所有通知的状态
-func (s *InternalMessageRecipientService) MarkNotificationsStatus(ctx context.Context, req *internalMessageV1.MarkNotificationsStatusRequest) (*emptypb.Empty, error) {
-	var err error
-	err = s.internalMessageRecipientRepo.MarkNotificationsStatus(ctx, req)
-	return &emptypb.Empty{}, err
-}

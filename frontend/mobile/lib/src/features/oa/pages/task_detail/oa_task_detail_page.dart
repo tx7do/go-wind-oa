@@ -73,9 +73,12 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
             onPressed: () {
               final fid = int.tryParse(_forwardToCtrl.text);
               Navigator.of(ctx).pop();
-              if (fid != null && fid > 0) {
-                _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.forward, forwardTo: fid);
+              if (fid == null || fid <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(loc.errorOccurred)));
+                return;
               }
+              _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.forward, forwardTo: fid);
             },
             child: Text(loc.oaTaskDetailConfirm),
           ),

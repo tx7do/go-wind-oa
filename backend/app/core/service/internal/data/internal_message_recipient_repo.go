@@ -288,41 +288,6 @@ func (r *InternalMessageRecipientRepo) MarkNotificationAsRead(ctx context.Contex
 	return err
 }
 
-// MarkNotificationsStatus 标记特定用户的某些或所有通知的状态
-func (r *InternalMessageRecipientRepo) MarkNotificationsStatus(ctx context.Context, req *internalMessageV1.MarkNotificationsStatusRequest) error {
-	if len(req.GetRecipientIds()) == 0 {
-		return internalMessageV1.ErrorBadRequest("invalid parameter")
-	}
-	// 强制使用调用者 user_id，忽略请求体中的 user_id
-	callerUserID, hasUser := viewerUserIDFromContext(ctx)
-	if !hasUser {
-		return internalMessageV1.ErrorBadRequest("missing viewer context")
-	}
-
-	now := time.Now()
-	var readAt *time.Time
-	var receiveAt *time.Time
-	switch req.GetNewStatus() {
-	case internalMessageV1.InternalMessageRecipient_READ:
-		readAt = trans.Ptr(now)
-	case internalMessageV1.InternalMessageRecipient_RECEIVED:
-		receiveAt = trans.Ptr(now)
-	}
-
-	_, err := r.entClient.Client().InternalMessageRecipient.Update().
-		Where(
-			internalmessagerecipient.IDIn(req.GetRecipientIds()...),
-			internalmessagerecipient.RecipientUserIDEQ(callerUserID),
-			internalmessagerecipient.StatusNEQ(*r.statusConverter.ToEntity(trans.Ptr(req.GetNewStatus()))),
-		).
-		SetNillableStatus(r.statusConverter.ToEntity(trans.Ptr(req.GetNewStatus()))).
-		SetNillableReadAt(readAt).
-		SetNillableReceivedAt(receiveAt).
-		SetNillableUpdatedAt(trans.Ptr(now)).
-		Save(ctx)
-	return err
-}
-
 // RevokeMessage 撤销某条消息
 // CleanByMessageID 事务级联清理：删除某条消息的所有收件人记录。
 // 仅在消息删除事务中调用，保证与主删除一起提交/回滚，避免留下悬空收件人行。

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_app/generated/l10n.dart';
 import 'package:flutter_app/src/features/oa/services/notification_service.dart';
+import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
 
 /// 站内信收件箱页。
 ///
@@ -17,7 +18,7 @@ class OaNotificationsPage extends StatefulWidget {
 
 class _OaNotificationsPageState extends State<OaNotificationsPage> {
   final _service = NotificationService();
-  List<dynamic> _items = [];
+  List<oaApi.Internal_messageServiceV1InternalMessage> _items = const [];
   bool _loading = true;
 
   @override
@@ -72,12 +73,12 @@ class _OaNotificationsPageState extends State<OaNotificationsPage> {
         itemCount: _items.length,
         separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (context, i) {
-          final row = _items[i] as Map<String, dynamic>? ?? const {};
+          final row = _items[i];
           return ListTile(
-            title: Text(row['title'] as String? ?? '',
+            title: Text(row.title ?? '',
                 maxLines: 1, overflow: TextOverflow.ellipsis),
             subtitle: Text(
-              '${row['sender_name'] ?? ''} · ${row['created_at'] ?? ''}',
+              '${row.senderName ?? ''} · ${row.createdAt ?? ''}',
               style: const TextStyle(fontSize: 12),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
