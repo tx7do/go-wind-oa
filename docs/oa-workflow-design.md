@@ -32,13 +32,24 @@
 
 `backend/app/core/service/`，`appid = serviceid.CoreService`，consul key `go-wind-oa/core/service`。
 
-- `internal/server/grpc_server.go`：創建 gRPC server，中間件鏈 `logging + ent`（core 是被 admin/app 調用的後端，無 auth/authz）。註冊四個 gRPC 服務：
+- `internal/server/grpc_server.go`：創建 gRPC server，中間件鏈 `logging + ent`（core 是被 admin/app 調用的後端，自身不做請求級 auth/authz）。註冊六個 gRPC 服務：
   - `internalMessageV1.RegisterInternalMessageServiceServer` + Category + Recipient（`internal_message.service.v1`，站內信）
   - `oaV1.RegisterWorkflowServiceServer`（`oa.service.v1`，工作流引擎）
-- `internal/data/`：ent 倉庫層。infra 客戶端（`client.NewRedisClient` / `NewEntClient` / `NewDiscovery`）+ 四個 workflow 倉庫 + 三個 internal_message 倉庫。ProviderSet 見 `data/providers/wire_set.go`。
-- `internal/data/ent/schema/`：四張 workflow 表 schema + 三張 internal_message 表 schema（見 §3）。
-- `internal/service/`：四個 gRPC 服務實現——`WorkflowService`（狀態機驅動，見 §4）+ 三個 `InternalMessageService`（含 `InternalMessagePublisher` SSE 推送）。ProviderSet 見 `service/providers/wire_set.go`。
+  - `oaV1.RegisterAttendanceServiceServer`（`oa.service.v1`，考勤打卡與圍欄/Wi-Fi 庫）
+  - `authenticationV1.RegisterAuthenticationServiceServer`（`authentication.service.v1`，鑑權服務端，admin/app BFF 經服務發現調用）
+- `internal/data/`：ent 倉庫層。infra 客戶端（`client.NewRedisClient` / `NewEntClient` / `NewDiscovery`）+ 四個 workflow 倉庫 + 三個 internal_message 倉庫 + 三個 attendance 倉庫 + 鑑權件（`Authenticator` JWT 簽發/驗證、`UserTokenCache` Redis 令牌存儲、`UserRepo` / `UserCredentialRepo`）。ProviderSet 見 `data/providers/wire_set.go`。
+- `internal/data/ent/schema/`：四張 workflow 表 + 三張 internal_message 表 + 三張 attendance 表 + 兩張鑑權表（`sys_users` / `sys_user_credentials`）。注意 workflow 三張父子表的 O2M 邊（definition→instances、instance→tasks/logs）**不可加 Required()**——ent 語義為「建父記錄時必須已存在子記錄」，會導致定義/實例無法插入。
+- `internal/service/`：六個 gRPC 服務實現——`WorkflowService`（狀態機驅動，見 §4）+ 三個 `InternalMessageService`（含 `InternalMessagePublisher` SSE 推送）+ `AttendanceService` + `AuthenticationService`。ProviderSet 見 `service/providers/wire_set.go`。
 - 無 HTTP 端點、無 openapi 生成（core 為 gRPC-only）。
+
+#### 鑑權服務端（AuthenticationService，以 cms 為基座裁剪）
+
+- 令牌機制完整保留自 cms：JWT access token（admin/app 兩套獨立 key，`configs/authenticator.yaml`）+ 不透明 refresh token，Redis String key 存儲（前綴 `goa:`），刷新輪換經 Lua 腳本原子「驗 RT→刪 RT→刪 AT」，支持黑名單（`bl:{jti}`）與按 jti/用戶撤銷。
+- 登錄鏈路：password grant → `FindUserCredential`（AES 解密 → bcrypt 校驗，恆定時間防用戶名枚舉）→ 用戶狀態檢查 → 簽發令牌對。密碼傳輸格式與雙端前端共享 `crypto.DefaultAESKey`（AES-CBC，key=IV，PKCS7，base64）。
+- 裁剪掉的 cms 能力：RBAC 鏈（角色→權限→`sys:access_backend`）、租戶解析（OA v1 單租戶 tenant 0，`tenant_code` 忽略）、`RegisterUser` / `WhoAmI`（雙端 BFF 未暴露對應端點，落 Unimplemented）。
+- 種子數據：服務啟動時 `sys_users` 為空則建立初始管理員 `admin/admin`（**tenant 1 默認租戶**，bcrypt 入庫）。不可用 tenant 0（平台域）：OA 各服務的 callerFromContext 對 tid==0 一律 fail-closed 拒絕，種子必須落在真實租戶上。
+- 令牌角色：v1 無角色表，簽發時為 payload 填入 `platform:admin` 角色碼——admin BFF 的 authz 中間件對空 subject 直接 403（noop 引擎僅在有 subject 時放行）。identity/permission 域落地後改為真實角色。
+- admin 前端的用戶信息從本地 access token JWT payload（`uid`/`sub`/`tid`/`roc`）解出，僅作展示；OA 路由不設 `meta.authority`（後端 authz 為 noop），待 identity/permission 域落地後恢復。
 
 ### 2.2 admin-service（HTTP 边端，admin 前端轉發）
 
