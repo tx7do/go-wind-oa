@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_app/src/features/oa/services/expense_service.dart';
+import 'package:flutter_app/src/features/oa/services/file_upload_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:image_picker/image_picker.dart';
 
 /// 报销申请页（含多行费用明细）。
 ///
@@ -17,6 +19,7 @@ class OaExpensePage extends StatefulWidget {
 
 class _OaExpensePageState extends State<OaExpensePage> {
   final _service = ExpenseService();
+  final _uploadService = FileUploadService();
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
 
@@ -63,7 +66,7 @@ class _OaExpensePageState extends State<OaExpensePage> {
               category: item.category.text,
               amount: double.tryParse(item.amount.text) ?? 0,
               description: item.description.text,
-              invoiceFileId: int.tryParse(item.invoiceFileId.text),
+              invoiceFileId: item.invoiceFileId,
             ))
         .toList();
     final result = await _service.submit(title: _titleCtrl.text, items: items);
@@ -80,6 +83,38 @@ class _OaExpensePageState extends State<OaExpensePage> {
         item.clear();
       }
       _loadApplications();
+    }
+  }
+
+  /// 拍照/相册选图 → multipart 上传 → 回填明细的 invoiceFileId。
+  Future<void> _pickInvoice(int itemIndex, ImageSource source) async {
+    final picker = ImagePicker();
+    XFile? image;
+    try {
+      image = await picker.pickImage(
+        source: source,
+        maxWidth: 1920,
+        imageQuality: 85,
+      );
+    } catch (_) {
+      image = null;
+    }
+    if (image == null || !mounted || itemIndex >= _items.length) return;
+
+    setState(() => _items[itemIndex].invoiceUploading = true);
+    final result = await _uploadService.uploadInvoice(image);
+    if (!mounted) return;
+    setState(() => _items[itemIndex].invoiceUploading = false);
+    if (result is UploadedInvoice) {
+      setState(() => _items[itemIndex].invoiceFileId = result.fileId);
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(const SnackBar(content: Text('发票已上传')));
+      }
+    } else if (result is Status) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(result.message ?? '上传失败')));
     }
   }
 
@@ -130,6 +165,7 @@ class _OaExpensePageState extends State<OaExpensePage> {
                         _items.removeAt(entry.key);
                       }),
                       onChanged: () => setState(() {}),
+                      onPickInvoice: _pickInvoice,
                     ),
                   ),
                 ),
@@ -172,24 +208,28 @@ class _OaExpensePageState extends State<OaExpensePage> {
 }
 
 /// 明细草稿（本地 TextEditingController 集）。
+///
+/// 发票凭证经拍照/相册上传后自动回填 [invoiceFileId]，
+/// [invoiceUploading] 驱动按钮加载态。
 class _ItemDraft {
   final category = TextEditingController();
   final amount = TextEditingController();
   final description = TextEditingController();
-  final invoiceFileId = TextEditingController();
+  int? invoiceFileId;
+  bool invoiceUploading = false;
 
   void dispose() {
     category.dispose();
     amount.dispose();
     description.dispose();
-    invoiceFileId.dispose();
   }
 
   void clear() {
     category.clear();
     amount.clear();
     description.clear();
-    invoiceFileId.clear();
+    invoiceFileId = null;
+    invoiceUploading = false;
   }
 }
 
@@ -199,6 +239,7 @@ class _ItemCard extends StatelessWidget {
   final bool canRemove;
   final VoidCallback onRemove;
   final VoidCallback onChanged;
+  final void Function(int itemIndex, ImageSource source) onPickInvoice;
 
   const _ItemCard({
     required this.draft,
@@ -206,6 +247,7 @@ class _ItemCard extends StatelessWidget {
     required this.canRemove,
     required this.onRemove,
     required this.onChanged,
+    required this.onPickInvoice,
   });
 
   @override
@@ -255,17 +297,73 @@ class _ItemCard extends StatelessWidget {
                   labelText: '说明', border: OutlineInputBorder(), isDense: true),
             ),
             const SizedBox(height: 8),
-            TextFormField(
-              controller: draft.invoiceFileId,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                  labelText: '发票文件ID（可选，上传发票图后填入）',
-                  border: OutlineInputBorder(),
-                  isDense: true),
-            ),
+            _InvoicePickerRow(draft: draft, index: index, onPick: onPickInvoice),
           ],
         ),
       ),
+    );
+  }
+}
+
+
+/// 发票凭证选择行：拍照/相册按钮 + 上传中/已上传状态。
+class _InvoicePickerRow extends StatelessWidget {
+  final _ItemDraft draft;
+  final int index;
+  final void Function(int itemIndex, ImageSource source) onPick;
+
+  const _InvoicePickerRow({
+    required this.draft,
+    required this.index,
+    required this.onPick,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    if (draft.invoiceUploading) {
+      return const Row(
+        children: [
+          SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2)),
+          SizedBox(width: 8),
+          Text('发票上传中…', style: TextStyle(fontSize: 13)),
+        ],
+      );
+    }
+    if (draft.invoiceFileId != null) {
+      return Row(
+        children: [
+          Icon(Icons.check_circle_outline,
+              size: 16, color: theme.colorScheme.primary),
+          const SizedBox(width: 6),
+          Text('发票已上传（文件 #${draft.invoiceFileId}）',
+              style: TextStyle(
+                  fontSize: 13, color: theme.colorScheme.onSurface)),
+        ],
+      );
+    }
+    return Row(
+      children: [
+        OutlinedButton.icon(
+          onPressed: () => onPick(index, ImageSource.camera),
+          icon: const Icon(Icons.photo_camera, size: 16),
+          label: const Text('拍照', style: TextStyle(fontSize: 13)),
+        ),
+        const SizedBox(width: 8),
+        OutlinedButton.icon(
+          onPressed: () => onPick(index, ImageSource.gallery),
+          icon: const Icon(Icons.photo_library, size: 16),
+          label: const Text('相册', style: TextStyle(fontSize: 13)),
+        ),
+        const SizedBox(width: 8),
+        Text('上传发票凭证（可选）',
+            style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withAlpha(140))),
+      ],
     );
   }
 }

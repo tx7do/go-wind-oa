@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
+	<key>NSCameraUsageDescription</key>
+	<string>拍摄发票凭证照片用于报销申请</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>从相册选择发票凭证图片用于报销申请</string>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
 		<true/>
 		<key>CFBundleDevelopmentRegion</key>

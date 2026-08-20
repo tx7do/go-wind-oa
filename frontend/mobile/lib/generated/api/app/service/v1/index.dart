@@ -4039,16 +4039,19 @@ class StorageServiceV1PresignOption {
 }
 
 class StorageServiceV1UploadFileResponse {
+  int? fileId;
   String? objectName;
   String? presignedUrl;
 
   StorageServiceV1UploadFileResponse({
+    this.fileId,
     this.objectName,
     this.presignedUrl,
   });
 
   factory StorageServiceV1UploadFileResponse.fromJson(Map<String, dynamic> json) {
     return StorageServiceV1UploadFileResponse(
+      fileId: json['fileId'] as int?,
       objectName: json['objectName'] as String?,
       presignedUrl: json['presignedUrl'] as String?,
     );
@@ -4056,6 +4059,7 @@ class StorageServiceV1UploadFileResponse {
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
+    if (fileId != null) json['fileId'] = fileId;
     if (objectName != null) json['objectName'] = objectName;
     if (presignedUrl != null) json['presignedUrl'] = presignedUrl;
     return json;
@@ -4063,7 +4067,7 @@ class StorageServiceV1UploadFileResponse {
 
   @override
   String toString() {
-    return 'StorageServiceV1UploadFileResponse(objectName: $objectName, presignedUrl: $presignedUrl)';
+    return 'StorageServiceV1UploadFileResponse(fileId: $fileId, objectName: $objectName, presignedUrl: $presignedUrl)';
   }
 
   @override
@@ -4071,21 +4075,25 @@ class StorageServiceV1UploadFileResponse {
     identical(this, other) ||
     other is StorageServiceV1UploadFileResponse &&
       runtimeType == other.runtimeType
+      && fileId == other.fileId
       && objectName == other.objectName
       && presignedUrl == other.presignedUrl
     ;
 
   @override
   int get hashCode => Object.hashAll([
+    fileId,
     objectName,
     presignedUrl,
   ]);
 
   StorageServiceV1UploadFileResponse copyWith({
+    int? fileId,
     String? objectName,
     String? presignedUrl,
   }) {
     return StorageServiceV1UploadFileResponse(
+      fileId: fileId ?? this.fileId,
       objectName: objectName ?? this.objectName,
       presignedUrl: presignedUrl ?? this.presignedUrl,
     );

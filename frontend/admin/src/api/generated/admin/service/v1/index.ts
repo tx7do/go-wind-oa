@@ -3103,6 +3103,7 @@ export type storageservicev1_PresignOption = {
 };
 
 export type storageservicev1_UploadFileResponse = {
+  fileId?: number;
   objectName?: string;
   presignedUrl?: string;
 };

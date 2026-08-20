@@ -126,6 +126,7 @@ dependencies:
   retrofit: ^4.9.2
   flutter_markdown: ^0.7.7+1
   flutter_widget_from_html: ^0.17.2
+  image_picker: ^1.2.3
 
 dev_dependencies:
   flutter_test:
