@@ -26,6 +26,7 @@ const (
 	WorkflowService_WithdrawApply_FullMethodName = "/app.service.v1.WorkflowService/WithdrawApply"
 	WorkflowService_GetMyTasks_FullMethodName    = "/app.service.v1.WorkflowService/GetMyTasks"
 	WorkflowService_GetTask_FullMethodName       = "/app.service.v1.WorkflowService/GetTask"
+	WorkflowService_GetApplyForm_FullMethodName  = "/app.service.v1.WorkflowService/GetApplyForm"
 )
 
 // WorkflowServiceClient is the client API for WorkflowService service.
@@ -44,6 +45,8 @@ type WorkflowServiceClient interface {
 	GetMyTasks(ctx context.Context, in *v1.GetMyTasksRequest, opts ...grpc.CallOption) (*v1.GetMyTasksResponse, error)
 	// 查询任务详情
 	GetTask(ctx context.Context, in *v1.GetTaskRequest, opts ...grpc.CallOption) (*v1.GetTaskResponse, error)
+	// 获取申请表单定义（提交页动态渲染表单用）
+	GetApplyForm(ctx context.Context, in *v1.GetApplyFormRequest, opts ...grpc.CallOption) (*v1.GetApplyFormResponse, error)
 }
 
 type workflowServiceClient struct {
@@ -104,6 +107,16 @@ func (c *workflowServiceClient) GetTask(ctx context.Context, in *v1.GetTaskReque
 	return out, nil
 }
 
+func (c *workflowServiceClient) GetApplyForm(ctx context.Context, in *v1.GetApplyFormRequest, opts ...grpc.CallOption) (*v1.GetApplyFormResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.GetApplyFormResponse)
+	err := c.cc.Invoke(ctx, WorkflowService_GetApplyForm_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkflowServiceServer is the server API for WorkflowService service.
 // All implementations must embed UnimplementedWorkflowServiceServer
 // for forward compatibility.
@@ -120,6 +133,8 @@ type WorkflowServiceServer interface {
 	GetMyTasks(context.Context, *v1.GetMyTasksRequest) (*v1.GetMyTasksResponse, error)
 	// 查询任务详情
 	GetTask(context.Context, *v1.GetTaskRequest) (*v1.GetTaskResponse, error)
+	// 获取申请表单定义（提交页动态渲染表单用）
+	GetApplyForm(context.Context, *v1.GetApplyFormRequest) (*v1.GetApplyFormResponse, error)
 	mustEmbedUnimplementedWorkflowServiceServer()
 }
 
@@ -144,6 +159,9 @@ func (UnimplementedWorkflowServiceServer) GetMyTasks(context.Context, *v1.GetMyT
 }
 func (UnimplementedWorkflowServiceServer) GetTask(context.Context, *v1.GetTaskRequest) (*v1.GetTaskResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTask not implemented")
+}
+func (UnimplementedWorkflowServiceServer) GetApplyForm(context.Context, *v1.GetApplyFormRequest) (*v1.GetApplyFormResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetApplyForm not implemented")
 }
 func (UnimplementedWorkflowServiceServer) mustEmbedUnimplementedWorkflowServiceServer() {}
 func (UnimplementedWorkflowServiceServer) testEmbeddedByValue()                         {}
@@ -256,6 +274,24 @@ func _WorkflowService_GetTask_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkflowService_GetApplyForm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.GetApplyFormRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).GetApplyForm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_GetApplyForm_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).GetApplyForm(ctx, req.(*v1.GetApplyFormRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkflowService_ServiceDesc is the grpc.ServiceDesc for WorkflowService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -282,6 +318,10 @@ var WorkflowService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTask",
 			Handler:    _WorkflowService_GetTask_Handler,
+		},
+		{
+			MethodName: "GetApplyForm",
+			Handler:    _WorkflowService_GetApplyForm_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

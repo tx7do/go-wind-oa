@@ -1293,6 +1293,29 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/oa.service.v1.ListLeaveTypesResponse'
+    /app/v1/oa/workflow/apply-form:
+        get:
+            tags:
+                - WorkflowService
+            description: 获取申请表单定义（提交页动态渲染表单用）
+            operationId: WorkflowService_GetApplyForm
+            parameters:
+                - name: code
+                  in: query
+                  schema:
+                    type: string
+                - name: version
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.GetApplyFormResponse'
     /app/v1/oa/workflow/audit-task:
         post:
             tags:
@@ -4205,6 +4228,13 @@ components:
                     description: 创建时间
                     format: date-time
             description: 报销明细行
+        oa.service.v1.GetApplyFormResponse:
+            type: object
+            properties:
+                formSchema:
+                    type: string
+                    description: 表单字段描述数组（JSON）：[{key,label,type:text|textarea|number|date|select,required,options}]。空串表示无表单定义，客户端回退自由 JSON 输入
+            description: 获取申请表单定义 - 回应
         oa.service.v1.GetMyTasksResponse:
             type: object
             properties:

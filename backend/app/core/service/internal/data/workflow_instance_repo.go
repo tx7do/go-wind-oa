@@ -162,6 +162,27 @@ func (r *WorkflowInstanceRepo) GetMeta(ctx context.Context, id uint32, tenantID 
 	return creator, businessType, businessID, nil
 }
 
+// GetFormData 读取实例的申请表单数据（JSON 文本），供审批人查看申请内容。
+func (r *WorkflowInstanceRepo) GetFormData(ctx context.Context, id uint32, tenantID uint32) (string, error) {
+	entity, err := r.entClient.Client().WorkflowInstance.Query().
+		Where(
+			workflowinstance.IDEQ(id),
+			workflowinstance.TenantIDEQ(tenantID),
+		).
+		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return "", oaV1.ErrorNotFound("workflow instance not found")
+		}
+		r.log.Errorf("query instance form data failed: %s", err.Error())
+		return "", oaV1.ErrorInternalServerError("query instance failed")
+	}
+	if entity.FormData == nil {
+		return "", nil
+	}
+	return *entity.FormData, nil
+}
+
 // GetDefinitionNodeConfig 经 instance→definition 边读取定义的 node_config（JSON 文本）。
 // 供状态机 APPROVE 推进时解析下一节点审批人。
 func (r *WorkflowInstanceRepo) GetDefinitionNodeConfig(ctx context.Context, id uint32, tenantID uint32) (string, error) {

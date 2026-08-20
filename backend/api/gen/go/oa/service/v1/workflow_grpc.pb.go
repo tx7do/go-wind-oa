@@ -28,6 +28,7 @@ const (
 	WorkflowService_SubmitApply_FullMethodName              = "/oa.service.v1.WorkflowService/SubmitApply"
 	WorkflowService_AuditTask_FullMethodName                = "/oa.service.v1.WorkflowService/AuditTask"
 	WorkflowService_WithdrawApply_FullMethodName            = "/oa.service.v1.WorkflowService/WithdrawApply"
+	WorkflowService_GetApplyForm_FullMethodName             = "/oa.service.v1.WorkflowService/GetApplyForm"
 	WorkflowService_GetMyTasks_FullMethodName               = "/oa.service.v1.WorkflowService/GetMyTasks"
 	WorkflowService_GetTask_FullMethodName                  = "/oa.service.v1.WorkflowService/GetTask"
 )
@@ -52,6 +53,8 @@ type WorkflowServiceClient interface {
 	AuditTask(ctx context.Context, in *AuditTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 撤回申请（仅申请人本人，仅进行中的实例）
 	WithdrawApply(ctx context.Context, in *WithdrawApplyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 获取申请表单定义（按流程 code+version，仅 ENABLED 定义；返回 form_schema JSON）
+	GetApplyForm(ctx context.Context, in *GetApplyFormRequest, opts ...grpc.CallOption) (*GetApplyFormResponse, error)
 	// 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(ctx context.Context, in *GetMyTasksRequest, opts ...grpc.CallOption) (*GetMyTasksResponse, error)
 	// 查询任务详情
@@ -136,6 +139,16 @@ func (c *workflowServiceClient) WithdrawApply(ctx context.Context, in *WithdrawA
 	return out, nil
 }
 
+func (c *workflowServiceClient) GetApplyForm(ctx context.Context, in *GetApplyFormRequest, opts ...grpc.CallOption) (*GetApplyFormResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetApplyFormResponse)
+	err := c.cc.Invoke(ctx, WorkflowService_GetApplyForm_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *workflowServiceClient) GetMyTasks(ctx context.Context, in *GetMyTasksRequest, opts ...grpc.CallOption) (*GetMyTasksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetMyTasksResponse)
@@ -176,6 +189,8 @@ type WorkflowServiceServer interface {
 	AuditTask(context.Context, *AuditTaskRequest) (*emptypb.Empty, error)
 	// 撤回申请（仅申请人本人，仅进行中的实例）
 	WithdrawApply(context.Context, *WithdrawApplyRequest) (*emptypb.Empty, error)
+	// 获取申请表单定义（按流程 code+version，仅 ENABLED 定义；返回 form_schema JSON）
+	GetApplyForm(context.Context, *GetApplyFormRequest) (*GetApplyFormResponse, error)
 	// 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(context.Context, *GetMyTasksRequest) (*GetMyTasksResponse, error)
 	// 查询任务详情
@@ -210,6 +225,9 @@ func (UnimplementedWorkflowServiceServer) AuditTask(context.Context, *AuditTaskR
 }
 func (UnimplementedWorkflowServiceServer) WithdrawApply(context.Context, *WithdrawApplyRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method WithdrawApply not implemented")
+}
+func (UnimplementedWorkflowServiceServer) GetApplyForm(context.Context, *GetApplyFormRequest) (*GetApplyFormResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetApplyForm not implemented")
 }
 func (UnimplementedWorkflowServiceServer) GetMyTasks(context.Context, *GetMyTasksRequest) (*GetMyTasksResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMyTasks not implemented")
@@ -364,6 +382,24 @@ func _WorkflowService_WithdrawApply_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkflowService_GetApplyForm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetApplyFormRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).GetApplyForm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_GetApplyForm_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).GetApplyForm(ctx, req.(*GetApplyFormRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _WorkflowService_GetMyTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetMyTasksRequest)
 	if err := dec(in); err != nil {
@@ -434,6 +470,10 @@ var WorkflowService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "WithdrawApply",
 			Handler:    _WorkflowService_WithdrawApply_Handler,
+		},
+		{
+			MethodName: "GetApplyForm",
+			Handler:    _WorkflowService_GetApplyForm_Handler,
 		},
 		{
 			MethodName: "GetMyTasks",

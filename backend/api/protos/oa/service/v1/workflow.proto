@@ -36,6 +36,9 @@ service WorkflowService {
   // 撤回申请（仅申请人本人，仅进行中的实例）
   rpc WithdrawApply(WithdrawApplyRequest) returns (google.protobuf.Empty) {}
 
+  // 获取申请表单定义（按流程 code+version，仅 ENABLED 定义；返回 form_schema JSON）
+  rpc GetApplyForm(GetApplyFormRequest) returns (GetApplyFormResponse) {}
+
   // 查询我的任务（待办/已办/我的申请）
   rpc GetMyTasks(GetMyTasksRequest) returns (GetMyTasksResponse) {}
 
@@ -350,6 +353,27 @@ message SubmitApplyResponse {
     json_name = "instanceId",
     (gnostic.openapi.v3.property) = { description: "实例ID" }
   ]; // 实例ID
+}
+
+// 获取申请表单定义 - 请求
+message GetApplyFormRequest {
+  string code = 1 [
+    json_name = "code",
+    (gnostic.openapi.v3.property) = { description: "流程代码" }
+  ]; // 流程代码
+
+  int32 version = 2 [
+    json_name = "version",
+    (gnostic.openapi.v3.property) = { description: "版本号" }
+  ]; // 版本号
+}
+
+// 获取申请表单定义 - 回应
+message GetApplyFormResponse {
+  string form_schema = 1 [
+    json_name = "formSchema",
+    (gnostic.openapi.v3.property) = { description: "表单字段描述数组（JSON）：[{key,label,type:text|textarea|number|date|select,required,options}]。空串表示无表单定义，客户端回退自由 JSON 输入" }
+  ]; // 表单字段描述
 }
 
 // 撤回申请 - 请求

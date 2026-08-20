@@ -27,14 +27,15 @@ var File_app_service_v1_i_workflow_proto protoreflect.FileDescriptor
 
 const file_app_service_v1_i_workflow_proto_rawDesc = "" +
 	"\n" +
-	"\x1fapp/service/v1/i_workflow.proto\x12\x0eapp.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1coa/service/v1/workflow.proto2\xee\x04\n" +
+	"\x1fapp/service/v1/i_workflow.proto\x12\x0eapp.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1coa/service/v1/workflow.proto2\xef\x05\n" +
 	"\x0fWorkflowService\x12\x81\x01\n" +
 	"\vSubmitApply\x12!.oa.service.v1.SubmitApplyRequest\x1a\".oa.service.v1.SubmitApplyResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /app/v1/oa/workflow/submit-apply\x12o\n" +
 	"\tAuditTask\x12\x1f.oa.service.v1.AuditTaskRequest\x1a\x16.google.protobuf.Empty\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/app/v1/oa/workflow/audit-task\x12{\n" +
 	"\rWithdrawApply\x12#.oa.service.v1.WithdrawApplyRequest\x1a\x16.google.protobuf.Empty\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/app/v1/oa/workflow/withdraw-apply\x12w\n" +
 	"\n" +
 	"GetMyTasks\x12 .oa.service.v1.GetMyTasksRequest\x1a!.oa.service.v1.GetMyTasksResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/app/v1/oa/workflow/my-tasks\x12p\n" +
-	"\aGetTask\x12\x1d.oa.service.v1.GetTaskRequest\x1a\x1e.oa.service.v1.GetTaskResponse\"&\x82\xd3\xe4\x93\x02 \x12\x1e/app/v1/oa/workflow/tasks/{id}B\xae\x01\n" +
+	"\aGetTask\x12\x1d.oa.service.v1.GetTaskRequest\x1a\x1e.oa.service.v1.GetTaskResponse\"&\x82\xd3\xe4\x93\x02 \x12\x1e/app/v1/oa/workflow/tasks/{id}\x12\x7f\n" +
+	"\fGetApplyForm\x12\".oa.service.v1.GetApplyFormRequest\x1a#.oa.service.v1.GetApplyFormResponse\"&\x82\xd3\xe4\x93\x02 \x12\x1e/app/v1/oa/workflow/apply-formB\xae\x01\n" +
 	"\x12com.app.service.v1B\x0eIWorkflowProtoP\x01Z.go-wind-oa/api/gen/go/app/service/v1;servicev1\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
 
 var file_app_service_v1_i_workflow_proto_goTypes = []any{
@@ -43,27 +44,31 @@ var file_app_service_v1_i_workflow_proto_goTypes = []any{
 	(*v1.WithdrawApplyRequest)(nil), // 2: oa.service.v1.WithdrawApplyRequest
 	(*v1.GetMyTasksRequest)(nil),    // 3: oa.service.v1.GetMyTasksRequest
 	(*v1.GetTaskRequest)(nil),       // 4: oa.service.v1.GetTaskRequest
-	(*v1.SubmitApplyResponse)(nil),  // 5: oa.service.v1.SubmitApplyResponse
-	(*emptypb.Empty)(nil),           // 6: google.protobuf.Empty
-	(*v1.GetMyTasksResponse)(nil),   // 7: oa.service.v1.GetMyTasksResponse
-	(*v1.GetTaskResponse)(nil),      // 8: oa.service.v1.GetTaskResponse
+	(*v1.GetApplyFormRequest)(nil),  // 5: oa.service.v1.GetApplyFormRequest
+	(*v1.SubmitApplyResponse)(nil),  // 6: oa.service.v1.SubmitApplyResponse
+	(*emptypb.Empty)(nil),           // 7: google.protobuf.Empty
+	(*v1.GetMyTasksResponse)(nil),   // 8: oa.service.v1.GetMyTasksResponse
+	(*v1.GetTaskResponse)(nil),      // 9: oa.service.v1.GetTaskResponse
+	(*v1.GetApplyFormResponse)(nil), // 10: oa.service.v1.GetApplyFormResponse
 }
 var file_app_service_v1_i_workflow_proto_depIdxs = []int32{
-	0, // 0: app.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
-	1, // 1: app.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
-	2, // 2: app.service.v1.WorkflowService.WithdrawApply:input_type -> oa.service.v1.WithdrawApplyRequest
-	3, // 3: app.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
-	4, // 4: app.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
-	5, // 5: app.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
-	6, // 6: app.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
-	6, // 7: app.service.v1.WorkflowService.WithdrawApply:output_type -> google.protobuf.Empty
-	7, // 8: app.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
-	8, // 9: app.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: app.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
+	1,  // 1: app.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
+	2,  // 2: app.service.v1.WorkflowService.WithdrawApply:input_type -> oa.service.v1.WithdrawApplyRequest
+	3,  // 3: app.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
+	4,  // 4: app.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
+	5,  // 5: app.service.v1.WorkflowService.GetApplyForm:input_type -> oa.service.v1.GetApplyFormRequest
+	6,  // 6: app.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
+	7,  // 7: app.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
+	7,  // 8: app.service.v1.WorkflowService.WithdrawApply:output_type -> google.protobuf.Empty
+	8,  // 9: app.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
+	9,  // 10: app.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
+	10, // 11: app.service.v1.WorkflowService.GetApplyForm:output_type -> oa.service.v1.GetApplyFormResponse
+	6,  // [6:12] is the sub-list for method output_type
+	0,  // [0:6] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_app_service_v1_i_workflow_proto_init() }

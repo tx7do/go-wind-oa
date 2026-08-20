@@ -22,6 +22,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationWorkflowServiceAuditTask = "/app.service.v1.WorkflowService/AuditTask"
+const OperationWorkflowServiceGetApplyForm = "/app.service.v1.WorkflowService/GetApplyForm"
 const OperationWorkflowServiceGetMyTasks = "/app.service.v1.WorkflowService/GetMyTasks"
 const OperationWorkflowServiceGetTask = "/app.service.v1.WorkflowService/GetTask"
 const OperationWorkflowServiceSubmitApply = "/app.service.v1.WorkflowService/SubmitApply"
@@ -30,6 +31,8 @@ const OperationWorkflowServiceWithdrawApply = "/app.service.v1.WorkflowService/W
 type WorkflowServiceHTTPServer interface {
 	// AuditTask 审批任务
 	AuditTask(context.Context, *v1.AuditTaskRequest) (*emptypb.Empty, error)
+	// GetApplyForm 获取申请表单定义（提交页动态渲染表单用）
+	GetApplyForm(context.Context, *v1.GetApplyFormRequest) (*v1.GetApplyFormResponse, error)
 	// GetMyTasks 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(context.Context, *v1.GetMyTasksRequest) (*v1.GetMyTasksResponse, error)
 	// GetTask 查询任务详情
@@ -47,6 +50,7 @@ func RegisterWorkflowServiceHTTPServer(s *http.Server, srv WorkflowServiceHTTPSe
 	r.POST("/app/v1/oa/workflow/withdraw-apply", _WorkflowService_WithdrawApply0_HTTP_Handler(srv))
 	r.GET("/app/v1/oa/workflow/my-tasks", _WorkflowService_GetMyTasks0_HTTP_Handler(srv))
 	r.GET("/app/v1/oa/workflow/tasks/{id}", _WorkflowService_GetTask0_HTTP_Handler(srv))
+	r.GET("/app/v1/oa/workflow/apply-form", _WorkflowService_GetApplyForm0_HTTP_Handler(srv))
 }
 
 func _WorkflowService_SubmitApply0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
@@ -156,9 +160,30 @@ func _WorkflowService_GetTask0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(
 	}
 }
 
+func _WorkflowService_GetApplyForm0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.GetApplyFormRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWorkflowServiceGetApplyForm)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetApplyForm(ctx, req.(*v1.GetApplyFormRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.GetApplyFormResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type WorkflowServiceHTTPClient interface {
 	// AuditTask 审批任务
 	AuditTask(ctx context.Context, req *v1.AuditTaskRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// GetApplyForm 获取申请表单定义（提交页动态渲染表单用）
+	GetApplyForm(ctx context.Context, req *v1.GetApplyFormRequest, opts ...http.CallOption) (rsp *v1.GetApplyFormResponse, err error)
 	// GetMyTasks 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(ctx context.Context, req *v1.GetMyTasksRequest, opts ...http.CallOption) (rsp *v1.GetMyTasksResponse, err error)
 	// GetTask 查询任务详情
@@ -185,6 +210,20 @@ func (c *WorkflowServiceHTTPClientImpl) AuditTask(ctx context.Context, in *v1.Au
 	opts = append(opts, http.Operation(OperationWorkflowServiceAuditTask))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetApplyForm 获取申请表单定义（提交页动态渲染表单用）
+func (c *WorkflowServiceHTTPClientImpl) GetApplyForm(ctx context.Context, in *v1.GetApplyFormRequest, opts ...http.CallOption) (*v1.GetApplyFormResponse, error) {
+	var out v1.GetApplyFormResponse
+	pattern := "/app/v1/oa/workflow/apply-form"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationWorkflowServiceGetApplyForm))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

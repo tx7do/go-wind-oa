@@ -1312,6 +1312,104 @@ func (x *SubmitApplyResponse) GetInstanceId() uint32 {
 	return 0
 }
 
+// 获取申请表单定义 - 请求
+type GetApplyFormRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`        // 流程代码
+	Version       int32                  `protobuf:"varint,2,opt,name=version,proto3" json:"version,omitempty"` // 版本号
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetApplyFormRequest) Reset() {
+	*x = GetApplyFormRequest{}
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetApplyFormRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetApplyFormRequest) ProtoMessage() {}
+
+func (x *GetApplyFormRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetApplyFormRequest.ProtoReflect.Descriptor instead.
+func (*GetApplyFormRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GetApplyFormRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *GetApplyFormRequest) GetVersion() int32 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+// 获取申请表单定义 - 回应
+type GetApplyFormResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FormSchema    string                 `protobuf:"bytes,1,opt,name=form_schema,json=formSchema,proto3" json:"form_schema,omitempty"` // 表单字段描述
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetApplyFormResponse) Reset() {
+	*x = GetApplyFormResponse{}
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetApplyFormResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetApplyFormResponse) ProtoMessage() {}
+
+func (x *GetApplyFormResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetApplyFormResponse.ProtoReflect.Descriptor instead.
+func (*GetApplyFormResponse) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GetApplyFormResponse) GetFormSchema() string {
+	if x != nil {
+		return x.FormSchema
+	}
+	return ""
+}
+
 // 撤回申请 - 请求
 type WithdrawApplyRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -1322,7 +1420,7 @@ type WithdrawApplyRequest struct {
 
 func (x *WithdrawApplyRequest) Reset() {
 	*x = WithdrawApplyRequest{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[11]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1334,7 +1432,7 @@ func (x *WithdrawApplyRequest) String() string {
 func (*WithdrawApplyRequest) ProtoMessage() {}
 
 func (x *WithdrawApplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[11]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1347,7 +1445,7 @@ func (x *WithdrawApplyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WithdrawApplyRequest.ProtoReflect.Descriptor instead.
 func (*WithdrawApplyRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{11}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *WithdrawApplyRequest) GetInstanceId() uint32 {
@@ -1370,7 +1468,7 @@ type AuditTaskRequest struct {
 
 func (x *AuditTaskRequest) Reset() {
 	*x = AuditTaskRequest{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[12]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1382,7 +1480,7 @@ func (x *AuditTaskRequest) String() string {
 func (*AuditTaskRequest) ProtoMessage() {}
 
 func (x *AuditTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[12]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1395,7 +1493,7 @@ func (x *AuditTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuditTaskRequest.ProtoReflect.Descriptor instead.
 func (*AuditTaskRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{12}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *AuditTaskRequest) GetTaskId() uint32 {
@@ -1438,7 +1536,7 @@ type GetMyTasksRequest struct {
 
 func (x *GetMyTasksRequest) Reset() {
 	*x = GetMyTasksRequest{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[13]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1450,7 +1548,7 @@ func (x *GetMyTasksRequest) String() string {
 func (*GetMyTasksRequest) ProtoMessage() {}
 
 func (x *GetMyTasksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[13]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1463,7 +1561,7 @@ func (x *GetMyTasksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMyTasksRequest.ProtoReflect.Descriptor instead.
 func (*GetMyTasksRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{13}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetMyTasksRequest) GetListType() ListType {
@@ -1498,7 +1596,7 @@ type GetMyTasksResponse struct {
 
 func (x *GetMyTasksResponse) Reset() {
 	*x = GetMyTasksResponse{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[14]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1510,7 +1608,7 @@ func (x *GetMyTasksResponse) String() string {
 func (*GetMyTasksResponse) ProtoMessage() {}
 
 func (x *GetMyTasksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[14]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1523,7 +1621,7 @@ func (x *GetMyTasksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMyTasksResponse.ProtoReflect.Descriptor instead.
 func (*GetMyTasksResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{14}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetMyTasksResponse) GetItems() []*MyTaskItem {
@@ -1553,7 +1651,7 @@ type GetTaskRequest struct {
 
 func (x *GetTaskRequest) Reset() {
 	*x = GetTaskRequest{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[15]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1565,7 +1663,7 @@ func (x *GetTaskRequest) String() string {
 func (*GetTaskRequest) ProtoMessage() {}
 
 func (x *GetTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[15]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1578,7 +1676,7 @@ func (x *GetTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskRequest.ProtoReflect.Descriptor instead.
 func (*GetTaskRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{15}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GetTaskRequest) GetQueryBy() isGetTaskRequest_QueryBy {
@@ -1619,7 +1717,7 @@ type GetTaskResponse struct {
 
 func (x *GetTaskResponse) Reset() {
 	*x = GetTaskResponse{}
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[16]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1631,7 +1729,7 @@ func (x *GetTaskResponse) String() string {
 func (*GetTaskResponse) ProtoMessage() {}
 
 func (x *GetTaskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_workflow_proto_msgTypes[16]
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1644,7 +1742,7 @@ func (x *GetTaskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskResponse.ProtoReflect.Descriptor instead.
 func (*GetTaskResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{16}
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GetTaskResponse) GetTask() *WorkflowTask {
@@ -1885,7 +1983,13 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\f_business_id\"F\n" +
 	"\x13SubmitApplyResponse\x12/\n" +
 	"\vinstance_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b实例IDR\n" +
-	"instanceId\"G\n" +
+	"instanceId\"h\n" +
+	"\x13GetApplyFormRequest\x12&\n" +
+	"\x04code\x18\x01 \x01(\tB\x12\xbaG\x0f\x92\x02\f流程代码R\x04code\x12)\n" +
+	"\aversion\x18\x02 \x01(\x05B\x0f\xbaG\f\x92\x02\t版本号R\aversion\"\xee\x01\n" +
+	"\x14GetApplyFormResponse\x12\xd5\x01\n" +
+	"\vform_schema\x18\x01 \x01(\tB\xb3\x01\xbaG\xaf\x01\x92\x02\xab\x01表单字段描述数组（JSON）：[{key,label,type:text|textarea|number|date|select,required,options}]。空串表示无表单定义，客户端回退自由 JSON 输入R\n" +
+	"formSchema\"G\n" +
 	"\x14WithdrawApplyRequest\x12/\n" +
 	"\vinstance_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b实例IDR\n" +
 	"instanceId\"\xec\x01\n" +
@@ -1925,7 +2029,7 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\bListType\x12\v\n" +
 	"\aPENDING\x10\x00\x12\b\n" +
 	"\x04DONE\x10\x01\x12\r\n" +
-	"\tSUBMITTED\x10\x022\xca\x06\n" +
+	"\tSUBMITTED\x10\x022\xa5\a\n" +
 	"\x0fWorkflowService\x12o\n" +
 	"\x18CreateWorkflowDefinition\x12..oa.service.v1.CreateWorkflowDefinitionRequest\x1a!.oa.service.v1.WorkflowDefinition\"\x00\x12d\n" +
 	"\x16ListWorkflowDefinition\x12\x19.pagination.PagingRequest\x1a-.oa.service.v1.ListWorkflowDefinitionResponse\"\x00\x12d\n" +
@@ -1933,7 +2037,8 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\x15GetWorkflowDefinition\x12+.oa.service.v1.GetWorkflowDefinitionRequest\x1a!.oa.service.v1.WorkflowDefinition\"\x00\x12V\n" +
 	"\vSubmitApply\x12!.oa.service.v1.SubmitApplyRequest\x1a\".oa.service.v1.SubmitApplyResponse\"\x00\x12F\n" +
 	"\tAuditTask\x12\x1f.oa.service.v1.AuditTaskRequest\x1a\x16.google.protobuf.Empty\"\x00\x12N\n" +
-	"\rWithdrawApply\x12#.oa.service.v1.WithdrawApplyRequest\x1a\x16.google.protobuf.Empty\"\x00\x12S\n" +
+	"\rWithdrawApply\x12#.oa.service.v1.WithdrawApplyRequest\x1a\x16.google.protobuf.Empty\"\x00\x12Y\n" +
+	"\fGetApplyForm\x12\".oa.service.v1.GetApplyFormRequest\x1a#.oa.service.v1.GetApplyFormResponse\"\x00\x12S\n" +
 	"\n" +
 	"GetMyTasks\x12 .oa.service.v1.GetMyTasksRequest\x1a!.oa.service.v1.GetMyTasksResponse\"\x00\x12J\n" +
 	"\aGetTask\x12\x1d.oa.service.v1.GetTaskRequest\x1a\x1e.oa.service.v1.GetTaskResponse\"\x00B\xa2\x01\n" +
@@ -1952,7 +2057,7 @@ func file_oa_service_v1_workflow_proto_rawDescGZIP() []byte {
 }
 
 var file_oa_service_v1_workflow_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_oa_service_v1_workflow_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_oa_service_v1_workflow_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_oa_service_v1_workflow_proto_goTypes = []any{
 	(AuditAction)(0),                         // 0: oa.service.v1.AuditAction
 	(ListType)(0),                            // 1: oa.service.v1.ListType
@@ -1971,65 +2076,69 @@ var file_oa_service_v1_workflow_proto_goTypes = []any{
 	(*UpdateWorkflowDefinitionRequest)(nil),  // 14: oa.service.v1.UpdateWorkflowDefinitionRequest
 	(*SubmitApplyRequest)(nil),               // 15: oa.service.v1.SubmitApplyRequest
 	(*SubmitApplyResponse)(nil),              // 16: oa.service.v1.SubmitApplyResponse
-	(*WithdrawApplyRequest)(nil),             // 17: oa.service.v1.WithdrawApplyRequest
-	(*AuditTaskRequest)(nil),                 // 18: oa.service.v1.AuditTaskRequest
-	(*GetMyTasksRequest)(nil),                // 19: oa.service.v1.GetMyTasksRequest
-	(*GetMyTasksResponse)(nil),               // 20: oa.service.v1.GetMyTasksResponse
-	(*GetTaskRequest)(nil),                   // 21: oa.service.v1.GetTaskRequest
-	(*GetTaskResponse)(nil),                  // 22: oa.service.v1.GetTaskResponse
-	(*timestamppb.Timestamp)(nil),            // 23: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),            // 24: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),                 // 25: pagination.PagingRequest
-	(*emptypb.Empty)(nil),                    // 26: google.protobuf.Empty
+	(*GetApplyFormRequest)(nil),              // 17: oa.service.v1.GetApplyFormRequest
+	(*GetApplyFormResponse)(nil),             // 18: oa.service.v1.GetApplyFormResponse
+	(*WithdrawApplyRequest)(nil),             // 19: oa.service.v1.WithdrawApplyRequest
+	(*AuditTaskRequest)(nil),                 // 20: oa.service.v1.AuditTaskRequest
+	(*GetMyTasksRequest)(nil),                // 21: oa.service.v1.GetMyTasksRequest
+	(*GetMyTasksResponse)(nil),               // 22: oa.service.v1.GetMyTasksResponse
+	(*GetTaskRequest)(nil),                   // 23: oa.service.v1.GetTaskRequest
+	(*GetTaskResponse)(nil),                  // 24: oa.service.v1.GetTaskResponse
+	(*timestamppb.Timestamp)(nil),            // 25: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),            // 26: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),                 // 27: pagination.PagingRequest
+	(*emptypb.Empty)(nil),                    // 28: google.protobuf.Empty
 }
 var file_oa_service_v1_workflow_proto_depIdxs = []int32{
 	2,  // 0: oa.service.v1.WorkflowDefinition.definition_status:type_name -> oa.service.v1.WorkflowDefinition.DefinitionStatus
-	23, // 1: oa.service.v1.WorkflowDefinition.created_at:type_name -> google.protobuf.Timestamp
-	23, // 2: oa.service.v1.WorkflowDefinition.updated_at:type_name -> google.protobuf.Timestamp
-	23, // 3: oa.service.v1.WorkflowDefinition.deleted_at:type_name -> google.protobuf.Timestamp
+	25, // 1: oa.service.v1.WorkflowDefinition.created_at:type_name -> google.protobuf.Timestamp
+	25, // 2: oa.service.v1.WorkflowDefinition.updated_at:type_name -> google.protobuf.Timestamp
+	25, // 3: oa.service.v1.WorkflowDefinition.deleted_at:type_name -> google.protobuf.Timestamp
 	3,  // 4: oa.service.v1.WorkflowInstance.instance_status:type_name -> oa.service.v1.WorkflowInstance.InstanceStatus
-	23, // 5: oa.service.v1.WorkflowInstance.created_at:type_name -> google.protobuf.Timestamp
-	23, // 6: oa.service.v1.WorkflowInstance.updated_at:type_name -> google.protobuf.Timestamp
-	23, // 7: oa.service.v1.WorkflowInstance.deleted_at:type_name -> google.protobuf.Timestamp
+	25, // 5: oa.service.v1.WorkflowInstance.created_at:type_name -> google.protobuf.Timestamp
+	25, // 6: oa.service.v1.WorkflowInstance.updated_at:type_name -> google.protobuf.Timestamp
+	25, // 7: oa.service.v1.WorkflowInstance.deleted_at:type_name -> google.protobuf.Timestamp
 	4,  // 8: oa.service.v1.WorkflowTask.task_status:type_name -> oa.service.v1.WorkflowTask.TaskStatus
-	23, // 9: oa.service.v1.WorkflowTask.created_at:type_name -> google.protobuf.Timestamp
-	23, // 10: oa.service.v1.WorkflowTask.updated_at:type_name -> google.protobuf.Timestamp
-	23, // 11: oa.service.v1.WorkflowTask.deleted_at:type_name -> google.protobuf.Timestamp
+	25, // 9: oa.service.v1.WorkflowTask.created_at:type_name -> google.protobuf.Timestamp
+	25, // 10: oa.service.v1.WorkflowTask.updated_at:type_name -> google.protobuf.Timestamp
+	25, // 11: oa.service.v1.WorkflowTask.deleted_at:type_name -> google.protobuf.Timestamp
 	5,  // 12: oa.service.v1.WorkflowLog.log_action:type_name -> oa.service.v1.WorkflowLog.LogAction
-	23, // 13: oa.service.v1.WorkflowLog.created_at:type_name -> google.protobuf.Timestamp
-	23, // 14: oa.service.v1.WorkflowLog.updated_at:type_name -> google.protobuf.Timestamp
-	23, // 15: oa.service.v1.WorkflowLog.deleted_at:type_name -> google.protobuf.Timestamp
-	23, // 16: oa.service.v1.MyTaskItem.created_at:type_name -> google.protobuf.Timestamp
+	25, // 13: oa.service.v1.WorkflowLog.created_at:type_name -> google.protobuf.Timestamp
+	25, // 14: oa.service.v1.WorkflowLog.updated_at:type_name -> google.protobuf.Timestamp
+	25, // 15: oa.service.v1.WorkflowLog.deleted_at:type_name -> google.protobuf.Timestamp
+	25, // 16: oa.service.v1.MyTaskItem.created_at:type_name -> google.protobuf.Timestamp
 	6,  // 17: oa.service.v1.ListWorkflowDefinitionResponse.items:type_name -> oa.service.v1.WorkflowDefinition
-	24, // 18: oa.service.v1.GetWorkflowDefinitionRequest.view_mask:type_name -> google.protobuf.FieldMask
+	26, // 18: oa.service.v1.GetWorkflowDefinitionRequest.view_mask:type_name -> google.protobuf.FieldMask
 	6,  // 19: oa.service.v1.CreateWorkflowDefinitionRequest.data:type_name -> oa.service.v1.WorkflowDefinition
 	6,  // 20: oa.service.v1.UpdateWorkflowDefinitionRequest.data:type_name -> oa.service.v1.WorkflowDefinition
-	24, // 21: oa.service.v1.UpdateWorkflowDefinitionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	26, // 21: oa.service.v1.UpdateWorkflowDefinitionRequest.update_mask:type_name -> google.protobuf.FieldMask
 	0,  // 22: oa.service.v1.AuditTaskRequest.action:type_name -> oa.service.v1.AuditAction
 	1,  // 23: oa.service.v1.GetMyTasksRequest.list_type:type_name -> oa.service.v1.ListType
 	10, // 24: oa.service.v1.GetMyTasksResponse.items:type_name -> oa.service.v1.MyTaskItem
 	8,  // 25: oa.service.v1.GetTaskResponse.task:type_name -> oa.service.v1.WorkflowTask
 	9,  // 26: oa.service.v1.GetTaskResponse.logs:type_name -> oa.service.v1.WorkflowLog
 	13, // 27: oa.service.v1.WorkflowService.CreateWorkflowDefinition:input_type -> oa.service.v1.CreateWorkflowDefinitionRequest
-	25, // 28: oa.service.v1.WorkflowService.ListWorkflowDefinition:input_type -> pagination.PagingRequest
+	27, // 28: oa.service.v1.WorkflowService.ListWorkflowDefinition:input_type -> pagination.PagingRequest
 	14, // 29: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:input_type -> oa.service.v1.UpdateWorkflowDefinitionRequest
 	12, // 30: oa.service.v1.WorkflowService.GetWorkflowDefinition:input_type -> oa.service.v1.GetWorkflowDefinitionRequest
 	15, // 31: oa.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
-	18, // 32: oa.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
-	17, // 33: oa.service.v1.WorkflowService.WithdrawApply:input_type -> oa.service.v1.WithdrawApplyRequest
-	19, // 34: oa.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
-	21, // 35: oa.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
-	6,  // 36: oa.service.v1.WorkflowService.CreateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
-	11, // 37: oa.service.v1.WorkflowService.ListWorkflowDefinition:output_type -> oa.service.v1.ListWorkflowDefinitionResponse
-	26, // 38: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:output_type -> google.protobuf.Empty
-	6,  // 39: oa.service.v1.WorkflowService.GetWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
-	16, // 40: oa.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
-	26, // 41: oa.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
-	26, // 42: oa.service.v1.WorkflowService.WithdrawApply:output_type -> google.protobuf.Empty
-	20, // 43: oa.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
-	22, // 44: oa.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
-	36, // [36:45] is the sub-list for method output_type
-	27, // [27:36] is the sub-list for method input_type
+	20, // 32: oa.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
+	19, // 33: oa.service.v1.WorkflowService.WithdrawApply:input_type -> oa.service.v1.WithdrawApplyRequest
+	17, // 34: oa.service.v1.WorkflowService.GetApplyForm:input_type -> oa.service.v1.GetApplyFormRequest
+	21, // 35: oa.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
+	23, // 36: oa.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
+	6,  // 37: oa.service.v1.WorkflowService.CreateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	11, // 38: oa.service.v1.WorkflowService.ListWorkflowDefinition:output_type -> oa.service.v1.ListWorkflowDefinitionResponse
+	28, // 39: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:output_type -> google.protobuf.Empty
+	6,  // 40: oa.service.v1.WorkflowService.GetWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	16, // 41: oa.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
+	28, // 42: oa.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
+	28, // 43: oa.service.v1.WorkflowService.WithdrawApply:output_type -> google.protobuf.Empty
+	18, // 44: oa.service.v1.WorkflowService.GetApplyForm:output_type -> oa.service.v1.GetApplyFormResponse
+	22, // 45: oa.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
+	24, // 46: oa.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
+	37, // [37:47] is the sub-list for method output_type
+	27, // [27:37] is the sub-list for method input_type
 	27, // [27:27] is the sub-list for extension type_name
 	27, // [27:27] is the sub-list for extension extendee
 	0,  // [0:27] is the sub-list for field type_name
@@ -2050,18 +2159,18 @@ func file_oa_service_v1_workflow_proto_init() {
 	}
 	file_oa_service_v1_workflow_proto_msgTypes[8].OneofWrappers = []any{}
 	file_oa_service_v1_workflow_proto_msgTypes[9].OneofWrappers = []any{}
-	file_oa_service_v1_workflow_proto_msgTypes[13].OneofWrappers = []any{}
-	file_oa_service_v1_workflow_proto_msgTypes[15].OneofWrappers = []any{
+	file_oa_service_v1_workflow_proto_msgTypes[15].OneofWrappers = []any{}
+	file_oa_service_v1_workflow_proto_msgTypes[17].OneofWrappers = []any{
 		(*GetTaskRequest_Id)(nil),
 	}
-	file_oa_service_v1_workflow_proto_msgTypes[16].OneofWrappers = []any{}
+	file_oa_service_v1_workflow_proto_msgTypes[18].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_oa_service_v1_workflow_proto_rawDesc), len(file_oa_service_v1_workflow_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -46,4 +46,11 @@ service WorkflowService {
       get: "/app/v1/oa/workflow/tasks/{id}"
     };
   }
+
+  // 获取申请表单定义（提交页动态渲染表单用）
+  rpc GetApplyForm(oa.service.v1.GetApplyFormRequest) returns (oa.service.v1.GetApplyFormResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/workflow/apply-form"
+    };
+  }
 }

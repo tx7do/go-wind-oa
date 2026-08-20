@@ -71,3 +71,11 @@ func (s *WorkflowService) GetTask(ctx context.Context, req *oaV1.GetTaskRequest)
 	}
 	return resp, nil
 }
+
+func (s *WorkflowService) GetApplyForm(ctx context.Context, req *oaV1.GetApplyFormRequest) (*oaV1.GetApplyFormResponse, error) {
+	resp, err := s.workflowServiceClient.GetApplyForm(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}

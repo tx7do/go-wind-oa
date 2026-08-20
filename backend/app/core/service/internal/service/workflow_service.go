@@ -485,6 +485,26 @@ func (s *WorkflowService) WithdrawApply(ctx context.Context, req *oaV1.WithdrawA
 	return &emptypb.Empty{}, nil
 }
 
+// GetApplyForm 获取申请表单定义（提交页动态渲染用）。仅 ENABLED 定义可取；
+// form_schema 为空串表示该流程无表单定义，客户端回退自由 JSON 输入。
+func (s *WorkflowService) GetApplyForm(ctx context.Context, req *oaV1.GetApplyFormRequest) (*oaV1.GetApplyFormResponse, error) {
+	_, _, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+	if req.GetCode() == "" || req.GetVersion() == 0 {
+		return nil, oaV1.ErrorBadRequest("invalid parameter")
+	}
+	def, err := s.definitionRepo.GetByCodeVersion(ctx, req.GetCode(), req.GetVersion())
+	if err != nil {
+		return nil, err
+	}
+	if def.DefinitionStatus == nil || *def.DefinitionStatus != oaV1.WorkflowDefinition_ENABLED {
+		return nil, oaV1.ErrorBadRequest("definition not enabled")
+	}
+	return &oaV1.GetApplyFormResponse{FormSchema: def.GetFormSchema()}, nil
+}
+
 // ===================== 列表 / 详情 =====================
 
 func (s *WorkflowService) GetMyTasks(ctx context.Context, req *oaV1.GetMyTasksRequest) (*oaV1.GetMyTasksResponse, error) {
@@ -530,7 +550,13 @@ func (s *WorkflowService) GetTask(ctx context.Context, req *oaV1.GetTaskRequest)
 		return nil, err
 	}
 
-	return &oaV1.GetTaskResponse{Task: task, Logs: logs}, nil
+	// 申请表单数据（审批人查看申请内容）。
+	formData, err := s.instanceRepo.GetFormData(ctx, instanceID, tid)
+	if err != nil {
+		return nil, err
+	}
+
+	return &oaV1.GetTaskResponse{Task: task, Logs: logs, FormData: trans.Ptr(formData)}, nil
 }
 
 // ===================== 辅助 =====================
