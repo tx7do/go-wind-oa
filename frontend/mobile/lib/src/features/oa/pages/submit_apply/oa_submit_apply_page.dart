@@ -20,7 +20,6 @@ class _OaSubmitApplyPageState extends State<OaSubmitApplyPage> {
   final _formKey = GlobalKey<FormState>();
   final _codeCtrl = TextEditingController();
   final _versionCtrl = TextEditingController();
-  final _titleCtrl = TextEditingController();
   final _formDataCtrl = TextEditingController();
   bool _submitting = false;
 
@@ -28,7 +27,6 @@ class _OaSubmitApplyPageState extends State<OaSubmitApplyPage> {
   void dispose() {
     _codeCtrl.dispose();
     _versionCtrl.dispose();
-    _titleCtrl.dispose();
     _formDataCtrl.dispose();
     super.dispose();
   }
@@ -38,9 +36,8 @@ class _OaSubmitApplyPageState extends State<OaSubmitApplyPage> {
     setState(() => _submitting = true);
     final version = int.tryParse(_versionCtrl.text) ?? 0;
     final result = await _service.submitApply(
-      definitionCode: _codeCtrl.text,
-      definitionVersion: version,
-      title: _titleCtrl.text,
+      code: _codeCtrl.text,
+      version: version,
       formData: _formDataCtrl.text,
     );
     if (!mounted) return;
@@ -81,15 +78,6 @@ class _OaSubmitApplyPageState extends State<OaSubmitApplyPage> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                   labelText: loc.oaSubmitApplyDefinitionVersion,
-                  border: const OutlineInputBorder()),
-              validator: (v) =>
-                  (v == null || v.isEmpty) ? 'required' : null,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _titleCtrl,
-              decoration: InputDecoration(
-                  labelText: loc.oaSubmitApplyTitleField,
                   border: const OutlineInputBorder()),
               validator: (v) =>
                   (v == null || v.isEmpty) ? 'required' : null,

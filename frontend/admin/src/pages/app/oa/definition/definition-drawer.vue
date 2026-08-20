@@ -36,7 +36,7 @@
         <ElInput
           v-model="formData.node_config"
           type="textarea"
-          :placeholder="$t('common.placeholder.input')"
+          placeholder='[{"approvers":[{"type":"USER","id":123},{"type":"LEADER"}],"strategy":"ALL"}] strategy=ALL 会签(默认)/ANY 或签；type=USER 指定用户/LEADER 申请人主管/POSITION 职位持有者'
           :rows="8"
         />
       </ElFormItem>
@@ -94,6 +94,50 @@ const formRules: FormRules = {
   name: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   code: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   version: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
+  node_config: [
+    { required: true, message: $t("common.validation.required"), trigger: "blur" },
+    {
+      validator: (_rule: unknown, value: string, callback: (err?: Error) => void) => {
+        let nodes: any[];
+        try {
+          nodes = JSON.parse(value);
+        } catch {
+          callback(new Error("node_config 必须是合法的 JSON 数组"));
+          return;
+        }
+        if (!Array.isArray(nodes) || nodes.length === 0) {
+          callback(new Error("node_config 必须是非空节点数组"));
+          return;
+        }
+        for (const node of nodes) {
+          const strategy = node.strategy ?? "ALL";
+          if (strategy !== "ALL" && strategy !== "ANY") {
+            callback(new Error(`非法审批策略 ${strategy}（仅 ALL 会签 / ANY 或签）`));
+            return;
+          }
+          const approvers = Array.isArray(node.approvers) && node.approvers.length > 0
+            ? node.approvers
+            : (node.approver_type === "USER" && node.approver ? [{ type: "USER", id: node.approver }] : []);
+          if (approvers.length === 0) {
+            callback(new Error("每个节点至少需要一个审批人（approvers 或旧格式 approver_type+approver）"));
+            return;
+          }
+          for (const approver of approvers) {
+            if (!["USER", "LEADER", "POSITION"].includes(approver.type)) {
+              callback(new Error(`非法审批人类型 ${approver.type}（仅 USER / LEADER / POSITION）`));
+              return;
+            }
+            if (approver.type !== "LEADER" && !approver.id) {
+              callback(new Error("USER / POSITION 类型审批人必须提供 id"));
+              return;
+            }
+          }
+        }
+        callback();
+      },
+      trigger: "blur",
+    },
+  ],
 };
 
 const title = computed(() =>

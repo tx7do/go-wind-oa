@@ -3,9 +3,8 @@ import 'package:get_it/get_it.dart' show GetIt;
 import 'package:cached_query/cached_query.dart' show Mutation, Query;
 
 import 'package:flutter_app/src/core/services/base_service.dart';
-import 'package:flutter_app/src/core/services/pagination_query.dart';
 
-// 生成代码由 buf.flutter.oa.dart.gen.yaml 生成于
+// 生成代码由 buf.app.dart.gen.yaml 生成于
 // generated/api/app/service/v1/index.dart。该包含 ApiClient（聚合所有
 // app HTTP service client）及 OA 工作流的消息类型（OaServiceV1* 前缀）。
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
@@ -16,12 +15,9 @@ import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
 /// [oaApi.ApiClient].workflowService；用 cached_query 的 Query / Mutation
 /// 管理列表/写操作。
 ///
-/// 关键：审批 Mutation 的 invalidateQueries 指向待办列表的 query key，
-/// 使审批/驳回/转交后，待办列表下次读取自动重新拉取——即"审批完一笔，
-/// 待办立刻减少一笔"的刷新语义。
-///
 /// 列表 query key 编码：
 ///   'oa-pending-tasks'     —— 待我审批（listType=PENDING）
+///   'oa-done-tasks'        —— 已办（listType=DONE）
 ///   'oa-submitted-tasks'   —— 我发起的（listType=SUBMITTED）
 class WorkflowService extends BaseService {
   WorkflowService() : super(tag: 'WorkflowService');
@@ -32,26 +28,26 @@ class WorkflowService extends BaseService {
   // ─── Queries ──────────────────────────────────────────
 
   /// 待我审批列表 Query。
-  Query<List<oaApi.OaServiceV1MyTaskItem>> pendingTasksQuery([PaginationQuery? query]) {
-    final q = query ?? const PaginationQuery();
+  Query<List<oaApi.OaServiceV1MyTaskItem>> pendingTasksQuery() {
     return Query<List<oaApi.OaServiceV1MyTaskItem>>(
       key: 'oa-pending-tasks',
       queryFn: () async {
-        final resp = await _api.getMyTasks(
-            _toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.pending));
+        final resp = await _api.getMyTasks(oaApi.OaServiceV1GetMyTasksRequest(
+          listType: oaApi.OaServiceV1ListType.pending,
+        ));
         return resp.items ?? const <oaApi.OaServiceV1MyTaskItem>[];
       },
     );
   }
 
   /// 我发起的列表 Query。
-  Query<List<oaApi.OaServiceV1MyTaskItem>> submittedTasksQuery([PaginationQuery? query]) {
-    final q = query ?? const PaginationQuery();
+  Query<List<oaApi.OaServiceV1MyTaskItem>> submittedTasksQuery() {
     return Query<List<oaApi.OaServiceV1MyTaskItem>>(
       key: 'oa-submitted-tasks',
       queryFn: () async {
-        final resp = await _api.getMyTasks(
-            _toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.submitted));
+        final resp = await _api.getMyTasks(oaApi.OaServiceV1GetMyTasksRequest(
+          listType: oaApi.OaServiceV1ListType.submitted,
+        ));
         return resp.items ?? const <oaApi.OaServiceV1MyTaskItem>[];
       },
     );
@@ -59,67 +55,70 @@ class WorkflowService extends BaseService {
 
   // ─── Mutations ────────────────────────────────────────
 
-  /// 审批 Mutation（同意/驳回/转交）。
-  ///
-  /// invalidateQueries 指向待办列表，使审批完成后列表自动刷新。
-  Mutation<void, ({int taskId, oaApi.OaServiceV1AuditTaskRequest$AuditAction action, String? comment, int? forwardToUserId})>
+  /// 审批 Mutation（同意/驳回/转交）。完成后待办与我发起的列表自动失效刷新。
+  Mutation<void,
+      ({int taskId, oaApi.OaServiceV1AuditAction action, String? comment, int? forwardToUserId})>
       auditMutation() {
     return Mutation<void,
-        ({int taskId, oaApi.OaServiceV1AuditTaskRequest$AuditAction action, String? comment, int? forwardToUserId})>(
+        ({int taskId, oaApi.OaServiceV1AuditAction action, String? comment, int? forwardToUserId})>(
       mutationFn: (p) => _api.auditTask(oaApi.OaServiceV1AuditTaskRequest(
         taskId: p.taskId,
         action: p.action,
         comment: p.comment,
-        forwardToUserId: p.forwardToUserId,
+        forwardTo: p.forwardToUserId,
       )),
       invalidateQueries: ['oa-pending-tasks', 'oa-submitted-tasks'],
     );
   }
 
-  /// 提交申请 Mutation。
-  ///
-  /// invalidateQueries 指向我发起的列表，使提交后该列表刷新出新建实例。
-  Mutation<oaApi.OaServiceV1SubmitApplyResponse,
-      ({String definitionCode, int definitionVersion, String title, String formData})>
-      submitApplyMutation() {
-    return Mutation<oaApi.OaServiceV1SubmitApplyResponse,
-        ({String definitionCode, int definitionVersion, String title, String formData})>(
-      mutationFn: (p) => _api.submitApply(oaApi.OaServiceV1SubmitApplyRequest(
-        definitionCode: p.definitionCode,
-        definitionVersion: p.definitionVersion,
-        title: p.title,
-        formData: p.formData,
-      )),
-      invalidateQueries: ['oa-submitted-tasks'],
+  /// 撤回 Mutation。完成后“我发起的”与“待办”列表自动失效刷新。
+  Mutation<void, int> withdrawMutation() {
+    return Mutation<void, int>(
+      mutationFn: (instanceId) => _api.withdrawApply(
+          oaApi.OaServiceV1WithdrawApplyRequest(instanceId: instanceId)),
+      invalidateQueries: ['oa-pending-tasks', 'oa-submitted-tasks'],
     );
   }
 
-  // ─── 直接调用方法（与 cms 各 Service 同构，页面用 Future 而非 Stream） ──
+  // ─── 直接调用方法（页面用 Future 而非 Stream） ──
 
   /// 待我审批列表（直接调用）。
-  Future<dynamic> pendingTasks([PaginationQuery? query]) async {
-    final q = query ?? const PaginationQuery();
+  Future<dynamic> pendingTasks() async {
     try {
-      return await _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.pending));
+      return await _api.getMyTasks(oaApi.OaServiceV1GetMyTasksRequest(
+        listType: oaApi.OaServiceV1ListType.pending,
+      ));
+    } on DioException catch (e) {
+      return handleDioError(e);
+    }
+  }
+
+  /// 已办列表（直接调用）。
+  Future<dynamic> doneTasks() async {
+    try {
+      return await _api.getMyTasks(oaApi.OaServiceV1GetMyTasksRequest(
+        listType: oaApi.OaServiceV1ListType.done,
+      ));
     } on DioException catch (e) {
       return handleDioError(e);
     }
   }
 
   /// 我发起的列表（直接调用）。
-  Future<dynamic> submittedTasks([PaginationQuery? query]) async {
-    final q = query ?? const PaginationQuery();
+  Future<dynamic> submittedTasks() async {
     try {
-      return await _api.getMyTasks(_toMyTasksRequest(q, oaApi.OaServiceV1GetMyTasksRequest$ListType.submitted));
+      return await _api.getMyTasks(oaApi.OaServiceV1GetMyTasksRequest(
+        listType: oaApi.OaServiceV1ListType.submitted,
+      ));
     } on DioException catch (e) {
       return handleDioError(e);
     }
   }
 
-  /// 审批（同意/驳回/转交）。直接调用版，供详情页按钮使用。
+  /// 审批（同意/驳回/转交）。供详情页按钮使用。
   Future<dynamic> audit({
     required int taskId,
-    required oaApi.OaServiceV1AuditTaskRequest$AuditAction action,
+    required oaApi.OaServiceV1AuditAction action,
     String? comment,
     int? forwardToUserId,
   }) async {
@@ -128,25 +127,34 @@ class WorkflowService extends BaseService {
         taskId: taskId,
         action: action,
         comment: comment,
-        forwardToUserId: forwardToUserId,
+        forwardTo: forwardToUserId,
       ));
     } on DioException catch (e) {
       return handleDioError(e);
     }
   }
 
-  /// 提交申请。直接调用版，供提交申请表单使用。
+  /// 撤回申请（仅本人进行中的实例）。供“我发起的”列表撤回按钮使用。
+  Future<dynamic> withdraw({required int instanceId}) async {
+    try {
+      return await _api.withdrawApply(
+          oaApi.OaServiceV1WithdrawApplyRequest(instanceId: instanceId));
+    } on DioException catch (e) {
+      return handleDioError(e);
+    }
+  }
+
+  /// 提交通用申请（按流程定义 code/version）。请假/报销走各自的业务服务，
+  /// 它们会在服务端自动创建对应流程实例。
   Future<dynamic> submitApply({
-    required String definitionCode,
-    required int definitionVersion,
-    required String title,
+    required String code,
+    required int version,
     required String formData,
   }) async {
     try {
       return await _api.submitApply(oaApi.OaServiceV1SubmitApplyRequest(
-        definitionCode: definitionCode,
-        definitionVersion: definitionVersion,
-        title: title,
+        code: code,
+        version: version,
         formData: formData,
       ));
     } on DioException catch (e) {
@@ -154,26 +162,12 @@ class WorkflowService extends BaseService {
     }
   }
 
-  /// 获取单个待办任务详情。直接调用版，供详情页渲染申请摘要、表单数据、
-  /// 审批日志轨迹使用。
-  ///
-  /// 鉴权由后端 GetTask 服务强制（task 必须指派给 caller 且 PENDING，否则
-  /// NotFound/Forbidden）——前端无需二次校验。
+  /// 获取单个待办任务详情（含申请表单与审批历史）。
   Future<dynamic> getTaskDetail({required int taskId}) async {
     try {
-      return await _api.getTask(oaApi.OaServiceV1GetTaskRequest(taskId: taskId));
+      return await _api.getTask(oaApi.OaServiceV1GetTaskRequest(id: taskId));
     } on DioException catch (e) {
       return handleDioError(e);
     }
-  }
-
-  // ─── helpers ─────────────────────────────────────────
-
-  oaApi.OaServiceV1GetMyTasksRequest _toMyTasksRequest(
-      PaginationQuery q, oaApi.OaServiceV1GetMyTasksRequest$ListType lt) {
-    return oaApi.OaServiceV1GetMyTasksRequest(
-      listType: lt,
-      paging: q.toPagingRequest(),
-    );
   }
 }

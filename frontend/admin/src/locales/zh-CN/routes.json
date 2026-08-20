@@ -2,7 +2,9 @@
   "oa": {
     "moduleName": "OA 工作流",
     "definition": "流程定义",
-    "attendanceFence": "考勤围栏",
-    "attendanceWifi": "考勤 Wi-Fi"
+    "attendanceRecords": "考勤记录",
+    "leave": "请假管理",
+    "expense": "报销管理",
+    "approval": "审批中心"
   }
 }

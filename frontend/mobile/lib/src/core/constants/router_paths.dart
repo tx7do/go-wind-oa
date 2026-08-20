@@ -15,4 +15,6 @@ class AppRoutePath {
   static const oaSubmitApply = '/oa/apply';
   static const oaNotifications = '/oa/notifications';
   static const oaAttendance = '/oa/attendance';
+  static const oaLeave = '/oa/leave';
+  static const oaExpense = '/oa/expense';
 }

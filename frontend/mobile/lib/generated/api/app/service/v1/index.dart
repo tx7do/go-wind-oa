@@ -71,59 +71,76 @@ enum AppErrorReason {
   String toString() => value;
 }
 
-/// OA 考勤打卡服务（app HTTP 边端，移动端）。
-/// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-/// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。仅暴露 CheckIn
-/// 端点供移动端打卡，围栏库 CRUD 不经 app 边端。
+/// OA 考勤参与服务（app 边端，移动端）
 class AttendanceServiceClient {
   final ClientTransport _transport;
 
   AttendanceServiceClient(this._transport);
 
-  /// 打卡
-  Future<OaServiceV1CheckInResponse> checkIn(OaServiceV1CheckInRequest request, {Map<String, String>? headers}) async {
+  /// 打卡（当日首次=签到，第二次=签退并结算）
+  Future<OaServiceV1AttendanceRecord> checkIn(OaServiceV1CheckInRequest request, {Map<String, String>? headers}) async {
     final path = '/app/v1/oa/attendance/check-in';
     final body = jsonEncode(request.toJson());
     final result = await _transport.unary(path, 'POST', body, TransportMeta(
       service: 'AttendanceService',
       method: 'CheckIn',
     ), headers: headers);
-    return OaServiceV1CheckInResponse.fromJson(result as Map<String, dynamic>);
+    return OaServiceV1AttendanceRecord.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询本人打卡记录
+  Future<OaServiceV1ListAttendanceRecordsResponse> getMyAttendanceRecords(OaServiceV1GetMyAttendanceRecordsRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/attendance/my-records';
+    final queryParams = <String>[];
+    if (request.startDate != null) {
+      queryParams.add('startDate=${Uri.encodeComponent(request.startDate!.toString())}');
+    }
+    if (request.endDate != null) {
+      queryParams.add('endDate=${Uri.encodeComponent(request.endDate!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'AttendanceService',
+      method: 'GetMyAttendanceRecords',
+    ), headers: headers);
+    return OaServiceV1ListAttendanceRecordsResponse.fromJson(result as Map<String, dynamic>);
   }
 }
 
+/// 打卡 - 请求
 class OaServiceV1CheckInRequest {
-  /// 打卡时连接 Wi-Fi 的 BSSID（如可用）。
-  String? bssid;
   double? latitude;
-  /// 打卡提交的 GPS 坐标（WGS84）。
   double? longitude;
+  String? wifiBssid;
 
   OaServiceV1CheckInRequest({
-    this.bssid,
     this.latitude,
     this.longitude,
+    this.wifiBssid,
   });
 
   factory OaServiceV1CheckInRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1CheckInRequest(
-      bssid: json['bssid'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
+      wifiBssid: json['wifiBssid'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (bssid != null) json['bssid'] = bssid;
     if (latitude != null) json['latitude'] = latitude;
     if (longitude != null) json['longitude'] = longitude;
+    if (wifiBssid != null) json['wifiBssid'] = wifiBssid;
     return json;
   }
 
   @override
   String toString() {
-    return 'OaServiceV1CheckInRequest(bssid: $bssid, latitude: $latitude, longitude: $longitude)';
+    return 'OaServiceV1CheckInRequest(latitude: $latitude, longitude: $longitude, wifiBssid: $wifiBssid)';
   }
 
   @override
@@ -131,97 +148,346 @@ class OaServiceV1CheckInRequest {
     identical(this, other) ||
     other is OaServiceV1CheckInRequest &&
       runtimeType == other.runtimeType
-      && bssid == other.bssid
       && latitude == other.latitude
       && longitude == other.longitude
+      && wifiBssid == other.wifiBssid
     ;
 
   @override
   int get hashCode => Object.hashAll([
-    bssid,
     latitude,
     longitude,
+    wifiBssid,
   ]);
 
   OaServiceV1CheckInRequest copyWith({
-    String? bssid,
     double? latitude,
     double? longitude,
+    String? wifiBssid,
   }) {
     return OaServiceV1CheckInRequest(
-      bssid: bssid ?? this.bssid,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      wifiBssid: wifiBssid ?? this.wifiBssid,
     );
   }
 }
 
-class OaServiceV1CheckInResponse {
-  OaServiceV1CheckInResponse$CheckResult? checkResult;
-  String? message;
+/// 打卡记录（用户 x 工作日 唯一）
+class OaServiceV1AttendanceRecord {
+  String? checkInAt;
+  double? checkInLatitude;
+  double? checkInLongitude;
+  String? checkInWifiBssid;
+  String? checkOutAt;
+  double? checkOutLatitude;
+  double? checkOutLongitude;
+  String? checkOutWifiBssid;
+  String? createdAt;
+  int? createdBy;
+  OaServiceV1AttendanceRecord$DayResult? dayResult;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? tenantId;
+  String? updatedAt;
+  int? updatedBy;
+  int? userId;
+  String? userName;
+  String? workDate;
 
-  OaServiceV1CheckInResponse({
-    this.checkResult,
-    this.message,
+  OaServiceV1AttendanceRecord({
+    this.checkInAt,
+    this.checkInLatitude,
+    this.checkInLongitude,
+    this.checkInWifiBssid,
+    this.checkOutAt,
+    this.checkOutLatitude,
+    this.checkOutLongitude,
+    this.checkOutWifiBssid,
+    this.createdAt,
+    this.createdBy,
+    this.dayResult,
+    this.id,
+    this.tenantId,
+    this.updatedAt,
+    this.updatedBy,
+    this.userId,
+    this.userName,
+    this.workDate,
   });
 
-  factory OaServiceV1CheckInResponse.fromJson(Map<String, dynamic> json) {
-    return OaServiceV1CheckInResponse(
-      checkResult: json['checkResult'] != null ? OaServiceV1CheckInResponse$CheckResult.fromString(json['checkResult'] as String) : null,
-      message: json['message'] as String?,
+  factory OaServiceV1AttendanceRecord.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1AttendanceRecord(
+      checkInAt: json['checkInAt'] as String?,
+      checkInLatitude: (json['checkInLatitude'] as num?)?.toDouble(),
+      checkInLongitude: (json['checkInLongitude'] as num?)?.toDouble(),
+      checkInWifiBssid: json['checkInWifiBssid'] as String?,
+      checkOutAt: json['checkOutAt'] as String?,
+      checkOutLatitude: (json['checkOutLatitude'] as num?)?.toDouble(),
+      checkOutLongitude: (json['checkOutLongitude'] as num?)?.toDouble(),
+      checkOutWifiBssid: json['checkOutWifiBssid'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      dayResult: json['dayResult'] != null ? OaServiceV1AttendanceRecord$DayResult.fromString(json['dayResult'] as String) : null,
+      id: json['id'] as int?,
+      tenantId: json['tenantId'] as int?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+      userId: json['userId'] as int?,
+      userName: json['userName'] as String?,
+      workDate: json['workDate'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (checkResult != null) json['checkResult'] = checkResult!.value;
-    if (message != null) json['message'] = message;
+    if (checkInAt != null) json['checkInAt'] = checkInAt;
+    if (checkInLatitude != null) json['checkInLatitude'] = checkInLatitude;
+    if (checkInLongitude != null) json['checkInLongitude'] = checkInLongitude;
+    if (checkInWifiBssid != null) json['checkInWifiBssid'] = checkInWifiBssid;
+    if (checkOutAt != null) json['checkOutAt'] = checkOutAt;
+    if (checkOutLatitude != null) json['checkOutLatitude'] = checkOutLatitude;
+    if (checkOutLongitude != null) json['checkOutLongitude'] = checkOutLongitude;
+    if (checkOutWifiBssid != null) json['checkOutWifiBssid'] = checkOutWifiBssid;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (dayResult != null) json['dayResult'] = dayResult!.value;
+    if (id != null) json['id'] = id;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (userId != null) json['userId'] = userId;
+    if (userName != null) json['userName'] = userName;
+    if (workDate != null) json['workDate'] = workDate;
     return json;
   }
 
   @override
   String toString() {
-    return 'OaServiceV1CheckInResponse(checkResult: $checkResult, message: $message)';
+    return 'OaServiceV1AttendanceRecord(checkInAt: $checkInAt, checkInLatitude: $checkInLatitude, checkInLongitude: $checkInLongitude, checkInWifiBssid: $checkInWifiBssid, checkOutAt: $checkOutAt, checkOutLatitude: $checkOutLatitude, checkOutLongitude: $checkOutLongitude, checkOutWifiBssid: $checkOutWifiBssid, createdAt: $createdAt, createdBy: $createdBy, dayResult: $dayResult, id: $id, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy, userId: $userId, userName: $userName, workDate: $workDate)';
   }
 
   @override
   bool operator ==(Object other) =>
     identical(this, other) ||
-    other is OaServiceV1CheckInResponse &&
+    other is OaServiceV1AttendanceRecord &&
       runtimeType == other.runtimeType
-      && checkResult == other.checkResult
-      && message == other.message
+      && checkInAt == other.checkInAt
+      && checkInLatitude == other.checkInLatitude
+      && checkInLongitude == other.checkInLongitude
+      && checkInWifiBssid == other.checkInWifiBssid
+      && checkOutAt == other.checkOutAt
+      && checkOutLatitude == other.checkOutLatitude
+      && checkOutLongitude == other.checkOutLongitude
+      && checkOutWifiBssid == other.checkOutWifiBssid
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && dayResult == other.dayResult
+      && id == other.id
+      && tenantId == other.tenantId
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+      && userId == other.userId
+      && userName == other.userName
+      && workDate == other.workDate
     ;
 
   @override
   int get hashCode => Object.hashAll([
-    checkResult,
-    message,
+    checkInAt,
+    checkInLatitude,
+    checkInLongitude,
+    checkInWifiBssid,
+    checkOutAt,
+    checkOutLatitude,
+    checkOutLongitude,
+    checkOutWifiBssid,
+    createdAt,
+    createdBy,
+    dayResult,
+    id,
+    tenantId,
+    updatedAt,
+    updatedBy,
+    userId,
+    userName,
+    workDate,
   ]);
 
-  OaServiceV1CheckInResponse copyWith({
-    OaServiceV1CheckInResponse$CheckResult? checkResult,
-    String? message,
+  OaServiceV1AttendanceRecord copyWith({
+    String? checkInAt,
+    double? checkInLatitude,
+    double? checkInLongitude,
+    String? checkInWifiBssid,
+    String? checkOutAt,
+    double? checkOutLatitude,
+    double? checkOutLongitude,
+    String? checkOutWifiBssid,
+    String? createdAt,
+    int? createdBy,
+    OaServiceV1AttendanceRecord$DayResult? dayResult,
+    int? id,
+    int? tenantId,
+    String? updatedAt,
+    int? updatedBy,
+    int? userId,
+    String? userName,
+    String? workDate,
   }) {
-    return OaServiceV1CheckInResponse(
-      checkResult: checkResult ?? this.checkResult,
-      message: message ?? this.message,
+    return OaServiceV1AttendanceRecord(
+      checkInAt: checkInAt ?? this.checkInAt,
+      checkInLatitude: checkInLatitude ?? this.checkInLatitude,
+      checkInLongitude: checkInLongitude ?? this.checkInLongitude,
+      checkInWifiBssid: checkInWifiBssid ?? this.checkInWifiBssid,
+      checkOutAt: checkOutAt ?? this.checkOutAt,
+      checkOutLatitude: checkOutLatitude ?? this.checkOutLatitude,
+      checkOutLongitude: checkOutLongitude ?? this.checkOutLongitude,
+      checkOutWifiBssid: checkOutWifiBssid ?? this.checkOutWifiBssid,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      dayResult: dayResult ?? this.dayResult,
+      id: id ?? this.id,
+      tenantId: tenantId ?? this.tenantId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      workDate: workDate ?? this.workDate,
     );
   }
 }
 
-enum OaServiceV1CheckInResponse$CheckResult {
-  denied('DENIED'),
-  inFence('IN_FENCE'),
-  inWifi('IN_WIFI');
+/// Well-known type: Timestamp
+///
+/// Maps to Dart: `String` (RFC 3339, e.g. `"2021-01-01T00:00:00Z"`).
+
+/// 当日结算结果
+enum OaServiceV1AttendanceRecord$DayResult {
+  absent('ABSENT'),
+  earlyLeave('EARLY_LEAVE'),
+  late_('LATE'),
+  normal('NORMAL'),
+  onLeave('ON_LEAVE'),
+  pending('PENDING');
 
   final String value;
-  const OaServiceV1CheckInResponse$CheckResult(this.value);
+  const OaServiceV1AttendanceRecord$DayResult(this.value);
 
-  static OaServiceV1CheckInResponse$CheckResult fromString(String v) =>
-    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1CheckInResponse\$CheckResult value: ' + v));
+  static OaServiceV1AttendanceRecord$DayResult fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1AttendanceRecord\$DayResult value: ' + v));
   @override
   String toString() => value;
+}
+
+/// 查询本人记录 - 请求
+class OaServiceV1GetMyAttendanceRecordsRequest {
+  String? endDate;
+  String? startDate;
+
+  OaServiceV1GetMyAttendanceRecordsRequest({
+    this.endDate,
+    this.startDate,
+  });
+
+  factory OaServiceV1GetMyAttendanceRecordsRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1GetMyAttendanceRecordsRequest(
+      endDate: json['endDate'] as String?,
+      startDate: json['startDate'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (endDate != null) json['endDate'] = endDate;
+    if (startDate != null) json['startDate'] = startDate;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1GetMyAttendanceRecordsRequest(endDate: $endDate, startDate: $startDate)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1GetMyAttendanceRecordsRequest &&
+      runtimeType == other.runtimeType
+      && endDate == other.endDate
+      && startDate == other.startDate
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    endDate,
+    startDate,
+  ]);
+
+  OaServiceV1GetMyAttendanceRecordsRequest copyWith({
+    String? endDate,
+    String? startDate,
+  }) {
+    return OaServiceV1GetMyAttendanceRecordsRequest(
+      endDate: endDate ?? this.endDate,
+      startDate: startDate ?? this.startDate,
+    );
+  }
+}
+
+/// 查询记录 - 回应
+class OaServiceV1ListAttendanceRecordsResponse {
+  List<OaServiceV1AttendanceRecord>? items;
+  int? total;
+
+  OaServiceV1ListAttendanceRecordsResponse({
+    this.items,
+    this.total,
+  });
+
+  factory OaServiceV1ListAttendanceRecordsResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListAttendanceRecordsResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1AttendanceRecord.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListAttendanceRecordsResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListAttendanceRecordsResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  OaServiceV1ListAttendanceRecordsResponse copyWith({
+    List<OaServiceV1AttendanceRecord>? items,
+    int? total,
+  }) {
+    return OaServiceV1ListAttendanceRecordsResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
 }
 
 /// 用户前台登录认证服务
@@ -577,19 +843,15 @@ enum AuthenticationServiceV1TokenType {
 ///
 /// Maps to Dart: `Map<String, dynamic>`.
 
-/// 站内信消息服务（app HTTP 边端，只读）。
-/// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-/// 消息类型引用自 internal_message.service.v1（core-service 的 gRPC 实现）。
-/// 移动端经此接口查询其收件箱消息。仅暴露 List/Get，写操作（Send/Update/Delete/
-/// Revoke）不经 app 边端。
-class InternalMessageServiceClient {
+/// 类别服务
+class CategoryServiceClient {
   final ClientTransport _transport;
 
-  InternalMessageServiceClient(this._transport);
+  CategoryServiceClient(this._transport);
 
-  /// 查询站内信消息列表
-  Future<Internal_messageServiceV1ListInternalMessageResponse> listMessage(PaginationPagingRequest request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/internal-message/messages';
+  /// 获取类别列表
+  Future<ContentServiceV1ListCategoryResponse> list(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/categories';
     final queryParams = <String>[];
     if (request.page != null) {
       queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
@@ -629,19 +891,25 @@ class InternalMessageServiceClient {
       uri += '?${queryParams.join("&")}';
     }
     final result = await _transport.unary(uri, 'GET', null, TransportMeta(
-      service: 'InternalMessageService',
-      method: 'ListMessage',
+      service: 'CategoryService',
+      method: 'List',
     ), headers: headers);
-    return Internal_messageServiceV1ListInternalMessageResponse.fromJson(result as Map<String, dynamic>);
+    return ContentServiceV1ListCategoryResponse.fromJson(result as Map<String, dynamic>);
   }
 
-  /// 查询站内信消息详情
-  Future<Internal_messageServiceV1InternalMessage> getMessage(Internal_messageServiceV1GetInternalMessageRequest request, {Map<String, String>? headers}) async {
+  /// 获取类别数据
+  Future<ContentServiceV1Category> get(ContentServiceV1GetCategoryRequest request, {Map<String, String>? headers}) async {
     if (request.id == null) {
       throw ArgumentError('missing required field request.id');
     }
-    final path = '/app/v1/internal-message/messages/${request.id}';
+    final path = '/app/v1/categories/${request.id}';
     final queryParams = <String>[];
+    if (request.code != null) {
+      queryParams.add('code=${Uri.encodeComponent(request.code!.toString())}');
+    }
+    if (request.locale != null) {
+      queryParams.add('locale=${Uri.encodeComponent(request.locale!.toString())}');
+    }
     if (request.viewMask != null) {
       queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
     }
@@ -650,10 +918,75 @@ class InternalMessageServiceClient {
       uri += '?${queryParams.join("&")}';
     }
     final result = await _transport.unary(uri, 'GET', null, TransportMeta(
-      service: 'InternalMessageService',
-      method: 'GetMessage',
+      service: 'CategoryService',
+      method: 'Get',
     ), headers: headers);
-    return Internal_messageServiceV1InternalMessage.fromJson(result as Map<String, dynamic>);
+    return ContentServiceV1Category.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 创建类别
+  Future<ContentServiceV1Category> create(ContentServiceV1CreateCategoryRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/categories';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'CategoryService',
+      method: 'Create',
+    ), headers: headers);
+    return ContentServiceV1Category.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 更新类别
+  Future<ContentServiceV1Category> update(ContentServiceV1UpdateCategoryRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/categories/${request.id}';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
+      service: 'CategoryService',
+      method: 'Update',
+    ), headers: headers);
+    return ContentServiceV1Category.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 删除类别
+  Future<Map<String, dynamic>> delete(ContentServiceV1DeleteCategoryRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/categories/${request.id}';
+    final result = await _transport.unary(path, 'DELETE', null, TransportMeta(
+      service: 'CategoryService',
+      method: 'Delete',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 获取翻译数据
+  Future<ContentServiceV1CategoryTranslation> getTranslation(ContentServiceV1GetCategoryRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/categories/${request.id}/translation';
+    final queryParams = <String>[];
+    if (request.code != null) {
+      queryParams.add('code=${Uri.encodeComponent(request.code!.toString())}');
+    }
+    if (request.locale != null) {
+      queryParams.add('locale=${Uri.encodeComponent(request.locale!.toString())}');
+    }
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'CategoryService',
+      method: 'GetTranslation',
+    ), headers: headers);
+    return ContentServiceV1CategoryTranslation.fromJson(result as Map<String, dynamic>);
   }
 }
 
@@ -1138,6 +1471,3932 @@ enum PaginationSorting$Direction {
 ///
 /// Maps to Dart: `String` (comma-separated camelCase paths).
 
+/// 回应 - 类别列表
+class ContentServiceV1ListCategoryResponse {
+  List<ContentServiceV1Category>? items;
+  int? total;
+
+  ContentServiceV1ListCategoryResponse({
+    this.items,
+    this.total,
+  });
+
+  factory ContentServiceV1ListCategoryResponse.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1ListCategoryResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => ContentServiceV1Category.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1ListCategoryResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1ListCategoryResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  ContentServiceV1ListCategoryResponse copyWith({
+    List<ContentServiceV1Category>? items,
+    int? total,
+  }) {
+    return ContentServiceV1ListCategoryResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 类别
+class ContentServiceV1Category {
+  List<String>? availableLanguages;
+  List<ContentServiceV1Category>? children;
+  String? code;
+  String? createdAt;
+  int? createdBy;
+  Map<String, String>? customFields;
+  String? deletedAt;
+  int? deletedBy;
+  int? depth;
+  int? directPostCount;
+  String? icon;
+  int? id;
+  bool? isNav;
+  int? parentId;
+  String? path;
+  int? postCount;
+  int? sortOrder;
+  ContentServiceV1Category$CategoryStatus? status;
+  List<ContentServiceV1CategoryTranslation>? translations;
+  String? updatedAt;
+  int? updatedBy;
+
+  ContentServiceV1Category({
+    this.availableLanguages,
+    this.children,
+    this.code,
+    this.createdAt,
+    this.createdBy,
+    this.customFields,
+    this.deletedAt,
+    this.deletedBy,
+    this.depth,
+    this.directPostCount,
+    this.icon,
+    this.id,
+    this.isNav,
+    this.parentId,
+    this.path,
+    this.postCount,
+    this.sortOrder,
+    this.status,
+    this.translations,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory ContentServiceV1Category.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1Category(
+      availableLanguages: (json['availableLanguages'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      children: (json['children'] as List<dynamic>?)?.map((e) => ContentServiceV1Category.fromJson(e as Map<String, dynamic>)).toList(),
+      code: json['code'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      customFields: (json['customFields'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)),
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      depth: json['depth'] as int?,
+      directPostCount: json['directPostCount'] as int?,
+      icon: json['icon'] as String?,
+      id: json['id'] as int?,
+      isNav: json['isNav'] as bool?,
+      parentId: json['parentId'] as int?,
+      path: json['path'] as String?,
+      postCount: json['postCount'] as int?,
+      sortOrder: json['sortOrder'] as int?,
+      status: json['status'] != null ? ContentServiceV1Category$CategoryStatus.fromString(json['status'] as String) : null,
+      translations: (json['translations'] as List<dynamic>?)?.map((e) => ContentServiceV1CategoryTranslation.fromJson(e as Map<String, dynamic>)).toList(),
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (availableLanguages != null) json['availableLanguages'] = availableLanguages;
+    if (children != null) json['children'] = children!.map((e) => e.toJson()).toList();
+    if (code != null) json['code'] = code;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (customFields != null) json['customFields'] = customFields;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (depth != null) json['depth'] = depth;
+    if (directPostCount != null) json['directPostCount'] = directPostCount;
+    if (icon != null) json['icon'] = icon;
+    if (id != null) json['id'] = id;
+    if (isNav != null) json['isNav'] = isNav;
+    if (parentId != null) json['parentId'] = parentId;
+    if (path != null) json['path'] = path;
+    if (postCount != null) json['postCount'] = postCount;
+    if (sortOrder != null) json['sortOrder'] = sortOrder;
+    if (status != null) json['status'] = status!.value;
+    if (translations != null) json['translations'] = translations!.map((e) => e.toJson()).toList();
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1Category(availableLanguages: $availableLanguages, children: $children, code: $code, createdAt: $createdAt, createdBy: $createdBy, customFields: $customFields, deletedAt: $deletedAt, deletedBy: $deletedBy, depth: $depth, directPostCount: $directPostCount, icon: $icon, id: $id, isNav: $isNav, parentId: $parentId, path: $path, postCount: $postCount, sortOrder: $sortOrder, status: $status, translations: $translations, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1Category &&
+      runtimeType == other.runtimeType
+      && availableLanguages == other.availableLanguages
+      && children == other.children
+      && code == other.code
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && customFields == other.customFields
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && depth == other.depth
+      && directPostCount == other.directPostCount
+      && icon == other.icon
+      && id == other.id
+      && isNav == other.isNav
+      && parentId == other.parentId
+      && path == other.path
+      && postCount == other.postCount
+      && sortOrder == other.sortOrder
+      && status == other.status
+      && translations == other.translations
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    availableLanguages,
+    children,
+    code,
+    createdAt,
+    createdBy,
+    customFields,
+    deletedAt,
+    deletedBy,
+    depth,
+    directPostCount,
+    icon,
+    id,
+    isNav,
+    parentId,
+    path,
+    postCount,
+    sortOrder,
+    status,
+    translations,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  ContentServiceV1Category copyWith({
+    List<String>? availableLanguages,
+    List<ContentServiceV1Category>? children,
+    String? code,
+    String? createdAt,
+    int? createdBy,
+    Map<String, String>? customFields,
+    String? deletedAt,
+    int? deletedBy,
+    int? depth,
+    int? directPostCount,
+    String? icon,
+    int? id,
+    bool? isNav,
+    int? parentId,
+    String? path,
+    int? postCount,
+    int? sortOrder,
+    ContentServiceV1Category$CategoryStatus? status,
+    List<ContentServiceV1CategoryTranslation>? translations,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return ContentServiceV1Category(
+      availableLanguages: availableLanguages ?? this.availableLanguages,
+      children: children ?? this.children,
+      code: code ?? this.code,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      customFields: customFields ?? this.customFields,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      depth: depth ?? this.depth,
+      directPostCount: directPostCount ?? this.directPostCount,
+      icon: icon ?? this.icon,
+      id: id ?? this.id,
+      isNav: isNav ?? this.isNav,
+      parentId: parentId ?? this.parentId,
+      path: path ?? this.path,
+      postCount: postCount ?? this.postCount,
+      sortOrder: sortOrder ?? this.sortOrder,
+      status: status ?? this.status,
+      translations: translations ?? this.translations,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 分类状态
+enum ContentServiceV1Category$CategoryStatus {
+  categoryStatusActive('CATEGORY_STATUS_ACTIVE'),
+  categoryStatusArchived('CATEGORY_STATUS_ARCHIVED'),
+  categoryStatusHidden('CATEGORY_STATUS_HIDDEN'),
+  categoryStatusUnspecified('CATEGORY_STATUS_UNSPECIFIED');
+
+  final String value;
+  const ContentServiceV1Category$CategoryStatus(this.value);
+
+  static ContentServiceV1Category$CategoryStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown ContentServiceV1Category\$CategoryStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 类别翻译
+class ContentServiceV1CategoryTranslation {
+  int? categoryId;
+  String? coverImage;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? description;
+  String? fullPath;
+  int? id;
+  String? languageCode;
+  String? name;
+  ContentServiceV1SeoMeta? seo;
+  String? slug;
+  String? thumbnail;
+  String? updatedAt;
+  int? updatedBy;
+
+  ContentServiceV1CategoryTranslation({
+    this.categoryId,
+    this.coverImage,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.description,
+    this.fullPath,
+    this.id,
+    this.languageCode,
+    this.name,
+    this.seo,
+    this.slug,
+    this.thumbnail,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory ContentServiceV1CategoryTranslation.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1CategoryTranslation(
+      categoryId: json['categoryId'] as int?,
+      coverImage: json['coverImage'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      description: json['description'] as String?,
+      fullPath: json['fullPath'] as String?,
+      id: json['id'] as int?,
+      languageCode: json['languageCode'] as String?,
+      name: json['name'] as String?,
+      seo: json['seo'] != null ? ContentServiceV1SeoMeta.fromJson(json['seo'] as Map<String, dynamic>) : null,
+      slug: json['slug'] as String?,
+      thumbnail: json['thumbnail'] as String?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (categoryId != null) json['categoryId'] = categoryId;
+    if (coverImage != null) json['coverImage'] = coverImage;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (description != null) json['description'] = description;
+    if (fullPath != null) json['fullPath'] = fullPath;
+    if (id != null) json['id'] = id;
+    if (languageCode != null) json['languageCode'] = languageCode;
+    if (name != null) json['name'] = name;
+    if (seo != null) json['seo'] = seo!.toJson();
+    if (slug != null) json['slug'] = slug;
+    if (thumbnail != null) json['thumbnail'] = thumbnail;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1CategoryTranslation(categoryId: $categoryId, coverImage: $coverImage, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, description: $description, fullPath: $fullPath, id: $id, languageCode: $languageCode, name: $name, seo: $seo, slug: $slug, thumbnail: $thumbnail, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1CategoryTranslation &&
+      runtimeType == other.runtimeType
+      && categoryId == other.categoryId
+      && coverImage == other.coverImage
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && description == other.description
+      && fullPath == other.fullPath
+      && id == other.id
+      && languageCode == other.languageCode
+      && name == other.name
+      && seo == other.seo
+      && slug == other.slug
+      && thumbnail == other.thumbnail
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    categoryId,
+    coverImage,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    description,
+    fullPath,
+    id,
+    languageCode,
+    name,
+    seo,
+    slug,
+    thumbnail,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  ContentServiceV1CategoryTranslation copyWith({
+    int? categoryId,
+    String? coverImage,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? description,
+    String? fullPath,
+    int? id,
+    String? languageCode,
+    String? name,
+    ContentServiceV1SeoMeta? seo,
+    String? slug,
+    String? thumbnail,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return ContentServiceV1CategoryTranslation(
+      categoryId: categoryId ?? this.categoryId,
+      coverImage: coverImage ?? this.coverImage,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      description: description ?? this.description,
+      fullPath: fullPath ?? this.fullPath,
+      id: id ?? this.id,
+      languageCode: languageCode ?? this.languageCode,
+      name: name ?? this.name,
+      seo: seo ?? this.seo,
+      slug: slug ?? this.slug,
+      thumbnail: thumbnail ?? this.thumbnail,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// SEO 元信息结构设计
+class ContentServiceV1SeoMeta {
+  String? canonicalUrl;
+  String? metaDescription;
+  String? metaKeywords;
+  String? ogDescription;
+  String? ogImage;
+  String? ogTitle;
+  String? seoTitle;
+
+  ContentServiceV1SeoMeta({
+    this.canonicalUrl,
+    this.metaDescription,
+    this.metaKeywords,
+    this.ogDescription,
+    this.ogImage,
+    this.ogTitle,
+    this.seoTitle,
+  });
+
+  factory ContentServiceV1SeoMeta.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1SeoMeta(
+      canonicalUrl: json['canonicalUrl'] as String?,
+      metaDescription: json['metaDescription'] as String?,
+      metaKeywords: json['metaKeywords'] as String?,
+      ogDescription: json['ogDescription'] as String?,
+      ogImage: json['ogImage'] as String?,
+      ogTitle: json['ogTitle'] as String?,
+      seoTitle: json['seoTitle'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (canonicalUrl != null) json['canonicalUrl'] = canonicalUrl;
+    if (metaDescription != null) json['metaDescription'] = metaDescription;
+    if (metaKeywords != null) json['metaKeywords'] = metaKeywords;
+    if (ogDescription != null) json['ogDescription'] = ogDescription;
+    if (ogImage != null) json['ogImage'] = ogImage;
+    if (ogTitle != null) json['ogTitle'] = ogTitle;
+    if (seoTitle != null) json['seoTitle'] = seoTitle;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1SeoMeta(canonicalUrl: $canonicalUrl, metaDescription: $metaDescription, metaKeywords: $metaKeywords, ogDescription: $ogDescription, ogImage: $ogImage, ogTitle: $ogTitle, seoTitle: $seoTitle)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1SeoMeta &&
+      runtimeType == other.runtimeType
+      && canonicalUrl == other.canonicalUrl
+      && metaDescription == other.metaDescription
+      && metaKeywords == other.metaKeywords
+      && ogDescription == other.ogDescription
+      && ogImage == other.ogImage
+      && ogTitle == other.ogTitle
+      && seoTitle == other.seoTitle
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    canonicalUrl,
+    metaDescription,
+    metaKeywords,
+    ogDescription,
+    ogImage,
+    ogTitle,
+    seoTitle,
+  ]);
+
+  ContentServiceV1SeoMeta copyWith({
+    String? canonicalUrl,
+    String? metaDescription,
+    String? metaKeywords,
+    String? ogDescription,
+    String? ogImage,
+    String? ogTitle,
+    String? seoTitle,
+  }) {
+    return ContentServiceV1SeoMeta(
+      canonicalUrl: canonicalUrl ?? this.canonicalUrl,
+      metaDescription: metaDescription ?? this.metaDescription,
+      metaKeywords: metaKeywords ?? this.metaKeywords,
+      ogDescription: ogDescription ?? this.ogDescription,
+      ogImage: ogImage ?? this.ogImage,
+      ogTitle: ogTitle ?? this.ogTitle,
+      seoTitle: seoTitle ?? this.seoTitle,
+    );
+  }
+}
+
+/// 请求 - 类别数据
+class ContentServiceV1GetCategoryRequest {
+  String? code;
+  int? id;
+  String? locale;
+  String? viewMask;
+
+  ContentServiceV1GetCategoryRequest({
+    this.code,
+    this.id,
+    this.locale,
+    this.viewMask,
+  });
+
+  factory ContentServiceV1GetCategoryRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1GetCategoryRequest(
+      code: json['code'] as String?,
+      id: json['id'] as int?,
+      locale: json['locale'] as String?,
+      viewMask: json['viewMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (code != null) json['code'] = code;
+    if (id != null) json['id'] = id;
+    if (locale != null) json['locale'] = locale;
+    if (viewMask != null) json['viewMask'] = viewMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1GetCategoryRequest(code: $code, id: $id, locale: $locale, viewMask: $viewMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1GetCategoryRequest &&
+      runtimeType == other.runtimeType
+      && code == other.code
+      && id == other.id
+      && locale == other.locale
+      && viewMask == other.viewMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    code,
+    id,
+    locale,
+    viewMask,
+  ]);
+
+  ContentServiceV1GetCategoryRequest copyWith({
+    String? code,
+    int? id,
+    String? locale,
+    String? viewMask,
+  }) {
+    return ContentServiceV1GetCategoryRequest(
+      code: code ?? this.code,
+      id: id ?? this.id,
+      locale: locale ?? this.locale,
+      viewMask: viewMask ?? this.viewMask,
+    );
+  }
+}
+
+/// 请求 - 创建类别
+class ContentServiceV1CreateCategoryRequest {
+  ContentServiceV1Category? data;
+
+  ContentServiceV1CreateCategoryRequest({
+    this.data,
+  });
+
+  factory ContentServiceV1CreateCategoryRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1CreateCategoryRequest(
+      data: json['data'] != null ? ContentServiceV1Category.fromJson(json['data'] as Map<String, dynamic>) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (data != null) json['data'] = data!.toJson();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1CreateCategoryRequest(data: $data)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1CreateCategoryRequest &&
+      runtimeType == other.runtimeType
+      && data == other.data
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    data,
+  ]);
+
+  ContentServiceV1CreateCategoryRequest copyWith({
+    ContentServiceV1Category? data,
+  }) {
+    return ContentServiceV1CreateCategoryRequest(
+      data: data ?? this.data,
+    );
+  }
+}
+
+/// 请求 - 更新类别
+class ContentServiceV1UpdateCategoryRequest {
+  bool? allowMissing;
+  ContentServiceV1Category? data;
+  int? id;
+  String? updateMask;
+
+  ContentServiceV1UpdateCategoryRequest({
+    this.allowMissing,
+    this.data,
+    this.id,
+    this.updateMask,
+  });
+
+  factory ContentServiceV1UpdateCategoryRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1UpdateCategoryRequest(
+      allowMissing: json['allowMissing'] as bool?,
+      data: json['data'] != null ? ContentServiceV1Category.fromJson(json['data'] as Map<String, dynamic>) : null,
+      id: json['id'] as int?,
+      updateMask: json['updateMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (allowMissing != null) json['allowMissing'] = allowMissing;
+    if (data != null) json['data'] = data!.toJson();
+    if (id != null) json['id'] = id;
+    if (updateMask != null) json['updateMask'] = updateMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1UpdateCategoryRequest(allowMissing: $allowMissing, data: $data, id: $id, updateMask: $updateMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1UpdateCategoryRequest &&
+      runtimeType == other.runtimeType
+      && allowMissing == other.allowMissing
+      && data == other.data
+      && id == other.id
+      && updateMask == other.updateMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    allowMissing,
+    data,
+    id,
+    updateMask,
+  ]);
+
+  ContentServiceV1UpdateCategoryRequest copyWith({
+    bool? allowMissing,
+    ContentServiceV1Category? data,
+    int? id,
+    String? updateMask,
+  }) {
+    return ContentServiceV1UpdateCategoryRequest(
+      allowMissing: allowMissing ?? this.allowMissing,
+      data: data ?? this.data,
+      id: id ?? this.id,
+      updateMask: updateMask ?? this.updateMask,
+    );
+  }
+}
+
+/// 请求 - 删除类别
+class ContentServiceV1DeleteCategoryRequest {
+  int? id;
+
+  ContentServiceV1DeleteCategoryRequest({
+    this.id,
+  });
+
+  factory ContentServiceV1DeleteCategoryRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1DeleteCategoryRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1DeleteCategoryRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1DeleteCategoryRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  ContentServiceV1DeleteCategoryRequest copyWith({
+    int? id,
+  }) {
+    return ContentServiceV1DeleteCategoryRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// 评论服务
+class CommentServiceClient {
+  final ClientTransport _transport;
+
+  CommentServiceClient(this._transport);
+
+  /// 获取评论列表
+  Future<CommentServiceV1ListCommentResponse> list(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/comments';
+    final queryParams = <String>[];
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
+    }
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
+    }
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
+    }
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
+    }
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
+    }
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
+    }
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'CommentService',
+      method: 'List',
+    ), headers: headers);
+    return CommentServiceV1ListCommentResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 获取评论数据
+  Future<CommentServiceV1Comment> get(CommentServiceV1GetCommentRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/comments/${request.id}';
+    final queryParams = <String>[];
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'CommentService',
+      method: 'Get',
+    ), headers: headers);
+    return CommentServiceV1Comment.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 创建评论
+  Future<CommentServiceV1Comment> create(CommentServiceV1CreateCommentRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/comments';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'CommentService',
+      method: 'Create',
+    ), headers: headers);
+    return CommentServiceV1Comment.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 更新评论
+  Future<CommentServiceV1Comment> update(CommentServiceV1UpdateCommentRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/comments/${request.id}';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
+      service: 'CommentService',
+      method: 'Update',
+    ), headers: headers);
+    return CommentServiceV1Comment.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 删除评论
+  Future<Map<String, dynamic>> delete(CommentServiceV1DeleteCommentRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/comments/${request.id}';
+    final result = await _transport.unary(path, 'DELETE', null, TransportMeta(
+      service: 'CommentService',
+      method: 'Delete',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+}
+
+/// 回应 - 评论列表
+class CommentServiceV1ListCommentResponse {
+  List<CommentServiceV1Comment>? items;
+  int? total;
+
+  CommentServiceV1ListCommentResponse({
+    this.items,
+    this.total,
+  });
+
+  factory CommentServiceV1ListCommentResponse.fromJson(Map<String, dynamic> json) {
+    return CommentServiceV1ListCommentResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => CommentServiceV1Comment.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'CommentServiceV1ListCommentResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is CommentServiceV1ListCommentResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  CommentServiceV1ListCommentResponse copyWith({
+    List<CommentServiceV1Comment>? items,
+    int? total,
+  }) {
+    return CommentServiceV1ListCommentResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 评论
+class CommentServiceV1Comment {
+  String? authorEmail;
+  int? authorId;
+  String? authorName;
+  CommentServiceV1Comment$AuthorType? authorType;
+  String? authorUrl;
+  List<CommentServiceV1Comment>? children;
+  String? content;
+  CommentServiceV1Comment$ContentType? contentType;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? detectedLanguage;
+  int? id;
+  String? ipAddress;
+  bool? isSpam;
+  bool? isSticky;
+  String? location;
+  int? objectId;
+  int? parentId;
+  int? replyToId;
+  CommentServiceV1Comment$Status? status;
+  String? updatedAt;
+  int? updatedBy;
+  String? userAgent;
+
+  CommentServiceV1Comment({
+    this.authorEmail,
+    this.authorId,
+    this.authorName,
+    this.authorType,
+    this.authorUrl,
+    this.children,
+    this.content,
+    this.contentType,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.detectedLanguage,
+    this.id,
+    this.ipAddress,
+    this.isSpam,
+    this.isSticky,
+    this.location,
+    this.objectId,
+    this.parentId,
+    this.replyToId,
+    this.status,
+    this.updatedAt,
+    this.updatedBy,
+    this.userAgent,
+  });
+
+  factory CommentServiceV1Comment.fromJson(Map<String, dynamic> json) {
+    return CommentServiceV1Comment(
+      authorEmail: json['authorEmail'] as String?,
+      authorId: json['authorId'] as int?,
+      authorName: json['authorName'] as String?,
+      authorType: json['authorType'] != null ? CommentServiceV1Comment$AuthorType.fromString(json['authorType'] as String) : null,
+      authorUrl: json['authorUrl'] as String?,
+      children: (json['children'] as List<dynamic>?)?.map((e) => CommentServiceV1Comment.fromJson(e as Map<String, dynamic>)).toList(),
+      content: json['content'] as String?,
+      contentType: json['contentType'] != null ? CommentServiceV1Comment$ContentType.fromString(json['contentType'] as String) : null,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      detectedLanguage: json['detectedLanguage'] as String?,
+      id: json['id'] as int?,
+      ipAddress: json['ipAddress'] as String?,
+      isSpam: json['isSpam'] as bool?,
+      isSticky: json['isSticky'] as bool?,
+      location: json['location'] as String?,
+      objectId: json['objectId'] as int?,
+      parentId: json['parentId'] as int?,
+      replyToId: json['replyToId'] as int?,
+      status: json['status'] != null ? CommentServiceV1Comment$Status.fromString(json['status'] as String) : null,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+      userAgent: json['userAgent'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (authorEmail != null) json['authorEmail'] = authorEmail;
+    if (authorId != null) json['authorId'] = authorId;
+    if (authorName != null) json['authorName'] = authorName;
+    if (authorType != null) json['authorType'] = authorType!.value;
+    if (authorUrl != null) json['authorUrl'] = authorUrl;
+    if (children != null) json['children'] = children!.map((e) => e.toJson()).toList();
+    if (content != null) json['content'] = content;
+    if (contentType != null) json['contentType'] = contentType!.value;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (detectedLanguage != null) json['detectedLanguage'] = detectedLanguage;
+    if (id != null) json['id'] = id;
+    if (ipAddress != null) json['ipAddress'] = ipAddress;
+    if (isSpam != null) json['isSpam'] = isSpam;
+    if (isSticky != null) json['isSticky'] = isSticky;
+    if (location != null) json['location'] = location;
+    if (objectId != null) json['objectId'] = objectId;
+    if (parentId != null) json['parentId'] = parentId;
+    if (replyToId != null) json['replyToId'] = replyToId;
+    if (status != null) json['status'] = status!.value;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (userAgent != null) json['userAgent'] = userAgent;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'CommentServiceV1Comment(authorEmail: $authorEmail, authorId: $authorId, authorName: $authorName, authorType: $authorType, authorUrl: $authorUrl, children: $children, content: $content, contentType: $contentType, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, detectedLanguage: $detectedLanguage, id: $id, ipAddress: $ipAddress, isSpam: $isSpam, isSticky: $isSticky, location: $location, objectId: $objectId, parentId: $parentId, replyToId: $replyToId, status: $status, updatedAt: $updatedAt, updatedBy: $updatedBy, userAgent: $userAgent)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is CommentServiceV1Comment &&
+      runtimeType == other.runtimeType
+      && authorEmail == other.authorEmail
+      && authorId == other.authorId
+      && authorName == other.authorName
+      && authorType == other.authorType
+      && authorUrl == other.authorUrl
+      && children == other.children
+      && content == other.content
+      && contentType == other.contentType
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && detectedLanguage == other.detectedLanguage
+      && id == other.id
+      && ipAddress == other.ipAddress
+      && isSpam == other.isSpam
+      && isSticky == other.isSticky
+      && location == other.location
+      && objectId == other.objectId
+      && parentId == other.parentId
+      && replyToId == other.replyToId
+      && status == other.status
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+      && userAgent == other.userAgent
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    authorEmail,
+    authorId,
+    authorName,
+    authorType,
+    authorUrl,
+    children,
+    content,
+    contentType,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    detectedLanguage,
+    id,
+    ipAddress,
+    isSpam,
+    isSticky,
+    location,
+    objectId,
+    parentId,
+    replyToId,
+    status,
+    updatedAt,
+    updatedBy,
+    userAgent,
+  ]);
+
+  CommentServiceV1Comment copyWith({
+    String? authorEmail,
+    int? authorId,
+    String? authorName,
+    CommentServiceV1Comment$AuthorType? authorType,
+    String? authorUrl,
+    List<CommentServiceV1Comment>? children,
+    String? content,
+    CommentServiceV1Comment$ContentType? contentType,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? detectedLanguage,
+    int? id,
+    String? ipAddress,
+    bool? isSpam,
+    bool? isSticky,
+    String? location,
+    int? objectId,
+    int? parentId,
+    int? replyToId,
+    CommentServiceV1Comment$Status? status,
+    String? updatedAt,
+    int? updatedBy,
+    String? userAgent,
+  }) {
+    return CommentServiceV1Comment(
+      authorEmail: authorEmail ?? this.authorEmail,
+      authorId: authorId ?? this.authorId,
+      authorName: authorName ?? this.authorName,
+      authorType: authorType ?? this.authorType,
+      authorUrl: authorUrl ?? this.authorUrl,
+      children: children ?? this.children,
+      content: content ?? this.content,
+      contentType: contentType ?? this.contentType,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      detectedLanguage: detectedLanguage ?? this.detectedLanguage,
+      id: id ?? this.id,
+      ipAddress: ipAddress ?? this.ipAddress,
+      isSpam: isSpam ?? this.isSpam,
+      isSticky: isSticky ?? this.isSticky,
+      location: location ?? this.location,
+      objectId: objectId ?? this.objectId,
+      parentId: parentId ?? this.parentId,
+      replyToId: replyToId ?? this.replyToId,
+      status: status ?? this.status,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+      userAgent: userAgent ?? this.userAgent,
+    );
+  }
+}
+
+/// 内容类型
+enum CommentServiceV1Comment$ContentType {
+  contentTypePage('CONTENT_TYPE_PAGE'),
+  contentTypePost('CONTENT_TYPE_POST'),
+  contentTypeProduct('CONTENT_TYPE_PRODUCT'),
+  contentTypeUnspecified('CONTENT_TYPE_UNSPECIFIED');
+
+  final String value;
+  const CommentServiceV1Comment$ContentType(this.value);
+
+  static CommentServiceV1Comment$ContentType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown CommentServiceV1Comment\$ContentType value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 作者类型
+enum CommentServiceV1Comment$AuthorType {
+  authorTypeAdmin('AUTHOR_TYPE_ADMIN'),
+  authorTypeGuest('AUTHOR_TYPE_GUEST'),
+  authorTypeModerator('AUTHOR_TYPE_MODERATOR'),
+  authorTypeUnspecified('AUTHOR_TYPE_UNSPECIFIED'),
+  authorTypeUser('AUTHOR_TYPE_USER');
+
+  final String value;
+  const CommentServiceV1Comment$AuthorType(this.value);
+
+  static CommentServiceV1Comment$AuthorType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown CommentServiceV1Comment\$AuthorType value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 评论状态
+enum CommentServiceV1Comment$Status {
+  statusApproved('STATUS_APPROVED'),
+  statusPending('STATUS_PENDING'),
+  statusRejected('STATUS_REJECTED'),
+  statusSpam('STATUS_SPAM'),
+  statusUnspecified('STATUS_UNSPECIFIED');
+
+  final String value;
+  const CommentServiceV1Comment$Status(this.value);
+
+  static CommentServiceV1Comment$Status fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown CommentServiceV1Comment\$Status value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 请求 - 评论数据
+class CommentServiceV1GetCommentRequest {
+  int? id;
+  String? viewMask;
+
+  CommentServiceV1GetCommentRequest({
+    this.id,
+    this.viewMask,
+  });
+
+  factory CommentServiceV1GetCommentRequest.fromJson(Map<String, dynamic> json) {
+    return CommentServiceV1GetCommentRequest(
+      id: json['id'] as int?,
+      viewMask: json['viewMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (viewMask != null) json['viewMask'] = viewMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'CommentServiceV1GetCommentRequest(id: $id, viewMask: $viewMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is CommentServiceV1GetCommentRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && viewMask == other.viewMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    viewMask,
+  ]);
+
+  CommentServiceV1GetCommentRequest copyWith({
+    int? id,
+    String? viewMask,
+  }) {
+    return CommentServiceV1GetCommentRequest(
+      id: id ?? this.id,
+      viewMask: viewMask ?? this.viewMask,
+    );
+  }
+}
+
+/// 请求 - 创建评论
+class CommentServiceV1CreateCommentRequest {
+  CommentServiceV1Comment? data;
+
+  CommentServiceV1CreateCommentRequest({
+    this.data,
+  });
+
+  factory CommentServiceV1CreateCommentRequest.fromJson(Map<String, dynamic> json) {
+    return CommentServiceV1CreateCommentRequest(
+      data: json['data'] != null ? CommentServiceV1Comment.fromJson(json['data'] as Map<String, dynamic>) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (data != null) json['data'] = data!.toJson();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'CommentServiceV1CreateCommentRequest(data: $data)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is CommentServiceV1CreateCommentRequest &&
+      runtimeType == other.runtimeType
+      && data == other.data
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    data,
+  ]);
+
+  CommentServiceV1CreateCommentRequest copyWith({
+    CommentServiceV1Comment? data,
+  }) {
+    return CommentServiceV1CreateCommentRequest(
+      data: data ?? this.data,
+    );
+  }
+}
+
+/// 请求 - 更新评论
+class CommentServiceV1UpdateCommentRequest {
+  bool? allowMissing;
+  CommentServiceV1Comment? data;
+  int? id;
+  String? updateMask;
+
+  CommentServiceV1UpdateCommentRequest({
+    this.allowMissing,
+    this.data,
+    this.id,
+    this.updateMask,
+  });
+
+  factory CommentServiceV1UpdateCommentRequest.fromJson(Map<String, dynamic> json) {
+    return CommentServiceV1UpdateCommentRequest(
+      allowMissing: json['allowMissing'] as bool?,
+      data: json['data'] != null ? CommentServiceV1Comment.fromJson(json['data'] as Map<String, dynamic>) : null,
+      id: json['id'] as int?,
+      updateMask: json['updateMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (allowMissing != null) json['allowMissing'] = allowMissing;
+    if (data != null) json['data'] = data!.toJson();
+    if (id != null) json['id'] = id;
+    if (updateMask != null) json['updateMask'] = updateMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'CommentServiceV1UpdateCommentRequest(allowMissing: $allowMissing, data: $data, id: $id, updateMask: $updateMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is CommentServiceV1UpdateCommentRequest &&
+      runtimeType == other.runtimeType
+      && allowMissing == other.allowMissing
+      && data == other.data
+      && id == other.id
+      && updateMask == other.updateMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    allowMissing,
+    data,
+    id,
+    updateMask,
+  ]);
+
+  CommentServiceV1UpdateCommentRequest copyWith({
+    bool? allowMissing,
+    CommentServiceV1Comment? data,
+    int? id,
+    String? updateMask,
+  }) {
+    return CommentServiceV1UpdateCommentRequest(
+      allowMissing: allowMissing ?? this.allowMissing,
+      data: data ?? this.data,
+      id: id ?? this.id,
+      updateMask: updateMask ?? this.updateMask,
+    );
+  }
+}
+
+/// 请求 - 删除评论
+class CommentServiceV1DeleteCommentRequest {
+  int? id;
+
+  CommentServiceV1DeleteCommentRequest({
+    this.id,
+  });
+
+  factory CommentServiceV1DeleteCommentRequest.fromJson(Map<String, dynamic> json) {
+    return CommentServiceV1DeleteCommentRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'CommentServiceV1DeleteCommentRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is CommentServiceV1DeleteCommentRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  CommentServiceV1DeleteCommentRequest copyWith({
+    int? id,
+  }) {
+    return CommentServiceV1DeleteCommentRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// OA 报销参与服务（app 边端，移动端）
+class ExpenseServiceClient {
+  final ClientTransport _transport;
+
+  ExpenseServiceClient(this._transport);
+
+  /// 提交报销申请
+  Future<OaServiceV1SubmitExpenseApplicationResponse> submitExpenseApplication(OaServiceV1SubmitExpenseApplicationRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/expense/applications';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'ExpenseService',
+      method: 'SubmitExpenseApplication',
+    ), headers: headers);
+    return OaServiceV1SubmitExpenseApplicationResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询我的报销申请
+  Future<OaServiceV1ListExpenseApplicationsResponse> listExpenseApplications(OaServiceV1ListExpenseApplicationsRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/expense/applications';
+    final queryParams = <String>[];
+    if (request.userId != null) {
+      queryParams.add('userId=${Uri.encodeComponent(request.userId!.toString())}');
+    }
+    if (request.status != null) {
+      queryParams.add('status=${Uri.encodeComponent(request.status!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'ExpenseService',
+      method: 'ListExpenseApplications',
+    ), headers: headers);
+    return OaServiceV1ListExpenseApplicationsResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询报销申请详情
+  Future<OaServiceV1ExpenseApplication> getExpenseApplication(OaServiceV1GetExpenseApplicationRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/oa/expense/applications/${request.id}';
+    final result = await _transport.unary(path, 'GET', null, TransportMeta(
+      service: 'ExpenseService',
+      method: 'GetExpenseApplication',
+    ), headers: headers);
+    return OaServiceV1ExpenseApplication.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 提交报销申请 - 请求
+class OaServiceV1SubmitExpenseApplicationRequest {
+  List<OaServiceV1ExpenseItem>? items;
+  String? title;
+
+  OaServiceV1SubmitExpenseApplicationRequest({
+    this.items,
+    this.title,
+  });
+
+  factory OaServiceV1SubmitExpenseApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitExpenseApplicationRequest(
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1ExpenseItem.fromJson(e as Map<String, dynamic>)).toList(),
+      title: json['title'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (title != null) json['title'] = title;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitExpenseApplicationRequest(items: $items, title: $title)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitExpenseApplicationRequest &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && title == other.title
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    title,
+  ]);
+
+  OaServiceV1SubmitExpenseApplicationRequest copyWith({
+    List<OaServiceV1ExpenseItem>? items,
+    String? title,
+  }) {
+    return OaServiceV1SubmitExpenseApplicationRequest(
+      items: items ?? this.items,
+      title: title ?? this.title,
+    );
+  }
+}
+
+/// 报销明细行
+class OaServiceV1ExpenseItem {
+  double? amount;
+  String? category;
+  String? createdAt;
+  String? description;
+  String? expenseDate;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? invoiceFileId;
+  int? tenantId;
+
+  OaServiceV1ExpenseItem({
+    this.amount,
+    this.category,
+    this.createdAt,
+    this.description,
+    this.expenseDate,
+    this.id,
+    this.invoiceFileId,
+    this.tenantId,
+  });
+
+  factory OaServiceV1ExpenseItem.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ExpenseItem(
+      amount: (json['amount'] as num?)?.toDouble(),
+      category: json['category'] as String?,
+      createdAt: json['createdAt'] as String?,
+      description: json['description'] as String?,
+      expenseDate: json['expenseDate'] as String?,
+      id: json['id'] as int?,
+      invoiceFileId: json['invoiceFileId'] as int?,
+      tenantId: json['tenantId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (amount != null) json['amount'] = amount;
+    if (category != null) json['category'] = category;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (description != null) json['description'] = description;
+    if (expenseDate != null) json['expenseDate'] = expenseDate;
+    if (id != null) json['id'] = id;
+    if (invoiceFileId != null) json['invoiceFileId'] = invoiceFileId;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ExpenseItem(amount: $amount, category: $category, createdAt: $createdAt, description: $description, expenseDate: $expenseDate, id: $id, invoiceFileId: $invoiceFileId, tenantId: $tenantId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ExpenseItem &&
+      runtimeType == other.runtimeType
+      && amount == other.amount
+      && category == other.category
+      && createdAt == other.createdAt
+      && description == other.description
+      && expenseDate == other.expenseDate
+      && id == other.id
+      && invoiceFileId == other.invoiceFileId
+      && tenantId == other.tenantId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    amount,
+    category,
+    createdAt,
+    description,
+    expenseDate,
+    id,
+    invoiceFileId,
+    tenantId,
+  ]);
+
+  OaServiceV1ExpenseItem copyWith({
+    double? amount,
+    String? category,
+    String? createdAt,
+    String? description,
+    String? expenseDate,
+    int? id,
+    int? invoiceFileId,
+    int? tenantId,
+  }) {
+    return OaServiceV1ExpenseItem(
+      amount: amount ?? this.amount,
+      category: category ?? this.category,
+      createdAt: createdAt ?? this.createdAt,
+      description: description ?? this.description,
+      expenseDate: expenseDate ?? this.expenseDate,
+      id: id ?? this.id,
+      invoiceFileId: invoiceFileId ?? this.invoiceFileId,
+      tenantId: tenantId ?? this.tenantId,
+    );
+  }
+}
+
+/// 提交报销申请 - 回应
+class OaServiceV1SubmitExpenseApplicationResponse {
+  int? id;
+  int? instanceId;
+
+  OaServiceV1SubmitExpenseApplicationResponse({
+    this.id,
+    this.instanceId,
+  });
+
+  factory OaServiceV1SubmitExpenseApplicationResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitExpenseApplicationResponse(
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitExpenseApplicationResponse(id: $id, instanceId: $instanceId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitExpenseApplicationResponse &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && instanceId == other.instanceId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    instanceId,
+  ]);
+
+  OaServiceV1SubmitExpenseApplicationResponse copyWith({
+    int? id,
+    int? instanceId,
+  }) {
+    return OaServiceV1SubmitExpenseApplicationResponse(
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+    );
+  }
+}
+
+/// 查询报销申请 - 请求
+class OaServiceV1ListExpenseApplicationsRequest {
+  OaServiceV1ExpenseApplication$ExpenseStatus? status;
+  int? userId;
+
+  OaServiceV1ListExpenseApplicationsRequest({
+    this.status,
+    this.userId,
+  });
+
+  factory OaServiceV1ListExpenseApplicationsRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListExpenseApplicationsRequest(
+      status: json['status'] != null ? OaServiceV1ExpenseApplication$ExpenseStatus.fromString(json['status'] as String) : null,
+      userId: json['userId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (status != null) json['status'] = status!.value;
+    if (userId != null) json['userId'] = userId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListExpenseApplicationsRequest(status: $status, userId: $userId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListExpenseApplicationsRequest &&
+      runtimeType == other.runtimeType
+      && status == other.status
+      && userId == other.userId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    status,
+    userId,
+  ]);
+
+  OaServiceV1ListExpenseApplicationsRequest copyWith({
+    OaServiceV1ExpenseApplication$ExpenseStatus? status,
+    int? userId,
+  }) {
+    return OaServiceV1ListExpenseApplicationsRequest(
+      status: status ?? this.status,
+      userId: userId ?? this.userId,
+    );
+  }
+}
+
+/// 申请单状态（与工作流实例终态同步）
+enum OaServiceV1ExpenseApplication$ExpenseStatus {
+  approved('APPROVED'),
+  pending('PENDING'),
+  rejected('REJECTED'),
+  withdrawn('WITHDRAWN');
+
+  final String value;
+  const OaServiceV1ExpenseApplication$ExpenseStatus(this.value);
+
+  static OaServiceV1ExpenseApplication$ExpenseStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1ExpenseApplication\$ExpenseStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 查询报销申请 - 回应
+class OaServiceV1ListExpenseApplicationsResponse {
+  List<OaServiceV1ExpenseApplication>? items;
+  int? total;
+
+  OaServiceV1ListExpenseApplicationsResponse({
+    this.items,
+    this.total,
+  });
+
+  factory OaServiceV1ListExpenseApplicationsResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListExpenseApplicationsResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1ExpenseApplication.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListExpenseApplicationsResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListExpenseApplicationsResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  OaServiceV1ListExpenseApplicationsResponse copyWith({
+    List<OaServiceV1ExpenseApplication>? items,
+    int? total,
+  }) {
+    return OaServiceV1ListExpenseApplicationsResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 报销申请单
+class OaServiceV1ExpenseApplication {
+  String? applicantName;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  OaServiceV1ExpenseApplication$ExpenseStatus? expenseStatus;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? instanceId;
+  List<OaServiceV1ExpenseItem>? items;
+  int? tenantId;
+  String? title;
+  double? totalAmount;
+  String? updatedAt;
+  int? updatedBy;
+
+  OaServiceV1ExpenseApplication({
+    this.applicantName,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.expenseStatus,
+    this.id,
+    this.instanceId,
+    this.items,
+    this.tenantId,
+    this.title,
+    this.totalAmount,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory OaServiceV1ExpenseApplication.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ExpenseApplication(
+      applicantName: json['applicantName'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      expenseStatus: json['expenseStatus'] != null ? OaServiceV1ExpenseApplication$ExpenseStatus.fromString(json['expenseStatus'] as String) : null,
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1ExpenseItem.fromJson(e as Map<String, dynamic>)).toList(),
+      tenantId: json['tenantId'] as int?,
+      title: json['title'] as String?,
+      totalAmount: (json['totalAmount'] as num?)?.toDouble(),
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (applicantName != null) json['applicantName'] = applicantName;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (expenseStatus != null) json['expenseStatus'] = expenseStatus!.value;
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (title != null) json['title'] = title;
+    if (totalAmount != null) json['totalAmount'] = totalAmount;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ExpenseApplication(applicantName: $applicantName, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, expenseStatus: $expenseStatus, id: $id, instanceId: $instanceId, items: $items, tenantId: $tenantId, title: $title, totalAmount: $totalAmount, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ExpenseApplication &&
+      runtimeType == other.runtimeType
+      && applicantName == other.applicantName
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && expenseStatus == other.expenseStatus
+      && id == other.id
+      && instanceId == other.instanceId
+      && items == other.items
+      && tenantId == other.tenantId
+      && title == other.title
+      && totalAmount == other.totalAmount
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    applicantName,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    expenseStatus,
+    id,
+    instanceId,
+    items,
+    tenantId,
+    title,
+    totalAmount,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  OaServiceV1ExpenseApplication copyWith({
+    String? applicantName,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    OaServiceV1ExpenseApplication$ExpenseStatus? expenseStatus,
+    int? id,
+    int? instanceId,
+    List<OaServiceV1ExpenseItem>? items,
+    int? tenantId,
+    String? title,
+    double? totalAmount,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return OaServiceV1ExpenseApplication(
+      applicantName: applicantName ?? this.applicantName,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      expenseStatus: expenseStatus ?? this.expenseStatus,
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+      items: items ?? this.items,
+      tenantId: tenantId ?? this.tenantId,
+      title: title ?? this.title,
+      totalAmount: totalAmount ?? this.totalAmount,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 查询报销申请详情 - 请求
+class OaServiceV1GetExpenseApplicationRequest {
+  int? id;
+
+  OaServiceV1GetExpenseApplicationRequest({
+    this.id,
+  });
+
+  factory OaServiceV1GetExpenseApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1GetExpenseApplicationRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1GetExpenseApplicationRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1GetExpenseApplicationRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  OaServiceV1GetExpenseApplicationRequest copyWith({
+    int? id,
+  }) {
+    return OaServiceV1GetExpenseApplicationRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// 文件传输服务
+class FileTransferServiceClient {
+  final ClientTransport _transport;
+
+  FileTransferServiceClient(this._transport);
+
+  /// 下载文件
+  Future<StorageServiceV1DownloadFileResponse> downloadFile(StorageServiceV1DownloadFileRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/file/download';
+    final queryParams = <String>[];
+    if (request.fileId != null) {
+      queryParams.add('fileId=${Uri.encodeComponent(request.fileId!.toString())}');
+    }
+    if (request.storageObject?.bucketName != null) {
+      queryParams.add('storageObject.bucketName=${Uri.encodeComponent(request.storageObject!.bucketName!.toString())}');
+    }
+    if (request.storageObject?.fileDirectory != null) {
+      queryParams.add('storageObject.fileDirectory=${Uri.encodeComponent(request.storageObject!.fileDirectory!.toString())}');
+    }
+    if (request.storageObject?.objectName != null) {
+      queryParams.add('storageObject.objectName=${Uri.encodeComponent(request.storageObject!.objectName!.toString())}');
+    }
+    if (request.downloadUrl != null) {
+      queryParams.add('downloadUrl=${Uri.encodeComponent(request.downloadUrl!.toString())}');
+    }
+    if (request.rangeStart != null) {
+      queryParams.add('rangeStart=${Uri.encodeComponent(request.rangeStart!.toString())}');
+    }
+    if (request.rangeEnd != null) {
+      queryParams.add('rangeEnd=${Uri.encodeComponent(request.rangeEnd!.toString())}');
+    }
+    if (request.preferPresignedUrl != null) {
+      queryParams.add('preferPresignedUrl=${Uri.encodeComponent(request.preferPresignedUrl!.toString())}');
+    }
+    if (request.presignExpireSeconds != null) {
+      queryParams.add('presignExpireSeconds=${Uri.encodeComponent(request.presignExpireSeconds!.toString())}');
+    }
+    if (request.disposition != null) {
+      queryParams.add('disposition=${Uri.encodeComponent(request.disposition!.toString())}');
+    }
+    if (request.acceptMime != null) {
+      queryParams.add('acceptMime=${Uri.encodeComponent(request.acceptMime!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'FileTransferService',
+      method: 'DownloadFile',
+    ), headers: headers);
+    return StorageServiceV1DownloadFileResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 上传文件 PUT 方式
+  Future<StorageServiceV1UploadFileResponse> putUploadFile(StorageServiceV1UploadFileRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/file/upload';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
+      service: 'FileTransferService',
+      method: 'PutUploadFile',
+    ), headers: headers);
+    return StorageServiceV1UploadFileResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 上传文件 POST 方式
+  Future<StorageServiceV1UploadFileResponse> postUploadFile(StorageServiceV1UploadFileRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/file/upload';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'FileTransferService',
+      method: 'PostUploadFile',
+    ), headers: headers);
+    return StorageServiceV1UploadFileResponse.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 文件下载请求
+class StorageServiceV1DownloadFileRequest {
+  String? acceptMime;
+  String? disposition;
+  String? downloadUrl;
+  int? fileId;
+  bool? preferPresignedUrl;
+  int? presignExpireSeconds;
+  int? rangeEnd;
+  /// 可选的分段下载范围（闭区间 start，开区间 end；为 0/0 表示全量）
+  int? rangeStart;
+  StorageServiceV1StorageObject? storageObject;
+
+  StorageServiceV1DownloadFileRequest({
+    this.acceptMime,
+    this.disposition,
+    this.downloadUrl,
+    this.fileId,
+    this.preferPresignedUrl,
+    this.presignExpireSeconds,
+    this.rangeEnd,
+    this.rangeStart,
+    this.storageObject,
+  });
+
+  factory StorageServiceV1DownloadFileRequest.fromJson(Map<String, dynamic> json) {
+    return StorageServiceV1DownloadFileRequest(
+      acceptMime: json['acceptMime'] as String?,
+      disposition: json['disposition'] as String?,
+      downloadUrl: json['downloadUrl'] as String?,
+      fileId: json['fileId'] as int?,
+      preferPresignedUrl: json['preferPresignedUrl'] as bool?,
+      presignExpireSeconds: json['presignExpireSeconds'] as int?,
+      rangeEnd: json['rangeEnd'] != null ? int.parse(json['rangeEnd'].toString()) : null,
+      rangeStart: json['rangeStart'] != null ? int.parse(json['rangeStart'].toString()) : null,
+      storageObject: json['storageObject'] != null ? StorageServiceV1StorageObject.fromJson(json['storageObject'] as Map<String, dynamic>) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (acceptMime != null) json['acceptMime'] = acceptMime;
+    if (disposition != null) json['disposition'] = disposition;
+    if (downloadUrl != null) json['downloadUrl'] = downloadUrl;
+    if (fileId != null) json['fileId'] = fileId;
+    if (preferPresignedUrl != null) json['preferPresignedUrl'] = preferPresignedUrl;
+    if (presignExpireSeconds != null) json['presignExpireSeconds'] = presignExpireSeconds;
+    if (rangeEnd != null) json['rangeEnd'] = rangeEnd.toString();
+    if (rangeStart != null) json['rangeStart'] = rangeStart.toString();
+    if (storageObject != null) json['storageObject'] = storageObject!.toJson();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'StorageServiceV1DownloadFileRequest(acceptMime: $acceptMime, disposition: $disposition, downloadUrl: $downloadUrl, fileId: $fileId, preferPresignedUrl: $preferPresignedUrl, presignExpireSeconds: $presignExpireSeconds, rangeEnd: $rangeEnd, rangeStart: $rangeStart, storageObject: $storageObject)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is StorageServiceV1DownloadFileRequest &&
+      runtimeType == other.runtimeType
+      && acceptMime == other.acceptMime
+      && disposition == other.disposition
+      && downloadUrl == other.downloadUrl
+      && fileId == other.fileId
+      && preferPresignedUrl == other.preferPresignedUrl
+      && presignExpireSeconds == other.presignExpireSeconds
+      && rangeEnd == other.rangeEnd
+      && rangeStart == other.rangeStart
+      && storageObject == other.storageObject
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    acceptMime,
+    disposition,
+    downloadUrl,
+    fileId,
+    preferPresignedUrl,
+    presignExpireSeconds,
+    rangeEnd,
+    rangeStart,
+    storageObject,
+  ]);
+
+  StorageServiceV1DownloadFileRequest copyWith({
+    String? acceptMime,
+    String? disposition,
+    String? downloadUrl,
+    int? fileId,
+    bool? preferPresignedUrl,
+    int? presignExpireSeconds,
+    int? rangeEnd,
+    int? rangeStart,
+    StorageServiceV1StorageObject? storageObject,
+  }) {
+    return StorageServiceV1DownloadFileRequest(
+      acceptMime: acceptMime ?? this.acceptMime,
+      disposition: disposition ?? this.disposition,
+      downloadUrl: downloadUrl ?? this.downloadUrl,
+      fileId: fileId ?? this.fileId,
+      preferPresignedUrl: preferPresignedUrl ?? this.preferPresignedUrl,
+      presignExpireSeconds: presignExpireSeconds ?? this.presignExpireSeconds,
+      rangeEnd: rangeEnd ?? this.rangeEnd,
+      rangeStart: rangeStart ?? this.rangeStart,
+      storageObject: storageObject ?? this.storageObject,
+    );
+  }
+}
+
+/// 对象存储对象
+class StorageServiceV1StorageObject {
+  String? bucketName;
+  String? fileDirectory;
+  String? objectName;
+
+  StorageServiceV1StorageObject({
+    this.bucketName,
+    this.fileDirectory,
+    this.objectName,
+  });
+
+  factory StorageServiceV1StorageObject.fromJson(Map<String, dynamic> json) {
+    return StorageServiceV1StorageObject(
+      bucketName: json['bucketName'] as String?,
+      fileDirectory: json['fileDirectory'] as String?,
+      objectName: json['objectName'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (bucketName != null) json['bucketName'] = bucketName;
+    if (fileDirectory != null) json['fileDirectory'] = fileDirectory;
+    if (objectName != null) json['objectName'] = objectName;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'StorageServiceV1StorageObject(bucketName: $bucketName, fileDirectory: $fileDirectory, objectName: $objectName)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is StorageServiceV1StorageObject &&
+      runtimeType == other.runtimeType
+      && bucketName == other.bucketName
+      && fileDirectory == other.fileDirectory
+      && objectName == other.objectName
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    bucketName,
+    fileDirectory,
+    objectName,
+  ]);
+
+  StorageServiceV1StorageObject copyWith({
+    String? bucketName,
+    String? fileDirectory,
+    String? objectName,
+  }) {
+    return StorageServiceV1StorageObject(
+      bucketName: bucketName ?? this.bucketName,
+      fileDirectory: fileDirectory ?? this.fileDirectory,
+      objectName: objectName ?? this.objectName,
+    );
+  }
+}
+
+/// 文件下载响应
+class StorageServiceV1DownloadFileResponse {
+  String? checksum;
+  String? downloadUrl;
+  String? file;
+  String? mime;
+  int? size;
+  String? sourceFileName;
+  String? storagePath;
+  String? updatedAt;
+
+  StorageServiceV1DownloadFileResponse({
+    this.checksum,
+    this.downloadUrl,
+    this.file,
+    this.mime,
+    this.size,
+    this.sourceFileName,
+    this.storagePath,
+    this.updatedAt,
+  });
+
+  factory StorageServiceV1DownloadFileResponse.fromJson(Map<String, dynamic> json) {
+    return StorageServiceV1DownloadFileResponse(
+      checksum: json['checksum'] as String?,
+      downloadUrl: json['downloadUrl'] as String?,
+      file: json['file'] as String?,
+      mime: json['mime'] as String?,
+      size: json['size'] != null ? int.parse(json['size'].toString()) : null,
+      sourceFileName: json['sourceFileName'] as String?,
+      storagePath: json['storagePath'] as String?,
+      updatedAt: json['updatedAt'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (checksum != null) json['checksum'] = checksum;
+    if (downloadUrl != null) json['downloadUrl'] = downloadUrl;
+    if (file != null) json['file'] = file;
+    if (mime != null) json['mime'] = mime;
+    if (size != null) json['size'] = size.toString();
+    if (sourceFileName != null) json['sourceFileName'] = sourceFileName;
+    if (storagePath != null) json['storagePath'] = storagePath;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'StorageServiceV1DownloadFileResponse(checksum: $checksum, downloadUrl: $downloadUrl, file: $file, mime: $mime, size: $size, sourceFileName: $sourceFileName, storagePath: $storagePath, updatedAt: $updatedAt)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is StorageServiceV1DownloadFileResponse &&
+      runtimeType == other.runtimeType
+      && checksum == other.checksum
+      && downloadUrl == other.downloadUrl
+      && file == other.file
+      && mime == other.mime
+      && size == other.size
+      && sourceFileName == other.sourceFileName
+      && storagePath == other.storagePath
+      && updatedAt == other.updatedAt
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    checksum,
+    downloadUrl,
+    file,
+    mime,
+    size,
+    sourceFileName,
+    storagePath,
+    updatedAt,
+  ]);
+
+  StorageServiceV1DownloadFileResponse copyWith({
+    String? checksum,
+    String? downloadUrl,
+    String? file,
+    String? mime,
+    int? size,
+    String? sourceFileName,
+    String? storagePath,
+    String? updatedAt,
+  }) {
+    return StorageServiceV1DownloadFileResponse(
+      checksum: checksum ?? this.checksum,
+      downloadUrl: downloadUrl ?? this.downloadUrl,
+      file: file ?? this.file,
+      mime: mime ?? this.mime,
+      size: size ?? this.size,
+      sourceFileName: sourceFileName ?? this.sourceFileName,
+      storagePath: storagePath ?? this.storagePath,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+}
+
+class StorageServiceV1UploadFileRequest {
+  String? file;
+  String? mime;
+  StorageServiceV1PresignOption? presign;
+  int? size;
+  String? sourceFileName;
+  StorageServiceV1StorageObject? storageObject;
+  int? tenantId;
+  int? userId;
+
+  StorageServiceV1UploadFileRequest({
+    this.file,
+    this.mime,
+    this.presign,
+    this.size,
+    this.sourceFileName,
+    this.storageObject,
+    this.tenantId,
+    this.userId,
+  });
+
+  factory StorageServiceV1UploadFileRequest.fromJson(Map<String, dynamic> json) {
+    return StorageServiceV1UploadFileRequest(
+      file: json['file'] as String?,
+      mime: json['mime'] as String?,
+      presign: json['presign'] != null ? StorageServiceV1PresignOption.fromJson(json['presign'] as Map<String, dynamic>) : null,
+      size: json['size'] != null ? int.parse(json['size'].toString()) : null,
+      sourceFileName: json['sourceFileName'] as String?,
+      storageObject: json['storageObject'] != null ? StorageServiceV1StorageObject.fromJson(json['storageObject'] as Map<String, dynamic>) : null,
+      tenantId: json['tenantId'] as int?,
+      userId: json['userId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (file != null) json['file'] = file;
+    if (mime != null) json['mime'] = mime;
+    if (presign != null) json['presign'] = presign!.toJson();
+    if (size != null) json['size'] = size.toString();
+    if (sourceFileName != null) json['sourceFileName'] = sourceFileName;
+    if (storageObject != null) json['storageObject'] = storageObject!.toJson();
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (userId != null) json['userId'] = userId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'StorageServiceV1UploadFileRequest(file: $file, mime: $mime, presign: $presign, size: $size, sourceFileName: $sourceFileName, storageObject: $storageObject, tenantId: $tenantId, userId: $userId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is StorageServiceV1UploadFileRequest &&
+      runtimeType == other.runtimeType
+      && file == other.file
+      && mime == other.mime
+      && presign == other.presign
+      && size == other.size
+      && sourceFileName == other.sourceFileName
+      && storageObject == other.storageObject
+      && tenantId == other.tenantId
+      && userId == other.userId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    file,
+    mime,
+    presign,
+    size,
+    sourceFileName,
+    storageObject,
+    tenantId,
+    userId,
+  ]);
+
+  StorageServiceV1UploadFileRequest copyWith({
+    String? file,
+    String? mime,
+    StorageServiceV1PresignOption? presign,
+    int? size,
+    String? sourceFileName,
+    StorageServiceV1StorageObject? storageObject,
+    int? tenantId,
+    int? userId,
+  }) {
+    return StorageServiceV1UploadFileRequest(
+      file: file ?? this.file,
+      mime: mime ?? this.mime,
+      presign: presign ?? this.presign,
+      size: size ?? this.size,
+      sourceFileName: sourceFileName ?? this.sourceFileName,
+      storageObject: storageObject ?? this.storageObject,
+      tenantId: tenantId ?? this.tenantId,
+      userId: userId ?? this.userId,
+    );
+  }
+}
+
+/// 预签名选项
+class StorageServiceV1PresignOption {
+  String? contentType;
+  int? expireSeconds;
+  String? method;
+
+  StorageServiceV1PresignOption({
+    this.contentType,
+    this.expireSeconds,
+    this.method,
+  });
+
+  factory StorageServiceV1PresignOption.fromJson(Map<String, dynamic> json) {
+    return StorageServiceV1PresignOption(
+      contentType: json['contentType'] as String?,
+      expireSeconds: json['expireSeconds'] as int?,
+      method: json['method'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (contentType != null) json['contentType'] = contentType;
+    if (expireSeconds != null) json['expireSeconds'] = expireSeconds;
+    if (method != null) json['method'] = method;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'StorageServiceV1PresignOption(contentType: $contentType, expireSeconds: $expireSeconds, method: $method)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is StorageServiceV1PresignOption &&
+      runtimeType == other.runtimeType
+      && contentType == other.contentType
+      && expireSeconds == other.expireSeconds
+      && method == other.method
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    contentType,
+    expireSeconds,
+    method,
+  ]);
+
+  StorageServiceV1PresignOption copyWith({
+    String? contentType,
+    int? expireSeconds,
+    String? method,
+  }) {
+    return StorageServiceV1PresignOption(
+      contentType: contentType ?? this.contentType,
+      expireSeconds: expireSeconds ?? this.expireSeconds,
+      method: method ?? this.method,
+    );
+  }
+}
+
+class StorageServiceV1UploadFileResponse {
+  String? objectName;
+  String? presignedUrl;
+
+  StorageServiceV1UploadFileResponse({
+    this.objectName,
+    this.presignedUrl,
+  });
+
+  factory StorageServiceV1UploadFileResponse.fromJson(Map<String, dynamic> json) {
+    return StorageServiceV1UploadFileResponse(
+      objectName: json['objectName'] as String?,
+      presignedUrl: json['presignedUrl'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (objectName != null) json['objectName'] = objectName;
+    if (presignedUrl != null) json['presignedUrl'] = presignedUrl;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'StorageServiceV1UploadFileResponse(objectName: $objectName, presignedUrl: $presignedUrl)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is StorageServiceV1UploadFileResponse &&
+      runtimeType == other.runtimeType
+      && objectName == other.objectName
+      && presignedUrl == other.presignedUrl
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    objectName,
+    presignedUrl,
+  ]);
+
+  StorageServiceV1UploadFileResponse copyWith({
+    String? objectName,
+    String? presignedUrl,
+  }) {
+    return StorageServiceV1UploadFileResponse(
+      objectName: objectName ?? this.objectName,
+      presignedUrl: presignedUrl ?? this.presignedUrl,
+    );
+  }
+}
+
+/// 交互服务（点赞/收藏）
+class InteractionServiceClient {
+  final ClientTransport _transport;
+
+  InteractionServiceClient(this._transport);
+
+  /// 点赞
+  Future<InteractionServiceV1LikeResponse> like(InteractionServiceV1LikeRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/interactions/like';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'InteractionService',
+      method: 'Like',
+    ), headers: headers);
+    return InteractionServiceV1LikeResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 取消点赞
+  Future<InteractionServiceV1LikeResponse> unlike(InteractionServiceV1LikeRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/interactions/unlike';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'InteractionService',
+      method: 'Unlike',
+    ), headers: headers);
+    return InteractionServiceV1LikeResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 收藏 post
+  Future<InteractionServiceV1WatchResponse> watch(InteractionServiceV1WatchRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/interactions/watch';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'InteractionService',
+      method: 'Watch',
+    ), headers: headers);
+    return InteractionServiceV1WatchResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 取消收藏 post
+  Future<InteractionServiceV1WatchResponse> unwatch(InteractionServiceV1WatchRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/interactions/unwatch';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'InteractionService',
+      method: 'Unwatch',
+    ), headers: headers);
+    return InteractionServiceV1WatchResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 批量查询交互状态
+  Future<InteractionServiceV1GetInteractionStatusResponse> getInteractionStatus(InteractionServiceV1GetInteractionStatusRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/interactions/status';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'InteractionService',
+      method: 'GetInteractionStatus',
+    ), headers: headers);
+    return InteractionServiceV1GetInteractionStatusResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 列出当前 viewer 收藏的 post
+  Future<ContentServiceV1ListPostResponse> listWatchedPosts(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/interactions/watched-posts';
+    final queryParams = <String>[];
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
+    }
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
+    }
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
+    }
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
+    }
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
+    }
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
+    }
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'InteractionService',
+      method: 'ListWatchedPosts',
+    ), headers: headers);
+    return ContentServiceV1ListPostResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 批量查询计数
+  Future<InteractionServiceV1GetCountsResponse> getCounts(InteractionServiceV1GetCountsRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/interactions/counts:list';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'InteractionService',
+      method: 'GetCounts',
+    ), headers: headers);
+    return InteractionServiceV1GetCountsResponse.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+class InteractionServiceV1LikeRequest {
+  int? targetId;
+  InteractionServiceV1TargetType? targetType;
+
+  InteractionServiceV1LikeRequest({
+    this.targetId,
+    this.targetType,
+  });
+
+  factory InteractionServiceV1LikeRequest.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1LikeRequest(
+      targetId: json['targetId'] as int?,
+      targetType: json['targetType'] != null ? InteractionServiceV1TargetType.fromString(json['targetType'] as String) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (targetId != null) json['targetId'] = targetId;
+    if (targetType != null) json['targetType'] = targetType!.value;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1LikeRequest(targetId: $targetId, targetType: $targetType)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1LikeRequest &&
+      runtimeType == other.runtimeType
+      && targetId == other.targetId
+      && targetType == other.targetType
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    targetId,
+    targetType,
+  ]);
+
+  InteractionServiceV1LikeRequest copyWith({
+    int? targetId,
+    InteractionServiceV1TargetType? targetType,
+  }) {
+    return InteractionServiceV1LikeRequest(
+      targetId: targetId ?? this.targetId,
+      targetType: targetType ?? this.targetType,
+    );
+  }
+}
+
+/// 交互目标类型
+enum InteractionServiceV1TargetType {
+  targetTypeComment('TARGET_TYPE_COMMENT'),
+  targetTypePost('TARGET_TYPE_POST'),
+  targetTypeUnspecified('TARGET_TYPE_UNSPECIFIED');
+
+  final String value;
+  const InteractionServiceV1TargetType(this.value);
+
+  static InteractionServiceV1TargetType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown InteractionServiceV1TargetType value: ' + v));
+  @override
+  String toString() => value;
+}
+
+class InteractionServiceV1LikeResponse {
+  int? likeCount;
+  bool? liked;
+
+  InteractionServiceV1LikeResponse({
+    this.likeCount,
+    this.liked,
+  });
+
+  factory InteractionServiceV1LikeResponse.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1LikeResponse(
+      likeCount: json['likeCount'] as int?,
+      liked: json['liked'] as bool?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (likeCount != null) json['likeCount'] = likeCount;
+    if (liked != null) json['liked'] = liked;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1LikeResponse(likeCount: $likeCount, liked: $liked)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1LikeResponse &&
+      runtimeType == other.runtimeType
+      && likeCount == other.likeCount
+      && liked == other.liked
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    likeCount,
+    liked,
+  ]);
+
+  InteractionServiceV1LikeResponse copyWith({
+    int? likeCount,
+    bool? liked,
+  }) {
+    return InteractionServiceV1LikeResponse(
+      likeCount: likeCount ?? this.likeCount,
+      liked: liked ?? this.liked,
+    );
+  }
+}
+
+class InteractionServiceV1WatchRequest {
+  int? postId;
+
+  InteractionServiceV1WatchRequest({
+    this.postId,
+  });
+
+  factory InteractionServiceV1WatchRequest.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1WatchRequest(
+      postId: json['postId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (postId != null) json['postId'] = postId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1WatchRequest(postId: $postId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1WatchRequest &&
+      runtimeType == other.runtimeType
+      && postId == other.postId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    postId,
+  ]);
+
+  InteractionServiceV1WatchRequest copyWith({
+    int? postId,
+  }) {
+    return InteractionServiceV1WatchRequest(
+      postId: postId ?? this.postId,
+    );
+  }
+}
+
+class InteractionServiceV1WatchResponse {
+  int? watchCount;
+  bool? watched;
+
+  InteractionServiceV1WatchResponse({
+    this.watchCount,
+    this.watched,
+  });
+
+  factory InteractionServiceV1WatchResponse.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1WatchResponse(
+      watchCount: json['watchCount'] as int?,
+      watched: json['watched'] as bool?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (watchCount != null) json['watchCount'] = watchCount;
+    if (watched != null) json['watched'] = watched;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1WatchResponse(watchCount: $watchCount, watched: $watched)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1WatchResponse &&
+      runtimeType == other.runtimeType
+      && watchCount == other.watchCount
+      && watched == other.watched
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    watchCount,
+    watched,
+  ]);
+
+  InteractionServiceV1WatchResponse copyWith({
+    int? watchCount,
+    bool? watched,
+  }) {
+    return InteractionServiceV1WatchResponse(
+      watchCount: watchCount ?? this.watchCount,
+      watched: watched ?? this.watched,
+    );
+  }
+}
+
+class InteractionServiceV1GetInteractionStatusRequest {
+  List<int>? targetIds;
+  InteractionServiceV1TargetType? targetType;
+
+  InteractionServiceV1GetInteractionStatusRequest({
+    this.targetIds,
+    this.targetType,
+  });
+
+  factory InteractionServiceV1GetInteractionStatusRequest.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1GetInteractionStatusRequest(
+      targetIds: (json['targetIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      targetType: json['targetType'] != null ? InteractionServiceV1TargetType.fromString(json['targetType'] as String) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (targetIds != null) json['targetIds'] = targetIds;
+    if (targetType != null) json['targetType'] = targetType!.value;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1GetInteractionStatusRequest(targetIds: $targetIds, targetType: $targetType)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1GetInteractionStatusRequest &&
+      runtimeType == other.runtimeType
+      && targetIds == other.targetIds
+      && targetType == other.targetType
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    targetIds,
+    targetType,
+  ]);
+
+  InteractionServiceV1GetInteractionStatusRequest copyWith({
+    List<int>? targetIds,
+    InteractionServiceV1TargetType? targetType,
+  }) {
+    return InteractionServiceV1GetInteractionStatusRequest(
+      targetIds: targetIds ?? this.targetIds,
+      targetType: targetType ?? this.targetType,
+    );
+  }
+}
+
+class InteractionServiceV1GetInteractionStatusResponse {
+  Map<String, InteractionServiceV1InteractionStatus>? statuses;
+
+  InteractionServiceV1GetInteractionStatusResponse({
+    this.statuses,
+  });
+
+  factory InteractionServiceV1GetInteractionStatusResponse.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1GetInteractionStatusResponse(
+      statuses: (json['statuses'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, InteractionServiceV1InteractionStatus.fromJson(v as Map<String, dynamic>))),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (statuses != null) json['statuses'] = statuses!.map((k, v) => MapEntry(k, v.toJson()));
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1GetInteractionStatusResponse(statuses: $statuses)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1GetInteractionStatusResponse &&
+      runtimeType == other.runtimeType
+      && statuses == other.statuses
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    statuses,
+  ]);
+
+  InteractionServiceV1GetInteractionStatusResponse copyWith({
+    Map<String, InteractionServiceV1InteractionStatus>? statuses,
+  }) {
+    return InteractionServiceV1GetInteractionStatusResponse(
+      statuses: statuses ?? this.statuses,
+    );
+  }
+}
+
+class InteractionServiceV1InteractionStatus {
+  bool? liked;
+  bool? watched;
+
+  InteractionServiceV1InteractionStatus({
+    this.liked,
+    this.watched,
+  });
+
+  factory InteractionServiceV1InteractionStatus.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1InteractionStatus(
+      liked: json['liked'] as bool?,
+      watched: json['watched'] as bool?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (liked != null) json['liked'] = liked;
+    if (watched != null) json['watched'] = watched;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1InteractionStatus(liked: $liked, watched: $watched)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1InteractionStatus &&
+      runtimeType == other.runtimeType
+      && liked == other.liked
+      && watched == other.watched
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    liked,
+    watched,
+  ]);
+
+  InteractionServiceV1InteractionStatus copyWith({
+    bool? liked,
+    bool? watched,
+  }) {
+    return InteractionServiceV1InteractionStatus(
+      liked: liked ?? this.liked,
+      watched: watched ?? this.watched,
+    );
+  }
+}
+
+/// 回应 - 帖子列表
+class ContentServiceV1ListPostResponse {
+  List<ContentServiceV1Post>? items;
+  int? total;
+
+  ContentServiceV1ListPostResponse({
+    this.items,
+    this.total,
+  });
+
+  factory ContentServiceV1ListPostResponse.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1ListPostResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => ContentServiceV1Post.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1ListPostResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1ListPostResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  ContentServiceV1ListPostResponse copyWith({
+    List<ContentServiceV1Post>? items,
+    int? total,
+  }) {
+    return ContentServiceV1ListPostResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 帖子
+class ContentServiceV1Post {
+  int? authorId;
+  String? authorName;
+  bool? autoSummary;
+  List<String>? availableLanguages;
+  List<int>? categoryIds;
+  String? code;
+  String? createdAt;
+  int? createdBy;
+  Map<String, String>? customFields;
+  String? deletedAt;
+  int? deletedBy;
+  bool? disallowComment;
+  ContentServiceV1EditorType? editorType;
+  int? id;
+  bool? inProgress;
+  bool? isFeatured;
+  String? passwordHash;
+  String? publishTime;
+  int? sortOrder;
+  ContentServiceV1Post$PostStatus? status;
+  List<int>? tagIds;
+  List<ContentServiceV1PostTranslation>? translations;
+  String? updatedAt;
+  int? updatedBy;
+
+  ContentServiceV1Post({
+    this.authorId,
+    this.authorName,
+    this.autoSummary,
+    this.availableLanguages,
+    this.categoryIds,
+    this.code,
+    this.createdAt,
+    this.createdBy,
+    this.customFields,
+    this.deletedAt,
+    this.deletedBy,
+    this.disallowComment,
+    this.editorType,
+    this.id,
+    this.inProgress,
+    this.isFeatured,
+    this.passwordHash,
+    this.publishTime,
+    this.sortOrder,
+    this.status,
+    this.tagIds,
+    this.translations,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory ContentServiceV1Post.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1Post(
+      authorId: json['authorId'] as int?,
+      authorName: json['authorName'] as String?,
+      autoSummary: json['autoSummary'] as bool?,
+      availableLanguages: (json['availableLanguages'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      categoryIds: (json['categoryIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      code: json['code'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      customFields: (json['customFields'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)),
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      disallowComment: json['disallowComment'] as bool?,
+      editorType: json['editorType'] != null ? ContentServiceV1EditorType.fromString(json['editorType'] as String) : null,
+      id: json['id'] as int?,
+      inProgress: json['inProgress'] as bool?,
+      isFeatured: json['isFeatured'] as bool?,
+      passwordHash: json['passwordHash'] as String?,
+      publishTime: json['publishTime'] as String?,
+      sortOrder: json['sortOrder'] as int?,
+      status: json['status'] != null ? ContentServiceV1Post$PostStatus.fromString(json['status'] as String) : null,
+      tagIds: (json['tagIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      translations: (json['translations'] as List<dynamic>?)?.map((e) => ContentServiceV1PostTranslation.fromJson(e as Map<String, dynamic>)).toList(),
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (authorId != null) json['authorId'] = authorId;
+    if (authorName != null) json['authorName'] = authorName;
+    if (autoSummary != null) json['autoSummary'] = autoSummary;
+    if (availableLanguages != null) json['availableLanguages'] = availableLanguages;
+    if (categoryIds != null) json['categoryIds'] = categoryIds;
+    if (code != null) json['code'] = code;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (customFields != null) json['customFields'] = customFields;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (disallowComment != null) json['disallowComment'] = disallowComment;
+    if (editorType != null) json['editorType'] = editorType!.value;
+    if (id != null) json['id'] = id;
+    if (inProgress != null) json['inProgress'] = inProgress;
+    if (isFeatured != null) json['isFeatured'] = isFeatured;
+    if (passwordHash != null) json['passwordHash'] = passwordHash;
+    if (publishTime != null) json['publishTime'] = publishTime;
+    if (sortOrder != null) json['sortOrder'] = sortOrder;
+    if (status != null) json['status'] = status!.value;
+    if (tagIds != null) json['tagIds'] = tagIds;
+    if (translations != null) json['translations'] = translations!.map((e) => e.toJson()).toList();
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1Post(authorId: $authorId, authorName: $authorName, autoSummary: $autoSummary, availableLanguages: $availableLanguages, categoryIds: $categoryIds, code: $code, createdAt: $createdAt, createdBy: $createdBy, customFields: $customFields, deletedAt: $deletedAt, deletedBy: $deletedBy, disallowComment: $disallowComment, editorType: $editorType, id: $id, inProgress: $inProgress, isFeatured: $isFeatured, passwordHash: $passwordHash, publishTime: $publishTime, sortOrder: $sortOrder, status: $status, tagIds: $tagIds, translations: $translations, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1Post &&
+      runtimeType == other.runtimeType
+      && authorId == other.authorId
+      && authorName == other.authorName
+      && autoSummary == other.autoSummary
+      && availableLanguages == other.availableLanguages
+      && categoryIds == other.categoryIds
+      && code == other.code
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && customFields == other.customFields
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && disallowComment == other.disallowComment
+      && editorType == other.editorType
+      && id == other.id
+      && inProgress == other.inProgress
+      && isFeatured == other.isFeatured
+      && passwordHash == other.passwordHash
+      && publishTime == other.publishTime
+      && sortOrder == other.sortOrder
+      && status == other.status
+      && tagIds == other.tagIds
+      && translations == other.translations
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    authorId,
+    authorName,
+    autoSummary,
+    availableLanguages,
+    categoryIds,
+    code,
+    createdAt,
+    createdBy,
+    customFields,
+    deletedAt,
+    deletedBy,
+    disallowComment,
+    editorType,
+    id,
+    inProgress,
+    isFeatured,
+    passwordHash,
+    publishTime,
+    sortOrder,
+    status,
+    tagIds,
+    translations,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  ContentServiceV1Post copyWith({
+    int? authorId,
+    String? authorName,
+    bool? autoSummary,
+    List<String>? availableLanguages,
+    List<int>? categoryIds,
+    String? code,
+    String? createdAt,
+    int? createdBy,
+    Map<String, String>? customFields,
+    String? deletedAt,
+    int? deletedBy,
+    bool? disallowComment,
+    ContentServiceV1EditorType? editorType,
+    int? id,
+    bool? inProgress,
+    bool? isFeatured,
+    String? passwordHash,
+    String? publishTime,
+    int? sortOrder,
+    ContentServiceV1Post$PostStatus? status,
+    List<int>? tagIds,
+    List<ContentServiceV1PostTranslation>? translations,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return ContentServiceV1Post(
+      authorId: authorId ?? this.authorId,
+      authorName: authorName ?? this.authorName,
+      autoSummary: autoSummary ?? this.autoSummary,
+      availableLanguages: availableLanguages ?? this.availableLanguages,
+      categoryIds: categoryIds ?? this.categoryIds,
+      code: code ?? this.code,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      customFields: customFields ?? this.customFields,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      disallowComment: disallowComment ?? this.disallowComment,
+      editorType: editorType ?? this.editorType,
+      id: id ?? this.id,
+      inProgress: inProgress ?? this.inProgress,
+      isFeatured: isFeatured ?? this.isFeatured,
+      passwordHash: passwordHash ?? this.passwordHash,
+      publishTime: publishTime ?? this.publishTime,
+      sortOrder: sortOrder ?? this.sortOrder,
+      status: status ?? this.status,
+      tagIds: tagIds ?? this.tagIds,
+      translations: translations ?? this.translations,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 帖子状态
+enum ContentServiceV1Post$PostStatus {
+  postStatusDraft('POST_STATUS_DRAFT'),
+  postStatusPublished('POST_STATUS_PUBLISHED'),
+  postStatusScheduled('POST_STATUS_SCHEDULED'),
+  postStatusTrashed('POST_STATUS_TRASHED'),
+  postStatusUnspecified('POST_STATUS_UNSPECIFIED');
+
+  final String value;
+  const ContentServiceV1Post$PostStatus(this.value);
+
+  static ContentServiceV1Post$PostStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown ContentServiceV1Post\$PostStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 编辑器类型
+enum ContentServiceV1EditorType {
+  editorTypeCode('EDITOR_TYPE_CODE'),
+  editorTypeJsonBlock('EDITOR_TYPE_JSON_BLOCK'),
+  editorTypeMarkdown('EDITOR_TYPE_MARKDOWN'),
+  editorTypePlainText('EDITOR_TYPE_PLAIN_TEXT'),
+  editorTypeRichText('EDITOR_TYPE_RICH_TEXT'),
+  editorTypeUnspecified('EDITOR_TYPE_UNSPECIFIED'),
+  editorTypeVisualBuilder('EDITOR_TYPE_VISUAL_BUILDER');
+
+  final String value;
+  const ContentServiceV1EditorType(this.value);
+
+  static ContentServiceV1EditorType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown ContentServiceV1EditorType value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 帖子翻译
+class ContentServiceV1PostTranslation {
+  String? content;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? fullPath;
+  int? id;
+  String? languageCode;
+  String? originalContent;
+  int? postId;
+  ContentServiceV1SeoMeta? seo;
+  String? slug;
+  String? summary;
+  String? thumbnail;
+  String? title;
+  String? updatedAt;
+  int? updatedBy;
+  int? wordCount;
+
+  ContentServiceV1PostTranslation({
+    this.content,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.fullPath,
+    this.id,
+    this.languageCode,
+    this.originalContent,
+    this.postId,
+    this.seo,
+    this.slug,
+    this.summary,
+    this.thumbnail,
+    this.title,
+    this.updatedAt,
+    this.updatedBy,
+    this.wordCount,
+  });
+
+  factory ContentServiceV1PostTranslation.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1PostTranslation(
+      content: json['content'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      fullPath: json['fullPath'] as String?,
+      id: json['id'] as int?,
+      languageCode: json['languageCode'] as String?,
+      originalContent: json['originalContent'] as String?,
+      postId: json['postId'] as int?,
+      seo: json['seo'] != null ? ContentServiceV1SeoMeta.fromJson(json['seo'] as Map<String, dynamic>) : null,
+      slug: json['slug'] as String?,
+      summary: json['summary'] as String?,
+      thumbnail: json['thumbnail'] as String?,
+      title: json['title'] as String?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+      wordCount: json['wordCount'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (content != null) json['content'] = content;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (fullPath != null) json['fullPath'] = fullPath;
+    if (id != null) json['id'] = id;
+    if (languageCode != null) json['languageCode'] = languageCode;
+    if (originalContent != null) json['originalContent'] = originalContent;
+    if (postId != null) json['postId'] = postId;
+    if (seo != null) json['seo'] = seo!.toJson();
+    if (slug != null) json['slug'] = slug;
+    if (summary != null) json['summary'] = summary;
+    if (thumbnail != null) json['thumbnail'] = thumbnail;
+    if (title != null) json['title'] = title;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (wordCount != null) json['wordCount'] = wordCount;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1PostTranslation(content: $content, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, fullPath: $fullPath, id: $id, languageCode: $languageCode, originalContent: $originalContent, postId: $postId, seo: $seo, slug: $slug, summary: $summary, thumbnail: $thumbnail, title: $title, updatedAt: $updatedAt, updatedBy: $updatedBy, wordCount: $wordCount)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1PostTranslation &&
+      runtimeType == other.runtimeType
+      && content == other.content
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && fullPath == other.fullPath
+      && id == other.id
+      && languageCode == other.languageCode
+      && originalContent == other.originalContent
+      && postId == other.postId
+      && seo == other.seo
+      && slug == other.slug
+      && summary == other.summary
+      && thumbnail == other.thumbnail
+      && title == other.title
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+      && wordCount == other.wordCount
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    content,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    fullPath,
+    id,
+    languageCode,
+    originalContent,
+    postId,
+    seo,
+    slug,
+    summary,
+    thumbnail,
+    title,
+    updatedAt,
+    updatedBy,
+    wordCount,
+  ]);
+
+  ContentServiceV1PostTranslation copyWith({
+    String? content,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? fullPath,
+    int? id,
+    String? languageCode,
+    String? originalContent,
+    int? postId,
+    ContentServiceV1SeoMeta? seo,
+    String? slug,
+    String? summary,
+    String? thumbnail,
+    String? title,
+    String? updatedAt,
+    int? updatedBy,
+    int? wordCount,
+  }) {
+    return ContentServiceV1PostTranslation(
+      content: content ?? this.content,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      fullPath: fullPath ?? this.fullPath,
+      id: id ?? this.id,
+      languageCode: languageCode ?? this.languageCode,
+      originalContent: originalContent ?? this.originalContent,
+      postId: postId ?? this.postId,
+      seo: seo ?? this.seo,
+      slug: slug ?? this.slug,
+      summary: summary ?? this.summary,
+      thumbnail: thumbnail ?? this.thumbnail,
+      title: title ?? this.title,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+      wordCount: wordCount ?? this.wordCount,
+    );
+  }
+}
+
+class InteractionServiceV1GetCountsRequest {
+  List<InteractionServiceV1CounterMetric>? metrics;
+  List<int>? targetIds;
+  InteractionServiceV1TargetType? targetType;
+
+  InteractionServiceV1GetCountsRequest({
+    this.metrics,
+    this.targetIds,
+    this.targetType,
+  });
+
+  factory InteractionServiceV1GetCountsRequest.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1GetCountsRequest(
+      metrics: (json['metrics'] as List<dynamic>?)?.map((e) => InteractionServiceV1CounterMetric.fromString(e as String)).toList(),
+      targetIds: (json['targetIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      targetType: json['targetType'] != null ? InteractionServiceV1TargetType.fromString(json['targetType'] as String) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (metrics != null) json['metrics'] = metrics!.map((e) => e.value).toList();
+    if (targetIds != null) json['targetIds'] = targetIds;
+    if (targetType != null) json['targetType'] = targetType!.value;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1GetCountsRequest(metrics: $metrics, targetIds: $targetIds, targetType: $targetType)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1GetCountsRequest &&
+      runtimeType == other.runtimeType
+      && metrics == other.metrics
+      && targetIds == other.targetIds
+      && targetType == other.targetType
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    metrics,
+    targetIds,
+    targetType,
+  ]);
+
+  InteractionServiceV1GetCountsRequest copyWith({
+    List<InteractionServiceV1CounterMetric>? metrics,
+    List<int>? targetIds,
+    InteractionServiceV1TargetType? targetType,
+  }) {
+    return InteractionServiceV1GetCountsRequest(
+      metrics: metrics ?? this.metrics,
+      targetIds: targetIds ?? this.targetIds,
+      targetType: targetType ?? this.targetType,
+    );
+  }
+}
+
+/// 计数指标类型。与 interaction_counter 表的 metric 列对应。
+/// 当前仅点赞计数活跃；后续若新增浏览量/点踩等，在此扩展枚举值即可，无需改 schema。
+enum InteractionServiceV1CounterMetric {
+  counterMetricLike('COUNTER_METRIC_LIKE'),
+  counterMetricUnspecified('COUNTER_METRIC_UNSPECIFIED'),
+  counterMetricWatch('COUNTER_METRIC_WATCH');
+
+  final String value;
+  const InteractionServiceV1CounterMetric(this.value);
+
+  static InteractionServiceV1CounterMetric fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown InteractionServiceV1CounterMetric value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// target_id → 该目标下各 metric 的计数集合。
+/// 未在 counter 表中记录的 (target, metric) 组合不出现在响应中，前端按 0 兜底。
+class InteractionServiceV1GetCountsResponse {
+  Map<String, InteractionServiceV1CountMap>? counts;
+
+  InteractionServiceV1GetCountsResponse({
+    this.counts,
+  });
+
+  factory InteractionServiceV1GetCountsResponse.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1GetCountsResponse(
+      counts: (json['counts'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, InteractionServiceV1CountMap.fromJson(v as Map<String, dynamic>))),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (counts != null) json['counts'] = counts!.map((k, v) => MapEntry(k, v.toJson()));
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1GetCountsResponse(counts: $counts)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1GetCountsResponse &&
+      runtimeType == other.runtimeType
+      && counts == other.counts
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    counts,
+  ]);
+
+  InteractionServiceV1GetCountsResponse copyWith({
+    Map<String, InteractionServiceV1CountMap>? counts,
+  }) {
+    return InteractionServiceV1GetCountsResponse(
+      counts: counts ?? this.counts,
+    );
+  }
+}
+
+/// 单个目标下所有请求 metric 的计数集合。
+class InteractionServiceV1CountMap {
+  List<InteractionServiceV1MetricCount>? counts;
+
+  InteractionServiceV1CountMap({
+    this.counts,
+  });
+
+  factory InteractionServiceV1CountMap.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1CountMap(
+      counts: (json['counts'] as List<dynamic>?)?.map((e) => InteractionServiceV1MetricCount.fromJson(e as Map<String, dynamic>)).toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (counts != null) json['counts'] = counts!.map((e) => e.toJson()).toList();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1CountMap(counts: $counts)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1CountMap &&
+      runtimeType == other.runtimeType
+      && counts == other.counts
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    counts,
+  ]);
+
+  InteractionServiceV1CountMap copyWith({
+    List<InteractionServiceV1MetricCount>? counts,
+  }) {
+    return InteractionServiceV1CountMap(
+      counts: counts ?? this.counts,
+    );
+  }
+}
+
+/// 单个 (target, metric) 的计数条目。用于 GetCountsResponse 的内层结构。
+/// 注意：proto3 不允许枚举类型作 map key，故内层用 repeated MetricCount 而非 map<CounterMetric,int64>。
+class InteractionServiceV1MetricCount {
+  int? count;
+  InteractionServiceV1CounterMetric? metric;
+
+  InteractionServiceV1MetricCount({
+    this.count,
+    this.metric,
+  });
+
+  factory InteractionServiceV1MetricCount.fromJson(Map<String, dynamic> json) {
+    return InteractionServiceV1MetricCount(
+      count: json['count'] != null ? int.parse(json['count'].toString()) : null,
+      metric: json['metric'] != null ? InteractionServiceV1CounterMetric.fromString(json['metric'] as String) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (count != null) json['count'] = count.toString();
+    if (metric != null) json['metric'] = metric!.value;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'InteractionServiceV1MetricCount(count: $count, metric: $metric)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is InteractionServiceV1MetricCount &&
+      runtimeType == other.runtimeType
+      && count == other.count
+      && metric == other.metric
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    count,
+    metric,
+  ]);
+
+  InteractionServiceV1MetricCount copyWith({
+    int? count,
+    InteractionServiceV1CounterMetric? metric,
+  }) {
+    return InteractionServiceV1MetricCount(
+      count: count ?? this.count,
+      metric: metric ?? this.metric,
+    );
+  }
+}
+
+/// 站内信参与服务（app 边端，移动端，只读收件箱）
+class InternalMessageServiceClient {
+  final ClientTransport _transport;
+
+  InternalMessageServiceClient(this._transport);
+
+  /// 查询我的收件箱（按当前操作者过滤）
+  Future<Internal_messageServiceV1ListInternalMessageResponse> listMyMessages(Internal_messageServiceV1ListMyMessagesRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/internal-message/my-messages';
+    final queryParams = <String>[];
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'InternalMessageService',
+      method: 'ListMyMessages',
+    ), headers: headers);
+    return Internal_messageServiceV1ListInternalMessageResponse.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 查询我的收件箱 - 请求
+class Internal_messageServiceV1ListMyMessagesRequest {
+  /// 最大返回条数（默认 50）
+  int? limit;
+
+  Internal_messageServiceV1ListMyMessagesRequest({
+    this.limit,
+  });
+
+  factory Internal_messageServiceV1ListMyMessagesRequest.fromJson(Map<String, dynamic> json) {
+    return Internal_messageServiceV1ListMyMessagesRequest(
+      limit: json['limit'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (limit != null) json['limit'] = limit;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'Internal_messageServiceV1ListMyMessagesRequest(limit: $limit)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is Internal_messageServiceV1ListMyMessagesRequest &&
+      runtimeType == other.runtimeType
+      && limit == other.limit
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    limit,
+  ]);
+
+  Internal_messageServiceV1ListMyMessagesRequest copyWith({
+    int? limit,
+  }) {
+    return Internal_messageServiceV1ListMyMessagesRequest(
+      limit: limit ?? this.limit,
+    );
+  }
+}
+
 /// 查询站内信消息列表 - 回应
 class Internal_messageServiceV1ListInternalMessageResponse {
   List<Internal_messageServiceV1InternalMessage>? items;
@@ -1403,23 +5662,1639 @@ enum Internal_messageServiceV1InternalMessage$Type {
   String toString() => value;
 }
 
-/// Well-known type: Timestamp
-///
-/// Maps to Dart: `String` (RFC 3339, e.g. `"2021-01-01T00:00:00Z"`).
+/// OA 请假参与服务（app 边端，移动端）
+class LeaveServiceClient {
+  final ClientTransport _transport;
 
-/// 查询站内信消息详情 - 请求
-class Internal_messageServiceV1GetInternalMessageRequest {
+  LeaveServiceClient(this._transport);
+
+  /// 提交请假申请
+  Future<OaServiceV1SubmitLeaveApplicationResponse> submitLeaveApplication(OaServiceV1SubmitLeaveApplicationRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/leave/applications';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'LeaveService',
+      method: 'SubmitLeaveApplication',
+    ), headers: headers);
+    return OaServiceV1SubmitLeaveApplicationResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询我的请假申请
+  Future<OaServiceV1ListLeaveApplicationsResponse> listLeaveApplications(OaServiceV1ListLeaveApplicationsRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/leave/applications';
+    final queryParams = <String>[];
+    if (request.userId != null) {
+      queryParams.add('userId=${Uri.encodeComponent(request.userId!.toString())}');
+    }
+    if (request.status != null) {
+      queryParams.add('status=${Uri.encodeComponent(request.status!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'LeaveService',
+      method: 'ListLeaveApplications',
+    ), headers: headers);
+    return OaServiceV1ListLeaveApplicationsResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询请假申请详情
+  Future<OaServiceV1LeaveApplication> getLeaveApplication(OaServiceV1GetLeaveApplicationRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/oa/leave/applications/${request.id}';
+    final result = await _transport.unary(path, 'GET', null, TransportMeta(
+      service: 'LeaveService',
+      method: 'GetLeaveApplication',
+    ), headers: headers);
+    return OaServiceV1LeaveApplication.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询请假类型列表
+  Future<OaServiceV1ListLeaveTypesResponse> listLeaveTypes(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/leave/types';
+    final queryParams = <String>[];
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
+    }
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
+    }
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
+    }
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
+    }
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
+    }
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
+    }
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'LeaveService',
+      method: 'ListLeaveTypes',
+    ), headers: headers);
+    return OaServiceV1ListLeaveTypesResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询我的假期额度
+  Future<OaServiceV1ListLeaveBalancesResponse> listLeaveBalances(OaServiceV1ListLeaveBalancesRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/leave/balances';
+    final queryParams = <String>[];
+    if (request.userId != null) {
+      queryParams.add('userId=${Uri.encodeComponent(request.userId!.toString())}');
+    }
+    if (request.year != null) {
+      queryParams.add('year=${Uri.encodeComponent(request.year!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'LeaveService',
+      method: 'ListLeaveBalances',
+    ), headers: headers);
+    return OaServiceV1ListLeaveBalancesResponse.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 提交请假申请 - 请求
+class OaServiceV1SubmitLeaveApplicationRequest {
+  String? endDate;
+  OaServiceV1HalfOfDay? endHalf;
+  int? leaveTypeId;
+  String? reason;
+  String? startDate;
+  OaServiceV1HalfOfDay? startHalf;
+
+  OaServiceV1SubmitLeaveApplicationRequest({
+    this.endDate,
+    this.endHalf,
+    this.leaveTypeId,
+    this.reason,
+    this.startDate,
+    this.startHalf,
+  });
+
+  factory OaServiceV1SubmitLeaveApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitLeaveApplicationRequest(
+      endDate: json['endDate'] as String?,
+      endHalf: json['endHalf'] != null ? OaServiceV1HalfOfDay.fromString(json['endHalf'] as String) : null,
+      leaveTypeId: json['leaveTypeId'] as int?,
+      reason: json['reason'] as String?,
+      startDate: json['startDate'] as String?,
+      startHalf: json['startHalf'] != null ? OaServiceV1HalfOfDay.fromString(json['startHalf'] as String) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (endDate != null) json['endDate'] = endDate;
+    if (endHalf != null) json['endHalf'] = endHalf!.value;
+    if (leaveTypeId != null) json['leaveTypeId'] = leaveTypeId;
+    if (reason != null) json['reason'] = reason;
+    if (startDate != null) json['startDate'] = startDate;
+    if (startHalf != null) json['startHalf'] = startHalf!.value;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitLeaveApplicationRequest(endDate: $endDate, endHalf: $endHalf, leaveTypeId: $leaveTypeId, reason: $reason, startDate: $startDate, startHalf: $startHalf)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitLeaveApplicationRequest &&
+      runtimeType == other.runtimeType
+      && endDate == other.endDate
+      && endHalf == other.endHalf
+      && leaveTypeId == other.leaveTypeId
+      && reason == other.reason
+      && startDate == other.startDate
+      && startHalf == other.startHalf
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    endDate,
+    endHalf,
+    leaveTypeId,
+    reason,
+    startDate,
+    startHalf,
+  ]);
+
+  OaServiceV1SubmitLeaveApplicationRequest copyWith({
+    String? endDate,
+    OaServiceV1HalfOfDay? endHalf,
+    int? leaveTypeId,
+    String? reason,
+    String? startDate,
+    OaServiceV1HalfOfDay? startHalf,
+  }) {
+    return OaServiceV1SubmitLeaveApplicationRequest(
+      endDate: endDate ?? this.endDate,
+      endHalf: endHalf ?? this.endHalf,
+      leaveTypeId: leaveTypeId ?? this.leaveTypeId,
+      reason: reason ?? this.reason,
+      startDate: startDate ?? this.startDate,
+      startHalf: startHalf ?? this.startHalf,
+    );
+  }
+}
+
+/// 半日粒度（请假起止）
+enum OaServiceV1HalfOfDay {
+  am('AM'),
+  pm('PM');
+
+  final String value;
+  const OaServiceV1HalfOfDay(this.value);
+
+  static OaServiceV1HalfOfDay fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1HalfOfDay value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 提交请假申请 - 回应
+class OaServiceV1SubmitLeaveApplicationResponse {
   int? id;
+  int? instanceId;
+
+  OaServiceV1SubmitLeaveApplicationResponse({
+    this.id,
+    this.instanceId,
+  });
+
+  factory OaServiceV1SubmitLeaveApplicationResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitLeaveApplicationResponse(
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitLeaveApplicationResponse(id: $id, instanceId: $instanceId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitLeaveApplicationResponse &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && instanceId == other.instanceId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    instanceId,
+  ]);
+
+  OaServiceV1SubmitLeaveApplicationResponse copyWith({
+    int? id,
+    int? instanceId,
+  }) {
+    return OaServiceV1SubmitLeaveApplicationResponse(
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+    );
+  }
+}
+
+/// 查询请假申请 - 请求
+class OaServiceV1ListLeaveApplicationsRequest {
+  OaServiceV1LeaveApplication$LeaveStatus? status;
+  int? userId;
+
+  OaServiceV1ListLeaveApplicationsRequest({
+    this.status,
+    this.userId,
+  });
+
+  factory OaServiceV1ListLeaveApplicationsRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListLeaveApplicationsRequest(
+      status: json['status'] != null ? OaServiceV1LeaveApplication$LeaveStatus.fromString(json['status'] as String) : null,
+      userId: json['userId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (status != null) json['status'] = status!.value;
+    if (userId != null) json['userId'] = userId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListLeaveApplicationsRequest(status: $status, userId: $userId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListLeaveApplicationsRequest &&
+      runtimeType == other.runtimeType
+      && status == other.status
+      && userId == other.userId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    status,
+    userId,
+  ]);
+
+  OaServiceV1ListLeaveApplicationsRequest copyWith({
+    OaServiceV1LeaveApplication$LeaveStatus? status,
+    int? userId,
+  }) {
+    return OaServiceV1ListLeaveApplicationsRequest(
+      status: status ?? this.status,
+      userId: userId ?? this.userId,
+    );
+  }
+}
+
+/// 申请单状态（与工作流实例终态同步）
+enum OaServiceV1LeaveApplication$LeaveStatus {
+  approved('APPROVED'),
+  pending('PENDING'),
+  rejected('REJECTED'),
+  withdrawn('WITHDRAWN');
+
+  final String value;
+  const OaServiceV1LeaveApplication$LeaveStatus(this.value);
+
+  static OaServiceV1LeaveApplication$LeaveStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1LeaveApplication\$LeaveStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 查询请假申请 - 回应
+class OaServiceV1ListLeaveApplicationsResponse {
+  List<OaServiceV1LeaveApplication>? items;
+  int? total;
+
+  OaServiceV1ListLeaveApplicationsResponse({
+    this.items,
+    this.total,
+  });
+
+  factory OaServiceV1ListLeaveApplicationsResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListLeaveApplicationsResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1LeaveApplication.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListLeaveApplicationsResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListLeaveApplicationsResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  OaServiceV1ListLeaveApplicationsResponse copyWith({
+    List<OaServiceV1LeaveApplication>? items,
+    int? total,
+  }) {
+    return OaServiceV1ListLeaveApplicationsResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 请假申请单
+class OaServiceV1LeaveApplication {
+  String? applicantName;
+  String? createdAt;
+  int? createdBy;
+  double? days;
+  String? deletedAt;
+  int? deletedBy;
+  String? endDate;
+  OaServiceV1HalfOfDay? endHalf;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? instanceId;
+  OaServiceV1LeaveApplication$LeaveStatus? leaveStatus;
+  int? leaveTypeId;
+  String? leaveTypeName;
+  String? reason;
+  String? startDate;
+  OaServiceV1HalfOfDay? startHalf;
+  int? tenantId;
+  String? updatedAt;
+  int? updatedBy;
+
+  OaServiceV1LeaveApplication({
+    this.applicantName,
+    this.createdAt,
+    this.createdBy,
+    this.days,
+    this.deletedAt,
+    this.deletedBy,
+    this.endDate,
+    this.endHalf,
+    this.id,
+    this.instanceId,
+    this.leaveStatus,
+    this.leaveTypeId,
+    this.leaveTypeName,
+    this.reason,
+    this.startDate,
+    this.startHalf,
+    this.tenantId,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory OaServiceV1LeaveApplication.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1LeaveApplication(
+      applicantName: json['applicantName'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      days: (json['days'] as num?)?.toDouble(),
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      endDate: json['endDate'] as String?,
+      endHalf: json['endHalf'] != null ? OaServiceV1HalfOfDay.fromString(json['endHalf'] as String) : null,
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+      leaveStatus: json['leaveStatus'] != null ? OaServiceV1LeaveApplication$LeaveStatus.fromString(json['leaveStatus'] as String) : null,
+      leaveTypeId: json['leaveTypeId'] as int?,
+      leaveTypeName: json['leaveTypeName'] as String?,
+      reason: json['reason'] as String?,
+      startDate: json['startDate'] as String?,
+      startHalf: json['startHalf'] != null ? OaServiceV1HalfOfDay.fromString(json['startHalf'] as String) : null,
+      tenantId: json['tenantId'] as int?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (applicantName != null) json['applicantName'] = applicantName;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (days != null) json['days'] = days;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (endDate != null) json['endDate'] = endDate;
+    if (endHalf != null) json['endHalf'] = endHalf!.value;
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    if (leaveStatus != null) json['leaveStatus'] = leaveStatus!.value;
+    if (leaveTypeId != null) json['leaveTypeId'] = leaveTypeId;
+    if (leaveTypeName != null) json['leaveTypeName'] = leaveTypeName;
+    if (reason != null) json['reason'] = reason;
+    if (startDate != null) json['startDate'] = startDate;
+    if (startHalf != null) json['startHalf'] = startHalf!.value;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1LeaveApplication(applicantName: $applicantName, createdAt: $createdAt, createdBy: $createdBy, days: $days, deletedAt: $deletedAt, deletedBy: $deletedBy, endDate: $endDate, endHalf: $endHalf, id: $id, instanceId: $instanceId, leaveStatus: $leaveStatus, leaveTypeId: $leaveTypeId, leaveTypeName: $leaveTypeName, reason: $reason, startDate: $startDate, startHalf: $startHalf, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1LeaveApplication &&
+      runtimeType == other.runtimeType
+      && applicantName == other.applicantName
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && days == other.days
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && endDate == other.endDate
+      && endHalf == other.endHalf
+      && id == other.id
+      && instanceId == other.instanceId
+      && leaveStatus == other.leaveStatus
+      && leaveTypeId == other.leaveTypeId
+      && leaveTypeName == other.leaveTypeName
+      && reason == other.reason
+      && startDate == other.startDate
+      && startHalf == other.startHalf
+      && tenantId == other.tenantId
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    applicantName,
+    createdAt,
+    createdBy,
+    days,
+    deletedAt,
+    deletedBy,
+    endDate,
+    endHalf,
+    id,
+    instanceId,
+    leaveStatus,
+    leaveTypeId,
+    leaveTypeName,
+    reason,
+    startDate,
+    startHalf,
+    tenantId,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  OaServiceV1LeaveApplication copyWith({
+    String? applicantName,
+    String? createdAt,
+    int? createdBy,
+    double? days,
+    String? deletedAt,
+    int? deletedBy,
+    String? endDate,
+    OaServiceV1HalfOfDay? endHalf,
+    int? id,
+    int? instanceId,
+    OaServiceV1LeaveApplication$LeaveStatus? leaveStatus,
+    int? leaveTypeId,
+    String? leaveTypeName,
+    String? reason,
+    String? startDate,
+    OaServiceV1HalfOfDay? startHalf,
+    int? tenantId,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return OaServiceV1LeaveApplication(
+      applicantName: applicantName ?? this.applicantName,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      days: days ?? this.days,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      endDate: endDate ?? this.endDate,
+      endHalf: endHalf ?? this.endHalf,
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+      leaveStatus: leaveStatus ?? this.leaveStatus,
+      leaveTypeId: leaveTypeId ?? this.leaveTypeId,
+      leaveTypeName: leaveTypeName ?? this.leaveTypeName,
+      reason: reason ?? this.reason,
+      startDate: startDate ?? this.startDate,
+      startHalf: startHalf ?? this.startHalf,
+      tenantId: tenantId ?? this.tenantId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 查询请假申请详情 - 请求
+class OaServiceV1GetLeaveApplicationRequest {
+  int? id;
+
+  OaServiceV1GetLeaveApplicationRequest({
+    this.id,
+  });
+
+  factory OaServiceV1GetLeaveApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1GetLeaveApplicationRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1GetLeaveApplicationRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1GetLeaveApplicationRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  OaServiceV1GetLeaveApplicationRequest copyWith({
+    int? id,
+  }) {
+    return OaServiceV1GetLeaveApplicationRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// 查询请假类型列表 - 回应
+class OaServiceV1ListLeaveTypesResponse {
+  List<OaServiceV1LeaveType>? items;
+  int? total;
+
+  OaServiceV1ListLeaveTypesResponse({
+    this.items,
+    this.total,
+  });
+
+  factory OaServiceV1ListLeaveTypesResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListLeaveTypesResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1LeaveType.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListLeaveTypesResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListLeaveTypesResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  OaServiceV1ListLeaveTypesResponse copyWith({
+    List<OaServiceV1LeaveType>? items,
+    int? total,
+  }) {
+    return OaServiceV1ListLeaveTypesResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 请假类型（年假/病假/事假等，租户内 code 唯一）
+class OaServiceV1LeaveType {
+  String? code;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  String? name;
+  int? tenantId;
+  String? updatedAt;
+  int? updatedBy;
+
+  OaServiceV1LeaveType({
+    this.code,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.id,
+    this.name,
+    this.tenantId,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory OaServiceV1LeaveType.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1LeaveType(
+      code: json['code'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      tenantId: json['tenantId'] as int?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (code != null) json['code'] = code;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (id != null) json['id'] = id;
+    if (name != null) json['name'] = name;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1LeaveType(code: $code, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, name: $name, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1LeaveType &&
+      runtimeType == other.runtimeType
+      && code == other.code
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && id == other.id
+      && name == other.name
+      && tenantId == other.tenantId
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    code,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    id,
+    name,
+    tenantId,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  OaServiceV1LeaveType copyWith({
+    String? code,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    int? id,
+    String? name,
+    int? tenantId,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return OaServiceV1LeaveType(
+      code: code ?? this.code,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      tenantId: tenantId ?? this.tenantId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 查询额度 - 请求
+class OaServiceV1ListLeaveBalancesRequest {
+  int? userId;
+  int? year;
+
+  OaServiceV1ListLeaveBalancesRequest({
+    this.userId,
+    this.year,
+  });
+
+  factory OaServiceV1ListLeaveBalancesRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListLeaveBalancesRequest(
+      userId: json['userId'] as int?,
+      year: json['year'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (userId != null) json['userId'] = userId;
+    if (year != null) json['year'] = year;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListLeaveBalancesRequest(userId: $userId, year: $year)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListLeaveBalancesRequest &&
+      runtimeType == other.runtimeType
+      && userId == other.userId
+      && year == other.year
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    userId,
+    year,
+  ]);
+
+  OaServiceV1ListLeaveBalancesRequest copyWith({
+    int? userId,
+    int? year,
+  }) {
+    return OaServiceV1ListLeaveBalancesRequest(
+      userId: userId ?? this.userId,
+      year: year ?? this.year,
+    );
+  }
+}
+
+/// 查询额度 - 回应
+class OaServiceV1ListLeaveBalancesResponse {
+  List<OaServiceV1LeaveBalance>? items;
+  int? total;
+
+  OaServiceV1ListLeaveBalancesResponse({
+    this.items,
+    this.total,
+  });
+
+  factory OaServiceV1ListLeaveBalancesResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListLeaveBalancesResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1LeaveBalance.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListLeaveBalancesResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListLeaveBalancesResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  OaServiceV1ListLeaveBalancesResponse copyWith({
+    List<OaServiceV1LeaveBalance>? items,
+    int? total,
+  }) {
+    return OaServiceV1ListLeaveBalancesResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 假期额度（用户 x 类型 x 年度）
+class OaServiceV1LeaveBalance {
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? leaveTypeId;
+  int? tenantId;
+  double? totalDays;
+  String? updatedAt;
+  int? updatedBy;
+  double? usedDays;
+  int? userId;
+  int? year;
+
+  OaServiceV1LeaveBalance({
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.id,
+    this.leaveTypeId,
+    this.tenantId,
+    this.totalDays,
+    this.updatedAt,
+    this.updatedBy,
+    this.usedDays,
+    this.userId,
+    this.year,
+  });
+
+  factory OaServiceV1LeaveBalance.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1LeaveBalance(
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      id: json['id'] as int?,
+      leaveTypeId: json['leaveTypeId'] as int?,
+      tenantId: json['tenantId'] as int?,
+      totalDays: (json['totalDays'] as num?)?.toDouble(),
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+      usedDays: (json['usedDays'] as num?)?.toDouble(),
+      userId: json['userId'] as int?,
+      year: json['year'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (id != null) json['id'] = id;
+    if (leaveTypeId != null) json['leaveTypeId'] = leaveTypeId;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (totalDays != null) json['totalDays'] = totalDays;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (usedDays != null) json['usedDays'] = usedDays;
+    if (userId != null) json['userId'] = userId;
+    if (year != null) json['year'] = year;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1LeaveBalance(createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, leaveTypeId: $leaveTypeId, tenantId: $tenantId, totalDays: $totalDays, updatedAt: $updatedAt, updatedBy: $updatedBy, usedDays: $usedDays, userId: $userId, year: $year)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1LeaveBalance &&
+      runtimeType == other.runtimeType
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && id == other.id
+      && leaveTypeId == other.leaveTypeId
+      && tenantId == other.tenantId
+      && totalDays == other.totalDays
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+      && usedDays == other.usedDays
+      && userId == other.userId
+      && year == other.year
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    id,
+    leaveTypeId,
+    tenantId,
+    totalDays,
+    updatedAt,
+    updatedBy,
+    usedDays,
+    userId,
+    year,
+  ]);
+
+  OaServiceV1LeaveBalance copyWith({
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    int? id,
+    int? leaveTypeId,
+    int? tenantId,
+    double? totalDays,
+    String? updatedAt,
+    int? updatedBy,
+    double? usedDays,
+    int? userId,
+    int? year,
+  }) {
+    return OaServiceV1LeaveBalance(
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      id: id ?? this.id,
+      leaveTypeId: leaveTypeId ?? this.leaveTypeId,
+      tenantId: tenantId ?? this.tenantId,
+      totalDays: totalDays ?? this.totalDays,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+      usedDays: usedDays ?? this.usedDays,
+      userId: userId ?? this.userId,
+      year: year ?? this.year,
+    );
+  }
+}
+
+/// 导航服务
+class NavigationServiceClient {
+  final ClientTransport _transport;
+
+  NavigationServiceClient(this._transport);
+
+  /// 获取导航列表
+  Future<SiteServiceV1ListNavigationResponse> list(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/navigations';
+    final queryParams = <String>[];
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
+    }
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
+    }
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
+    }
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
+    }
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
+    }
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
+    }
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'NavigationService',
+      method: 'List',
+    ), headers: headers);
+    return SiteServiceV1ListNavigationResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 获取导航数据
+  Future<SiteServiceV1Navigation> get(SiteServiceV1GetNavigationRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/navigations/${request.id}';
+    final queryParams = <String>[];
+    if (request.name != null) {
+      queryParams.add('name=${Uri.encodeComponent(request.name!.toString())}');
+    }
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'NavigationService',
+      method: 'Get',
+    ), headers: headers);
+    return SiteServiceV1Navigation.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 创建导航
+  Future<SiteServiceV1Navigation> create(SiteServiceV1CreateNavigationRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/navigations';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'NavigationService',
+      method: 'Create',
+    ), headers: headers);
+    return SiteServiceV1Navigation.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 更新导航
+  Future<SiteServiceV1Navigation> update(SiteServiceV1UpdateNavigationRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/navigations/${request.id}';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
+      service: 'NavigationService',
+      method: 'Update',
+    ), headers: headers);
+    return SiteServiceV1Navigation.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 删除导航
+  Future<Map<String, dynamic>> delete(SiteServiceV1DeleteNavigationRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/navigations/${request.id}';
+    final result = await _transport.unary(path, 'DELETE', null, TransportMeta(
+      service: 'NavigationService',
+      method: 'Delete',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+}
+
+/// 回应 - 导航列表
+class SiteServiceV1ListNavigationResponse {
+  List<SiteServiceV1Navigation>? items;
+  int? total;
+
+  SiteServiceV1ListNavigationResponse({
+    this.items,
+    this.total,
+  });
+
+  factory SiteServiceV1ListNavigationResponse.fromJson(Map<String, dynamic> json) {
+    return SiteServiceV1ListNavigationResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => SiteServiceV1Navigation.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'SiteServiceV1ListNavigationResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is SiteServiceV1ListNavigationResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  SiteServiceV1ListNavigationResponse copyWith({
+    List<SiteServiceV1Navigation>? items,
+    int? total,
+  }) {
+    return SiteServiceV1ListNavigationResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 导航
+class SiteServiceV1Navigation {
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  int? id;
+  bool? isActive;
+  List<SiteServiceV1NavigationItem>? items;
+  String? locale;
+  SiteServiceV1Navigation$Location? location;
+  String? name;
+  String? updatedAt;
+  int? updatedBy;
+
+  SiteServiceV1Navigation({
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.id,
+    this.isActive,
+    this.items,
+    this.locale,
+    this.location,
+    this.name,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory SiteServiceV1Navigation.fromJson(Map<String, dynamic> json) {
+    return SiteServiceV1Navigation(
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      id: json['id'] as int?,
+      isActive: json['isActive'] as bool?,
+      items: (json['items'] as List<dynamic>?)?.map((e) => SiteServiceV1NavigationItem.fromJson(e as Map<String, dynamic>)).toList(),
+      locale: json['locale'] as String?,
+      location: json['location'] != null ? SiteServiceV1Navigation$Location.fromString(json['location'] as String) : null,
+      name: json['name'] as String?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (id != null) json['id'] = id;
+    if (isActive != null) json['isActive'] = isActive;
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (locale != null) json['locale'] = locale;
+    if (location != null) json['location'] = location!.value;
+    if (name != null) json['name'] = name;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'SiteServiceV1Navigation(createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, isActive: $isActive, items: $items, locale: $locale, location: $location, name: $name, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is SiteServiceV1Navigation &&
+      runtimeType == other.runtimeType
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && id == other.id
+      && isActive == other.isActive
+      && items == other.items
+      && locale == other.locale
+      && location == other.location
+      && name == other.name
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    id,
+    isActive,
+    items,
+    locale,
+    location,
+    name,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  SiteServiceV1Navigation copyWith({
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    int? id,
+    bool? isActive,
+    List<SiteServiceV1NavigationItem>? items,
+    String? locale,
+    SiteServiceV1Navigation$Location? location,
+    String? name,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return SiteServiceV1Navigation(
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      id: id ?? this.id,
+      isActive: isActive ?? this.isActive,
+      items: items ?? this.items,
+      locale: locale ?? this.locale,
+      location: location ?? this.location,
+      name: name ?? this.name,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 导航位置枚举
+enum SiteServiceV1Navigation$Location {
+  footer('FOOTER'),
+  header('HEADER'),
+  mobile('MOBILE'),
+  navigationLocationUnspecified('NAVIGATION_LOCATION_UNSPECIFIED'),
+  offcanvas('OFFCANVAS'),
+  sidebar('SIDEBAR'),
+  topBar('TOP_BAR');
+
+  final String value;
+  const SiteServiceV1Navigation$Location(this.value);
+
+  static SiteServiceV1Navigation$Location fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown SiteServiceV1Navigation\$Location value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 导航项目项
+class SiteServiceV1NavigationItem {
+  List<SiteServiceV1NavigationItem>? children;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? description;
+  String? icon;
+  int? id;
+  bool? isInvalid;
+  bool? isOpenNewTab;
+  SiteServiceV1NavigationItem$LinkType? linkType;
+  int? navigationId;
+  int? objectId;
+  int? parentId;
+  String? requiredPermission;
+  int? sortOrder;
+  String? title;
+  String? updatedAt;
+  int? updatedBy;
+  String? url;
+
+  SiteServiceV1NavigationItem({
+    this.children,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.description,
+    this.icon,
+    this.id,
+    this.isInvalid,
+    this.isOpenNewTab,
+    this.linkType,
+    this.navigationId,
+    this.objectId,
+    this.parentId,
+    this.requiredPermission,
+    this.sortOrder,
+    this.title,
+    this.updatedAt,
+    this.updatedBy,
+    this.url,
+  });
+
+  factory SiteServiceV1NavigationItem.fromJson(Map<String, dynamic> json) {
+    return SiteServiceV1NavigationItem(
+      children: (json['children'] as List<dynamic>?)?.map((e) => SiteServiceV1NavigationItem.fromJson(e as Map<String, dynamic>)).toList(),
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      description: json['description'] as String?,
+      icon: json['icon'] as String?,
+      id: json['id'] as int?,
+      isInvalid: json['isInvalid'] as bool?,
+      isOpenNewTab: json['isOpenNewTab'] as bool?,
+      linkType: json['linkType'] != null ? SiteServiceV1NavigationItem$LinkType.fromString(json['linkType'] as String) : null,
+      navigationId: json['navigationId'] as int?,
+      objectId: json['objectId'] as int?,
+      parentId: json['parentId'] as int?,
+      requiredPermission: json['requiredPermission'] as String?,
+      sortOrder: json['sortOrder'] as int?,
+      title: json['title'] as String?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+      url: json['url'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (children != null) json['children'] = children!.map((e) => e.toJson()).toList();
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (description != null) json['description'] = description;
+    if (icon != null) json['icon'] = icon;
+    if (id != null) json['id'] = id;
+    if (isInvalid != null) json['isInvalid'] = isInvalid;
+    if (isOpenNewTab != null) json['isOpenNewTab'] = isOpenNewTab;
+    if (linkType != null) json['linkType'] = linkType!.value;
+    if (navigationId != null) json['navigationId'] = navigationId;
+    if (objectId != null) json['objectId'] = objectId;
+    if (parentId != null) json['parentId'] = parentId;
+    if (requiredPermission != null) json['requiredPermission'] = requiredPermission;
+    if (sortOrder != null) json['sortOrder'] = sortOrder;
+    if (title != null) json['title'] = title;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (url != null) json['url'] = url;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'SiteServiceV1NavigationItem(children: $children, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, description: $description, icon: $icon, id: $id, isInvalid: $isInvalid, isOpenNewTab: $isOpenNewTab, linkType: $linkType, navigationId: $navigationId, objectId: $objectId, parentId: $parentId, requiredPermission: $requiredPermission, sortOrder: $sortOrder, title: $title, updatedAt: $updatedAt, updatedBy: $updatedBy, url: $url)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is SiteServiceV1NavigationItem &&
+      runtimeType == other.runtimeType
+      && children == other.children
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && description == other.description
+      && icon == other.icon
+      && id == other.id
+      && isInvalid == other.isInvalid
+      && isOpenNewTab == other.isOpenNewTab
+      && linkType == other.linkType
+      && navigationId == other.navigationId
+      && objectId == other.objectId
+      && parentId == other.parentId
+      && requiredPermission == other.requiredPermission
+      && sortOrder == other.sortOrder
+      && title == other.title
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+      && url == other.url
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    children,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    description,
+    icon,
+    id,
+    isInvalid,
+    isOpenNewTab,
+    linkType,
+    navigationId,
+    objectId,
+    parentId,
+    requiredPermission,
+    sortOrder,
+    title,
+    updatedAt,
+    updatedBy,
+    url,
+  ]);
+
+  SiteServiceV1NavigationItem copyWith({
+    List<SiteServiceV1NavigationItem>? children,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? description,
+    String? icon,
+    int? id,
+    bool? isInvalid,
+    bool? isOpenNewTab,
+    SiteServiceV1NavigationItem$LinkType? linkType,
+    int? navigationId,
+    int? objectId,
+    int? parentId,
+    String? requiredPermission,
+    int? sortOrder,
+    String? title,
+    String? updatedAt,
+    int? updatedBy,
+    String? url,
+  }) {
+    return SiteServiceV1NavigationItem(
+      children: children ?? this.children,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      description: description ?? this.description,
+      icon: icon ?? this.icon,
+      id: id ?? this.id,
+      isInvalid: isInvalid ?? this.isInvalid,
+      isOpenNewTab: isOpenNewTab ?? this.isOpenNewTab,
+      linkType: linkType ?? this.linkType,
+      navigationId: navigationId ?? this.navigationId,
+      objectId: objectId ?? this.objectId,
+      parentId: parentId ?? this.parentId,
+      requiredPermission: requiredPermission ?? this.requiredPermission,
+      sortOrder: sortOrder ?? this.sortOrder,
+      title: title ?? this.title,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+      url: url ?? this.url,
+    );
+  }
+}
+
+/// 链接类型
+enum SiteServiceV1NavigationItem$LinkType {
+  linkTypeCategory('LINK_TYPE_CATEGORY'),
+  linkTypeCustom('LINK_TYPE_CUSTOM'),
+  linkTypeExternal('LINK_TYPE_EXTERNAL'),
+  linkTypePage('LINK_TYPE_PAGE'),
+  linkTypePost('LINK_TYPE_POST'),
+  linkTypeUnspecified('LINK_TYPE_UNSPECIFIED');
+
+  final String value;
+  const SiteServiceV1NavigationItem$LinkType(this.value);
+
+  static SiteServiceV1NavigationItem$LinkType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown SiteServiceV1NavigationItem\$LinkType value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 请求 - 导航数据
+class SiteServiceV1GetNavigationRequest {
+  int? id;
+  String? name;
   String? viewMask;
 
-  Internal_messageServiceV1GetInternalMessageRequest({
+  SiteServiceV1GetNavigationRequest({
     this.id,
+    this.name,
     this.viewMask,
   });
 
-  factory Internal_messageServiceV1GetInternalMessageRequest.fromJson(Map<String, dynamic> json) {
-    return Internal_messageServiceV1GetInternalMessageRequest(
+  factory SiteServiceV1GetNavigationRequest.fromJson(Map<String, dynamic> json) {
+    return SiteServiceV1GetNavigationRequest(
       id: json['id'] as int?,
+      name: json['name'] as String?,
       viewMask: json['viewMask'] as String?,
     );
   }
@@ -1427,54 +7302,4287 @@ class Internal_messageServiceV1GetInternalMessageRequest {
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     if (id != null) json['id'] = id;
+    if (name != null) json['name'] = name;
     if (viewMask != null) json['viewMask'] = viewMask;
     return json;
   }
 
   @override
   String toString() {
-    return 'Internal_messageServiceV1GetInternalMessageRequest(id: $id, viewMask: $viewMask)';
+    return 'SiteServiceV1GetNavigationRequest(id: $id, name: $name, viewMask: $viewMask)';
   }
 
   @override
   bool operator ==(Object other) =>
     identical(this, other) ||
-    other is Internal_messageServiceV1GetInternalMessageRequest &&
+    other is SiteServiceV1GetNavigationRequest &&
       runtimeType == other.runtimeType
       && id == other.id
+      && name == other.name
       && viewMask == other.viewMask
     ;
 
   @override
   int get hashCode => Object.hashAll([
     id,
+    name,
     viewMask,
   ]);
 
-  Internal_messageServiceV1GetInternalMessageRequest copyWith({
+  SiteServiceV1GetNavigationRequest copyWith({
     int? id,
+    String? name,
     String? viewMask,
   }) {
-    return Internal_messageServiceV1GetInternalMessageRequest(
+    return SiteServiceV1GetNavigationRequest(
       id: id ?? this.id,
+      name: name ?? this.name,
       viewMask: viewMask ?? this.viewMask,
     );
   }
 }
 
-/// OA 工作流服务（app HTTP 边端，供移动端调用）。
-/// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-/// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
-/// appV1.WorkflowServiceHTTPServer，app-service 注册并转发到 core gRPC。
-/// 路径前缀 /app/v1/oa/workflow/，与 cms app 的 /app/v1/ 同构。
+/// 请求 - 创建导航
+class SiteServiceV1CreateNavigationRequest {
+  SiteServiceV1Navigation? data;
+
+  SiteServiceV1CreateNavigationRequest({
+    this.data,
+  });
+
+  factory SiteServiceV1CreateNavigationRequest.fromJson(Map<String, dynamic> json) {
+    return SiteServiceV1CreateNavigationRequest(
+      data: json['data'] != null ? SiteServiceV1Navigation.fromJson(json['data'] as Map<String, dynamic>) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (data != null) json['data'] = data!.toJson();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'SiteServiceV1CreateNavigationRequest(data: $data)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is SiteServiceV1CreateNavigationRequest &&
+      runtimeType == other.runtimeType
+      && data == other.data
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    data,
+  ]);
+
+  SiteServiceV1CreateNavigationRequest copyWith({
+    SiteServiceV1Navigation? data,
+  }) {
+    return SiteServiceV1CreateNavigationRequest(
+      data: data ?? this.data,
+    );
+  }
+}
+
+/// 请求 - 更新导航
+class SiteServiceV1UpdateNavigationRequest {
+  bool? allowMissing;
+  SiteServiceV1Navigation? data;
+  int? id;
+  String? updateMask;
+
+  SiteServiceV1UpdateNavigationRequest({
+    this.allowMissing,
+    this.data,
+    this.id,
+    this.updateMask,
+  });
+
+  factory SiteServiceV1UpdateNavigationRequest.fromJson(Map<String, dynamic> json) {
+    return SiteServiceV1UpdateNavigationRequest(
+      allowMissing: json['allowMissing'] as bool?,
+      data: json['data'] != null ? SiteServiceV1Navigation.fromJson(json['data'] as Map<String, dynamic>) : null,
+      id: json['id'] as int?,
+      updateMask: json['updateMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (allowMissing != null) json['allowMissing'] = allowMissing;
+    if (data != null) json['data'] = data!.toJson();
+    if (id != null) json['id'] = id;
+    if (updateMask != null) json['updateMask'] = updateMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'SiteServiceV1UpdateNavigationRequest(allowMissing: $allowMissing, data: $data, id: $id, updateMask: $updateMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is SiteServiceV1UpdateNavigationRequest &&
+      runtimeType == other.runtimeType
+      && allowMissing == other.allowMissing
+      && data == other.data
+      && id == other.id
+      && updateMask == other.updateMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    allowMissing,
+    data,
+    id,
+    updateMask,
+  ]);
+
+  SiteServiceV1UpdateNavigationRequest copyWith({
+    bool? allowMissing,
+    SiteServiceV1Navigation? data,
+    int? id,
+    String? updateMask,
+  }) {
+    return SiteServiceV1UpdateNavigationRequest(
+      allowMissing: allowMissing ?? this.allowMissing,
+      data: data ?? this.data,
+      id: id ?? this.id,
+      updateMask: updateMask ?? this.updateMask,
+    );
+  }
+}
+
+/// 请求 - 删除导航
+class SiteServiceV1DeleteNavigationRequest {
+  int? id;
+
+  SiteServiceV1DeleteNavigationRequest({
+    this.id,
+  });
+
+  factory SiteServiceV1DeleteNavigationRequest.fromJson(Map<String, dynamic> json) {
+    return SiteServiceV1DeleteNavigationRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'SiteServiceV1DeleteNavigationRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is SiteServiceV1DeleteNavigationRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  SiteServiceV1DeleteNavigationRequest copyWith({
+    int? id,
+  }) {
+    return SiteServiceV1DeleteNavigationRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// 页面服务
+class PageServiceClient {
+  final ClientTransport _transport;
+
+  PageServiceClient(this._transport);
+
+  /// 获取页面列表
+  Future<ContentServiceV1ListPageResponse> list(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/pages';
+    final queryParams = <String>[];
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
+    }
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
+    }
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
+    }
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
+    }
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
+    }
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
+    }
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'PageService',
+      method: 'List',
+    ), headers: headers);
+    return ContentServiceV1ListPageResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 获取页面数据
+  Future<ContentServiceV1Page> get(ContentServiceV1GetPageRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/pages/${request.id}';
+    final queryParams = <String>[];
+    if (request.slug != null) {
+      queryParams.add('slug=${Uri.encodeComponent(request.slug!.toString())}');
+    }
+    if (request.locale != null) {
+      queryParams.add('locale=${Uri.encodeComponent(request.locale!.toString())}');
+    }
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'PageService',
+      method: 'Get',
+    ), headers: headers);
+    return ContentServiceV1Page.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 创建页面
+  Future<ContentServiceV1Page> create(ContentServiceV1CreatePageRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/pages';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'PageService',
+      method: 'Create',
+    ), headers: headers);
+    return ContentServiceV1Page.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 更新页面
+  Future<ContentServiceV1Page> update(ContentServiceV1UpdatePageRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/pages/${request.id}';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
+      service: 'PageService',
+      method: 'Update',
+    ), headers: headers);
+    return ContentServiceV1Page.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 删除页面
+  Future<Map<String, dynamic>> delete(ContentServiceV1DeletePageRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/pages/${request.id}';
+    final result = await _transport.unary(path, 'DELETE', null, TransportMeta(
+      service: 'PageService',
+      method: 'Delete',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 获取翻译数据
+  Future<ContentServiceV1PageTranslation> getTranslation(ContentServiceV1GetPageRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/pages/${request.id}/translation';
+    final queryParams = <String>[];
+    if (request.slug != null) {
+      queryParams.add('slug=${Uri.encodeComponent(request.slug!.toString())}');
+    }
+    if (request.locale != null) {
+      queryParams.add('locale=${Uri.encodeComponent(request.locale!.toString())}');
+    }
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'PageService',
+      method: 'GetTranslation',
+    ), headers: headers);
+    return ContentServiceV1PageTranslation.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 回应 - 页面列表
+class ContentServiceV1ListPageResponse {
+  List<ContentServiceV1Page>? items;
+  int? total;
+
+  ContentServiceV1ListPageResponse({
+    this.items,
+    this.total,
+  });
+
+  factory ContentServiceV1ListPageResponse.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1ListPageResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => ContentServiceV1Page.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1ListPageResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1ListPageResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  ContentServiceV1ListPageResponse copyWith({
+    List<ContentServiceV1Page>? items,
+    int? total,
+  }) {
+    return ContentServiceV1ListPageResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 页面
+class ContentServiceV1Page {
+  int? authorId;
+  String? authorName;
+  List<String>? availableLanguages;
+  List<ContentServiceV1Page>? children;
+  String? createdAt;
+  int? createdBy;
+  Map<String, String>? customFields;
+  String? deletedAt;
+  int? deletedBy;
+  int? depth;
+  bool? disallowComment;
+  ContentServiceV1EditorType? editorType;
+  int? id;
+  bool? isCustomTemplate;
+  int? parentId;
+  String? path;
+  String? redirectUrl;
+  bool? showInNavigation;
+  String? slug;
+  int? sortOrder;
+  ContentServiceV1Page$PageStatus? status;
+  String? template;
+  List<ContentServiceV1PageTranslation>? translations;
+  ContentServiceV1Page$PageType? type;
+  String? updatedAt;
+  int? updatedBy;
+
+  ContentServiceV1Page({
+    this.authorId,
+    this.authorName,
+    this.availableLanguages,
+    this.children,
+    this.createdAt,
+    this.createdBy,
+    this.customFields,
+    this.deletedAt,
+    this.deletedBy,
+    this.depth,
+    this.disallowComment,
+    this.editorType,
+    this.id,
+    this.isCustomTemplate,
+    this.parentId,
+    this.path,
+    this.redirectUrl,
+    this.showInNavigation,
+    this.slug,
+    this.sortOrder,
+    this.status,
+    this.template,
+    this.translations,
+    this.type,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory ContentServiceV1Page.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1Page(
+      authorId: json['authorId'] as int?,
+      authorName: json['authorName'] as String?,
+      availableLanguages: (json['availableLanguages'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      children: (json['children'] as List<dynamic>?)?.map((e) => ContentServiceV1Page.fromJson(e as Map<String, dynamic>)).toList(),
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      customFields: (json['customFields'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)),
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      depth: json['depth'] as int?,
+      disallowComment: json['disallowComment'] as bool?,
+      editorType: json['editorType'] != null ? ContentServiceV1EditorType.fromString(json['editorType'] as String) : null,
+      id: json['id'] as int?,
+      isCustomTemplate: json['isCustomTemplate'] as bool?,
+      parentId: json['parentId'] as int?,
+      path: json['path'] as String?,
+      redirectUrl: json['redirectUrl'] as String?,
+      showInNavigation: json['showInNavigation'] as bool?,
+      slug: json['slug'] as String?,
+      sortOrder: json['sortOrder'] as int?,
+      status: json['status'] != null ? ContentServiceV1Page$PageStatus.fromString(json['status'] as String) : null,
+      template: json['template'] as String?,
+      translations: (json['translations'] as List<dynamic>?)?.map((e) => ContentServiceV1PageTranslation.fromJson(e as Map<String, dynamic>)).toList(),
+      type: json['type'] != null ? ContentServiceV1Page$PageType.fromString(json['type'] as String) : null,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (authorId != null) json['authorId'] = authorId;
+    if (authorName != null) json['authorName'] = authorName;
+    if (availableLanguages != null) json['availableLanguages'] = availableLanguages;
+    if (children != null) json['children'] = children!.map((e) => e.toJson()).toList();
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (customFields != null) json['customFields'] = customFields;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (depth != null) json['depth'] = depth;
+    if (disallowComment != null) json['disallowComment'] = disallowComment;
+    if (editorType != null) json['editorType'] = editorType!.value;
+    if (id != null) json['id'] = id;
+    if (isCustomTemplate != null) json['isCustomTemplate'] = isCustomTemplate;
+    if (parentId != null) json['parentId'] = parentId;
+    if (path != null) json['path'] = path;
+    if (redirectUrl != null) json['redirectUrl'] = redirectUrl;
+    if (showInNavigation != null) json['showInNavigation'] = showInNavigation;
+    if (slug != null) json['slug'] = slug;
+    if (sortOrder != null) json['sortOrder'] = sortOrder;
+    if (status != null) json['status'] = status!.value;
+    if (template != null) json['template'] = template;
+    if (translations != null) json['translations'] = translations!.map((e) => e.toJson()).toList();
+    if (type != null) json['type'] = type!.value;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1Page(authorId: $authorId, authorName: $authorName, availableLanguages: $availableLanguages, children: $children, createdAt: $createdAt, createdBy: $createdBy, customFields: $customFields, deletedAt: $deletedAt, deletedBy: $deletedBy, depth: $depth, disallowComment: $disallowComment, editorType: $editorType, id: $id, isCustomTemplate: $isCustomTemplate, parentId: $parentId, path: $path, redirectUrl: $redirectUrl, showInNavigation: $showInNavigation, slug: $slug, sortOrder: $sortOrder, status: $status, template: $template, translations: $translations, type: $type, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1Page &&
+      runtimeType == other.runtimeType
+      && authorId == other.authorId
+      && authorName == other.authorName
+      && availableLanguages == other.availableLanguages
+      && children == other.children
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && customFields == other.customFields
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && depth == other.depth
+      && disallowComment == other.disallowComment
+      && editorType == other.editorType
+      && id == other.id
+      && isCustomTemplate == other.isCustomTemplate
+      && parentId == other.parentId
+      && path == other.path
+      && redirectUrl == other.redirectUrl
+      && showInNavigation == other.showInNavigation
+      && slug == other.slug
+      && sortOrder == other.sortOrder
+      && status == other.status
+      && template == other.template
+      && translations == other.translations
+      && type == other.type
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    authorId,
+    authorName,
+    availableLanguages,
+    children,
+    createdAt,
+    createdBy,
+    customFields,
+    deletedAt,
+    deletedBy,
+    depth,
+    disallowComment,
+    editorType,
+    id,
+    isCustomTemplate,
+    parentId,
+    path,
+    redirectUrl,
+    showInNavigation,
+    slug,
+    sortOrder,
+    status,
+    template,
+    translations,
+    type,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  ContentServiceV1Page copyWith({
+    int? authorId,
+    String? authorName,
+    List<String>? availableLanguages,
+    List<ContentServiceV1Page>? children,
+    String? createdAt,
+    int? createdBy,
+    Map<String, String>? customFields,
+    String? deletedAt,
+    int? deletedBy,
+    int? depth,
+    bool? disallowComment,
+    ContentServiceV1EditorType? editorType,
+    int? id,
+    bool? isCustomTemplate,
+    int? parentId,
+    String? path,
+    String? redirectUrl,
+    bool? showInNavigation,
+    String? slug,
+    int? sortOrder,
+    ContentServiceV1Page$PageStatus? status,
+    String? template,
+    List<ContentServiceV1PageTranslation>? translations,
+    ContentServiceV1Page$PageType? type,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return ContentServiceV1Page(
+      authorId: authorId ?? this.authorId,
+      authorName: authorName ?? this.authorName,
+      availableLanguages: availableLanguages ?? this.availableLanguages,
+      children: children ?? this.children,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      customFields: customFields ?? this.customFields,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      depth: depth ?? this.depth,
+      disallowComment: disallowComment ?? this.disallowComment,
+      editorType: editorType ?? this.editorType,
+      id: id ?? this.id,
+      isCustomTemplate: isCustomTemplate ?? this.isCustomTemplate,
+      parentId: parentId ?? this.parentId,
+      path: path ?? this.path,
+      redirectUrl: redirectUrl ?? this.redirectUrl,
+      showInNavigation: showInNavigation ?? this.showInNavigation,
+      slug: slug ?? this.slug,
+      sortOrder: sortOrder ?? this.sortOrder,
+      status: status ?? this.status,
+      template: template ?? this.template,
+      translations: translations ?? this.translations,
+      type: type ?? this.type,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 页面状态
+enum ContentServiceV1Page$PageStatus {
+  pageStatusArchived('PAGE_STATUS_ARCHIVED'),
+  pageStatusDraft('PAGE_STATUS_DRAFT'),
+  pageStatusPublished('PAGE_STATUS_PUBLISHED'),
+  pageStatusUnspecified('PAGE_STATUS_UNSPECIFIED');
+
+  final String value;
+  const ContentServiceV1Page$PageStatus(this.value);
+
+  static ContentServiceV1Page$PageStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown ContentServiceV1Page\$PageStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 页面类型（用于特殊页面处理）
+enum ContentServiceV1Page$PageType {
+  pageTypeCustom('PAGE_TYPE_CUSTOM'),
+  pageTypeDefault('PAGE_TYPE_DEFAULT'),
+  pageTypeError404('PAGE_TYPE_ERROR_404'),
+  pageTypeError500('PAGE_TYPE_ERROR_500'),
+  pageTypeHome('PAGE_TYPE_HOME'),
+  pageTypeUnspecified('PAGE_TYPE_UNSPECIFIED');
+
+  final String value;
+  const ContentServiceV1Page$PageType(this.value);
+
+  static ContentServiceV1Page$PageType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown ContentServiceV1Page\$PageType value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 页面翻译
+class ContentServiceV1PageTranslation {
+  String? coverImage;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? fullPath;
+  int? id;
+  String? languageCode;
+  int? pageId;
+  ContentServiceV1SeoMeta? seo;
+  String? slug;
+  String? thumbnail;
+  String? title;
+  String? updatedAt;
+  int? updatedBy;
+
+  ContentServiceV1PageTranslation({
+    this.coverImage,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.fullPath,
+    this.id,
+    this.languageCode,
+    this.pageId,
+    this.seo,
+    this.slug,
+    this.thumbnail,
+    this.title,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory ContentServiceV1PageTranslation.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1PageTranslation(
+      coverImage: json['coverImage'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      fullPath: json['fullPath'] as String?,
+      id: json['id'] as int?,
+      languageCode: json['languageCode'] as String?,
+      pageId: json['pageId'] as int?,
+      seo: json['seo'] != null ? ContentServiceV1SeoMeta.fromJson(json['seo'] as Map<String, dynamic>) : null,
+      slug: json['slug'] as String?,
+      thumbnail: json['thumbnail'] as String?,
+      title: json['title'] as String?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (coverImage != null) json['coverImage'] = coverImage;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (fullPath != null) json['fullPath'] = fullPath;
+    if (id != null) json['id'] = id;
+    if (languageCode != null) json['languageCode'] = languageCode;
+    if (pageId != null) json['pageId'] = pageId;
+    if (seo != null) json['seo'] = seo!.toJson();
+    if (slug != null) json['slug'] = slug;
+    if (thumbnail != null) json['thumbnail'] = thumbnail;
+    if (title != null) json['title'] = title;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1PageTranslation(coverImage: $coverImage, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, fullPath: $fullPath, id: $id, languageCode: $languageCode, pageId: $pageId, seo: $seo, slug: $slug, thumbnail: $thumbnail, title: $title, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1PageTranslation &&
+      runtimeType == other.runtimeType
+      && coverImage == other.coverImage
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && fullPath == other.fullPath
+      && id == other.id
+      && languageCode == other.languageCode
+      && pageId == other.pageId
+      && seo == other.seo
+      && slug == other.slug
+      && thumbnail == other.thumbnail
+      && title == other.title
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    coverImage,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    fullPath,
+    id,
+    languageCode,
+    pageId,
+    seo,
+    slug,
+    thumbnail,
+    title,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  ContentServiceV1PageTranslation copyWith({
+    String? coverImage,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? fullPath,
+    int? id,
+    String? languageCode,
+    int? pageId,
+    ContentServiceV1SeoMeta? seo,
+    String? slug,
+    String? thumbnail,
+    String? title,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return ContentServiceV1PageTranslation(
+      coverImage: coverImage ?? this.coverImage,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      fullPath: fullPath ?? this.fullPath,
+      id: id ?? this.id,
+      languageCode: languageCode ?? this.languageCode,
+      pageId: pageId ?? this.pageId,
+      seo: seo ?? this.seo,
+      slug: slug ?? this.slug,
+      thumbnail: thumbnail ?? this.thumbnail,
+      title: title ?? this.title,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 请求 - 页面数据
+class ContentServiceV1GetPageRequest {
+  int? id;
+  String? locale;
+  String? slug;
+  String? viewMask;
+
+  ContentServiceV1GetPageRequest({
+    this.id,
+    this.locale,
+    this.slug,
+    this.viewMask,
+  });
+
+  factory ContentServiceV1GetPageRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1GetPageRequest(
+      id: json['id'] as int?,
+      locale: json['locale'] as String?,
+      slug: json['slug'] as String?,
+      viewMask: json['viewMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (locale != null) json['locale'] = locale;
+    if (slug != null) json['slug'] = slug;
+    if (viewMask != null) json['viewMask'] = viewMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1GetPageRequest(id: $id, locale: $locale, slug: $slug, viewMask: $viewMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1GetPageRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && locale == other.locale
+      && slug == other.slug
+      && viewMask == other.viewMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    locale,
+    slug,
+    viewMask,
+  ]);
+
+  ContentServiceV1GetPageRequest copyWith({
+    int? id,
+    String? locale,
+    String? slug,
+    String? viewMask,
+  }) {
+    return ContentServiceV1GetPageRequest(
+      id: id ?? this.id,
+      locale: locale ?? this.locale,
+      slug: slug ?? this.slug,
+      viewMask: viewMask ?? this.viewMask,
+    );
+  }
+}
+
+/// 请求 - 创建页面
+class ContentServiceV1CreatePageRequest {
+  ContentServiceV1Page? data;
+
+  ContentServiceV1CreatePageRequest({
+    this.data,
+  });
+
+  factory ContentServiceV1CreatePageRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1CreatePageRequest(
+      data: json['data'] != null ? ContentServiceV1Page.fromJson(json['data'] as Map<String, dynamic>) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (data != null) json['data'] = data!.toJson();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1CreatePageRequest(data: $data)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1CreatePageRequest &&
+      runtimeType == other.runtimeType
+      && data == other.data
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    data,
+  ]);
+
+  ContentServiceV1CreatePageRequest copyWith({
+    ContentServiceV1Page? data,
+  }) {
+    return ContentServiceV1CreatePageRequest(
+      data: data ?? this.data,
+    );
+  }
+}
+
+/// 请求 - 更新页面
+class ContentServiceV1UpdatePageRequest {
+  bool? allowMissing;
+  ContentServiceV1Page? data;
+  int? id;
+  String? updateMask;
+
+  ContentServiceV1UpdatePageRequest({
+    this.allowMissing,
+    this.data,
+    this.id,
+    this.updateMask,
+  });
+
+  factory ContentServiceV1UpdatePageRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1UpdatePageRequest(
+      allowMissing: json['allowMissing'] as bool?,
+      data: json['data'] != null ? ContentServiceV1Page.fromJson(json['data'] as Map<String, dynamic>) : null,
+      id: json['id'] as int?,
+      updateMask: json['updateMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (allowMissing != null) json['allowMissing'] = allowMissing;
+    if (data != null) json['data'] = data!.toJson();
+    if (id != null) json['id'] = id;
+    if (updateMask != null) json['updateMask'] = updateMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1UpdatePageRequest(allowMissing: $allowMissing, data: $data, id: $id, updateMask: $updateMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1UpdatePageRequest &&
+      runtimeType == other.runtimeType
+      && allowMissing == other.allowMissing
+      && data == other.data
+      && id == other.id
+      && updateMask == other.updateMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    allowMissing,
+    data,
+    id,
+    updateMask,
+  ]);
+
+  ContentServiceV1UpdatePageRequest copyWith({
+    bool? allowMissing,
+    ContentServiceV1Page? data,
+    int? id,
+    String? updateMask,
+  }) {
+    return ContentServiceV1UpdatePageRequest(
+      allowMissing: allowMissing ?? this.allowMissing,
+      data: data ?? this.data,
+      id: id ?? this.id,
+      updateMask: updateMask ?? this.updateMask,
+    );
+  }
+}
+
+/// 请求 - 删除页面
+class ContentServiceV1DeletePageRequest {
+  int? id;
+
+  ContentServiceV1DeletePageRequest({
+    this.id,
+  });
+
+  factory ContentServiceV1DeletePageRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1DeletePageRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1DeletePageRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1DeletePageRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  ContentServiceV1DeletePageRequest copyWith({
+    int? id,
+  }) {
+    return ContentServiceV1DeletePageRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// 帖子服务
+class PostServiceClient {
+  final ClientTransport _transport;
+
+  PostServiceClient(this._transport);
+
+  /// 获取帖子列表
+  Future<ContentServiceV1ListPostResponse> list(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/posts';
+    final queryParams = <String>[];
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
+    }
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
+    }
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
+    }
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
+    }
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
+    }
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
+    }
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'PostService',
+      method: 'List',
+    ), headers: headers);
+    return ContentServiceV1ListPostResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 全文搜索帖子（前台，基于 OpenSearch）
+  /// 
+  /// 仅返回 PUBLISHED 状态内容；tenant_id 由服务端从登录用户上下文注入，
+  /// 客户端无法指定或绕过。故此端点不进鉴权白名单——必须登录后方可搜索。
+  Future<ContentServiceV1SearchPostsResponse> searchPosts(ContentServiceV1SearchPostsRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/posts/search';
+    final queryParams = <String>[];
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.language != null) {
+      queryParams.add('language=${Uri.encodeComponent(request.language!.toString())}');
+    }
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'PostService',
+      method: 'SearchPosts',
+    ), headers: headers);
+    return ContentServiceV1SearchPostsResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 获取帖子数据
+  Future<ContentServiceV1Post> get(ContentServiceV1GetPostRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/posts/${request.id}';
+    final queryParams = <String>[];
+    if (request.code != null) {
+      queryParams.add('code=${Uri.encodeComponent(request.code!.toString())}');
+    }
+    if (request.locale != null) {
+      queryParams.add('locale=${Uri.encodeComponent(request.locale!.toString())}');
+    }
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'PostService',
+      method: 'Get',
+    ), headers: headers);
+    return ContentServiceV1Post.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 创建帖子
+  Future<ContentServiceV1Post> create(ContentServiceV1CreatePostRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/posts';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'PostService',
+      method: 'Create',
+    ), headers: headers);
+    return ContentServiceV1Post.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 更新帖子
+  Future<ContentServiceV1Post> update(ContentServiceV1UpdatePostRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/posts/${request.id}';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
+      service: 'PostService',
+      method: 'Update',
+    ), headers: headers);
+    return ContentServiceV1Post.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 删除帖子
+  Future<Map<String, dynamic>> delete(ContentServiceV1DeletePostRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/posts/${request.id}';
+    final result = await _transport.unary(path, 'DELETE', null, TransportMeta(
+      service: 'PostService',
+      method: 'Delete',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 获取翻译数据
+  Future<ContentServiceV1PostTranslation> getTranslation(ContentServiceV1GetPostRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/posts/${request.id}/translation';
+    final queryParams = <String>[];
+    if (request.code != null) {
+      queryParams.add('code=${Uri.encodeComponent(request.code!.toString())}');
+    }
+    if (request.locale != null) {
+      queryParams.add('locale=${Uri.encodeComponent(request.locale!.toString())}');
+    }
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'PostService',
+      method: 'GetTranslation',
+    ), headers: headers);
+    return ContentServiceV1PostTranslation.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 请求 - 帖子搜索
+/// 
+/// tenant_id 不在此消息中——由服务端从调用方租户上下文（viewer）注入，
+/// 客户端无法指定或绕过。status 固定为 PUBLISHED（前台仅检索已发布内容）。
+class ContentServiceV1SearchPostsRequest {
+  /// 语言代码（必填，仅返回该语言的翻译命中）
+  String? language;
+  /// 页码（0-based）
+  int? page;
+  /// 每页条数（服务端封顶 50）
+  int? pageSize;
+  /// 搜索查询词
+  String? query;
+
+  ContentServiceV1SearchPostsRequest({
+    this.language,
+    this.page,
+    this.pageSize,
+    this.query,
+  });
+
+  factory ContentServiceV1SearchPostsRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1SearchPostsRequest(
+      language: json['language'] as String?,
+      page: json['page'] as int?,
+      pageSize: json['pageSize'] as int?,
+      query: json['query'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (language != null) json['language'] = language;
+    if (page != null) json['page'] = page;
+    if (pageSize != null) json['pageSize'] = pageSize;
+    if (query != null) json['query'] = query;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1SearchPostsRequest(language: $language, page: $page, pageSize: $pageSize, query: $query)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1SearchPostsRequest &&
+      runtimeType == other.runtimeType
+      && language == other.language
+      && page == other.page
+      && pageSize == other.pageSize
+      && query == other.query
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    language,
+    page,
+    pageSize,
+    query,
+  ]);
+
+  ContentServiceV1SearchPostsRequest copyWith({
+    String? language,
+    int? page,
+    int? pageSize,
+    String? query,
+  }) {
+    return ContentServiceV1SearchPostsRequest(
+      language: language ?? this.language,
+      page: page ?? this.page,
+      pageSize: pageSize ?? this.pageSize,
+      query: query ?? this.query,
+    );
+  }
+}
+
+/// 回应 - 帖子搜索
+/// 
+/// 仅返回最小字段集：post_id / language / title。
+/// 不含 content / tenant_id / status——这些字段不向前台暴露。
+class ContentServiceV1SearchPostsResponse {
+  List<ContentServiceV1SearchPostHit>? items;
+  int? total;
+
+  ContentServiceV1SearchPostsResponse({
+    this.items,
+    this.total,
+  });
+
+  factory ContentServiceV1SearchPostsResponse.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1SearchPostsResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => ContentServiceV1SearchPostHit.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1SearchPostsResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1SearchPostsResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  ContentServiceV1SearchPostsResponse copyWith({
+    List<ContentServiceV1SearchPostHit>? items,
+    int? total,
+  }) {
+    return ContentServiceV1SearchPostsResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 搜索命中条目（最小字段集）
+class ContentServiceV1SearchPostHit {
+  /// 语言代码
+  String? language;
+  /// 帖子 ID（用于后续 GetPost 详情查询）
+  int? postId;
+  /// 标题（来自翻译，用于搜索结果展示）
+  String? title;
+
+  ContentServiceV1SearchPostHit({
+    this.language,
+    this.postId,
+    this.title,
+  });
+
+  factory ContentServiceV1SearchPostHit.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1SearchPostHit(
+      language: json['language'] as String?,
+      postId: json['postId'] as int?,
+      title: json['title'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (language != null) json['language'] = language;
+    if (postId != null) json['postId'] = postId;
+    if (title != null) json['title'] = title;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1SearchPostHit(language: $language, postId: $postId, title: $title)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1SearchPostHit &&
+      runtimeType == other.runtimeType
+      && language == other.language
+      && postId == other.postId
+      && title == other.title
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    language,
+    postId,
+    title,
+  ]);
+
+  ContentServiceV1SearchPostHit copyWith({
+    String? language,
+    int? postId,
+    String? title,
+  }) {
+    return ContentServiceV1SearchPostHit(
+      language: language ?? this.language,
+      postId: postId ?? this.postId,
+      title: title ?? this.title,
+    );
+  }
+}
+
+/// 请求 - 帖子数据
+class ContentServiceV1GetPostRequest {
+  String? code;
+  int? id;
+  String? locale;
+  String? viewMask;
+
+  ContentServiceV1GetPostRequest({
+    this.code,
+    this.id,
+    this.locale,
+    this.viewMask,
+  });
+
+  factory ContentServiceV1GetPostRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1GetPostRequest(
+      code: json['code'] as String?,
+      id: json['id'] as int?,
+      locale: json['locale'] as String?,
+      viewMask: json['viewMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (code != null) json['code'] = code;
+    if (id != null) json['id'] = id;
+    if (locale != null) json['locale'] = locale;
+    if (viewMask != null) json['viewMask'] = viewMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1GetPostRequest(code: $code, id: $id, locale: $locale, viewMask: $viewMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1GetPostRequest &&
+      runtimeType == other.runtimeType
+      && code == other.code
+      && id == other.id
+      && locale == other.locale
+      && viewMask == other.viewMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    code,
+    id,
+    locale,
+    viewMask,
+  ]);
+
+  ContentServiceV1GetPostRequest copyWith({
+    String? code,
+    int? id,
+    String? locale,
+    String? viewMask,
+  }) {
+    return ContentServiceV1GetPostRequest(
+      code: code ?? this.code,
+      id: id ?? this.id,
+      locale: locale ?? this.locale,
+      viewMask: viewMask ?? this.viewMask,
+    );
+  }
+}
+
+/// 请求 - 创建帖子
+class ContentServiceV1CreatePostRequest {
+  ContentServiceV1Post? data;
+
+  ContentServiceV1CreatePostRequest({
+    this.data,
+  });
+
+  factory ContentServiceV1CreatePostRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1CreatePostRequest(
+      data: json['data'] != null ? ContentServiceV1Post.fromJson(json['data'] as Map<String, dynamic>) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (data != null) json['data'] = data!.toJson();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1CreatePostRequest(data: $data)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1CreatePostRequest &&
+      runtimeType == other.runtimeType
+      && data == other.data
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    data,
+  ]);
+
+  ContentServiceV1CreatePostRequest copyWith({
+    ContentServiceV1Post? data,
+  }) {
+    return ContentServiceV1CreatePostRequest(
+      data: data ?? this.data,
+    );
+  }
+}
+
+/// 请求 - 更新帖子
+class ContentServiceV1UpdatePostRequest {
+  bool? allowMissing;
+  ContentServiceV1Post? data;
+  int? id;
+  String? updateMask;
+
+  ContentServiceV1UpdatePostRequest({
+    this.allowMissing,
+    this.data,
+    this.id,
+    this.updateMask,
+  });
+
+  factory ContentServiceV1UpdatePostRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1UpdatePostRequest(
+      allowMissing: json['allowMissing'] as bool?,
+      data: json['data'] != null ? ContentServiceV1Post.fromJson(json['data'] as Map<String, dynamic>) : null,
+      id: json['id'] as int?,
+      updateMask: json['updateMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (allowMissing != null) json['allowMissing'] = allowMissing;
+    if (data != null) json['data'] = data!.toJson();
+    if (id != null) json['id'] = id;
+    if (updateMask != null) json['updateMask'] = updateMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1UpdatePostRequest(allowMissing: $allowMissing, data: $data, id: $id, updateMask: $updateMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1UpdatePostRequest &&
+      runtimeType == other.runtimeType
+      && allowMissing == other.allowMissing
+      && data == other.data
+      && id == other.id
+      && updateMask == other.updateMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    allowMissing,
+    data,
+    id,
+    updateMask,
+  ]);
+
+  ContentServiceV1UpdatePostRequest copyWith({
+    bool? allowMissing,
+    ContentServiceV1Post? data,
+    int? id,
+    String? updateMask,
+  }) {
+    return ContentServiceV1UpdatePostRequest(
+      allowMissing: allowMissing ?? this.allowMissing,
+      data: data ?? this.data,
+      id: id ?? this.id,
+      updateMask: updateMask ?? this.updateMask,
+    );
+  }
+}
+
+/// 请求 - 删除帖子
+class ContentServiceV1DeletePostRequest {
+  int? id;
+
+  ContentServiceV1DeletePostRequest({
+    this.id,
+  });
+
+  factory ContentServiceV1DeletePostRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1DeletePostRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1DeletePostRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1DeletePostRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  ContentServiceV1DeletePostRequest copyWith({
+    int? id,
+  }) {
+    return ContentServiceV1DeletePostRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// 页面区块服务
+class SectionServiceClient {
+  final ClientTransport _transport;
+
+  SectionServiceClient(this._transport);
+
+  /// 获取区块列表
+  Future<ContentServiceV1ListSectionResponse> list(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/sections';
+    final queryParams = <String>[];
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
+    }
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
+    }
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
+    }
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
+    }
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
+    }
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
+    }
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'SectionService',
+      method: 'List',
+    ), headers: headers);
+    return ContentServiceV1ListSectionResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 获取区块数据
+  Future<ContentServiceV1Section> get(ContentServiceV1GetSectionRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/sections/${request.id}';
+    final queryParams = <String>[];
+    if (request.locale != null) {
+      queryParams.add('locale=${Uri.encodeComponent(request.locale!.toString())}');
+    }
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'SectionService',
+      method: 'Get',
+    ), headers: headers);
+    return ContentServiceV1Section.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 创建区块
+  Future<ContentServiceV1Section> create(ContentServiceV1CreateSectionRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/sections';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'SectionService',
+      method: 'Create',
+    ), headers: headers);
+    return ContentServiceV1Section.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 更新区块
+  Future<ContentServiceV1Section> update(ContentServiceV1UpdateSectionRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/sections/${request.id}';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
+      service: 'SectionService',
+      method: 'Update',
+    ), headers: headers);
+    return ContentServiceV1Section.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 删除区块
+  Future<Map<String, dynamic>> delete(ContentServiceV1DeleteSectionRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/sections/${request.id}';
+    final result = await _transport.unary(path, 'DELETE', null, TransportMeta(
+      service: 'SectionService',
+      method: 'Delete',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 获取翻译数据
+  Future<ContentServiceV1SectionTranslation> getTranslation(ContentServiceV1GetSectionRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/sections/${request.id}/translation';
+    final queryParams = <String>[];
+    if (request.locale != null) {
+      queryParams.add('locale=${Uri.encodeComponent(request.locale!.toString())}');
+    }
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'SectionService',
+      method: 'GetTranslation',
+    ), headers: headers);
+    return ContentServiceV1SectionTranslation.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 回应 - 区块列表
+class ContentServiceV1ListSectionResponse {
+  List<ContentServiceV1Section>? items;
+  int? total;
+
+  ContentServiceV1ListSectionResponse({
+    this.items,
+    this.total,
+  });
+
+  factory ContentServiceV1ListSectionResponse.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1ListSectionResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => ContentServiceV1Section.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1ListSectionResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1ListSectionResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  ContentServiceV1ListSectionResponse copyWith({
+    List<ContentServiceV1Section>? items,
+    int? total,
+  }) {
+    return ContentServiceV1ListSectionResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 页面区块（语言无关的结构，内容随语言变化在翻译表中）
+class ContentServiceV1Section {
+  List<String>? availableLanguages;
+  Map<String, String>? config;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  int? id;
+  String? name;
+  int? pageId;
+  int? sortOrder;
+  List<ContentServiceV1SectionTranslation>? translations;
+  ContentServiceV1SectionType? type;
+  String? updatedAt;
+  int? updatedBy;
+
+  ContentServiceV1Section({
+    this.availableLanguages,
+    this.config,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.id,
+    this.name,
+    this.pageId,
+    this.sortOrder,
+    this.translations,
+    this.type,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory ContentServiceV1Section.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1Section(
+      availableLanguages: (json['availableLanguages'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      config: (json['config'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)),
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      pageId: json['pageId'] as int?,
+      sortOrder: json['sortOrder'] as int?,
+      translations: (json['translations'] as List<dynamic>?)?.map((e) => ContentServiceV1SectionTranslation.fromJson(e as Map<String, dynamic>)).toList(),
+      type: json['type'] != null ? ContentServiceV1SectionType.fromString(json['type'] as String) : null,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (availableLanguages != null) json['availableLanguages'] = availableLanguages;
+    if (config != null) json['config'] = config;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (id != null) json['id'] = id;
+    if (name != null) json['name'] = name;
+    if (pageId != null) json['pageId'] = pageId;
+    if (sortOrder != null) json['sortOrder'] = sortOrder;
+    if (translations != null) json['translations'] = translations!.map((e) => e.toJson()).toList();
+    if (type != null) json['type'] = type!.value;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1Section(availableLanguages: $availableLanguages, config: $config, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, name: $name, pageId: $pageId, sortOrder: $sortOrder, translations: $translations, type: $type, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1Section &&
+      runtimeType == other.runtimeType
+      && availableLanguages == other.availableLanguages
+      && config == other.config
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && id == other.id
+      && name == other.name
+      && pageId == other.pageId
+      && sortOrder == other.sortOrder
+      && translations == other.translations
+      && type == other.type
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    availableLanguages,
+    config,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    id,
+    name,
+    pageId,
+    sortOrder,
+    translations,
+    type,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  ContentServiceV1Section copyWith({
+    List<String>? availableLanguages,
+    Map<String, String>? config,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    int? id,
+    String? name,
+    int? pageId,
+    int? sortOrder,
+    List<ContentServiceV1SectionTranslation>? translations,
+    ContentServiceV1SectionType? type,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return ContentServiceV1Section(
+      availableLanguages: availableLanguages ?? this.availableLanguages,
+      config: config ?? this.config,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      pageId: pageId ?? this.pageId,
+      sortOrder: sortOrder ?? this.sortOrder,
+      translations: translations ?? this.translations,
+      type: type ?? this.type,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 区块类型
+enum ContentServiceV1SectionType {
+  sectionTypeButton('SECTION_TYPE_BUTTON'),
+  sectionTypeCarousel('SECTION_TYPE_CAROUSEL'),
+  sectionTypeCode('SECTION_TYPE_CODE'),
+  sectionTypeCustom('SECTION_TYPE_CUSTOM'),
+  sectionTypeDivider('SECTION_TYPE_DIVIDER'),
+  sectionTypeForm('SECTION_TYPE_FORM'),
+  sectionTypeGallery('SECTION_TYPE_GALLERY'),
+  sectionTypeHtml('SECTION_TYPE_HTML'),
+  sectionTypeImage('SECTION_TYPE_IMAGE'),
+  sectionTypeMarkdown('SECTION_TYPE_MARKDOWN'),
+  sectionTypeRichText('SECTION_TYPE_RICH_TEXT'),
+  sectionTypeSpacer('SECTION_TYPE_SPACER'),
+  sectionTypeTitle('SECTION_TYPE_TITLE'),
+  sectionTypeUnspecified('SECTION_TYPE_UNSPECIFIED'),
+  sectionTypeVideo('SECTION_TYPE_VIDEO');
+
+  final String value;
+  const ContentServiceV1SectionType(this.value);
+
+  static ContentServiceV1SectionType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown ContentServiceV1SectionType value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 区块翻译（语言相关的内容）
+class ContentServiceV1SectionTranslation {
+  Map<String, String>? content;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  int? id;
+  String? languageCode;
+  int? sectionId;
+  String? updatedAt;
+  int? updatedBy;
+
+  ContentServiceV1SectionTranslation({
+    this.content,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.id,
+    this.languageCode,
+    this.sectionId,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory ContentServiceV1SectionTranslation.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1SectionTranslation(
+      content: (json['content'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)),
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      id: json['id'] as int?,
+      languageCode: json['languageCode'] as String?,
+      sectionId: json['sectionId'] as int?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (content != null) json['content'] = content;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (id != null) json['id'] = id;
+    if (languageCode != null) json['languageCode'] = languageCode;
+    if (sectionId != null) json['sectionId'] = sectionId;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1SectionTranslation(content: $content, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, languageCode: $languageCode, sectionId: $sectionId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1SectionTranslation &&
+      runtimeType == other.runtimeType
+      && content == other.content
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && id == other.id
+      && languageCode == other.languageCode
+      && sectionId == other.sectionId
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    content,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    id,
+    languageCode,
+    sectionId,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  ContentServiceV1SectionTranslation copyWith({
+    Map<String, String>? content,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    int? id,
+    String? languageCode,
+    int? sectionId,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return ContentServiceV1SectionTranslation(
+      content: content ?? this.content,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      id: id ?? this.id,
+      languageCode: languageCode ?? this.languageCode,
+      sectionId: sectionId ?? this.sectionId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 请求 - 区块数据
+class ContentServiceV1GetSectionRequest {
+  int? id;
+  String? locale;
+  String? viewMask;
+
+  ContentServiceV1GetSectionRequest({
+    this.id,
+    this.locale,
+    this.viewMask,
+  });
+
+  factory ContentServiceV1GetSectionRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1GetSectionRequest(
+      id: json['id'] as int?,
+      locale: json['locale'] as String?,
+      viewMask: json['viewMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (locale != null) json['locale'] = locale;
+    if (viewMask != null) json['viewMask'] = viewMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1GetSectionRequest(id: $id, locale: $locale, viewMask: $viewMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1GetSectionRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && locale == other.locale
+      && viewMask == other.viewMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    locale,
+    viewMask,
+  ]);
+
+  ContentServiceV1GetSectionRequest copyWith({
+    int? id,
+    String? locale,
+    String? viewMask,
+  }) {
+    return ContentServiceV1GetSectionRequest(
+      id: id ?? this.id,
+      locale: locale ?? this.locale,
+      viewMask: viewMask ?? this.viewMask,
+    );
+  }
+}
+
+/// 请求 - 创建区块
+class ContentServiceV1CreateSectionRequest {
+  ContentServiceV1Section? data;
+
+  ContentServiceV1CreateSectionRequest({
+    this.data,
+  });
+
+  factory ContentServiceV1CreateSectionRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1CreateSectionRequest(
+      data: json['data'] != null ? ContentServiceV1Section.fromJson(json['data'] as Map<String, dynamic>) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (data != null) json['data'] = data!.toJson();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1CreateSectionRequest(data: $data)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1CreateSectionRequest &&
+      runtimeType == other.runtimeType
+      && data == other.data
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    data,
+  ]);
+
+  ContentServiceV1CreateSectionRequest copyWith({
+    ContentServiceV1Section? data,
+  }) {
+    return ContentServiceV1CreateSectionRequest(
+      data: data ?? this.data,
+    );
+  }
+}
+
+/// 请求 - 更新区块
+class ContentServiceV1UpdateSectionRequest {
+  bool? allowMissing;
+  ContentServiceV1Section? data;
+  int? id;
+  String? updateMask;
+
+  ContentServiceV1UpdateSectionRequest({
+    this.allowMissing,
+    this.data,
+    this.id,
+    this.updateMask,
+  });
+
+  factory ContentServiceV1UpdateSectionRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1UpdateSectionRequest(
+      allowMissing: json['allowMissing'] as bool?,
+      data: json['data'] != null ? ContentServiceV1Section.fromJson(json['data'] as Map<String, dynamic>) : null,
+      id: json['id'] as int?,
+      updateMask: json['updateMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (allowMissing != null) json['allowMissing'] = allowMissing;
+    if (data != null) json['data'] = data!.toJson();
+    if (id != null) json['id'] = id;
+    if (updateMask != null) json['updateMask'] = updateMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1UpdateSectionRequest(allowMissing: $allowMissing, data: $data, id: $id, updateMask: $updateMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1UpdateSectionRequest &&
+      runtimeType == other.runtimeType
+      && allowMissing == other.allowMissing
+      && data == other.data
+      && id == other.id
+      && updateMask == other.updateMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    allowMissing,
+    data,
+    id,
+    updateMask,
+  ]);
+
+  ContentServiceV1UpdateSectionRequest copyWith({
+    bool? allowMissing,
+    ContentServiceV1Section? data,
+    int? id,
+    String? updateMask,
+  }) {
+    return ContentServiceV1UpdateSectionRequest(
+      allowMissing: allowMissing ?? this.allowMissing,
+      data: data ?? this.data,
+      id: id ?? this.id,
+      updateMask: updateMask ?? this.updateMask,
+    );
+  }
+}
+
+/// 请求 - 删除区块
+class ContentServiceV1DeleteSectionRequest {
+  int? id;
+
+  ContentServiceV1DeleteSectionRequest({
+    this.id,
+  });
+
+  factory ContentServiceV1DeleteSectionRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1DeleteSectionRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1DeleteSectionRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1DeleteSectionRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  ContentServiceV1DeleteSectionRequest copyWith({
+    int? id,
+  }) {
+    return ContentServiceV1DeleteSectionRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// 标签服务
+class TagServiceClient {
+  final ClientTransport _transport;
+
+  TagServiceClient(this._transport);
+
+  /// 获取标签列表
+  Future<ContentServiceV1ListTagResponse> list(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/tags';
+    final queryParams = <String>[];
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
+    }
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
+    }
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
+    }
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
+    }
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
+    }
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
+    }
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'TagService',
+      method: 'List',
+    ), headers: headers);
+    return ContentServiceV1ListTagResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 获取标签数据
+  Future<ContentServiceV1Tag> get(ContentServiceV1GetTagRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/tags/${request.id}';
+    final queryParams = <String>[];
+    if (request.code != null) {
+      queryParams.add('code=${Uri.encodeComponent(request.code!.toString())}');
+    }
+    if (request.locale != null) {
+      queryParams.add('locale=${Uri.encodeComponent(request.locale!.toString())}');
+    }
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'TagService',
+      method: 'Get',
+    ), headers: headers);
+    return ContentServiceV1Tag.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 创建标签
+  Future<ContentServiceV1Tag> create(ContentServiceV1CreateTagRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/tags';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'TagService',
+      method: 'Create',
+    ), headers: headers);
+    return ContentServiceV1Tag.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 更新标签
+  Future<ContentServiceV1Tag> update(ContentServiceV1UpdateTagRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/tags/${request.id}';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
+      service: 'TagService',
+      method: 'Update',
+    ), headers: headers);
+    return ContentServiceV1Tag.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 删除标签
+  Future<Map<String, dynamic>> delete(ContentServiceV1DeleteTagRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/tags/${request.id}';
+    final result = await _transport.unary(path, 'DELETE', null, TransportMeta(
+      service: 'TagService',
+      method: 'Delete',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 获取翻译数据
+  Future<ContentServiceV1TagTranslation> getTranslation(ContentServiceV1GetTagRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/tags/${request.id}/translation';
+    final queryParams = <String>[];
+    if (request.code != null) {
+      queryParams.add('code=${Uri.encodeComponent(request.code!.toString())}');
+    }
+    if (request.locale != null) {
+      queryParams.add('locale=${Uri.encodeComponent(request.locale!.toString())}');
+    }
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'TagService',
+      method: 'GetTranslation',
+    ), headers: headers);
+    return ContentServiceV1TagTranslation.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 回应 - 标签列表
+class ContentServiceV1ListTagResponse {
+  List<ContentServiceV1Tag>? items;
+  int? total;
+
+  ContentServiceV1ListTagResponse({
+    this.items,
+    this.total,
+  });
+
+  factory ContentServiceV1ListTagResponse.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1ListTagResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => ContentServiceV1Tag.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1ListTagResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1ListTagResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  ContentServiceV1ListTagResponse copyWith({
+    List<ContentServiceV1Tag>? items,
+    int? total,
+  }) {
+    return ContentServiceV1ListTagResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 标签
+class ContentServiceV1Tag {
+  List<String>? availableLanguages;
+  String? code;
+  String? color;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? group;
+  String? icon;
+  int? id;
+  bool? isFeatured;
+  int? postCount;
+  int? sortOrder;
+  ContentServiceV1Tag$TagStatus? status;
+  List<ContentServiceV1TagTranslation>? translations;
+  String? updatedAt;
+  int? updatedBy;
+
+  ContentServiceV1Tag({
+    this.availableLanguages,
+    this.code,
+    this.color,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.group,
+    this.icon,
+    this.id,
+    this.isFeatured,
+    this.postCount,
+    this.sortOrder,
+    this.status,
+    this.translations,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory ContentServiceV1Tag.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1Tag(
+      availableLanguages: (json['availableLanguages'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      code: json['code'] as String?,
+      color: json['color'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      group: json['group'] as String?,
+      icon: json['icon'] as String?,
+      id: json['id'] as int?,
+      isFeatured: json['isFeatured'] as bool?,
+      postCount: json['postCount'] as int?,
+      sortOrder: json['sortOrder'] as int?,
+      status: json['status'] != null ? ContentServiceV1Tag$TagStatus.fromString(json['status'] as String) : null,
+      translations: (json['translations'] as List<dynamic>?)?.map((e) => ContentServiceV1TagTranslation.fromJson(e as Map<String, dynamic>)).toList(),
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (availableLanguages != null) json['availableLanguages'] = availableLanguages;
+    if (code != null) json['code'] = code;
+    if (color != null) json['color'] = color;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (group != null) json['group'] = group;
+    if (icon != null) json['icon'] = icon;
+    if (id != null) json['id'] = id;
+    if (isFeatured != null) json['isFeatured'] = isFeatured;
+    if (postCount != null) json['postCount'] = postCount;
+    if (sortOrder != null) json['sortOrder'] = sortOrder;
+    if (status != null) json['status'] = status!.value;
+    if (translations != null) json['translations'] = translations!.map((e) => e.toJson()).toList();
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1Tag(availableLanguages: $availableLanguages, code: $code, color: $color, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, group: $group, icon: $icon, id: $id, isFeatured: $isFeatured, postCount: $postCount, sortOrder: $sortOrder, status: $status, translations: $translations, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1Tag &&
+      runtimeType == other.runtimeType
+      && availableLanguages == other.availableLanguages
+      && code == other.code
+      && color == other.color
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && group == other.group
+      && icon == other.icon
+      && id == other.id
+      && isFeatured == other.isFeatured
+      && postCount == other.postCount
+      && sortOrder == other.sortOrder
+      && status == other.status
+      && translations == other.translations
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    availableLanguages,
+    code,
+    color,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    group,
+    icon,
+    id,
+    isFeatured,
+    postCount,
+    sortOrder,
+    status,
+    translations,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  ContentServiceV1Tag copyWith({
+    List<String>? availableLanguages,
+    String? code,
+    String? color,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? group,
+    String? icon,
+    int? id,
+    bool? isFeatured,
+    int? postCount,
+    int? sortOrder,
+    ContentServiceV1Tag$TagStatus? status,
+    List<ContentServiceV1TagTranslation>? translations,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return ContentServiceV1Tag(
+      availableLanguages: availableLanguages ?? this.availableLanguages,
+      code: code ?? this.code,
+      color: color ?? this.color,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      group: group ?? this.group,
+      icon: icon ?? this.icon,
+      id: id ?? this.id,
+      isFeatured: isFeatured ?? this.isFeatured,
+      postCount: postCount ?? this.postCount,
+      sortOrder: sortOrder ?? this.sortOrder,
+      status: status ?? this.status,
+      translations: translations ?? this.translations,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 标签状态
+enum ContentServiceV1Tag$TagStatus {
+  tagStatusActive('TAG_STATUS_ACTIVE'),
+  tagStatusArchived('TAG_STATUS_ARCHIVED'),
+  tagStatusHidden('TAG_STATUS_HIDDEN'),
+  tagStatusUnspecified('TAG_STATUS_UNSPECIFIED');
+
+  final String value;
+  const ContentServiceV1Tag$TagStatus(this.value);
+
+  static ContentServiceV1Tag$TagStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown ContentServiceV1Tag\$TagStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 标签翻译
+class ContentServiceV1TagTranslation {
+  String? coverImage;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? description;
+  String? fullPath;
+  int? id;
+  String? languageCode;
+  String? name;
+  ContentServiceV1SeoMeta? seo;
+  String? slug;
+  int? tagId;
+  String? updatedAt;
+  int? updatedBy;
+
+  ContentServiceV1TagTranslation({
+    this.coverImage,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.description,
+    this.fullPath,
+    this.id,
+    this.languageCode,
+    this.name,
+    this.seo,
+    this.slug,
+    this.tagId,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory ContentServiceV1TagTranslation.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1TagTranslation(
+      coverImage: json['coverImage'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      description: json['description'] as String?,
+      fullPath: json['fullPath'] as String?,
+      id: json['id'] as int?,
+      languageCode: json['languageCode'] as String?,
+      name: json['name'] as String?,
+      seo: json['seo'] != null ? ContentServiceV1SeoMeta.fromJson(json['seo'] as Map<String, dynamic>) : null,
+      slug: json['slug'] as String?,
+      tagId: json['tagId'] as int?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (coverImage != null) json['coverImage'] = coverImage;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (description != null) json['description'] = description;
+    if (fullPath != null) json['fullPath'] = fullPath;
+    if (id != null) json['id'] = id;
+    if (languageCode != null) json['languageCode'] = languageCode;
+    if (name != null) json['name'] = name;
+    if (seo != null) json['seo'] = seo!.toJson();
+    if (slug != null) json['slug'] = slug;
+    if (tagId != null) json['tagId'] = tagId;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1TagTranslation(coverImage: $coverImage, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, description: $description, fullPath: $fullPath, id: $id, languageCode: $languageCode, name: $name, seo: $seo, slug: $slug, tagId: $tagId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1TagTranslation &&
+      runtimeType == other.runtimeType
+      && coverImage == other.coverImage
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && description == other.description
+      && fullPath == other.fullPath
+      && id == other.id
+      && languageCode == other.languageCode
+      && name == other.name
+      && seo == other.seo
+      && slug == other.slug
+      && tagId == other.tagId
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    coverImage,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    description,
+    fullPath,
+    id,
+    languageCode,
+    name,
+    seo,
+    slug,
+    tagId,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  ContentServiceV1TagTranslation copyWith({
+    String? coverImage,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? description,
+    String? fullPath,
+    int? id,
+    String? languageCode,
+    String? name,
+    ContentServiceV1SeoMeta? seo,
+    String? slug,
+    int? tagId,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return ContentServiceV1TagTranslation(
+      coverImage: coverImage ?? this.coverImage,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      description: description ?? this.description,
+      fullPath: fullPath ?? this.fullPath,
+      id: id ?? this.id,
+      languageCode: languageCode ?? this.languageCode,
+      name: name ?? this.name,
+      seo: seo ?? this.seo,
+      slug: slug ?? this.slug,
+      tagId: tagId ?? this.tagId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 请求 - 标签数据
+class ContentServiceV1GetTagRequest {
+  String? code;
+  int? id;
+  String? locale;
+  String? viewMask;
+
+  ContentServiceV1GetTagRequest({
+    this.code,
+    this.id,
+    this.locale,
+    this.viewMask,
+  });
+
+  factory ContentServiceV1GetTagRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1GetTagRequest(
+      code: json['code'] as String?,
+      id: json['id'] as int?,
+      locale: json['locale'] as String?,
+      viewMask: json['viewMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (code != null) json['code'] = code;
+    if (id != null) json['id'] = id;
+    if (locale != null) json['locale'] = locale;
+    if (viewMask != null) json['viewMask'] = viewMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1GetTagRequest(code: $code, id: $id, locale: $locale, viewMask: $viewMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1GetTagRequest &&
+      runtimeType == other.runtimeType
+      && code == other.code
+      && id == other.id
+      && locale == other.locale
+      && viewMask == other.viewMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    code,
+    id,
+    locale,
+    viewMask,
+  ]);
+
+  ContentServiceV1GetTagRequest copyWith({
+    String? code,
+    int? id,
+    String? locale,
+    String? viewMask,
+  }) {
+    return ContentServiceV1GetTagRequest(
+      code: code ?? this.code,
+      id: id ?? this.id,
+      locale: locale ?? this.locale,
+      viewMask: viewMask ?? this.viewMask,
+    );
+  }
+}
+
+/// 请求 - 创建标签
+class ContentServiceV1CreateTagRequest {
+  ContentServiceV1Tag? data;
+
+  ContentServiceV1CreateTagRequest({
+    this.data,
+  });
+
+  factory ContentServiceV1CreateTagRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1CreateTagRequest(
+      data: json['data'] != null ? ContentServiceV1Tag.fromJson(json['data'] as Map<String, dynamic>) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (data != null) json['data'] = data!.toJson();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1CreateTagRequest(data: $data)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1CreateTagRequest &&
+      runtimeType == other.runtimeType
+      && data == other.data
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    data,
+  ]);
+
+  ContentServiceV1CreateTagRequest copyWith({
+    ContentServiceV1Tag? data,
+  }) {
+    return ContentServiceV1CreateTagRequest(
+      data: data ?? this.data,
+    );
+  }
+}
+
+/// 请求 - 更新标签
+class ContentServiceV1UpdateTagRequest {
+  bool? allowMissing;
+  ContentServiceV1Tag? data;
+  int? id;
+  String? updateMask;
+
+  ContentServiceV1UpdateTagRequest({
+    this.allowMissing,
+    this.data,
+    this.id,
+    this.updateMask,
+  });
+
+  factory ContentServiceV1UpdateTagRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1UpdateTagRequest(
+      allowMissing: json['allowMissing'] as bool?,
+      data: json['data'] != null ? ContentServiceV1Tag.fromJson(json['data'] as Map<String, dynamic>) : null,
+      id: json['id'] as int?,
+      updateMask: json['updateMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (allowMissing != null) json['allowMissing'] = allowMissing;
+    if (data != null) json['data'] = data!.toJson();
+    if (id != null) json['id'] = id;
+    if (updateMask != null) json['updateMask'] = updateMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1UpdateTagRequest(allowMissing: $allowMissing, data: $data, id: $id, updateMask: $updateMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1UpdateTagRequest &&
+      runtimeType == other.runtimeType
+      && allowMissing == other.allowMissing
+      && data == other.data
+      && id == other.id
+      && updateMask == other.updateMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    allowMissing,
+    data,
+    id,
+    updateMask,
+  ]);
+
+  ContentServiceV1UpdateTagRequest copyWith({
+    bool? allowMissing,
+    ContentServiceV1Tag? data,
+    int? id,
+    String? updateMask,
+  }) {
+    return ContentServiceV1UpdateTagRequest(
+      allowMissing: allowMissing ?? this.allowMissing,
+      data: data ?? this.data,
+      id: id ?? this.id,
+      updateMask: updateMask ?? this.updateMask,
+    );
+  }
+}
+
+/// 请求 - 删除标签
+class ContentServiceV1DeleteTagRequest {
+  int? id;
+
+  ContentServiceV1DeleteTagRequest({
+    this.id,
+  });
+
+  factory ContentServiceV1DeleteTagRequest.fromJson(Map<String, dynamic> json) {
+    return ContentServiceV1DeleteTagRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'ContentServiceV1DeleteTagRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is ContentServiceV1DeleteTagRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  ContentServiceV1DeleteTagRequest copyWith({
+    int? id,
+  }) {
+    return ContentServiceV1DeleteTagRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// 用户个人资料服务
+class UserProfileServiceClient {
+  final ClientTransport _transport;
+
+  UserProfileServiceClient(this._transport);
+
+  /// 获取用户资料
+  Future<IdentityServiceV1User> getUser(Map<String, dynamic> _request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me';
+    final result = await _transport.unary(path, 'GET', null, TransportMeta(
+      service: 'UserProfileService',
+      method: 'GetUser',
+    ), headers: headers);
+    return IdentityServiceV1User.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 更新用户资料
+  Future<Map<String, dynamic>> updateUser(IdentityServiceV1UpdateUserRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
+      service: 'UserProfileService',
+      method: 'UpdateUser',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 修改用户密码
+  Future<Map<String, dynamic>> changePassword(IdentityServiceV1ChangePasswordRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me/password';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'UserProfileService',
+      method: 'ChangePassword',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 上传头像
+  Future<IdentityServiceV1UploadAvatarResponse> uploadAvatar(IdentityServiceV1UploadAvatarRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me/avatar';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'UserProfileService',
+      method: 'UploadAvatar',
+    ), headers: headers);
+    return IdentityServiceV1UploadAvatarResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 删除头像
+  Future<Map<String, dynamic>> deleteAvatar(Map<String, dynamic> _request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me/avatar';
+    final result = await _transport.unary(path, 'DELETE', null, TransportMeta(
+      service: 'UserProfileService',
+      method: 'DeleteAvatar',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 绑定手机号码/邮箱
+  Future<Map<String, dynamic>> bindContact(IdentityServiceV1BindContactRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me/contact';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'UserProfileService',
+      method: 'BindContact',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 验证手机号码/邮箱
+  Future<Map<String, dynamic>> verifyContact(IdentityServiceV1VerifyContactRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me/contact/verify';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'UserProfileService',
+      method: 'VerifyContact',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+}
+
+/// 用户
+class IdentityServiceV1User {
+  String? address;
+  String? avatar;
+  int? commentCount;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? description;
+  String? email;
+  int? followers;
+  int? following;
+  IdentityServiceV1User$Gender? gender;
+  int? id;
+  String? lastLoginAt;
+  String? lastLoginIp;
+  int? likeCount;
+  String? lockedUntil;
+  String? mobile;
+  String? nickname;
+  int? orgUnitId;
+  List<int>? orgUnitIds;
+  String? orgUnitName;
+  List<String>? orgUnitNames;
+  int? positionId;
+  List<int>? positionIds;
+  String? positionName;
+  List<String>? positionNames;
+  int? postCount;
+  String? realname;
+  String? region;
+  String? remark;
+  int? roleId;
+  List<int>? roleIds;
+  List<String>? roleNames;
+  List<String>? roles;
+  IdentityServiceV1User$Status? status;
+  String? telephone;
+  int? tenantId;
+  String? tenantName;
+  String? updatedAt;
+  int? updatedBy;
+  String? username;
+
+  IdentityServiceV1User({
+    this.address,
+    this.avatar,
+    this.commentCount,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.description,
+    this.email,
+    this.followers,
+    this.following,
+    this.gender,
+    this.id,
+    this.lastLoginAt,
+    this.lastLoginIp,
+    this.likeCount,
+    this.lockedUntil,
+    this.mobile,
+    this.nickname,
+    this.orgUnitId,
+    this.orgUnitIds,
+    this.orgUnitName,
+    this.orgUnitNames,
+    this.positionId,
+    this.positionIds,
+    this.positionName,
+    this.positionNames,
+    this.postCount,
+    this.realname,
+    this.region,
+    this.remark,
+    this.roleId,
+    this.roleIds,
+    this.roleNames,
+    this.roles,
+    this.status,
+    this.telephone,
+    this.tenantId,
+    this.tenantName,
+    this.updatedAt,
+    this.updatedBy,
+    this.username,
+  });
+
+  factory IdentityServiceV1User.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1User(
+      address: json['address'] as String?,
+      avatar: json['avatar'] as String?,
+      commentCount: json['commentCount'] != null ? int.parse(json['commentCount'].toString()) : null,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      description: json['description'] as String?,
+      email: json['email'] as String?,
+      followers: json['followers'] != null ? int.parse(json['followers'].toString()) : null,
+      following: json['following'] != null ? int.parse(json['following'].toString()) : null,
+      gender: json['gender'] != null ? IdentityServiceV1User$Gender.fromString(json['gender'] as String) : null,
+      id: json['id'] as int?,
+      lastLoginAt: json['lastLoginAt'] as String?,
+      lastLoginIp: json['lastLoginIp'] as String?,
+      likeCount: json['likeCount'] != null ? int.parse(json['likeCount'].toString()) : null,
+      lockedUntil: json['lockedUntil'] as String?,
+      mobile: json['mobile'] as String?,
+      nickname: json['nickname'] as String?,
+      orgUnitId: json['orgUnitId'] as int?,
+      orgUnitIds: (json['orgUnitIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      orgUnitName: json['orgUnitName'] as String?,
+      orgUnitNames: (json['orgUnitNames'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      positionId: json['positionId'] as int?,
+      positionIds: (json['positionIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      positionName: json['positionName'] as String?,
+      positionNames: (json['positionNames'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      postCount: json['postCount'] != null ? int.parse(json['postCount'].toString()) : null,
+      realname: json['realname'] as String?,
+      region: json['region'] as String?,
+      remark: json['remark'] as String?,
+      roleId: json['roleId'] as int?,
+      roleIds: (json['roleIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      roleNames: (json['roleNames'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      roles: (json['roles'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      status: json['status'] != null ? IdentityServiceV1User$Status.fromString(json['status'] as String) : null,
+      telephone: json['telephone'] as String?,
+      tenantId: json['tenantId'] as int?,
+      tenantName: json['tenantName'] as String?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+      username: json['username'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (address != null) json['address'] = address;
+    if (avatar != null) json['avatar'] = avatar;
+    if (commentCount != null) json['commentCount'] = commentCount.toString();
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (description != null) json['description'] = description;
+    if (email != null) json['email'] = email;
+    if (followers != null) json['followers'] = followers.toString();
+    if (following != null) json['following'] = following.toString();
+    if (gender != null) json['gender'] = gender!.value;
+    if (id != null) json['id'] = id;
+    if (lastLoginAt != null) json['lastLoginAt'] = lastLoginAt;
+    if (lastLoginIp != null) json['lastLoginIp'] = lastLoginIp;
+    if (likeCount != null) json['likeCount'] = likeCount.toString();
+    if (lockedUntil != null) json['lockedUntil'] = lockedUntil;
+    if (mobile != null) json['mobile'] = mobile;
+    if (nickname != null) json['nickname'] = nickname;
+    if (orgUnitId != null) json['orgUnitId'] = orgUnitId;
+    if (orgUnitIds != null) json['orgUnitIds'] = orgUnitIds;
+    if (orgUnitName != null) json['orgUnitName'] = orgUnitName;
+    if (orgUnitNames != null) json['orgUnitNames'] = orgUnitNames;
+    if (positionId != null) json['positionId'] = positionId;
+    if (positionIds != null) json['positionIds'] = positionIds;
+    if (positionName != null) json['positionName'] = positionName;
+    if (positionNames != null) json['positionNames'] = positionNames;
+    if (postCount != null) json['postCount'] = postCount.toString();
+    if (realname != null) json['realname'] = realname;
+    if (region != null) json['region'] = region;
+    if (remark != null) json['remark'] = remark;
+    if (roleId != null) json['roleId'] = roleId;
+    if (roleIds != null) json['roleIds'] = roleIds;
+    if (roleNames != null) json['roleNames'] = roleNames;
+    if (roles != null) json['roles'] = roles;
+    if (status != null) json['status'] = status!.value;
+    if (telephone != null) json['telephone'] = telephone;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantName != null) json['tenantName'] = tenantName;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (username != null) json['username'] = username;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1User(address: $address, avatar: $avatar, commentCount: $commentCount, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, description: $description, email: $email, followers: $followers, following: $following, gender: $gender, id: $id, lastLoginAt: $lastLoginAt, lastLoginIp: $lastLoginIp, likeCount: $likeCount, lockedUntil: $lockedUntil, mobile: $mobile, nickname: $nickname, orgUnitId: $orgUnitId, orgUnitIds: $orgUnitIds, orgUnitName: $orgUnitName, orgUnitNames: $orgUnitNames, positionId: $positionId, positionIds: $positionIds, positionName: $positionName, positionNames: $positionNames, postCount: $postCount, realname: $realname, region: $region, remark: $remark, roleId: $roleId, roleIds: $roleIds, roleNames: $roleNames, roles: $roles, status: $status, telephone: $telephone, tenantId: $tenantId, tenantName: $tenantName, updatedAt: $updatedAt, updatedBy: $updatedBy, username: $username)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1User &&
+      runtimeType == other.runtimeType
+      && address == other.address
+      && avatar == other.avatar
+      && commentCount == other.commentCount
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && description == other.description
+      && email == other.email
+      && followers == other.followers
+      && following == other.following
+      && gender == other.gender
+      && id == other.id
+      && lastLoginAt == other.lastLoginAt
+      && lastLoginIp == other.lastLoginIp
+      && likeCount == other.likeCount
+      && lockedUntil == other.lockedUntil
+      && mobile == other.mobile
+      && nickname == other.nickname
+      && orgUnitId == other.orgUnitId
+      && orgUnitIds == other.orgUnitIds
+      && orgUnitName == other.orgUnitName
+      && orgUnitNames == other.orgUnitNames
+      && positionId == other.positionId
+      && positionIds == other.positionIds
+      && positionName == other.positionName
+      && positionNames == other.positionNames
+      && postCount == other.postCount
+      && realname == other.realname
+      && region == other.region
+      && remark == other.remark
+      && roleId == other.roleId
+      && roleIds == other.roleIds
+      && roleNames == other.roleNames
+      && roles == other.roles
+      && status == other.status
+      && telephone == other.telephone
+      && tenantId == other.tenantId
+      && tenantName == other.tenantName
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+      && username == other.username
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    address,
+    avatar,
+    commentCount,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    description,
+    email,
+    followers,
+    following,
+    gender,
+    id,
+    lastLoginAt,
+    lastLoginIp,
+    likeCount,
+    lockedUntil,
+    mobile,
+    nickname,
+    orgUnitId,
+    orgUnitIds,
+    orgUnitName,
+    orgUnitNames,
+    positionId,
+    positionIds,
+    positionName,
+    positionNames,
+    postCount,
+    realname,
+    region,
+    remark,
+    roleId,
+    roleIds,
+    roleNames,
+    roles,
+    status,
+    telephone,
+    tenantId,
+    tenantName,
+    updatedAt,
+    updatedBy,
+    username,
+  ]);
+
+  IdentityServiceV1User copyWith({
+    String? address,
+    String? avatar,
+    int? commentCount,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? description,
+    String? email,
+    int? followers,
+    int? following,
+    IdentityServiceV1User$Gender? gender,
+    int? id,
+    String? lastLoginAt,
+    String? lastLoginIp,
+    int? likeCount,
+    String? lockedUntil,
+    String? mobile,
+    String? nickname,
+    int? orgUnitId,
+    List<int>? orgUnitIds,
+    String? orgUnitName,
+    List<String>? orgUnitNames,
+    int? positionId,
+    List<int>? positionIds,
+    String? positionName,
+    List<String>? positionNames,
+    int? postCount,
+    String? realname,
+    String? region,
+    String? remark,
+    int? roleId,
+    List<int>? roleIds,
+    List<String>? roleNames,
+    List<String>? roles,
+    IdentityServiceV1User$Status? status,
+    String? telephone,
+    int? tenantId,
+    String? tenantName,
+    String? updatedAt,
+    int? updatedBy,
+    String? username,
+  }) {
+    return IdentityServiceV1User(
+      address: address ?? this.address,
+      avatar: avatar ?? this.avatar,
+      commentCount: commentCount ?? this.commentCount,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      description: description ?? this.description,
+      email: email ?? this.email,
+      followers: followers ?? this.followers,
+      following: following ?? this.following,
+      gender: gender ?? this.gender,
+      id: id ?? this.id,
+      lastLoginAt: lastLoginAt ?? this.lastLoginAt,
+      lastLoginIp: lastLoginIp ?? this.lastLoginIp,
+      likeCount: likeCount ?? this.likeCount,
+      lockedUntil: lockedUntil ?? this.lockedUntil,
+      mobile: mobile ?? this.mobile,
+      nickname: nickname ?? this.nickname,
+      orgUnitId: orgUnitId ?? this.orgUnitId,
+      orgUnitIds: orgUnitIds ?? this.orgUnitIds,
+      orgUnitName: orgUnitName ?? this.orgUnitName,
+      orgUnitNames: orgUnitNames ?? this.orgUnitNames,
+      positionId: positionId ?? this.positionId,
+      positionIds: positionIds ?? this.positionIds,
+      positionName: positionName ?? this.positionName,
+      positionNames: positionNames ?? this.positionNames,
+      postCount: postCount ?? this.postCount,
+      realname: realname ?? this.realname,
+      region: region ?? this.region,
+      remark: remark ?? this.remark,
+      roleId: roleId ?? this.roleId,
+      roleIds: roleIds ?? this.roleIds,
+      roleNames: roleNames ?? this.roleNames,
+      roles: roles ?? this.roles,
+      status: status ?? this.status,
+      telephone: telephone ?? this.telephone,
+      tenantId: tenantId ?? this.tenantId,
+      tenantName: tenantName ?? this.tenantName,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+      username: username ?? this.username,
+    );
+  }
+}
+
+/// 用户性别
+enum IdentityServiceV1User$Gender {
+  female('FEMALE'),
+  male('MALE'),
+  secret('SECRET');
+
+  final String value;
+  const IdentityServiceV1User$Gender(this.value);
+
+  static IdentityServiceV1User$Gender fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown IdentityServiceV1User\$Gender value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 用户状态
+enum IdentityServiceV1User$Status {
+  closed('CLOSED'),
+  disabled('DISABLED'),
+  expired('EXPIRED'),
+  locked('LOCKED'),
+  normal('NORMAL'),
+  pending('PENDING');
+
+  final String value;
+  const IdentityServiceV1User$Status(this.value);
+
+  static IdentityServiceV1User$Status fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown IdentityServiceV1User\$Status value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 更新用户 - 请求
+class IdentityServiceV1UpdateUserRequest {
+  bool? allowMissing;
+  ///
+  /// Behaviors: REQUIRED
+  IdentityServiceV1User? data;
+  int? id;
+  String? password;
+  String? updateMask;
+
+  IdentityServiceV1UpdateUserRequest({
+    this.allowMissing,
+    this.data,
+    this.id,
+    this.password,
+    this.updateMask,
+  });
+
+  factory IdentityServiceV1UpdateUserRequest.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1UpdateUserRequest(
+      allowMissing: json['allowMissing'] as bool?,
+      data: json['data'] != null ? IdentityServiceV1User.fromJson(json['data'] as Map<String, dynamic>) : null,
+      id: json['id'] as int?,
+      password: json['password'] as String?,
+      updateMask: json['updateMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (allowMissing != null) json['allowMissing'] = allowMissing;
+    if (data != null) json['data'] = data!.toJson();
+    if (id != null) json['id'] = id;
+    if (password != null) json['password'] = password;
+    if (updateMask != null) json['updateMask'] = updateMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1UpdateUserRequest(allowMissing: $allowMissing, data: $data, id: $id, password: $password, updateMask: $updateMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1UpdateUserRequest &&
+      runtimeType == other.runtimeType
+      && allowMissing == other.allowMissing
+      && data == other.data
+      && id == other.id
+      && password == other.password
+      && updateMask == other.updateMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    allowMissing,
+    data,
+    id,
+    password,
+    updateMask,
+  ]);
+
+  IdentityServiceV1UpdateUserRequest copyWith({
+    bool? allowMissing,
+    IdentityServiceV1User? data,
+    int? id,
+    String? password,
+    String? updateMask,
+  }) {
+    return IdentityServiceV1UpdateUserRequest(
+      allowMissing: allowMissing ?? this.allowMissing,
+      data: data ?? this.data,
+      id: id ?? this.id,
+      password: password ?? this.password,
+      updateMask: updateMask ?? this.updateMask,
+    );
+  }
+}
+
+/// 修改用户密码（需要验证旧密码） - 请求
+class IdentityServiceV1ChangePasswordRequest {
+  String? newPassword;
+  String? oldPassword;
+
+  IdentityServiceV1ChangePasswordRequest({
+    this.newPassword,
+    this.oldPassword,
+  });
+
+  factory IdentityServiceV1ChangePasswordRequest.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1ChangePasswordRequest(
+      newPassword: json['newPassword'] as String?,
+      oldPassword: json['oldPassword'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (newPassword != null) json['newPassword'] = newPassword;
+    if (oldPassword != null) json['oldPassword'] = oldPassword;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1ChangePasswordRequest(newPassword: $newPassword, oldPassword: $oldPassword)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1ChangePasswordRequest &&
+      runtimeType == other.runtimeType
+      && newPassword == other.newPassword
+      && oldPassword == other.oldPassword
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    newPassword,
+    oldPassword,
+  ]);
+
+  IdentityServiceV1ChangePasswordRequest copyWith({
+    String? newPassword,
+    String? oldPassword,
+  }) {
+    return IdentityServiceV1ChangePasswordRequest(
+      newPassword: newPassword ?? this.newPassword,
+      oldPassword: oldPassword ?? this.oldPassword,
+    );
+  }
+}
+
+class IdentityServiceV1UploadAvatarRequest {
+  String? imageBase64;
+  String? imageUrl;
+
+  IdentityServiceV1UploadAvatarRequest({
+    this.imageBase64,
+    this.imageUrl,
+  });
+
+  factory IdentityServiceV1UploadAvatarRequest.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1UploadAvatarRequest(
+      imageBase64: json['imageBase64'] as String?,
+      imageUrl: json['imageUrl'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (imageBase64 != null) json['imageBase64'] = imageBase64;
+    if (imageUrl != null) json['imageUrl'] = imageUrl;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1UploadAvatarRequest(imageBase64: $imageBase64, imageUrl: $imageUrl)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1UploadAvatarRequest &&
+      runtimeType == other.runtimeType
+      && imageBase64 == other.imageBase64
+      && imageUrl == other.imageUrl
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    imageBase64,
+    imageUrl,
+  ]);
+
+  IdentityServiceV1UploadAvatarRequest copyWith({
+    String? imageBase64,
+    String? imageUrl,
+  }) {
+    return IdentityServiceV1UploadAvatarRequest(
+      imageBase64: imageBase64 ?? this.imageBase64,
+      imageUrl: imageUrl ?? this.imageUrl,
+    );
+  }
+}
+
+class IdentityServiceV1UploadAvatarResponse {
+  String? url;
+
+  IdentityServiceV1UploadAvatarResponse({
+    this.url,
+  });
+
+  factory IdentityServiceV1UploadAvatarResponse.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1UploadAvatarResponse(
+      url: json['url'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (url != null) json['url'] = url;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1UploadAvatarResponse(url: $url)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1UploadAvatarResponse &&
+      runtimeType == other.runtimeType
+      && url == other.url
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    url,
+  ]);
+
+  IdentityServiceV1UploadAvatarResponse copyWith({
+    String? url,
+  }) {
+    return IdentityServiceV1UploadAvatarResponse(
+      url: url ?? this.url,
+    );
+  }
+}
+
+class IdentityServiceV1BindContactRequest {
+  IdentityServiceV1BindEmailRequest? email;
+  IdentityServiceV1BindPhoneRequest? phone;
+
+  IdentityServiceV1BindContactRequest({
+    this.email,
+    this.phone,
+  });
+
+  factory IdentityServiceV1BindContactRequest.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1BindContactRequest(
+      email: json['email'] != null ? IdentityServiceV1BindEmailRequest.fromJson(json['email'] as Map<String, dynamic>) : null,
+      phone: json['phone'] != null ? IdentityServiceV1BindPhoneRequest.fromJson(json['phone'] as Map<String, dynamic>) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (email != null) json['email'] = email!.toJson();
+    if (phone != null) json['phone'] = phone!.toJson();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1BindContactRequest(email: $email, phone: $phone)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1BindContactRequest &&
+      runtimeType == other.runtimeType
+      && email == other.email
+      && phone == other.phone
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    email,
+    phone,
+  ]);
+
+  IdentityServiceV1BindContactRequest copyWith({
+    IdentityServiceV1BindEmailRequest? email,
+    IdentityServiceV1BindPhoneRequest? phone,
+  }) {
+    return IdentityServiceV1BindContactRequest(
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+    );
+  }
+}
+
+class IdentityServiceV1BindPhoneRequest {
+  String? code;
+  String? phone;
+
+  IdentityServiceV1BindPhoneRequest({
+    this.code,
+    this.phone,
+  });
+
+  factory IdentityServiceV1BindPhoneRequest.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1BindPhoneRequest(
+      code: json['code'] as String?,
+      phone: json['phone'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (code != null) json['code'] = code;
+    if (phone != null) json['phone'] = phone;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1BindPhoneRequest(code: $code, phone: $phone)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1BindPhoneRequest &&
+      runtimeType == other.runtimeType
+      && code == other.code
+      && phone == other.phone
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    code,
+    phone,
+  ]);
+
+  IdentityServiceV1BindPhoneRequest copyWith({
+    String? code,
+    String? phone,
+  }) {
+    return IdentityServiceV1BindPhoneRequest(
+      code: code ?? this.code,
+      phone: phone ?? this.phone,
+    );
+  }
+}
+
+class IdentityServiceV1BindEmailRequest {
+  String? email;
+  String? verificationCode;
+
+  IdentityServiceV1BindEmailRequest({
+    this.email,
+    this.verificationCode,
+  });
+
+  factory IdentityServiceV1BindEmailRequest.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1BindEmailRequest(
+      email: json['email'] as String?,
+      verificationCode: json['verificationCode'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (email != null) json['email'] = email;
+    if (verificationCode != null) json['verificationCode'] = verificationCode;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1BindEmailRequest(email: $email, verificationCode: $verificationCode)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1BindEmailRequest &&
+      runtimeType == other.runtimeType
+      && email == other.email
+      && verificationCode == other.verificationCode
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    email,
+    verificationCode,
+  ]);
+
+  IdentityServiceV1BindEmailRequest copyWith({
+    String? email,
+    String? verificationCode,
+  }) {
+    return IdentityServiceV1BindEmailRequest(
+      email: email ?? this.email,
+      verificationCode: verificationCode ?? this.verificationCode,
+    );
+  }
+}
+
+class IdentityServiceV1VerifyContactRequest {
+  IdentityServiceV1EmailVerification? email;
+  IdentityServiceV1PhoneVerification? phone;
+  /// 可选：服务端生成的验证码会话 id（用于多步骤或回调验证）
+  String? verificationId;
+
+  IdentityServiceV1VerifyContactRequest({
+    this.email,
+    this.phone,
+    this.verificationId,
+  });
+
+  factory IdentityServiceV1VerifyContactRequest.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1VerifyContactRequest(
+      email: json['email'] != null ? IdentityServiceV1EmailVerification.fromJson(json['email'] as Map<String, dynamic>) : null,
+      phone: json['phone'] != null ? IdentityServiceV1PhoneVerification.fromJson(json['phone'] as Map<String, dynamic>) : null,
+      verificationId: json['verificationId'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (email != null) json['email'] = email!.toJson();
+    if (phone != null) json['phone'] = phone!.toJson();
+    if (verificationId != null) json['verificationId'] = verificationId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1VerifyContactRequest(email: $email, phone: $phone, verificationId: $verificationId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1VerifyContactRequest &&
+      runtimeType == other.runtimeType
+      && email == other.email
+      && phone == other.phone
+      && verificationId == other.verificationId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    email,
+    phone,
+    verificationId,
+  ]);
+
+  IdentityServiceV1VerifyContactRequest copyWith({
+    IdentityServiceV1EmailVerification? email,
+    IdentityServiceV1PhoneVerification? phone,
+    String? verificationId,
+  }) {
+    return IdentityServiceV1VerifyContactRequest(
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      verificationId: verificationId ?? this.verificationId,
+    );
+  }
+}
+
+/// 手机验证
+class IdentityServiceV1PhoneVerification {
+  ///
+  /// Behaviors: REQUIRED
+  String? code;
+  String? phone;
+
+  IdentityServiceV1PhoneVerification({
+    this.code,
+    this.phone,
+  });
+
+  factory IdentityServiceV1PhoneVerification.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1PhoneVerification(
+      code: json['code'] as String?,
+      phone: json['phone'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (code != null) json['code'] = code;
+    if (phone != null) json['phone'] = phone;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1PhoneVerification(code: $code, phone: $phone)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1PhoneVerification &&
+      runtimeType == other.runtimeType
+      && code == other.code
+      && phone == other.phone
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    code,
+    phone,
+  ]);
+
+  IdentityServiceV1PhoneVerification copyWith({
+    String? code,
+    String? phone,
+  }) {
+    return IdentityServiceV1PhoneVerification(
+      code: code ?? this.code,
+      phone: phone ?? this.phone,
+    );
+  }
+}
+
+/// 邮箱验证
+class IdentityServiceV1EmailVerification {
+  ///
+  /// Behaviors: REQUIRED
+  String? code;
+  String? email;
+
+  IdentityServiceV1EmailVerification({
+    this.code,
+    this.email,
+  });
+
+  factory IdentityServiceV1EmailVerification.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1EmailVerification(
+      code: json['code'] as String?,
+      email: json['email'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (code != null) json['code'] = code;
+    if (email != null) json['email'] = email;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1EmailVerification(code: $code, email: $email)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1EmailVerification &&
+      runtimeType == other.runtimeType
+      && code == other.code
+      && email == other.email
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    code,
+    email,
+  ]);
+
+  IdentityServiceV1EmailVerification copyWith({
+    String? code,
+    String? email,
+  }) {
+    return IdentityServiceV1EmailVerification(
+      code: code ?? this.code,
+      email: email ?? this.email,
+    );
+  }
+}
+
+/// OA 工作流参与服务（app 边端，移动端）
 class WorkflowServiceClient {
   final ClientTransport _transport;
 
   WorkflowServiceClient(this._transport);
 
-  /// 提交申请：发起一个工作流实例。
+  /// 提交申请
   Future<OaServiceV1SubmitApplyResponse> submitApply(OaServiceV1SubmitApplyRequest request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/oa/workflow/apply';
+    final path = '/app/v1/oa/workflow/submit-apply';
     final body = jsonEncode(request.toJson());
     final result = await _transport.unary(path, 'POST', body, TransportMeta(
       service: 'WorkflowService',
@@ -1483,12 +11591,9 @@ class WorkflowServiceClient {
     return OaServiceV1SubmitApplyResponse.fromJson(result as Map<String, dynamic>);
   }
 
-  /// 审批/驳回/转办当前待办任务。
+  /// 审批任务
   Future<Map<String, dynamic>> auditTask(OaServiceV1AuditTaskRequest request, {Map<String, String>? headers}) async {
-    if (request.taskId == null) {
-      throw ArgumentError('missing required field request.task_id');
-    }
-    final path = '/app/v1/oa/workflow/tasks/${request.taskId}/audit';
+    final path = '/app/v1/oa/workflow/audit-task';
     final body = jsonEncode(request.toJson());
     final result = await _transport.unary(path, 'POST', body, TransportMeta(
       service: 'WorkflowService',
@@ -1497,45 +11602,23 @@ class WorkflowServiceClient {
     return result as Map<String, dynamic>;
   }
 
-  /// 获取当前用户的待办 / 已办 / 我的申请列表。
+  /// 撤回申请（仅申请人本人，仅进行中的实例）
+  Future<Map<String, dynamic>> withdrawApply(OaServiceV1WithdrawApplyRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/workflow/withdraw-apply';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'WorkflowService',
+      method: 'WithdrawApply',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 查询我的任务（待办/已办/我的申请）
   Future<OaServiceV1GetMyTasksResponse> getMyTasks(OaServiceV1GetMyTasksRequest request, {Map<String, String>? headers}) async {
     final path = '/app/v1/oa/workflow/my-tasks';
     final queryParams = <String>[];
     if (request.listType != null) {
       queryParams.add('listType=${Uri.encodeComponent(request.listType!.toString())}');
-    }
-    if (request.paging?.page != null) {
-      queryParams.add('paging.page=${Uri.encodeComponent(request.paging!.page!.toString())}');
-    }
-    if (request.paging?.pageSize != null) {
-      queryParams.add('paging.pageSize=${Uri.encodeComponent(request.paging!.pageSize!.toString())}');
-    }
-    if (request.paging?.offset != null) {
-      queryParams.add('paging.offset=${Uri.encodeComponent(request.paging!.offset!.toString())}');
-    }
-    if (request.paging?.limit != null) {
-      queryParams.add('paging.limit=${Uri.encodeComponent(request.paging!.limit!.toString())}');
-    }
-    if (request.paging?.token != null) {
-      queryParams.add('paging.token=${Uri.encodeComponent(request.paging!.token!.toString())}');
-    }
-    if (request.paging?.noPaging != null) {
-      queryParams.add('paging.noPaging=${Uri.encodeComponent(request.paging!.noPaging!.toString())}');
-    }
-    if (request.paging?.query != null) {
-      queryParams.add('paging.query=${Uri.encodeComponent(request.paging!.query!.toString())}');
-    }
-    if (request.paging?.filter != null) {
-      queryParams.add('paging.filter=${Uri.encodeComponent(request.paging!.filter!.toString())}');
-    }
-    if (request.paging?.filterExpr?.type != null) {
-      queryParams.add('paging.filterExpr.type=${Uri.encodeComponent(request.paging!.filterExpr!.type!.toString())}');
-    }
-    if (request.paging?.orderBy != null) {
-      queryParams.add('paging.orderBy=${Uri.encodeComponent(request.paging!.orderBy!.toString())}');
-    }
-    if (request.paging?.fieldMask != null) {
-      queryParams.add('paging.fieldMask=${Uri.encodeComponent(request.paging!.fieldMask!.toString())}');
     }
     var uri = path;
     if (queryParams.isNotEmpty) {
@@ -1548,12 +11631,12 @@ class WorkflowServiceClient {
     return OaServiceV1GetMyTasksResponse.fromJson(result as Map<String, dynamic>);
   }
 
-  /// 获取单个待办任务详情。
+  /// 查询任务详情
   Future<OaServiceV1GetTaskResponse> getTask(OaServiceV1GetTaskRequest request, {Map<String, String>? headers}) async {
-    if (request.taskId == null) {
-      throw ArgumentError('missing required field request.task_id');
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
     }
-    final path = '/app/v1/oa/workflow/tasks/${request.taskId}';
+    final path = '/app/v1/oa/workflow/tasks/${request.id}';
     final result = await _transport.unary(path, 'GET', null, TransportMeta(
       service: 'WorkflowService',
       method: 'GetTask',
@@ -1562,41 +11645,45 @@ class WorkflowServiceClient {
   }
 }
 
+/// 提交申请 - 请求
 class OaServiceV1SubmitApplyRequest {
-  String? definitionCode;
-  int? definitionVersion;
-  /// 申请表单数据，原始 JSON 文本。
+  int? businessId;
+  String? businessType;
+  String? code;
   String? formData;
-  String? title;
+  int? version;
 
   OaServiceV1SubmitApplyRequest({
-    this.definitionCode,
-    this.definitionVersion,
+    this.businessId,
+    this.businessType,
+    this.code,
     this.formData,
-    this.title,
+    this.version,
   });
 
   factory OaServiceV1SubmitApplyRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1SubmitApplyRequest(
-      definitionCode: json['definitionCode'] as String?,
-      definitionVersion: json['definitionVersion'] as int?,
+      businessId: json['businessId'] as int?,
+      businessType: json['businessType'] as String?,
+      code: json['code'] as String?,
       formData: json['formData'] as String?,
-      title: json['title'] as String?,
+      version: json['version'] as int?,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (definitionCode != null) json['definitionCode'] = definitionCode;
-    if (definitionVersion != null) json['definitionVersion'] = definitionVersion;
+    if (businessId != null) json['businessId'] = businessId;
+    if (businessType != null) json['businessType'] = businessType;
+    if (code != null) json['code'] = code;
     if (formData != null) json['formData'] = formData;
-    if (title != null) json['title'] = title;
+    if (version != null) json['version'] = version;
     return json;
   }
 
   @override
   String toString() {
-    return 'OaServiceV1SubmitApplyRequest(definitionCode: $definitionCode, definitionVersion: $definitionVersion, formData: $formData, title: $title)';
+    return 'OaServiceV1SubmitApplyRequest(businessId: $businessId, businessType: $businessType, code: $code, formData: $formData, version: $version)';
   }
 
   @override
@@ -1604,35 +11691,40 @@ class OaServiceV1SubmitApplyRequest {
     identical(this, other) ||
     other is OaServiceV1SubmitApplyRequest &&
       runtimeType == other.runtimeType
-      && definitionCode == other.definitionCode
-      && definitionVersion == other.definitionVersion
+      && businessId == other.businessId
+      && businessType == other.businessType
+      && code == other.code
       && formData == other.formData
-      && title == other.title
+      && version == other.version
     ;
 
   @override
   int get hashCode => Object.hashAll([
-    definitionCode,
-    definitionVersion,
+    businessId,
+    businessType,
+    code,
     formData,
-    title,
+    version,
   ]);
 
   OaServiceV1SubmitApplyRequest copyWith({
-    String? definitionCode,
-    int? definitionVersion,
+    int? businessId,
+    String? businessType,
+    String? code,
     String? formData,
-    String? title,
+    int? version,
   }) {
     return OaServiceV1SubmitApplyRequest(
-      definitionCode: definitionCode ?? this.definitionCode,
-      definitionVersion: definitionVersion ?? this.definitionVersion,
+      businessId: businessId ?? this.businessId,
+      businessType: businessType ?? this.businessType,
+      code: code ?? this.code,
       formData: formData ?? this.formData,
-      title: title ?? this.title,
+      version: version ?? this.version,
     );
   }
 }
 
+/// 提交申请 - 回应
 class OaServiceV1SubmitApplyResponse {
   int? instanceId;
 
@@ -1679,26 +11771,25 @@ class OaServiceV1SubmitApplyResponse {
   }
 }
 
+/// 审批任务 - 请求
 class OaServiceV1AuditTaskRequest {
-  OaServiceV1AuditTaskRequest$AuditAction? action;
+  OaServiceV1AuditAction? action;
   String? comment;
-  /// 仅 action == FORWARD 时有效：被转办人 ID。
-  int? forwardToUserId;
-  /// 绑定路径参数 {task_id}。
+  int? forwardTo;
   int? taskId;
 
   OaServiceV1AuditTaskRequest({
     this.action,
     this.comment,
-    this.forwardToUserId,
+    this.forwardTo,
     this.taskId,
   });
 
   factory OaServiceV1AuditTaskRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1AuditTaskRequest(
-      action: json['action'] != null ? OaServiceV1AuditTaskRequest$AuditAction.fromString(json['action'] as String) : null,
+      action: json['action'] != null ? OaServiceV1AuditAction.fromString(json['action'] as String) : null,
       comment: json['comment'] as String?,
-      forwardToUserId: json['forwardToUserId'] as int?,
+      forwardTo: json['forwardTo'] as int?,
       taskId: json['taskId'] as int?,
     );
   }
@@ -1707,14 +11798,14 @@ class OaServiceV1AuditTaskRequest {
     final json = <String, dynamic>{};
     if (action != null) json['action'] = action!.value;
     if (comment != null) json['comment'] = comment;
-    if (forwardToUserId != null) json['forwardToUserId'] = forwardToUserId;
+    if (forwardTo != null) json['forwardTo'] = forwardTo;
     if (taskId != null) json['taskId'] = taskId;
     return json;
   }
 
   @override
   String toString() {
-    return 'OaServiceV1AuditTaskRequest(action: $action, comment: $comment, forwardToUserId: $forwardToUserId, taskId: $taskId)';
+    return 'OaServiceV1AuditTaskRequest(action: $action, comment: $comment, forwardTo: $forwardTo, taskId: $taskId)';
   }
 
   @override
@@ -1724,7 +11815,7 @@ class OaServiceV1AuditTaskRequest {
       runtimeType == other.runtimeType
       && action == other.action
       && comment == other.comment
-      && forwardToUserId == other.forwardToUserId
+      && forwardTo == other.forwardTo
       && taskId == other.taskId
     ;
 
@@ -1732,65 +11823,110 @@ class OaServiceV1AuditTaskRequest {
   int get hashCode => Object.hashAll([
     action,
     comment,
-    forwardToUserId,
+    forwardTo,
     taskId,
   ]);
 
   OaServiceV1AuditTaskRequest copyWith({
-    OaServiceV1AuditTaskRequest$AuditAction? action,
+    OaServiceV1AuditAction? action,
     String? comment,
-    int? forwardToUserId,
+    int? forwardTo,
     int? taskId,
   }) {
     return OaServiceV1AuditTaskRequest(
       action: action ?? this.action,
       comment: comment ?? this.comment,
-      forwardToUserId: forwardToUserId ?? this.forwardToUserId,
+      forwardTo: forwardTo ?? this.forwardTo,
       taskId: taskId ?? this.taskId,
     );
   }
 }
 
-enum OaServiceV1AuditTaskRequest$AuditAction {
+/// 审批动作
+enum OaServiceV1AuditAction {
   approve('APPROVE'),
   forward('FORWARD'),
   reject('REJECT');
 
   final String value;
-  const OaServiceV1AuditTaskRequest$AuditAction(this.value);
+  const OaServiceV1AuditAction(this.value);
 
-  static OaServiceV1AuditTaskRequest$AuditAction fromString(String v) =>
-    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1AuditTaskRequest\$AuditAction value: ' + v));
+  static OaServiceV1AuditAction fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1AuditAction value: ' + v));
   @override
   String toString() => value;
 }
 
+/// 撤回申请 - 请求
+class OaServiceV1WithdrawApplyRequest {
+  int? instanceId;
+
+  OaServiceV1WithdrawApplyRequest({
+    this.instanceId,
+  });
+
+  factory OaServiceV1WithdrawApplyRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1WithdrawApplyRequest(
+      instanceId: json['instanceId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (instanceId != null) json['instanceId'] = instanceId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1WithdrawApplyRequest(instanceId: $instanceId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1WithdrawApplyRequest &&
+      runtimeType == other.runtimeType
+      && instanceId == other.instanceId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    instanceId,
+  ]);
+
+  OaServiceV1WithdrawApplyRequest copyWith({
+    int? instanceId,
+  }) {
+    return OaServiceV1WithdrawApplyRequest(
+      instanceId: instanceId ?? this.instanceId,
+    );
+  }
+}
+
+/// 查询我的任务 - 请求
 class OaServiceV1GetMyTasksRequest {
-  OaServiceV1GetMyTasksRequest$ListType? listType;
-  PaginationPagingRequest? paging;
+  OaServiceV1ListType? listType;
 
   OaServiceV1GetMyTasksRequest({
     this.listType,
-    this.paging,
   });
 
   factory OaServiceV1GetMyTasksRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetMyTasksRequest(
-      listType: json['listType'] != null ? OaServiceV1GetMyTasksRequest$ListType.fromString(json['listType'] as String) : null,
-      paging: json['paging'] != null ? PaginationPagingRequest.fromJson(json['paging'] as Map<String, dynamic>) : null,
+      listType: json['listType'] != null ? OaServiceV1ListType.fromString(json['listType'] as String) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     if (listType != null) json['listType'] = listType!.value;
-    if (paging != null) json['paging'] = paging!.toJson();
     return json;
   }
 
   @override
   String toString() {
-    return 'OaServiceV1GetMyTasksRequest(listType: $listType, paging: $paging)';
+    return 'OaServiceV1GetMyTasksRequest(listType: $listType)';
   }
 
   @override
@@ -1799,40 +11935,38 @@ class OaServiceV1GetMyTasksRequest {
     other is OaServiceV1GetMyTasksRequest &&
       runtimeType == other.runtimeType
       && listType == other.listType
-      && paging == other.paging
     ;
 
   @override
   int get hashCode => Object.hashAll([
     listType,
-    paging,
   ]);
 
   OaServiceV1GetMyTasksRequest copyWith({
-    OaServiceV1GetMyTasksRequest$ListType? listType,
-    PaginationPagingRequest? paging,
+    OaServiceV1ListType? listType,
   }) {
     return OaServiceV1GetMyTasksRequest(
       listType: listType ?? this.listType,
-      paging: paging ?? this.paging,
     );
   }
 }
 
-enum OaServiceV1GetMyTasksRequest$ListType {
+/// 任务列表类型
+enum OaServiceV1ListType {
   done('DONE'),
   pending('PENDING'),
   submitted('SUBMITTED');
 
   final String value;
-  const OaServiceV1GetMyTasksRequest$ListType(this.value);
+  const OaServiceV1ListType(this.value);
 
-  static OaServiceV1GetMyTasksRequest$ListType fromString(String v) =>
-    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1GetMyTasksRequest\$ListType value: ' + v));
+  static OaServiceV1ListType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1ListType value: ' + v));
   @override
   String toString() => value;
 }
 
+/// 查询我的任务 - 回应
 class OaServiceV1GetMyTasksResponse {
   List<OaServiceV1MyTaskItem>? items;
   int? total;
@@ -1887,57 +12021,41 @@ class OaServiceV1GetMyTasksResponse {
   }
 }
 
+/// 我的任务列表项
 class OaServiceV1MyTaskItem {
-  String? actionLabel;
-  String? comment;
+  String? createdAt;
   int? instanceId;
-  int? logId;
-  String? occurredAt;
   String? statusLabel;
-  /// 各字段按 list_type 选择性填充。
   int? taskId;
-  String? title;
 
   OaServiceV1MyTaskItem({
-    this.actionLabel,
-    this.comment,
+    this.createdAt,
     this.instanceId,
-    this.logId,
-    this.occurredAt,
     this.statusLabel,
     this.taskId,
-    this.title,
   });
 
   factory OaServiceV1MyTaskItem.fromJson(Map<String, dynamic> json) {
     return OaServiceV1MyTaskItem(
-      actionLabel: json['actionLabel'] as String?,
-      comment: json['comment'] as String?,
+      createdAt: json['createdAt'] as String?,
       instanceId: json['instanceId'] as int?,
-      logId: json['logId'] as int?,
-      occurredAt: json['occurredAt'] as String?,
       statusLabel: json['statusLabel'] as String?,
       taskId: json['taskId'] as int?,
-      title: json['title'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (actionLabel != null) json['actionLabel'] = actionLabel;
-    if (comment != null) json['comment'] = comment;
+    if (createdAt != null) json['createdAt'] = createdAt;
     if (instanceId != null) json['instanceId'] = instanceId;
-    if (logId != null) json['logId'] = logId;
-    if (occurredAt != null) json['occurredAt'] = occurredAt;
     if (statusLabel != null) json['statusLabel'] = statusLabel;
     if (taskId != null) json['taskId'] = taskId;
-    if (title != null) json['title'] = title;
     return json;
   }
 
   @override
   String toString() {
-    return 'OaServiceV1MyTaskItem(actionLabel: $actionLabel, comment: $comment, instanceId: $instanceId, logId: $logId, occurredAt: $occurredAt, statusLabel: $statusLabel, taskId: $taskId, title: $title)';
+    return 'OaServiceV1MyTaskItem(createdAt: $createdAt, instanceId: $instanceId, statusLabel: $statusLabel, taskId: $taskId)';
   }
 
   @override
@@ -1945,73 +12063,58 @@ class OaServiceV1MyTaskItem {
     identical(this, other) ||
     other is OaServiceV1MyTaskItem &&
       runtimeType == other.runtimeType
-      && actionLabel == other.actionLabel
-      && comment == other.comment
+      && createdAt == other.createdAt
       && instanceId == other.instanceId
-      && logId == other.logId
-      && occurredAt == other.occurredAt
       && statusLabel == other.statusLabel
       && taskId == other.taskId
-      && title == other.title
     ;
 
   @override
   int get hashCode => Object.hashAll([
-    actionLabel,
-    comment,
+    createdAt,
     instanceId,
-    logId,
-    occurredAt,
     statusLabel,
     taskId,
-    title,
   ]);
 
   OaServiceV1MyTaskItem copyWith({
-    String? actionLabel,
-    String? comment,
+    String? createdAt,
     int? instanceId,
-    int? logId,
-    String? occurredAt,
     String? statusLabel,
     int? taskId,
-    String? title,
   }) {
     return OaServiceV1MyTaskItem(
-      actionLabel: actionLabel ?? this.actionLabel,
-      comment: comment ?? this.comment,
+      createdAt: createdAt ?? this.createdAt,
       instanceId: instanceId ?? this.instanceId,
-      logId: logId ?? this.logId,
-      occurredAt: occurredAt ?? this.occurredAt,
       statusLabel: statusLabel ?? this.statusLabel,
       taskId: taskId ?? this.taskId,
-      title: title ?? this.title,
     );
   }
 }
 
+/// 查询任务详情 - 请求
 class OaServiceV1GetTaskRequest {
-  int? taskId;
+  int? id;
 
   OaServiceV1GetTaskRequest({
-    this.taskId,
+    this.id,
   });
 
   factory OaServiceV1GetTaskRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetTaskRequest(
-      taskId: json['taskId'] as int?,
+      id: json['id'] as int?,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (taskId != null) json['taskId'] = taskId;
+    if (id != null) json['id'] = id;
     return json;
   }
 
   @override
   String toString() {
-    return 'OaServiceV1GetTaskRequest(taskId: $taskId)';
+    return 'OaServiceV1GetTaskRequest(id: $id)';
   }
 
   @override
@@ -2019,63 +12122,54 @@ class OaServiceV1GetTaskRequest {
     identical(this, other) ||
     other is OaServiceV1GetTaskRequest &&
       runtimeType == other.runtimeType
-      && taskId == other.taskId
+      && id == other.id
     ;
 
   @override
   int get hashCode => Object.hashAll([
-    taskId,
+    id,
   ]);
 
   OaServiceV1GetTaskRequest copyWith({
-    int? taskId,
+    int? id,
   }) {
     return OaServiceV1GetTaskRequest(
-      taskId: taskId ?? this.taskId,
+      id: id ?? this.id,
     );
   }
 }
 
-/// GetTaskResponse 投影待办任务详情。字段对齐详情页渲染所需，最小披露：
-/// 申请标题、申请表单数据（原始 JSON 文本，引擎不解释）、该实例的审批日志轨迹。
+/// 查询任务详情 - 回应
 class OaServiceV1GetTaskResponse {
   String? formData;
-  List<OaServiceV1AuditLogEntry>? history;
-  int? instanceId;
-  int? taskId;
-  String? title;
+  List<OaServiceV1WorkflowLog>? logs;
+  OaServiceV1WorkflowTask? task;
 
   OaServiceV1GetTaskResponse({
     this.formData,
-    this.history,
-    this.instanceId,
-    this.taskId,
-    this.title,
+    this.logs,
+    this.task,
   });
 
   factory OaServiceV1GetTaskResponse.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetTaskResponse(
       formData: json['formData'] as String?,
-      history: (json['history'] as List<dynamic>?)?.map((e) => OaServiceV1AuditLogEntry.fromJson(e as Map<String, dynamic>)).toList(),
-      instanceId: json['instanceId'] as int?,
-      taskId: json['taskId'] as int?,
-      title: json['title'] as String?,
+      logs: (json['logs'] as List<dynamic>?)?.map((e) => OaServiceV1WorkflowLog.fromJson(e as Map<String, dynamic>)).toList(),
+      task: json['task'] != null ? OaServiceV1WorkflowTask.fromJson(json['task'] as Map<String, dynamic>) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     if (formData != null) json['formData'] = formData;
-    if (history != null) json['history'] = history!.map((e) => e.toJson()).toList();
-    if (instanceId != null) json['instanceId'] = instanceId;
-    if (taskId != null) json['taskId'] = taskId;
-    if (title != null) json['title'] = title;
+    if (logs != null) json['logs'] = logs!.map((e) => e.toJson()).toList();
+    if (task != null) json['task'] = task!.toJson();
     return json;
   }
 
   @override
   String toString() {
-    return 'OaServiceV1GetTaskResponse(formData: $formData, history: $history, instanceId: $instanceId, taskId: $taskId, title: $title)';
+    return 'OaServiceV1GetTaskResponse(formData: $formData, logs: $logs, task: $task)';
   }
 
   @override
@@ -2084,100 +12178,319 @@ class OaServiceV1GetTaskResponse {
     other is OaServiceV1GetTaskResponse &&
       runtimeType == other.runtimeType
       && formData == other.formData
-      && history == other.history
-      && instanceId == other.instanceId
-      && taskId == other.taskId
-      && title == other.title
+      && logs == other.logs
+      && task == other.task
     ;
 
   @override
   int get hashCode => Object.hashAll([
     formData,
-    history,
-    instanceId,
-    taskId,
-    title,
+    logs,
+    task,
   ]);
 
   OaServiceV1GetTaskResponse copyWith({
     String? formData,
-    List<OaServiceV1AuditLogEntry>? history,
-    int? instanceId,
-    int? taskId,
-    String? title,
+    List<OaServiceV1WorkflowLog>? logs,
+    OaServiceV1WorkflowTask? task,
   }) {
     return OaServiceV1GetTaskResponse(
       formData: formData ?? this.formData,
-      history: history ?? this.history,
-      instanceId: instanceId ?? this.instanceId,
-      taskId: taskId ?? this.taskId,
-      title: title ?? this.title,
+      logs: logs ?? this.logs,
+      task: task ?? this.task,
     );
   }
 }
 
-/// AuditLogEntry 审批日志轨迹条目。投影自 WorkflowLog，仅含审批类动作
-/// （APPROVE / REJECT / FORWARD），与 ListByActor 的过滤口径一致。
-class OaServiceV1AuditLogEntry {
-  String? actionLabel;
-  String? comment;
-  String? occurredAt;
+/// 审批任务
+class OaServiceV1WorkflowTask {
+  int? assigneeUserId;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? nodeIndex;
+  OaServiceV1WorkflowTask$TaskStatus? taskStatus;
+  int? tenantId;
+  String? updatedAt;
+  int? updatedBy;
 
-  OaServiceV1AuditLogEntry({
-    this.actionLabel,
-    this.comment,
-    this.occurredAt,
+  OaServiceV1WorkflowTask({
+    this.assigneeUserId,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.id,
+    this.nodeIndex,
+    this.taskStatus,
+    this.tenantId,
+    this.updatedAt,
+    this.updatedBy,
   });
 
-  factory OaServiceV1AuditLogEntry.fromJson(Map<String, dynamic> json) {
-    return OaServiceV1AuditLogEntry(
-      actionLabel: json['actionLabel'] as String?,
-      comment: json['comment'] as String?,
-      occurredAt: json['occurredAt'] as String?,
+  factory OaServiceV1WorkflowTask.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1WorkflowTask(
+      assigneeUserId: json['assigneeUserId'] as int?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      id: json['id'] as int?,
+      nodeIndex: json['nodeIndex'] as int?,
+      taskStatus: json['taskStatus'] != null ? OaServiceV1WorkflowTask$TaskStatus.fromString(json['taskStatus'] as String) : null,
+      tenantId: json['tenantId'] as int?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (actionLabel != null) json['actionLabel'] = actionLabel;
-    if (comment != null) json['comment'] = comment;
-    if (occurredAt != null) json['occurredAt'] = occurredAt;
+    if (assigneeUserId != null) json['assigneeUserId'] = assigneeUserId;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (id != null) json['id'] = id;
+    if (nodeIndex != null) json['nodeIndex'] = nodeIndex;
+    if (taskStatus != null) json['taskStatus'] = taskStatus!.value;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
     return json;
   }
 
   @override
   String toString() {
-    return 'OaServiceV1AuditLogEntry(actionLabel: $actionLabel, comment: $comment, occurredAt: $occurredAt)';
+    return 'OaServiceV1WorkflowTask(assigneeUserId: $assigneeUserId, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, nodeIndex: $nodeIndex, taskStatus: $taskStatus, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
   }
 
   @override
   bool operator ==(Object other) =>
     identical(this, other) ||
-    other is OaServiceV1AuditLogEntry &&
+    other is OaServiceV1WorkflowTask &&
       runtimeType == other.runtimeType
-      && actionLabel == other.actionLabel
-      && comment == other.comment
-      && occurredAt == other.occurredAt
+      && assigneeUserId == other.assigneeUserId
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && id == other.id
+      && nodeIndex == other.nodeIndex
+      && taskStatus == other.taskStatus
+      && tenantId == other.tenantId
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
     ;
 
   @override
   int get hashCode => Object.hashAll([
-    actionLabel,
-    comment,
-    occurredAt,
+    assigneeUserId,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    id,
+    nodeIndex,
+    taskStatus,
+    tenantId,
+    updatedAt,
+    updatedBy,
   ]);
 
-  OaServiceV1AuditLogEntry copyWith({
-    String? actionLabel,
-    String? comment,
-    String? occurredAt,
+  OaServiceV1WorkflowTask copyWith({
+    int? assigneeUserId,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    int? id,
+    int? nodeIndex,
+    OaServiceV1WorkflowTask$TaskStatus? taskStatus,
+    int? tenantId,
+    String? updatedAt,
+    int? updatedBy,
   }) {
-    return OaServiceV1AuditLogEntry(
-      actionLabel: actionLabel ?? this.actionLabel,
-      comment: comment ?? this.comment,
-      occurredAt: occurredAt ?? this.occurredAt,
+    return OaServiceV1WorkflowTask(
+      assigneeUserId: assigneeUserId ?? this.assigneeUserId,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      id: id ?? this.id,
+      nodeIndex: nodeIndex ?? this.nodeIndex,
+      taskStatus: taskStatus ?? this.taskStatus,
+      tenantId: tenantId ?? this.tenantId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
     );
   }
+}
+
+/// 任务状态
+enum OaServiceV1WorkflowTask$TaskStatus {
+  approved('APPROVED'),
+  cancelled('CANCELLED'),
+  pending('PENDING'),
+  rejected('REJECTED');
+
+  final String value;
+  const OaServiceV1WorkflowTask$TaskStatus(this.value);
+
+  static OaServiceV1WorkflowTask$TaskStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1WorkflowTask\$TaskStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 审批日志
+class OaServiceV1WorkflowLog {
+  String? comment;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  OaServiceV1WorkflowLog$LogAction? logAction;
+  int? nodeIndex;
+  int? tenantId;
+  String? updatedAt;
+  int? updatedBy;
+
+  OaServiceV1WorkflowLog({
+    this.comment,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.id,
+    this.logAction,
+    this.nodeIndex,
+    this.tenantId,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory OaServiceV1WorkflowLog.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1WorkflowLog(
+      comment: json['comment'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      id: json['id'] as int?,
+      logAction: json['logAction'] != null ? OaServiceV1WorkflowLog$LogAction.fromString(json['logAction'] as String) : null,
+      nodeIndex: json['nodeIndex'] as int?,
+      tenantId: json['tenantId'] as int?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (comment != null) json['comment'] = comment;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (id != null) json['id'] = id;
+    if (logAction != null) json['logAction'] = logAction!.value;
+    if (nodeIndex != null) json['nodeIndex'] = nodeIndex;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1WorkflowLog(comment: $comment, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, logAction: $logAction, nodeIndex: $nodeIndex, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1WorkflowLog &&
+      runtimeType == other.runtimeType
+      && comment == other.comment
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && id == other.id
+      && logAction == other.logAction
+      && nodeIndex == other.nodeIndex
+      && tenantId == other.tenantId
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    comment,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    id,
+    logAction,
+    nodeIndex,
+    tenantId,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  OaServiceV1WorkflowLog copyWith({
+    String? comment,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    int? id,
+    OaServiceV1WorkflowLog$LogAction? logAction,
+    int? nodeIndex,
+    int? tenantId,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return OaServiceV1WorkflowLog(
+      comment: comment ?? this.comment,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      id: id ?? this.id,
+      logAction: logAction ?? this.logAction,
+      nodeIndex: nodeIndex ?? this.nodeIndex,
+      tenantId: tenantId ?? this.tenantId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 日志动作
+enum OaServiceV1WorkflowLog$LogAction {
+  approve('APPROVE'),
+  forward('FORWARD'),
+  reject('REJECT'),
+  submit('SUBMIT'),
+  withdraw('WITHDRAW');
+
+  final String value;
+  const OaServiceV1WorkflowLog$LogAction(this.value);
+
+  static OaServiceV1WorkflowLog$LogAction fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1WorkflowLog\$LogAction value: ' + v));
+  @override
+  String toString() => value;
 }
 
 class ApiClient {
@@ -2185,7 +12498,19 @@ class ApiClient {
 
   AttendanceServiceClient? _attendanceService;
   AuthenticationServiceClient? _authenticationService;
+  CategoryServiceClient? _categoryService;
+  CommentServiceClient? _commentService;
+  ExpenseServiceClient? _expenseService;
+  FileTransferServiceClient? _fileTransferService;
+  InteractionServiceClient? _interactionService;
   InternalMessageServiceClient? _internalMessageService;
+  LeaveServiceClient? _leaveService;
+  NavigationServiceClient? _navigationService;
+  PageServiceClient? _pageService;
+  PostServiceClient? _postService;
+  SectionServiceClient? _sectionService;
+  TagServiceClient? _tagService;
+  UserProfileServiceClient? _userProfileService;
   WorkflowServiceClient? _workflowService;
 
   ApiClient(this._transport);
@@ -2200,9 +12525,69 @@ class ApiClient {
     return _authenticationService!;
   }
 
+  CategoryServiceClient get categoryService {
+    _categoryService ??= CategoryServiceClient(_transport);
+    return _categoryService!;
+  }
+
+  CommentServiceClient get commentService {
+    _commentService ??= CommentServiceClient(_transport);
+    return _commentService!;
+  }
+
+  ExpenseServiceClient get expenseService {
+    _expenseService ??= ExpenseServiceClient(_transport);
+    return _expenseService!;
+  }
+
+  FileTransferServiceClient get fileTransferService {
+    _fileTransferService ??= FileTransferServiceClient(_transport);
+    return _fileTransferService!;
+  }
+
+  InteractionServiceClient get interactionService {
+    _interactionService ??= InteractionServiceClient(_transport);
+    return _interactionService!;
+  }
+
   InternalMessageServiceClient get internalMessageService {
     _internalMessageService ??= InternalMessageServiceClient(_transport);
     return _internalMessageService!;
+  }
+
+  LeaveServiceClient get leaveService {
+    _leaveService ??= LeaveServiceClient(_transport);
+    return _leaveService!;
+  }
+
+  NavigationServiceClient get navigationService {
+    _navigationService ??= NavigationServiceClient(_transport);
+    return _navigationService!;
+  }
+
+  PageServiceClient get pageService {
+    _pageService ??= PageServiceClient(_transport);
+    return _pageService!;
+  }
+
+  PostServiceClient get postService {
+    _postService ??= PostServiceClient(_transport);
+    return _postService!;
+  }
+
+  SectionServiceClient get sectionService {
+    _sectionService ??= SectionServiceClient(_transport);
+    return _sectionService!;
+  }
+
+  TagServiceClient get tagService {
+    _tagService ??= TagServiceClient(_transport);
+    return _tagService!;
+  }
+
+  UserProfileServiceClient get userProfileService {
+    _userProfileService ??= UserProfileServiceClient(_transport);
+    return _userProfileService!;
   }
 
   WorkflowServiceClient get workflowService {
@@ -2214,7 +12599,19 @@ class ApiClient {
   void dispose() {
     _attendanceService = null;
     _authenticationService = null;
+    _categoryService = null;
+    _commentService = null;
+    _expenseService = null;
+    _fileTransferService = null;
+    _interactionService = null;
     _internalMessageService = null;
+    _leaveService = null;
+    _navigationService = null;
+    _pageService = null;
+    _postService = null;
+    _sectionService = null;
+    _tagService = null;
+    _userProfileService = null;
     _workflowService = null;
   }
 }

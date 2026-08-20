@@ -5,9 +5,6 @@
     :config="{ component: 'drawer', drawer: { size: DRAWER_WIDTH, closeOnClickModal: false } }"
   >
     <ElForm label-width="140px" v-if="detail">
-      <ElFormItem :label="$t('pages.oa.definition.fieldName')">
-        <ElInput :model-value="detail.name" readonly />
-      </ElFormItem>
       <ElFormItem :label="$t('pages.oa.definition.fieldCode')">
         <ElInput :model-value="detail.code" readonly />
       </ElFormItem>
@@ -24,8 +21,8 @@
           {{ definitionStatusLabel(detail.definitionStatus) }}
         </ElTag>
       </ElFormItem>
-      <ElFormItem :label="$t('pages.oa.definition.fieldDescription')">
-        <ElInput :model-value="detail.description" type="textarea" :rows="3" readonly />
+      <ElFormItem label="备注">
+        <ElInput :model-value="detail.remark" type="textarea" :rows="3" readonly />
       </ElFormItem>
       <ElFormItem :label="$t('pages.oa.definition.fieldNodeConfig')">
         <ElInput

@@ -5,14 +5,18 @@ import { Layout } from "@/layouts";
 /**
  * OA 管理路由模块。
  *
- * 对齐 cms internal_message.ts 路由模块模式：Layout 包裹，children 为具体页面，
- * meta.authority 限定平台管理员。accessMode=frontend 下，routes 聚合器对
- * modules 目录下所有 .ts 做 eager glob 自动收编本文件，无需改聚合器。
+ * 对齐 cms internal_message.ts 路由模块模式：Layout 包裹，children 为具体页面。
+ * accessMode=frontend 下，routes 聚合器对 modules 目录下所有 .ts 做 eager glob
+ * 自动收编本文件，无需改聚合器。
+ *
+ * 不设 meta.authority：OA v1 后端无角色/权限表（authz 为 noop），登录即视为
+ * 可访问后台；待 identity/permission 域落地后再恢复 authority 过滤。
  *
  * 页面：
  *   - 流程定义管理
- *   - 考勤地理围栏库 CRUD
- *   - 考勤 Wi-Fi 指纹库 CRUD
+ *   - 考勤记录 / 设置 / 结算
+ *   - 请假管理（类型 / 额度 / 申请单）
+ *   - 报销申请管理
  */
 const oa: RouteRecordRaw[] = [
   {
@@ -25,7 +29,6 @@ const oa: RouteRecordRaw[] = [
       icon: "lucide:file-work",
       title: "routes.oa.moduleName",
       keepAlive: true,
-      authority: ["sys:platform_admin"],
     },
     children: [
       {
@@ -35,31 +38,48 @@ const oa: RouteRecordRaw[] = [
           order: 1,
           icon: "lucide:file-work",
           title: "routes.oa.definition",
-          authority: ["sys:platform_admin"],
         },
         component: () => import("@/pages/app/oa/definition/index.vue"),
       },
       {
-        path: "attendance-fence",
-        name: "OaAttendanceFence",
+        path: "approvals",
+        name: "OaApprovalCenter",
         meta: {
           order: 2,
-          icon: "lucide:map-pin",
-          title: "routes.oa.attendanceFence",
-          authority: ["sys:platform_admin"],
+          icon: "lucide:stamp",
+          title: "routes.oa.approval",
         },
-        component: () => import("@/pages/app/oa/attendance/fence.vue"),
+        component: () => import("@/pages/app/oa/approval/index.vue"),
       },
       {
-        path: "attendance-wifi",
-        name: "OaAttendanceWifi",
+        path: "attendance-records",
+        name: "OaAttendanceRecords",
         meta: {
           order: 3,
-          icon: "lucide:wifi",
-          title: "routes.oa.attendanceWifi",
-          authority: ["sys:platform_admin"],
+          icon: "lucide:calendar-check",
+          title: "routes.oa.attendanceRecords",
         },
-        component: () => import("@/pages/app/oa/attendance/wifi.vue"),
+        component: () => import("@/pages/app/oa/attendance/records.vue"),
+      },
+      {
+        path: "leave",
+        name: "OaLeaveManagement",
+        meta: {
+          order: 4,
+          icon: "lucide:plane-takeoff",
+          title: "routes.oa.leave",
+        },
+        component: () => import("@/pages/app/oa/leave/index.vue"),
+      },
+      {
+        path: "expense",
+        name: "OaExpenseManagement",
+        meta: {
+          order: 5,
+          icon: "lucide:receipt",
+          title: "routes.oa.expense",
+        },
+        component: () => import("@/pages/app/oa/expense/index.vue"),
       },
     ],
   },

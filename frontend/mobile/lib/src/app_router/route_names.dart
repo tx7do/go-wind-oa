@@ -16,4 +16,8 @@ class RouteNames {
   // OA 移动端骨架功能（推送 / 考勤）
   static const String oaNotifications = 'oa_notifications';
   static const String oaAttendance = 'oa_attendance';
+
+  // OA 行政单据（请假 / 报销）
+  static const String oaLeave = 'oa_leave';
+  static const String oaExpense = 'oa_expense';
 }

@@ -10,6 +10,8 @@ import 'package:flutter_app/generated/api/app/service/v1/index.dart'
     show AuthenticationServiceV1LoginRequest, AuthenticationServiceV1GrantType, AuthenticationServiceV1LoginResponse;
 import 'package:flutter_app/src/core/repositories/user_auth_cache.dart'
     show UserAuthCache;
+import 'package:flutter_app/src/core/constants/router_paths.dart'
+    show AppRoutePath;
 
 import 'package:flutter_app/src/core/config/environments.dart';
 import 'package:flutter_app/src/core/transport/http/index.dart';
@@ -167,7 +169,8 @@ class AuthenticationService extends AuthService {
   /// 认证失败处理
   doAuthenticationFailed() {
     GetIt.instance<UserAuthCache>().clearTokens();
-    AppRouter.router.goNamed('home');
+    // 令牌已清理，路由守卫会将未登录态统一重定向到 /login
+    AppRouter.router.go(AppRoutePath.login);
   }
 }
 

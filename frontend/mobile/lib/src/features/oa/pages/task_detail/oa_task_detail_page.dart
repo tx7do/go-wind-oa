@@ -7,8 +7,8 @@ import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
 
 /// 任务详情页。
 ///
-/// 调 [WorkflowService.getTaskDetail] 取单任务详情（申请标题、申请表单数据、
-/// 该实例的审批日志轨迹），渲染为只读摘要 + 表单数据 + 历史轨迹。鉴权由后端
+/// 调 [WorkflowService.getTaskDetail] 取单任务详情（任务信息、申请表单数据、
+/// 该实例的审批历史），渲染为只读摘要 + 表单数据 + 历史轨迹。鉴权由后端
 /// GetTask 服务强制（task 必须指派给 caller 且 PENDING），前端无需二次校验。
 ///
 /// 审批按钮调 [WorkflowService.audit]，传入 APPROVE/REJECT/FORWARD。
@@ -33,7 +33,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
     super.dispose();
   }
 
-  Future<void> _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction action,
+  Future<void> _doAudit(oaApi.OaServiceV1AuditAction action,
       {int? forwardTo}) async {
     final result = await _service.audit(
       taskId: widget.taskId,
@@ -78,7 +78,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
                     SnackBar(content: Text(loc.errorOccurred)));
                 return;
               }
-              _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.forward, forwardTo: fid);
+              _doAudit(oaApi.OaServiceV1AuditAction.forward, forwardTo: fid);
             },
             child: Text(loc.oaTaskDetailConfirm),
           ),
@@ -149,7 +149,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
                 Expanded(
                   child: FilledButton(
                     onPressed: () =>
-                        _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.approve),
+                        _doAudit(oaApi.OaServiceV1AuditAction.approve),
                     child: Text(loc.oaTaskDetailApprove),
                   ),
                 ),
@@ -157,7 +157,7 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
                 Expanded(
                   child: FilledButton.tonal(
                     onPressed: () =>
-                        _doAudit(oaApi.OaServiceV1AuditTaskRequest$AuditAction.reject),
+                        _doAudit(oaApi.OaServiceV1AuditAction.reject),
                     child: Text(loc.oaTaskDetailReject),
                   ),
                 ),
@@ -177,11 +177,27 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
   }
 }
 
-/// 详情内容渲染：申请标题、申请表单数据（只读 JSON 文本）、审批日志轨迹。
+/// 审批历史动作 → 展示文案。
+String logActionLabel(oaApi.OaServiceV1WorkflowLog$LogAction? action) {
+  switch (action) {
+    case oaApi.OaServiceV1WorkflowLog$LogAction.submit:
+      return '已提交';
+    case oaApi.OaServiceV1WorkflowLog$LogAction.approve:
+      return '已审批通过';
+    case oaApi.OaServiceV1WorkflowLog$LogAction.reject:
+      return '已审批驳回';
+    case oaApi.OaServiceV1WorkflowLog$LogAction.forward:
+      return '已转办';
+    case oaApi.OaServiceV1WorkflowLog$LogAction.withdraw:
+      return '已撤回';
+    default:
+      return '-';
+  }
+}
+
+/// 详情内容渲染：任务信息（节点/状态）、申请表单数据（只读 JSON 文本）、审批历史。
 ///
-/// 表单数据与历史轨迹均为只读展示，引擎不解释表单字段语义。历史轨迹仅含
-/// 审批类动作（APPROVE/REJECT/FORWARD），提交动作不在详情视图——与后端
-/// ListByInstance 过滤口径一致。
+/// 表单数据与历史轨迹均为只读展示，引擎不解释表单字段语义。
 class _DetailContent extends StatelessWidget {
   final oaApi.OaServiceV1GetTaskResponse detail;
   final ThemeData theme;
@@ -192,13 +208,14 @@ class _DetailContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final history = detail.history ?? <oaApi.OaServiceV1AuditLogEntry>[];
+    final logs = detail.logs ?? <oaApi.OaServiceV1WorkflowLog>[];
+    final task = detail.task;
     return ListView(
       children: [
         Text(loc.oaTaskDetailSummaryTitle,
             style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
-        Text('${loc.oaTaskDetailSummaryTitleField}: ${detail.title ?? '-'}',
+        Text('节点: ${task?.nodeIndex ?? '-'}    任务状态: ${task?.taskStatus ?? '-'}',
             style: theme.textTheme.bodyMedium),
         const SizedBox(height: 16),
         Text(loc.oaTaskDetailFormDataTitle,
@@ -219,30 +236,30 @@ class _DetailContent extends StatelessWidget {
         Text(loc.oaTaskDetailHistoryTitle,
             style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
-        if (history.isEmpty)
+        if (logs.isEmpty)
           Text(loc.oaTaskDetailHistoryEmpty,
               style: TextStyle(
                   color: theme.colorScheme.onSurface.withAlpha(120)))
         else
-          ...history.map((e) => _HistoryRow(entry: e, theme: theme)),
+          ...logs.map((e) => _HistoryRow(entry: e, theme: theme)),
       ],
     );
   }
 }
 
 class _HistoryRow extends StatelessWidget {
-  final oaApi.OaServiceV1AuditLogEntry entry;
+  final oaApi.OaServiceV1WorkflowLog entry;
   final ThemeData theme;
 
   const _HistoryRow({required this.entry, required this.theme});
 
   @override
   Widget build(BuildContext context) {
-    final ts = entry.occurredAt ?? '-';
+    final ts = entry.createdAt ?? '-';
     return Card(
       child: ListTile(
         dense: true,
-        title: Text(entry.actionLabel ?? '-',
+        title: Text(logActionLabel(entry.logAction),
             style: theme.textTheme.bodyMedium),
         subtitle: Text(
             '${ts}\n${entry.comment ?? '-'}',

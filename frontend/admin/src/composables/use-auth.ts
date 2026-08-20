@@ -84,21 +84,39 @@ const REFRESH_TOKEN_REFRESH_INTERVAL = 12 * 60 * 60 * 1000;
 // ==============================
 
 // OA 后端鉴权转发仅提供 Login/Logout/RefreshToken/GenerateCaptcha/VerifyCaptcha，
-// 无 getMe / getMyPermissionCode / registerUser（依赖 cms identity/permission 服务，
-// OA 未含）。故 fetchUserInfo / fetchAccessCodes / register 均为 stub。
-// frontend accessMode 下，路由由 routes/modules 前端模块 + meta.authority 过滤，
-// 不依赖 accessCodes；userInfo 仅需 homePath 供登录后跳转。
-async function fetchUserInfo(): Promise<UserInfo | null> {
+// 无 getMe / getMyPermissionCode / registerUser（依赖 identity/permission 域，
+// OA v1 未含）。userInfo 从本地保存的 accessToken JWT payload 解出（uid/sub/tid/roc），
+// 仅作展示与角色填充用——鉴权以服务端 ValidateToken 为准，前端解码不可信。
+// accessCodes 无来源，恒为空数组（OA 路由未使用 authority 过滤）。
+function decodeJwtPayload(token: string): Record<string, any> | null {
+  try {
+    const part = token.split(".")[1];
+    if (!part) return null;
+    const normalized = part.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+    return JSON.parse(decodeURIComponent(escape(atob(padded))));
+  } catch {
+    return null;
+  }
+}
+
+function fetchUserInfo(): UserInfo | null {
+  const accessStore = useAccessStore();
+  const token = accessStore.accessToken ?? "";
+  const claims = token ? decodeJwtPayload(String(token)) : null;
+
+  const username = claims?.sub ? String(claims.sub) : "";
   return {
-    id: 0,
-    username: "",
-    nickname: "",
-    realname: "",
+    id: claims?.uid ? Number(claims.uid) : 0,
+    username,
+    nickname: username,
+    realname: username,
     avatar: "",
     description: "",
     homePath: DEFAULT_HOME_PATH,
     token: "",
-    tenantId: 0,
+    roles: Array.isArray(claims?.roc) ? claims.roc.map(String) : [],
+    tenantId: claims?.tid ? Number(claims.tid) : 0,
   };
 }
 

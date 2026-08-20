@@ -15,6 +15,8 @@ import 'package:flutter_app/src/features/oa/pages/task_detail/oa_task_detail_pag
 import 'package:flutter_app/src/features/oa/pages/submit_apply/oa_submit_apply_page.dart';
 import 'package:flutter_app/src/features/oa/pages/notifications/oa_notifications_page.dart';
 import 'package:flutter_app/src/features/oa/pages/attendance/oa_attendance_page.dart';
+import 'package:flutter_app/src/features/oa/pages/leave/oa_leave_page.dart';
+import 'package:flutter_app/src/features/oa/pages/expense/oa_expense_page.dart';
 
 /// OA 移动端路由。
 ///
@@ -74,12 +76,26 @@ class AppRouter {
           ),
         ],
       ),
-      // ── 提交申请（非 Shell，全屏表单） ───────────────
+      // ── 提交申请 / 请假 / 报销（非 Shell，全屏表单） ──
       GoRoute(
         name: RouteNames.oaSubmitApply,
         path: constants.AppRoutePath.oaSubmitApply,
         builder: (context, state) {
           return const OaSubmitApplyPage();
+        },
+      ),
+      GoRoute(
+        name: RouteNames.oaLeave,
+        path: constants.AppRoutePath.oaLeave,
+        builder: (context, state) {
+          return const OaLeavePage();
+        },
+      ),
+      GoRoute(
+        name: RouteNames.oaExpense,
+        path: constants.AppRoutePath.oaExpense,
+        builder: (context, state) {
+          return const OaExpensePage();
         },
       ),
       // ── 登录（非 Shell） ────────────────────────────
@@ -93,17 +109,21 @@ class AppRouter {
     ],
   );
 
-  /// 路由守卫：未登录 → /login；已登录访问 /login → /。
+  /// 路由守卫：未登录 → /login；已登录访问 /login → 待办列表。
+  ///
+  /// `/` 无对应页面（登录页返回键、404 页返回首页均跳 `/`），在此统一
+  /// 重定向到工作流待办 Tab，避免落入 errorBuilder 的 404。
   static FutureOr<String?> _guard(BuildContext context, GoRouterState state) {
     final authCache = GetIt.instance<UserAuthCache>();
     final loggedIn = authCache.hasLogin;
-    final isLoginRoute = state.matchedLocation == constants.AppRoutePath.login;
+    final location = state.matchedLocation;
+    final isLoginRoute = location == constants.AppRoutePath.login;
 
     if (!loggedIn && !isLoginRoute) {
       return constants.AppRoutePath.login;
     }
-    if (loggedIn && isLoginRoute) {
-      return constants.AppRoutePath.initial;
+    if (loggedIn && (isLoginRoute || location == constants.AppRoutePath.initial)) {
+      return constants.AppRoutePath.oaTaskList;
     }
     return null;
   }

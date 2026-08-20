@@ -2,7 +2,9 @@
   "oa": {
     "moduleName": "OA Workflow",
     "definition": "Workflow Definition",
-    "attendanceFence": "Attendance Fence",
-    "attendanceWifi": "Attendance Wi-Fi"
+    "attendanceRecords": "Attendance Records",
+    "leave": "Leave Management",
+    "expense": "Expense Management",
+    "approval": "Approval Center"
   }
 }
