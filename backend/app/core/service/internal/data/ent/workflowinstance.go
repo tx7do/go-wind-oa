@@ -3,7 +3,6 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
@@ -14,7 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// OA工作流实例表
+// OA 工作流实例表
 type WorkflowInstance struct {
 	config `json:"-"`
 	// ID of the ent.
@@ -34,16 +33,16 @@ type WorkflowInstance struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 备注
-	Remark *string `json:"remark,omitempty"`
-	// 申请标题
-	Title *string `json:"title,omitempty"`
-	// 申请表单数据(JSON)
-	FormData any `json:"form_data,omitempty"`
 	// 实例状态
-	InstanceStatus workflowinstance.InstanceStatus `json:"instance_status,omitempty"`
-	// 当前节点序号
-	CurrentNodeIndex *int32 `json:"current_node_index,omitempty"`
+	InstanceStatus *workflowinstance.InstanceStatus `json:"instance_status,omitempty"`
+	// 当前节点索引
+	CurrentNodeIndex *int `json:"current_node_index,omitempty"`
+	// 申请表单数据（JSON 文本）
+	FormData *string `json:"form_data,omitempty"`
+	// 业务单据类型（LEAVE/EXPENSE 等，审批终结时回调业务模块）
+	BusinessType *string `json:"business_type,omitempty"`
+	// 业务单据ID
+	BusinessID *uint32 `json:"business_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WorkflowInstanceQuery when eager-loading is set.
 	Edges         WorkflowInstanceEdges `json:"edges"`
@@ -98,11 +97,9 @@ func (*WorkflowInstance) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case workflowinstance.FieldFormData:
-			values[i] = new([]byte)
-		case workflowinstance.FieldID, workflowinstance.FieldCreatedBy, workflowinstance.FieldUpdatedBy, workflowinstance.FieldDeletedBy, workflowinstance.FieldTenantID, workflowinstance.FieldCurrentNodeIndex:
+		case workflowinstance.FieldID, workflowinstance.FieldCreatedBy, workflowinstance.FieldUpdatedBy, workflowinstance.FieldDeletedBy, workflowinstance.FieldTenantID, workflowinstance.FieldCurrentNodeIndex, workflowinstance.FieldBusinessID:
 			values[i] = new(sql.NullInt64)
-		case workflowinstance.FieldRemark, workflowinstance.FieldTitle, workflowinstance.FieldInstanceStatus:
+		case workflowinstance.FieldInstanceStatus, workflowinstance.FieldFormData, workflowinstance.FieldBusinessType:
 			values[i] = new(sql.NullString)
 		case workflowinstance.FieldCreatedAt, workflowinstance.FieldUpdatedAt, workflowinstance.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -178,40 +175,40 @@ func (_m *WorkflowInstance) assignValues(columns []string, values []any) error {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
 			}
-		case workflowinstance.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
-			} else if value.Valid {
-				_m.Remark = new(string)
-				*_m.Remark = value.String
-			}
-		case workflowinstance.FieldTitle:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field title", values[i])
-			} else if value.Valid {
-				_m.Title = new(string)
-				*_m.Title = value.String
-			}
-		case workflowinstance.FieldFormData:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field form_data", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.FormData); err != nil {
-					return fmt.Errorf("unmarshal field form_data: %w", err)
-				}
-			}
 		case workflowinstance.FieldInstanceStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field instance_status", values[i])
 			} else if value.Valid {
-				_m.InstanceStatus = workflowinstance.InstanceStatus(value.String)
+				_m.InstanceStatus = new(workflowinstance.InstanceStatus)
+				*_m.InstanceStatus = workflowinstance.InstanceStatus(value.String)
 			}
 		case workflowinstance.FieldCurrentNodeIndex:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field current_node_index", values[i])
 			} else if value.Valid {
-				_m.CurrentNodeIndex = new(int32)
-				*_m.CurrentNodeIndex = int32(value.Int64)
+				_m.CurrentNodeIndex = new(int)
+				*_m.CurrentNodeIndex = int(value.Int64)
+			}
+		case workflowinstance.FieldFormData:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field form_data", values[i])
+			} else if value.Valid {
+				_m.FormData = new(string)
+				*_m.FormData = value.String
+			}
+		case workflowinstance.FieldBusinessType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_type", values[i])
+			} else if value.Valid {
+				_m.BusinessType = new(string)
+				*_m.BusinessType = value.String
+			}
+		case workflowinstance.FieldBusinessID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field business_id", values[i])
+			} else if value.Valid {
+				_m.BusinessID = new(uint32)
+				*_m.BusinessID = uint32(value.Int64)
 			}
 		case workflowinstance.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -306,24 +303,28 @@ func (_m *WorkflowInstance) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.Remark; v != nil {
-		builder.WriteString("remark=")
-		builder.WriteString(*v)
+	if v := _m.InstanceStatus; v != nil {
+		builder.WriteString("instance_status=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	builder.WriteString(", ")
-	if v := _m.Title; v != nil {
-		builder.WriteString("title=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	builder.WriteString("form_data=")
-	builder.WriteString(fmt.Sprintf("%v", _m.FormData))
-	builder.WriteString(", ")
-	builder.WriteString("instance_status=")
-	builder.WriteString(fmt.Sprintf("%v", _m.InstanceStatus))
 	builder.WriteString(", ")
 	if v := _m.CurrentNodeIndex; v != nil {
 		builder.WriteString("current_node_index=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.FormData; v != nil {
+		builder.WriteString("form_data=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.BusinessType; v != nil {
+		builder.WriteString("business_type=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.BusinessID; v != nil {
+		builder.WriteString("business_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

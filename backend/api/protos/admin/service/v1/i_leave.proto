@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination/v1/pagination.proto";
+
+import "oa/service/v1/leave.proto";
+
+// OA 请假管理服务（admin 边端）
+service LeaveService {
+  // 创建请假类型
+  rpc CreateLeaveType(oa.service.v1.CreateLeaveTypeRequest) returns (oa.service.v1.LeaveType) {
+    option (google.api.http) = {
+      post: "/admin/v1/oa/leave/types"
+      body: "*"
+    };
+  }
+
+  // 查询请假类型列表
+  rpc ListLeaveTypes(pagination.PagingRequest) returns (oa.service.v1.ListLeaveTypesResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/leave/types"
+    };
+  }
+
+  // 授予/调整用户假期额度
+  rpc GrantLeaveBalance(oa.service.v1.GrantLeaveBalanceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/oa/leave/balances"
+      body: "*"
+    };
+  }
+
+  // 查询假期额度
+  rpc ListLeaveBalances(oa.service.v1.ListLeaveBalancesRequest) returns (oa.service.v1.ListLeaveBalancesResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/leave/balances"
+    };
+  }
+
+  // 查询请假申请列表
+  rpc ListLeaveApplications(oa.service.v1.ListLeaveApplicationsRequest) returns (oa.service.v1.ListLeaveApplicationsResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/leave/applications"
+    };
+  }
+
+  // 查询请假申请详情
+  rpc GetLeaveApplication(oa.service.v1.GetLeaveApplicationRequest) returns (oa.service.v1.LeaveApplication) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/leave/applications/{id}"
+    };
+  }
+}

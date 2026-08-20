@@ -1,83 +1,111 @@
-# OA 模块的 buf Go 桩代码生成配置。
-#
-# OA 專屬調整：
-#   - go_package_prefix 與所有 per-directory override 均指向 go-wind-oa/api/gen/go；
-#   - inputs.paths 過濾為 OA 保留的 6 個 proto 域，避免 buf 對已刪域報錯。
-#
-# 保留域（對應 api/protos/ 下的實際 proto）：
-#   oa/service/v1, internal_message/service/v1, authentication/service/v1,
-#   identity/service/v1, admin/service/v1, app/service/v1
-#
-# 插件栈：protoc-gen-go / -go-grpc / -go-http / -go-errors / -validate。
 version: v2
+
 clean: true
+
 managed:
   enabled: true
-  # disable managed 模式对所有 remote 依赖模块生效 —— 與 cms 同構。
-  # 否则 managed 会改写 google.api / pagination / validate 等远程 proto 的
-  # go_package，导致下游 import 路径错乱、编译失败。
+
   disable:
     - module: buf.build/googleapis/googleapis
     - module: 'buf.build/envoyproxy/protoc-gen-validate'
     - module: 'buf.build/kratos/apis'
-    - module: buf.build/gnostic/gnostic
-    - module: buf.build/gogo/protobuf
-    - module: buf.build/tx7do/pagination
-    - module: buf.build/go-wind/redact
+    - module: 'buf.build/gnostic/gnostic'
+    - module: 'buf.build/gogo/protobuf'
+    - module: 'buf.build/tx7do/pagination'
+    - module: 'buf.build/go-wind/redact'
+
   override:
+    # global go_package_prefix option
+    # 如果没有在各目录下单独配置go_package，则会使用该前缀。
     - file_option: go_package_prefix
       value: go-wind-oa/api/gen/go
-    # per-directory go_package：value 第一部分是生成代碼的包路徑，第二部分是 go 包名。
-    # 5 個保留域全部指向 go-wind-oa 倉內（這些 proto 已從 cms 拷到 OA 倉，生成樁也該在 OA 倉）。
-    - file_option: go_package
-      path: oa/service/v1
-      value: go-wind-oa/api/gen/go/oa/service/v1;oapb
-    - file_option: go_package
-      path: internal_message/service/v1
-      value: go-wind-oa/api/gen/go/internal_message/service/v1;internalmessagepb
-    - file_option: go_package
-      path: authentication/service/v1
-      value: go-wind-oa/api/gen/go/authentication/service/v1;authenticationpb
-    - file_option: go_package
-      path: identity/service/v1
-      value: go-wind-oa/api/gen/go/identity/service/v1;identitypb
+
+    # per-directory go_package options
+    # value第一部分是生成代码的包路径，第二部分是go包名。
     - file_option: go_package
       path: admin/service/v1
       value: go-wind-oa/api/gen/go/admin/service/v1;adminpb
     - file_option: go_package
-      path: app/service/v1
-      value: go-wind-oa/api/gen/go/app/service/v1;apppb
+      path: audit/service/v1
+      value: go-wind-oa/api/gen/go/audit/service/v1;auditpb
+    - file_option: go_package
+      path: authentication/service/v1
+      value: go-wind-oa/api/gen/go/authentication/service/v1;authenticationpb
+    - file_option: go_package
+      path: dict/service/v1
+      value: go-wind-oa/api/gen/go/dict/service/v1;dictpb
+    - file_option: go_package
+      path: storage/service/v1
+      value: go-wind-oa/api/gen/go/storage/service/v1;storagepb
+    - file_option: go_package
+      path: internal_message/service/v1
+      value: go-wind-oa/api/gen/go/internal_message/service/v1;internalmessagepb
+    - file_option: go_package
+      path: permission/service/v1
+      value: go-wind-oa/api/gen/go/permission/service/v1;permissionpb
+    - file_option: go_package
+      path: task/service/v1
+      value: go-wind-oa/api/gen/go/task/service/v1;taskpb
+    - file_option: go_package
+      path: identity/service/v1
+      value: go-wind-oa/api/gen/go/identity/service/v1;identitypb
+    - file_option: go_package
+      path: resource/service/v1
+      value: go-wind-oa/api/gen/go/permission/service/v1;resourcepb
 
-inputs:
-  - directory: protos
-    paths:
-      - protos/oa/service/v1
-      - protos/internal_message/service/v1
-      - protos/authentication/service/v1
-      - protos/identity/service/v1
-      - protos/admin/service/v1
-      - protos/app/service/v1
+    - file_option: go_package
+      path: content/service/v1
+      value: go-wind-oa/api/gen/go/content/service/v1;contentpb
+    - file_option: go_package
+      path: comment/service/v1
+      value: go-wind-oa/api/gen/go/comment/service/v1;commentpb
+    - file_option: go_package
+      path: interaction/service/v1
+      value: go-wind-oa/api/gen/go/interaction/service/v1;interactionpb
+    - file_option: go_package
+      path: media/service/v1
+      value: go-wind-oa/api/gen/go/media/service/v1;mediapb
+    - file_option: go_package
+      path: oa/service/v1
+      value: go-wind-oa/api/gen/go/oa/service/v1;oapb
 
 plugins:
   # generate go code
+  #- plugin: buf.build/protocolbuffers/go
   - local: protoc-gen-go
     out: gen/go
-    opt: paths=source_relative
+    opt: paths=source_relative # use relative paths
+
   # generate grpc service code
+  #- plugin: buf.build/grpc/go
   - local: protoc-gen-go-grpc
     out: gen/go
-    opt: [paths=source_relative]
+    opt:
+      - paths=source_relative # use relative paths
+
   # generate rest service code
   - local: protoc-gen-go-http
     out: gen/go
-    opt: [paths=source_relative]
+    opt:
+      - paths=source_relative # use relative paths
+
   # generate kratos errors code
   - local: protoc-gen-go-errors
     out: gen/go
-    opt: [paths=source_relative]
+    opt:
+      - paths=source_relative # use relative paths
+
   # generate message validator code
+  #- plugin: buf.build/bufbuild/validate-go
   - local: protoc-gen-validate
     out: gen/go
     opt:
-      - paths=source_relative
+      - paths=source_relative # use relative paths
+      - lang=go
+
+  # generate redact code
+  - local: protoc-gen-go-redact
+    out: gen/go
+    opt:
+      - paths=source_relative # use relative paths
       - lang=go

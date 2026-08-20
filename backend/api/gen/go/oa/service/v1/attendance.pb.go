@@ -7,11 +7,12 @@
 package oapb
 
 import (
-	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	_ "github.com/google/gnostic/openapiv3"
+	_ "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -25,69 +26,344 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type CheckInResponse_CheckResult int32
+// 当日结算结果
+type AttendanceRecord_DayResult int32
 
 const (
-	CheckInResponse_DENIED   CheckInResponse_CheckResult = 0
-	CheckInResponse_IN_FENCE CheckInResponse_CheckResult = 1
-	CheckInResponse_IN_WIFI  CheckInResponse_CheckResult = 2
+	AttendanceRecord_PENDING     AttendanceRecord_DayResult = 0 // 未结算（未签退或未触发结算）
+	AttendanceRecord_NORMAL      AttendanceRecord_DayResult = 1 // 正常
+	AttendanceRecord_LATE        AttendanceRecord_DayResult = 2 // 迟到
+	AttendanceRecord_EARLY_LEAVE AttendanceRecord_DayResult = 3 // 早退
+	AttendanceRecord_ABSENT      AttendanceRecord_DayResult = 4 // 旷工
+	AttendanceRecord_ON_LEAVE    AttendanceRecord_DayResult = 5 // 请假（已通过的请假单覆盖当日）
 )
 
-// Enum value maps for CheckInResponse_CheckResult.
+// Enum value maps for AttendanceRecord_DayResult.
 var (
-	CheckInResponse_CheckResult_name = map[int32]string{
-		0: "DENIED",
-		1: "IN_FENCE",
-		2: "IN_WIFI",
+	AttendanceRecord_DayResult_name = map[int32]string{
+		0: "PENDING",
+		1: "NORMAL",
+		2: "LATE",
+		3: "EARLY_LEAVE",
+		4: "ABSENT",
+		5: "ON_LEAVE",
 	}
-	CheckInResponse_CheckResult_value = map[string]int32{
-		"DENIED":   0,
-		"IN_FENCE": 1,
-		"IN_WIFI":  2,
+	AttendanceRecord_DayResult_value = map[string]int32{
+		"PENDING":     0,
+		"NORMAL":      1,
+		"LATE":        2,
+		"EARLY_LEAVE": 3,
+		"ABSENT":      4,
+		"ON_LEAVE":    5,
 	}
 )
 
-func (x CheckInResponse_CheckResult) Enum() *CheckInResponse_CheckResult {
-	p := new(CheckInResponse_CheckResult)
+func (x AttendanceRecord_DayResult) Enum() *AttendanceRecord_DayResult {
+	p := new(AttendanceRecord_DayResult)
 	*p = x
 	return p
 }
 
-func (x CheckInResponse_CheckResult) String() string {
+func (x AttendanceRecord_DayResult) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (CheckInResponse_CheckResult) Descriptor() protoreflect.EnumDescriptor {
+func (AttendanceRecord_DayResult) Descriptor() protoreflect.EnumDescriptor {
 	return file_oa_service_v1_attendance_proto_enumTypes[0].Descriptor()
 }
 
-func (CheckInResponse_CheckResult) Type() protoreflect.EnumType {
+func (AttendanceRecord_DayResult) Type() protoreflect.EnumType {
 	return &file_oa_service_v1_attendance_proto_enumTypes[0]
 }
 
-func (x CheckInResponse_CheckResult) Number() protoreflect.EnumNumber {
+func (x AttendanceRecord_DayResult) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use CheckInResponse_CheckResult.Descriptor instead.
-func (CheckInResponse_CheckResult) EnumDescriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{1, 0}
+// Deprecated: Use AttendanceRecord_DayResult.Descriptor instead.
+func (AttendanceRecord_DayResult) EnumDescriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{0, 0}
 }
 
+// 打卡记录（用户 x 工作日 唯一）
+type AttendanceRecord struct {
+	state             protoimpl.MessageState      `protogen:"open.v1"`
+	Id                *uint32                     `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                               // 记录ID
+	UserId            *uint32                     `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                         // 用户ID
+	UserName          *string                     `protobuf:"bytes,13,opt,name=user_name,json=userName,proto3,oneof" json:"user_name,omitempty"`                                                   // 用户姓名
+	WorkDate          *timestamppb.Timestamp      `protobuf:"bytes,3,opt,name=work_date,json=workDate,proto3,oneof" json:"work_date,omitempty"`                                                    // 工作日
+	CheckInAt         *timestamppb.Timestamp      `protobuf:"bytes,4,opt,name=check_in_at,json=checkInAt,proto3,oneof" json:"check_in_at,omitempty"`                                               // 上班签到时间
+	CheckInLatitude   *float64                    `protobuf:"fixed64,5,opt,name=check_in_latitude,json=checkInLatitude,proto3,oneof" json:"check_in_latitude,omitempty"`                           // 签到 GPS 纬度
+	CheckInLongitude  *float64                    `protobuf:"fixed64,6,opt,name=check_in_longitude,json=checkInLongitude,proto3,oneof" json:"check_in_longitude,omitempty"`                        // 签到 GPS 经度
+	CheckInWifiBssid  *string                     `protobuf:"bytes,7,opt,name=check_in_wifi_bssid,json=checkInWifiBssid,proto3,oneof" json:"check_in_wifi_bssid,omitempty"`                        // 签到 Wifi BSSID
+	CheckOutAt        *timestamppb.Timestamp      `protobuf:"bytes,8,opt,name=check_out_at,json=checkOutAt,proto3,oneof" json:"check_out_at,omitempty"`                                            // 下班签退时间
+	CheckOutLatitude  *float64                    `protobuf:"fixed64,9,opt,name=check_out_latitude,json=checkOutLatitude,proto3,oneof" json:"check_out_latitude,omitempty"`                        // 签退 GPS 纬度
+	CheckOutLongitude *float64                    `protobuf:"fixed64,10,opt,name=check_out_longitude,json=checkOutLongitude,proto3,oneof" json:"check_out_longitude,omitempty"`                    // 签退 GPS 经度
+	CheckOutWifiBssid *string                     `protobuf:"bytes,11,opt,name=check_out_wifi_bssid,json=checkOutWifiBssid,proto3,oneof" json:"check_out_wifi_bssid,omitempty"`                    // 签退 Wifi BSSID
+	DayResult         *AttendanceRecord_DayResult `protobuf:"varint,12,opt,name=day_result,json=dayResult,proto3,enum=oa.service.v1.AttendanceRecord_DayResult,oneof" json:"day_result,omitempty"` // 当日结算结果
+	TenantId          *uint32                     `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                  // 租户ID
+	CreatedBy         *uint32                     `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
+	UpdatedBy         *uint32                     `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
+	CreatedAt         *timestamppb.Timestamp      `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	UpdatedAt         *timestamppb.Timestamp      `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AttendanceRecord) Reset() {
+	*x = AttendanceRecord{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AttendanceRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttendanceRecord) ProtoMessage() {}
+
+func (x *AttendanceRecord) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AttendanceRecord.ProtoReflect.Descriptor instead.
+func (*AttendanceRecord) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *AttendanceRecord) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *AttendanceRecord) GetUserId() uint32 {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return 0
+}
+
+func (x *AttendanceRecord) GetUserName() string {
+	if x != nil && x.UserName != nil {
+		return *x.UserName
+	}
+	return ""
+}
+
+func (x *AttendanceRecord) GetWorkDate() *timestamppb.Timestamp {
+	if x != nil {
+		return x.WorkDate
+	}
+	return nil
+}
+
+func (x *AttendanceRecord) GetCheckInAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CheckInAt
+	}
+	return nil
+}
+
+func (x *AttendanceRecord) GetCheckInLatitude() float64 {
+	if x != nil && x.CheckInLatitude != nil {
+		return *x.CheckInLatitude
+	}
+	return 0
+}
+
+func (x *AttendanceRecord) GetCheckInLongitude() float64 {
+	if x != nil && x.CheckInLongitude != nil {
+		return *x.CheckInLongitude
+	}
+	return 0
+}
+
+func (x *AttendanceRecord) GetCheckInWifiBssid() string {
+	if x != nil && x.CheckInWifiBssid != nil {
+		return *x.CheckInWifiBssid
+	}
+	return ""
+}
+
+func (x *AttendanceRecord) GetCheckOutAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CheckOutAt
+	}
+	return nil
+}
+
+func (x *AttendanceRecord) GetCheckOutLatitude() float64 {
+	if x != nil && x.CheckOutLatitude != nil {
+		return *x.CheckOutLatitude
+	}
+	return 0
+}
+
+func (x *AttendanceRecord) GetCheckOutLongitude() float64 {
+	if x != nil && x.CheckOutLongitude != nil {
+		return *x.CheckOutLongitude
+	}
+	return 0
+}
+
+func (x *AttendanceRecord) GetCheckOutWifiBssid() string {
+	if x != nil && x.CheckOutWifiBssid != nil {
+		return *x.CheckOutWifiBssid
+	}
+	return ""
+}
+
+func (x *AttendanceRecord) GetDayResult() AttendanceRecord_DayResult {
+	if x != nil && x.DayResult != nil {
+		return *x.DayResult
+	}
+	return AttendanceRecord_PENDING
+}
+
+func (x *AttendanceRecord) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
+func (x *AttendanceRecord) GetCreatedBy() uint32 {
+	if x != nil && x.CreatedBy != nil {
+		return *x.CreatedBy
+	}
+	return 0
+}
+
+func (x *AttendanceRecord) GetUpdatedBy() uint32 {
+	if x != nil && x.UpdatedBy != nil {
+		return *x.UpdatedBy
+	}
+	return 0
+}
+
+func (x *AttendanceRecord) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *AttendanceRecord) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+// 考勤设置（每租户一行）
+type AttendanceSetting struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                             // 设置ID
+	WorkStartTime *string                `protobuf:"bytes,2,opt,name=work_start_time,json=workStartTime,proto3,oneof" json:"work_start_time,omitempty"` // 上班时间
+	WorkEndTime   *string                `protobuf:"bytes,3,opt,name=work_end_time,json=workEndTime,proto3,oneof" json:"work_end_time,omitempty"`       // 下班时间
+	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                // 租户ID
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AttendanceSetting) Reset() {
+	*x = AttendanceSetting{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AttendanceSetting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttendanceSetting) ProtoMessage() {}
+
+func (x *AttendanceSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AttendanceSetting.ProtoReflect.Descriptor instead.
+func (*AttendanceSetting) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AttendanceSetting) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *AttendanceSetting) GetWorkStartTime() string {
+	if x != nil && x.WorkStartTime != nil {
+		return *x.WorkStartTime
+	}
+	return ""
+}
+
+func (x *AttendanceSetting) GetWorkEndTime() string {
+	if x != nil && x.WorkEndTime != nil {
+		return *x.WorkEndTime
+	}
+	return ""
+}
+
+func (x *AttendanceSetting) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
+func (x *AttendanceSetting) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *AttendanceSetting) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+// 打卡 - 请求
 type CheckInRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// 打卡提交的 GPS 坐标（WGS84）。
-	Longitude *float64 `protobuf:"fixed64,1,opt,name=longitude,proto3,oneof" json:"longitude,omitempty"`
-	Latitude  *float64 `protobuf:"fixed64,2,opt,name=latitude,proto3,oneof" json:"latitude,omitempty"`
-	// 打卡时连接 Wi-Fi 的 BSSID（如可用）。
-	Bssid         *string `protobuf:"bytes,3,opt,name=bssid,proto3,oneof" json:"bssid,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Latitude      float64                `protobuf:"fixed64,1,opt,name=latitude,proto3" json:"latitude,omitempty"`                  // GPS 纬度
+	Longitude     float64                `protobuf:"fixed64,2,opt,name=longitude,proto3" json:"longitude,omitempty"`                // GPS 经度
+	WifiBssid     string                 `protobuf:"bytes,3,opt,name=wifi_bssid,json=wifiBssid,proto3" json:"wifi_bssid,omitempty"` // Wifi BSSID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CheckInRequest) Reset() {
 	*x = CheckInRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[0]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -99,7 +375,7 @@ func (x *CheckInRequest) String() string {
 func (*CheckInRequest) ProtoMessage() {}
 
 func (x *CheckInRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[0]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -112,244 +388,53 @@ func (x *CheckInRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckInRequest.ProtoReflect.Descriptor instead.
 func (*CheckInRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *CheckInRequest) GetLongitude() float64 {
-	if x != nil && x.Longitude != nil {
-		return *x.Longitude
-	}
-	return 0
-}
-
-func (x *CheckInRequest) GetLatitude() float64 {
-	if x != nil && x.Latitude != nil {
-		return *x.Latitude
-	}
-	return 0
-}
-
-func (x *CheckInRequest) GetBssid() string {
-	if x != nil && x.Bssid != nil {
-		return *x.Bssid
-	}
-	return ""
-}
-
-type CheckInResponse struct {
-	state         protoimpl.MessageState       `protogen:"open.v1"`
-	CheckResult   *CheckInResponse_CheckResult `protobuf:"varint,1,opt,name=check_result,json=checkResult,proto3,enum=oa.service.v1.CheckInResponse_CheckResult,oneof" json:"check_result,omitempty"`
-	Message       *string                      `protobuf:"bytes,2,opt,name=message,proto3,oneof" json:"message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CheckInResponse) Reset() {
-	*x = CheckInResponse{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CheckInResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CheckInResponse) ProtoMessage() {}
-
-func (x *CheckInResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CheckInResponse.ProtoReflect.Descriptor instead.
-func (*CheckInResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *CheckInResponse) GetCheckResult() CheckInResponse_CheckResult {
-	if x != nil && x.CheckResult != nil {
-		return *x.CheckResult
-	}
-	return CheckInResponse_DENIED
-}
-
-func (x *CheckInResponse) GetMessage() string {
-	if x != nil && x.Message != nil {
-		return *x.Message
-	}
-	return ""
-}
-
-type AttendanceFence struct {
-	state     protoimpl.MessageState `protogen:"open.v1"`
-	Id        *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
-	Name      *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
-	Longitude *float64               `protobuf:"fixed64,3,opt,name=longitude,proto3,oneof" json:"longitude,omitempty"`
-	Latitude  *float64               `protobuf:"fixed64,4,opt,name=latitude,proto3,oneof" json:"latitude,omitempty"`
-	Radius    *float64               `protobuf:"fixed64,5,opt,name=radius,proto3,oneof" json:"radius,omitempty"`
-	// ---- 租户 / 审计字段（固定字段号约定） ----
-	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`
-	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`
-	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
-	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
-	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
-	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *AttendanceFence) Reset() {
-	*x = AttendanceFence{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AttendanceFence) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AttendanceFence) ProtoMessage() {}
-
-func (x *AttendanceFence) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use AttendanceFence.ProtoReflect.Descriptor instead.
-func (*AttendanceFence) Descriptor() ([]byte, []int) {
 	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *AttendanceFence) GetId() uint32 {
-	if x != nil && x.Id != nil {
-		return *x.Id
+func (x *CheckInRequest) GetLatitude() float64 {
+	if x != nil {
+		return x.Latitude
 	}
 	return 0
 }
 
-func (x *AttendanceFence) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
+func (x *CheckInRequest) GetLongitude() float64 {
+	if x != nil {
+		return x.Longitude
+	}
+	return 0
+}
+
+func (x *CheckInRequest) GetWifiBssid() string {
+	if x != nil {
+		return x.WifiBssid
 	}
 	return ""
 }
 
-func (x *AttendanceFence) GetLongitude() float64 {
-	if x != nil && x.Longitude != nil {
-		return *x.Longitude
-	}
-	return 0
-}
-
-func (x *AttendanceFence) GetLatitude() float64 {
-	if x != nil && x.Latitude != nil {
-		return *x.Latitude
-	}
-	return 0
-}
-
-func (x *AttendanceFence) GetRadius() float64 {
-	if x != nil && x.Radius != nil {
-		return *x.Radius
-	}
-	return 0
-}
-
-func (x *AttendanceFence) GetTenantId() uint32 {
-	if x != nil && x.TenantId != nil {
-		return *x.TenantId
-	}
-	return 0
-}
-
-func (x *AttendanceFence) GetTenantName() string {
-	if x != nil && x.TenantName != nil {
-		return *x.TenantName
-	}
-	return ""
-}
-
-func (x *AttendanceFence) GetCreatedBy() uint32 {
-	if x != nil && x.CreatedBy != nil {
-		return *x.CreatedBy
-	}
-	return 0
-}
-
-func (x *AttendanceFence) GetUpdatedBy() uint32 {
-	if x != nil && x.UpdatedBy != nil {
-		return *x.UpdatedBy
-	}
-	return 0
-}
-
-func (x *AttendanceFence) GetDeletedBy() uint32 {
-	if x != nil && x.DeletedBy != nil {
-		return *x.DeletedBy
-	}
-	return 0
-}
-
-func (x *AttendanceFence) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *AttendanceFence) GetUpdatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return nil
-}
-
-func (x *AttendanceFence) GetDeletedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.DeletedAt
-	}
-	return nil
-}
-
-type CreateAttendanceFenceRequest struct {
+// 查询本人记录 - 请求
+type GetMyAttendanceRecordsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          *AttendanceFence       `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	StartDate     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"` // 开始日期
+	EndDate       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`       // 结束日期
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateAttendanceFenceRequest) Reset() {
-	*x = CreateAttendanceFenceRequest{}
+func (x *GetMyAttendanceRecordsRequest) Reset() {
+	*x = GetMyAttendanceRecordsRequest{}
 	mi := &file_oa_service_v1_attendance_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateAttendanceFenceRequest) String() string {
+func (x *GetMyAttendanceRecordsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateAttendanceFenceRequest) ProtoMessage() {}
+func (*GetMyAttendanceRecordsRequest) ProtoMessage() {}
 
-func (x *CreateAttendanceFenceRequest) ProtoReflect() protoreflect.Message {
+func (x *GetMyAttendanceRecordsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_oa_service_v1_attendance_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -361,39 +446,48 @@ func (x *CreateAttendanceFenceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateAttendanceFenceRequest.ProtoReflect.Descriptor instead.
-func (*CreateAttendanceFenceRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetMyAttendanceRecordsRequest.ProtoReflect.Descriptor instead.
+func (*GetMyAttendanceRecordsRequest) Descriptor() ([]byte, []int) {
 	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *CreateAttendanceFenceRequest) GetData() *AttendanceFence {
+func (x *GetMyAttendanceRecordsRequest) GetStartDate() *timestamppb.Timestamp {
 	if x != nil {
-		return x.Data
+		return x.StartDate
 	}
 	return nil
 }
 
-type ListAttendanceFenceRequest struct {
+func (x *GetMyAttendanceRecordsRequest) GetEndDate() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EndDate
+	}
+	return nil
+}
+
+// 查询记录 - 请求（admin）
+type ListAttendanceRecordsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Paging        *v1.PagingRequest      `protobuf:"bytes,1,opt,name=paging,proto3" json:"paging,omitempty"`
+	WorkDate      *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=work_date,json=workDate,proto3" json:"work_date,omitempty"` // 工作日
+	UserId        uint32                 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`      // 用户ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ListAttendanceFenceRequest) Reset() {
-	*x = ListAttendanceFenceRequest{}
+func (x *ListAttendanceRecordsRequest) Reset() {
+	*x = ListAttendanceRecordsRequest{}
 	mi := &file_oa_service_v1_attendance_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ListAttendanceFenceRequest) String() string {
+func (x *ListAttendanceRecordsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListAttendanceFenceRequest) ProtoMessage() {}
+func (*ListAttendanceRecordsRequest) ProtoMessage() {}
 
-func (x *ListAttendanceFenceRequest) ProtoReflect() protoreflect.Message {
+func (x *ListAttendanceRecordsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_oa_service_v1_attendance_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -405,40 +499,48 @@ func (x *ListAttendanceFenceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListAttendanceFenceRequest.ProtoReflect.Descriptor instead.
-func (*ListAttendanceFenceRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListAttendanceRecordsRequest.ProtoReflect.Descriptor instead.
+func (*ListAttendanceRecordsRequest) Descriptor() ([]byte, []int) {
 	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *ListAttendanceFenceRequest) GetPaging() *v1.PagingRequest {
+func (x *ListAttendanceRecordsRequest) GetWorkDate() *timestamppb.Timestamp {
 	if x != nil {
-		return x.Paging
+		return x.WorkDate
 	}
 	return nil
 }
 
-type ListAttendanceFenceResponse struct {
+func (x *ListAttendanceRecordsRequest) GetUserId() uint32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+// 查询记录 - 回应
+type ListAttendanceRecordsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Items         []*AttendanceFence     `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Items         []*AttendanceRecord    `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ListAttendanceFenceResponse) Reset() {
-	*x = ListAttendanceFenceResponse{}
+func (x *ListAttendanceRecordsResponse) Reset() {
+	*x = ListAttendanceRecordsResponse{}
 	mi := &file_oa_service_v1_attendance_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ListAttendanceFenceResponse) String() string {
+func (x *ListAttendanceRecordsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListAttendanceFenceResponse) ProtoMessage() {}
+func (*ListAttendanceRecordsResponse) ProtoMessage() {}
 
-func (x *ListAttendanceFenceResponse) ProtoReflect() protoreflect.Message {
+func (x *ListAttendanceRecordsResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_oa_service_v1_attendance_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -450,48 +552,47 @@ func (x *ListAttendanceFenceResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListAttendanceFenceResponse.ProtoReflect.Descriptor instead.
-func (*ListAttendanceFenceResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListAttendanceRecordsResponse.ProtoReflect.Descriptor instead.
+func (*ListAttendanceRecordsResponse) Descriptor() ([]byte, []int) {
 	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *ListAttendanceFenceResponse) GetItems() []*AttendanceFence {
+func (x *ListAttendanceRecordsResponse) GetItems() []*AttendanceRecord {
 	if x != nil {
 		return x.Items
 	}
 	return nil
 }
 
-func (x *ListAttendanceFenceResponse) GetTotal() uint64 {
+func (x *ListAttendanceRecordsResponse) GetTotal() uint64 {
 	if x != nil {
 		return x.Total
 	}
 	return 0
 }
 
-type UpdateAttendanceFenceRequest struct {
+// 工作日结算 - 请求（admin）
+type RunDailySettlementRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Data          *AttendanceFence       `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	WorkDate      *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=work_date,json=workDate,proto3" json:"work_date,omitempty"` // 结算日期
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UpdateAttendanceFenceRequest) Reset() {
-	*x = UpdateAttendanceFenceRequest{}
+func (x *RunDailySettlementRequest) Reset() {
+	*x = RunDailySettlementRequest{}
 	mi := &file_oa_service_v1_attendance_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UpdateAttendanceFenceRequest) String() string {
+func (x *RunDailySettlementRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UpdateAttendanceFenceRequest) ProtoMessage() {}
+func (*RunDailySettlementRequest) ProtoMessage() {}
 
-func (x *UpdateAttendanceFenceRequest) ProtoReflect() protoreflect.Message {
+func (x *RunDailySettlementRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_oa_service_v1_attendance_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -503,53 +604,40 @@ func (x *UpdateAttendanceFenceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateAttendanceFenceRequest.ProtoReflect.Descriptor instead.
-func (*UpdateAttendanceFenceRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use RunDailySettlementRequest.ProtoReflect.Descriptor instead.
+func (*RunDailySettlementRequest) Descriptor() ([]byte, []int) {
 	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *UpdateAttendanceFenceRequest) GetId() uint32 {
+func (x *RunDailySettlementRequest) GetWorkDate() *timestamppb.Timestamp {
 	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *UpdateAttendanceFenceRequest) GetData() *AttendanceFence {
-	if x != nil {
-		return x.Data
+		return x.WorkDate
 	}
 	return nil
 }
 
-func (x *UpdateAttendanceFenceRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
-	if x != nil {
-		return x.UpdateMask
-	}
-	return nil
-}
-
-type DeleteAttendanceFenceRequest struct {
+// 工作日结算 - 回应
+type RunDailySettlementResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	SettledCount  uint32                 `protobuf:"varint,1,opt,name=settled_count,json=settledCount,proto3" json:"settled_count,omitempty"` // 结算记录数
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DeleteAttendanceFenceRequest) Reset() {
-	*x = DeleteAttendanceFenceRequest{}
+func (x *RunDailySettlementResponse) Reset() {
+	*x = RunDailySettlementResponse{}
 	mi := &file_oa_service_v1_attendance_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DeleteAttendanceFenceRequest) String() string {
+func (x *RunDailySettlementResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeleteAttendanceFenceRequest) ProtoMessage() {}
+func (*RunDailySettlementResponse) ProtoMessage() {}
 
-func (x *DeleteAttendanceFenceRequest) ProtoReflect() protoreflect.Message {
+func (x *RunDailySettlementResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_oa_service_v1_attendance_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -561,323 +649,14 @@ func (x *DeleteAttendanceFenceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteAttendanceFenceRequest.ProtoReflect.Descriptor instead.
-func (*DeleteAttendanceFenceRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use RunDailySettlementResponse.ProtoReflect.Descriptor instead.
+func (*RunDailySettlementResponse) Descriptor() ([]byte, []int) {
 	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *DeleteAttendanceFenceRequest) GetId() uint32 {
+func (x *RunDailySettlementResponse) GetSettledCount() uint32 {
 	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-type AttendanceWifi struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	Id    *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
-	Ssid  *string                `protobuf:"bytes,2,opt,name=ssid,proto3,oneof" json:"ssid,omitempty"`
-	Bssid *string                `protobuf:"bytes,3,opt,name=bssid,proto3,oneof" json:"bssid,omitempty"`
-	// ---- 租户 / 审计字段（固定字段号约定） ----
-	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`
-	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`
-	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
-	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
-	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
-	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *AttendanceWifi) Reset() {
-	*x = AttendanceWifi{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AttendanceWifi) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AttendanceWifi) ProtoMessage() {}
-
-func (x *AttendanceWifi) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use AttendanceWifi.ProtoReflect.Descriptor instead.
-func (*AttendanceWifi) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *AttendanceWifi) GetId() uint32 {
-	if x != nil && x.Id != nil {
-		return *x.Id
-	}
-	return 0
-}
-
-func (x *AttendanceWifi) GetSsid() string {
-	if x != nil && x.Ssid != nil {
-		return *x.Ssid
-	}
-	return ""
-}
-
-func (x *AttendanceWifi) GetBssid() string {
-	if x != nil && x.Bssid != nil {
-		return *x.Bssid
-	}
-	return ""
-}
-
-func (x *AttendanceWifi) GetTenantId() uint32 {
-	if x != nil && x.TenantId != nil {
-		return *x.TenantId
-	}
-	return 0
-}
-
-func (x *AttendanceWifi) GetTenantName() string {
-	if x != nil && x.TenantName != nil {
-		return *x.TenantName
-	}
-	return ""
-}
-
-func (x *AttendanceWifi) GetCreatedBy() uint32 {
-	if x != nil && x.CreatedBy != nil {
-		return *x.CreatedBy
-	}
-	return 0
-}
-
-func (x *AttendanceWifi) GetUpdatedBy() uint32 {
-	if x != nil && x.UpdatedBy != nil {
-		return *x.UpdatedBy
-	}
-	return 0
-}
-
-func (x *AttendanceWifi) GetDeletedBy() uint32 {
-	if x != nil && x.DeletedBy != nil {
-		return *x.DeletedBy
-	}
-	return 0
-}
-
-func (x *AttendanceWifi) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *AttendanceWifi) GetUpdatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return nil
-}
-
-func (x *AttendanceWifi) GetDeletedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.DeletedAt
-	}
-	return nil
-}
-
-type CreateAttendanceWifiRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          *AttendanceWifi        `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateAttendanceWifiRequest) Reset() {
-	*x = CreateAttendanceWifiRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateAttendanceWifiRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateAttendanceWifiRequest) ProtoMessage() {}
-
-func (x *CreateAttendanceWifiRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateAttendanceWifiRequest.ProtoReflect.Descriptor instead.
-func (*CreateAttendanceWifiRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *CreateAttendanceWifiRequest) GetData() *AttendanceWifi {
-	if x != nil {
-		return x.Data
-	}
-	return nil
-}
-
-type ListAttendanceWifiRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Paging        *v1.PagingRequest      `protobuf:"bytes,1,opt,name=paging,proto3" json:"paging,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListAttendanceWifiRequest) Reset() {
-	*x = ListAttendanceWifiRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListAttendanceWifiRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListAttendanceWifiRequest) ProtoMessage() {}
-
-func (x *ListAttendanceWifiRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListAttendanceWifiRequest.ProtoReflect.Descriptor instead.
-func (*ListAttendanceWifiRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *ListAttendanceWifiRequest) GetPaging() *v1.PagingRequest {
-	if x != nil {
-		return x.Paging
-	}
-	return nil
-}
-
-type ListAttendanceWifiResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Items         []*AttendanceWifi      `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListAttendanceWifiResponse) Reset() {
-	*x = ListAttendanceWifiResponse{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListAttendanceWifiResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListAttendanceWifiResponse) ProtoMessage() {}
-
-func (x *ListAttendanceWifiResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[11]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListAttendanceWifiResponse.ProtoReflect.Descriptor instead.
-func (*ListAttendanceWifiResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *ListAttendanceWifiResponse) GetItems() []*AttendanceWifi {
-	if x != nil {
-		return x.Items
-	}
-	return nil
-}
-
-func (x *ListAttendanceWifiResponse) GetTotal() uint64 {
-	if x != nil {
-		return x.Total
-	}
-	return 0
-}
-
-type DeleteAttendanceWifiRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *DeleteAttendanceWifiRequest) Reset() {
-	*x = DeleteAttendanceWifiRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeleteAttendanceWifiRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteAttendanceWifiRequest) ProtoMessage() {}
-
-func (x *DeleteAttendanceWifiRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[12]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteAttendanceWifiRequest.ProtoReflect.Descriptor instead.
-func (*DeleteAttendanceWifiRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *DeleteAttendanceWifiRequest) GetId() uint32 {
-	if x != nil {
-		return x.Id
+		return x.SettledCount
 	}
 	return 0
 }
@@ -886,127 +665,107 @@ var File_oa_service_v1_attendance_proto protoreflect.FileDescriptor
 
 const file_oa_service_v1_attendance_proto_rawDesc = "" +
 	"\n" +
-	"\x1eoa/service/v1/attendance.proto\x12\roa.service.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x94\x01\n" +
-	"\x0eCheckInRequest\x12!\n" +
-	"\tlongitude\x18\x01 \x01(\x01H\x00R\tlongitude\x88\x01\x01\x12\x1f\n" +
-	"\blatitude\x18\x02 \x01(\x01H\x01R\blatitude\x88\x01\x01\x12\x19\n" +
-	"\x05bssid\x18\x03 \x01(\tH\x02R\x05bssid\x88\x01\x01B\f\n" +
+	"\x1eoa/service/v1/attendance.proto\x12\roa.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xeb\r\n" +
+	"\x10AttendanceRecord\x12&\n" +
+	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b记录IDH\x00R\x02id\x88\x01\x01\x12,\n" +
+	"\auser_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x01R\x06userId\x88\x01\x01\x12I\n" +
+	"\tuser_name\x18\r \x01(\tB'\xbaG$\x92\x02!用户姓名（服务端回填）H\x02R\buserName\x88\x01\x01\x12b\n" +
+	"\twork_date\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB$\xbaG!\x92\x02\x1e工作日（日期，零点）H\x03R\bworkDate\x88\x01\x01\x12Y\n" +
+	"\vcheck_in_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12上班签到时间H\x04R\tcheckInAt\x88\x01\x01\x12H\n" +
+	"\x11check_in_latitude\x18\x05 \x01(\x01B\x17\xbaG\x14\x92\x02\x11签到 GPS 纬度H\x05R\x0fcheckInLatitude\x88\x01\x01\x12J\n" +
+	"\x12check_in_longitude\x18\x06 \x01(\x01B\x17\xbaG\x14\x92\x02\x11签到 GPS 经度H\x06R\x10checkInLongitude\x88\x01\x01\x12K\n" +
+	"\x13check_in_wifi_bssid\x18\a \x01(\tB\x17\xbaG\x14\x92\x02\x11签到 Wifi BSSIDH\aR\x10checkInWifiBssid\x88\x01\x01\x12[\n" +
+	"\fcheck_out_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12下班签退时间H\bR\n" +
+	"checkOutAt\x88\x01\x01\x12J\n" +
+	"\x12check_out_latitude\x18\t \x01(\x01B\x17\xbaG\x14\x92\x02\x11签退 GPS 纬度H\tR\x10checkOutLatitude\x88\x01\x01\x12L\n" +
+	"\x13check_out_longitude\x18\n" +
+	" \x01(\x01B\x17\xbaG\x14\x92\x02\x11签退 GPS 经度H\n" +
+	"R\x11checkOutLongitude\x88\x01\x01\x12M\n" +
+	"\x14check_out_wifi_bssid\x18\v \x01(\tB\x17\xbaG\x14\x92\x02\x11签退 Wifi BSSIDH\vR\x11checkOutWifiBssid\x88\x01\x01\x12g\n" +
 	"\n" +
-	"_longitudeB\v\n" +
-	"\t_latitudeB\b\n" +
-	"\x06_bssid\"\xd7\x01\n" +
-	"\x0fCheckInResponse\x12R\n" +
-	"\fcheck_result\x18\x01 \x01(\x0e2*.oa.service.v1.CheckInResponse.CheckResultH\x00R\vcheckResult\x88\x01\x01\x12\x1d\n" +
-	"\amessage\x18\x02 \x01(\tH\x01R\amessage\x88\x01\x01\"4\n" +
-	"\vCheckResult\x12\n" +
+	"day_result\x18\f \x01(\x0e2).oa.service.v1.AttendanceRecord.DayResultB\x18\xbaG\x15\x92\x02\x12当日结算结果H\fR\tdayResult\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18( \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\rR\btenantId\x88\x01\x01\x12;\n" +
 	"\n" +
-	"\x06DENIED\x10\x00\x12\f\n" +
-	"\bIN_FENCE\x10\x01\x12\v\n" +
-	"\aIN_WIFI\x10\x02B\x0f\n" +
-	"\r_check_resultB\n" +
+	"created_by\x18d \x01(\rB\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x0eR\tcreatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"\b_message\"\xc5\x05\n" +
-	"\x0fAttendanceFence\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\rH\x00R\x02id\x88\x01\x01\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tH\x01R\x04name\x88\x01\x01\x12!\n" +
-	"\tlongitude\x18\x03 \x01(\x01H\x02R\tlongitude\x88\x01\x01\x12\x1f\n" +
-	"\blatitude\x18\x04 \x01(\x01H\x03R\blatitude\x88\x01\x01\x12\x1b\n" +
-	"\x06radius\x18\x05 \x01(\x01H\x04R\x06radius\x88\x01\x01\x12 \n" +
-	"\ttenant_id\x18( \x01(\rH\x05R\btenantId\x88\x01\x01\x12$\n" +
-	"\vtenant_name\x18) \x01(\tH\x06R\n" +
-	"tenantName\x88\x01\x01\x12\"\n" +
+	"updated_by\x18e \x01(\rB\x17\xbaG\x14\x92\x02\x11更新者用户IDH\x0fR\tupdatedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_by\x18d \x01(\rH\aR\tcreatedBy\x88\x01\x01\x12\"\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x10R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rH\bR\tupdatedBy\x88\x01\x01\x12\"\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\x11R\tupdatedAt\x88\x01\x01\"Y\n" +
+	"\tDayResult\x12\v\n" +
+	"\aPENDING\x10\x00\x12\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rH\tR\tdeletedBy\x88\x01\x01\x12?\n" +
+	"\x06NORMAL\x10\x01\x12\b\n" +
+	"\x04LATE\x10\x02\x12\x0f\n" +
+	"\vEARLY_LEAVE\x10\x03\x12\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\n" +
-	"R\tcreatedAt\x88\x01\x01\x12?\n" +
+	"\x06ABSENT\x10\x04\x12\f\n" +
+	"\bON_LEAVE\x10\x05B\x05\n" +
+	"\x03_idB\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampH\vR\tupdatedAt\x88\x01\x01\x12?\n" +
+	"\b_user_idB\f\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampH\fR\tdeletedAt\x88\x01\x01B\x05\n" +
-	"\x03_idB\a\n" +
-	"\x05_nameB\f\n" +
+	"_user_nameB\f\n" +
 	"\n" +
-	"_longitudeB\v\n" +
-	"\t_latitudeB\t\n" +
-	"\a_radiusB\f\n" +
+	"_work_dateB\x0e\n" +
+	"\f_check_in_atB\x14\n" +
+	"\x12_check_in_latitudeB\x15\n" +
+	"\x13_check_in_longitudeB\x16\n" +
+	"\x14_check_in_wifi_bssidB\x0f\n" +
+	"\r_check_out_atB\x15\n" +
+	"\x13_check_out_latitudeB\x16\n" +
+	"\x14_check_out_longitudeB\x17\n" +
+	"\x15_check_out_wifi_bssidB\r\n" +
+	"\v_day_resultB\f\n" +
 	"\n" +
-	"_tenant_idB\x0e\n" +
-	"\f_tenant_nameB\r\n" +
+	"_tenant_idB\r\n" +
 	"\v_created_byB\r\n" +
 	"\v_updated_byB\r\n" +
-	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
-	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"R\n" +
-	"\x1cCreateAttendanceFenceRequest\x122\n" +
-	"\x04data\x18\x01 \x01(\v2\x1e.oa.service.v1.AttendanceFenceR\x04data\"O\n" +
-	"\x1aListAttendanceFenceRequest\x121\n" +
-	"\x06paging\x18\x01 \x01(\v2\x19.pagination.PagingRequestR\x06paging\"i\n" +
-	"\x1bListAttendanceFenceResponse\x124\n" +
-	"\x05items\x18\x01 \x03(\v2\x1e.oa.service.v1.AttendanceFenceR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\x9f\x01\n" +
-	"\x1cUpdateAttendanceFenceRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x122\n" +
-	"\x04data\x18\x02 \x01(\v2\x1e.oa.service.v1.AttendanceFenceR\x04data\x12;\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\".\n" +
-	"\x1cDeleteAttendanceFenceRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"\xe2\x04\n" +
-	"\x0eAttendanceWifi\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\rH\x00R\x02id\x88\x01\x01\x12\x17\n" +
-	"\x04ssid\x18\x02 \x01(\tH\x01R\x04ssid\x88\x01\x01\x12\x19\n" +
-	"\x05bssid\x18\x03 \x01(\tH\x02R\x05bssid\x88\x01\x01\x12 \n" +
-	"\ttenant_id\x18( \x01(\rH\x03R\btenantId\x88\x01\x01\x12$\n" +
-	"\vtenant_name\x18) \x01(\tH\x04R\n" +
-	"tenantName\x88\x01\x01\x12\"\n" +
+	"\v_updated_at\"\xc6\x04\n" +
+	"\x11AttendanceSetting\x12&\n" +
+	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b设置IDH\x00R\x02id\x88\x01\x01\x12k\n" +
+	"\x0fwork_start_time\x18\x02 \x01(\tB>\xbaG;\x92\x028上班时间（HH:MM，默认 09:00），晚于记迟到H\x01R\rworkStartTime\x88\x01\x01\x12g\n" +
+	"\rwork_end_time\x18\x03 \x01(\tB>\xbaG;\x92\x028下班时间（HH:MM，默认 18:00），早于记早退H\x02R\vworkEndTime\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18( \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x03R\btenantId\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_by\x18d \x01(\rH\x05R\tcreatedBy\x88\x01\x01\x12\"\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x04R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rH\x06R\tupdatedBy\x88\x01\x01\x12\"\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\x05R\tupdatedAt\x88\x01\x01B\x05\n" +
+	"\x03_idB\x12\n" +
+	"\x10_work_start_timeB\x10\n" +
+	"\x0e_work_end_timeB\f\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rH\aR\tdeletedBy\x88\x01\x01\x12?\n" +
-	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\bR\tcreatedAt\x88\x01\x01\x12?\n" +
-	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampH\tR\tupdatedAt\x88\x01\x01\x12?\n" +
-	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampH\n" +
-	"R\tdeletedAt\x88\x01\x01B\x05\n" +
-	"\x03_idB\a\n" +
-	"\x05_ssidB\b\n" +
-	"\x06_bssidB\f\n" +
-	"\n" +
-	"_tenant_idB\x0e\n" +
-	"\f_tenant_nameB\r\n" +
-	"\v_created_byB\r\n" +
-	"\v_updated_byB\r\n" +
-	"\v_deleted_byB\r\n" +
+	"_tenant_idB\r\n" +
 	"\v_created_atB\r\n" +
-	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"P\n" +
-	"\x1bCreateAttendanceWifiRequest\x121\n" +
-	"\x04data\x18\x01 \x01(\v2\x1d.oa.service.v1.AttendanceWifiR\x04data\"N\n" +
-	"\x19ListAttendanceWifiRequest\x121\n" +
-	"\x06paging\x18\x01 \x01(\v2\x19.pagination.PagingRequestR\x06paging\"g\n" +
-	"\x1aListAttendanceWifiResponse\x123\n" +
-	"\x05items\x18\x01 \x03(\v2\x1d.oa.service.v1.AttendanceWifiR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"-\n" +
-	"\x1bDeleteAttendanceWifiRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id2\xaf\x06\n" +
-	"\x11AttendanceService\x12J\n" +
-	"\aCheckIn\x12\x1d.oa.service.v1.CheckInRequest\x1a\x1e.oa.service.v1.CheckInResponse\"\x00\x12f\n" +
-	"\x15CreateAttendanceFence\x12+.oa.service.v1.CreateAttendanceFenceRequest\x1a\x1e.oa.service.v1.AttendanceFence\"\x00\x12n\n" +
-	"\x13ListAttendanceFence\x12).oa.service.v1.ListAttendanceFenceRequest\x1a*.oa.service.v1.ListAttendanceFenceResponse\"\x00\x12f\n" +
-	"\x15UpdateAttendanceFence\x12+.oa.service.v1.UpdateAttendanceFenceRequest\x1a\x1e.oa.service.v1.AttendanceFence\"\x00\x12^\n" +
-	"\x15DeleteAttendanceFence\x12+.oa.service.v1.DeleteAttendanceFenceRequest\x1a\x16.google.protobuf.Empty\"\x00\x12c\n" +
-	"\x14CreateAttendanceWifi\x12*.oa.service.v1.CreateAttendanceWifiRequest\x1a\x1d.oa.service.v1.AttendanceWifi\"\x00\x12k\n" +
-	"\x12ListAttendanceWifi\x12(.oa.service.v1.ListAttendanceWifiRequest\x1a).oa.service.v1.ListAttendanceWifiResponse\"\x00\x12\\\n" +
-	"\x14DeleteAttendanceWifi\x12*.oa.service.v1.DeleteAttendanceWifiRequest\x1a\x16.google.protobuf.Empty\"\x00B\xa4\x01\n" +
+	"\v_updated_at\"\xeb\x01\n" +
+	"\x0eCheckInRequest\x12C\n" +
+	"\blatitude\x18\x01 \x01(\x01B'\xbaG$\x92\x02!GPS 纬度（不可用时传 0）R\blatitude\x12E\n" +
+	"\tlongitude\x18\x02 \x01(\x01B'\xbaG$\x92\x02!GPS 经度（不可用时传 0）R\tlongitude\x12M\n" +
+	"\n" +
+	"wifi_bssid\x18\x03 \x01(\tB.\xbaG+\x92\x02(Wifi BSSID（尽力采集，可为空）R\twifiBssid\"\xdf\x01\n" +
+	"\x1dGetMyAttendanceRecordsRequest\x12j\n" +
+	"\n" +
+	"start_date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB/\xbaG,\x92\x02)开始日期（含），不传=近 30 天R\tstartDate\x12R\n" +
+	"\bend_date\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15结束日期（含）R\aendDate\"\xb1\x01\n" +
+	"\x1cListAttendanceRecordsRequest\x12]\n" +
+	"\twork_date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB$\xbaG!\x92\x02\x1e工作日（日期，零点）R\bworkDate\x122\n" +
+	"\auser_id\x18\x02 \x01(\rB\x19\xbaG\x16\x92\x02\x13用户ID，0=全部R\x06userId\"l\n" +
+	"\x1dListAttendanceRecordsResponse\x125\n" +
+	"\x05items\x18\x01 \x03(\v2\x1f.oa.service.v1.AttendanceRecordR\x05items\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x04R\x05total\"\x8d\x01\n" +
+	"\x19RunDailySettlementRequest\x12p\n" +
+	"\twork_date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB7\xbaG4\x92\x021结算日期（日期，零点），不传=今天R\bworkDate\"b\n" +
+	"\x1aRunDailySettlementResponse\x12D\n" +
+	"\rsettled_count\x18\x01 \x01(\rB\x1f\xbaG\x1c\x92\x02\x19结算/物化的记录数R\fsettledCount2\xe6\x04\n" +
+	"\x11AttendanceService\x12K\n" +
+	"\aCheckIn\x12\x1d.oa.service.v1.CheckInRequest\x1a\x1f.oa.service.v1.AttendanceRecord\"\x00\x12v\n" +
+	"\x16GetMyAttendanceRecords\x12,.oa.service.v1.GetMyAttendanceRecordsRequest\x1a,.oa.service.v1.ListAttendanceRecordsResponse\"\x00\x12t\n" +
+	"\x15ListAttendanceRecords\x12+.oa.service.v1.ListAttendanceRecordsRequest\x1a,.oa.service.v1.ListAttendanceRecordsResponse\"\x00\x12R\n" +
+	"\x14GetAttendanceSetting\x12\x16.google.protobuf.Empty\x1a .oa.service.v1.AttendanceSetting\"\x00\x12U\n" +
+	"\x17UpdateAttendanceSetting\x12 .oa.service.v1.AttendanceSetting\x1a\x16.google.protobuf.Empty\"\x00\x12k\n" +
+	"\x12RunDailySettlement\x12(.oa.service.v1.RunDailySettlementRequest\x1a).oa.service.v1.RunDailySettlementResponse\"\x00B\xa4\x01\n" +
 	"\x11com.oa.service.v1B\x0fAttendanceProtoP\x01Z(go-wind-oa/api/gen/go/oa/service/v1;oapb\xa2\x02\x03OSX\xaa\x02\rOa.Service.V1\xca\x02\rOa\\Service\\V1\xe2\x02\x19Oa\\Service\\V1\\GPBMetadata\xea\x02\x0fOa::Service::V1b\x06proto3"
 
 var (
@@ -1022,64 +781,51 @@ func file_oa_service_v1_attendance_proto_rawDescGZIP() []byte {
 }
 
 var file_oa_service_v1_attendance_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_oa_service_v1_attendance_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_oa_service_v1_attendance_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_oa_service_v1_attendance_proto_goTypes = []any{
-	(CheckInResponse_CheckResult)(0),     // 0: oa.service.v1.CheckInResponse.CheckResult
-	(*CheckInRequest)(nil),               // 1: oa.service.v1.CheckInRequest
-	(*CheckInResponse)(nil),              // 2: oa.service.v1.CheckInResponse
-	(*AttendanceFence)(nil),              // 3: oa.service.v1.AttendanceFence
-	(*CreateAttendanceFenceRequest)(nil), // 4: oa.service.v1.CreateAttendanceFenceRequest
-	(*ListAttendanceFenceRequest)(nil),   // 5: oa.service.v1.ListAttendanceFenceRequest
-	(*ListAttendanceFenceResponse)(nil),  // 6: oa.service.v1.ListAttendanceFenceResponse
-	(*UpdateAttendanceFenceRequest)(nil), // 7: oa.service.v1.UpdateAttendanceFenceRequest
-	(*DeleteAttendanceFenceRequest)(nil), // 8: oa.service.v1.DeleteAttendanceFenceRequest
-	(*AttendanceWifi)(nil),               // 9: oa.service.v1.AttendanceWifi
-	(*CreateAttendanceWifiRequest)(nil),  // 10: oa.service.v1.CreateAttendanceWifiRequest
-	(*ListAttendanceWifiRequest)(nil),    // 11: oa.service.v1.ListAttendanceWifiRequest
-	(*ListAttendanceWifiResponse)(nil),   // 12: oa.service.v1.ListAttendanceWifiResponse
-	(*DeleteAttendanceWifiRequest)(nil),  // 13: oa.service.v1.DeleteAttendanceWifiRequest
-	(*timestamppb.Timestamp)(nil),        // 14: google.protobuf.Timestamp
-	(*v1.PagingRequest)(nil),             // 15: pagination.PagingRequest
-	(*fieldmaskpb.FieldMask)(nil),        // 16: google.protobuf.FieldMask
-	(*emptypb.Empty)(nil),                // 17: google.protobuf.Empty
+	(AttendanceRecord_DayResult)(0),       // 0: oa.service.v1.AttendanceRecord.DayResult
+	(*AttendanceRecord)(nil),              // 1: oa.service.v1.AttendanceRecord
+	(*AttendanceSetting)(nil),             // 2: oa.service.v1.AttendanceSetting
+	(*CheckInRequest)(nil),                // 3: oa.service.v1.CheckInRequest
+	(*GetMyAttendanceRecordsRequest)(nil), // 4: oa.service.v1.GetMyAttendanceRecordsRequest
+	(*ListAttendanceRecordsRequest)(nil),  // 5: oa.service.v1.ListAttendanceRecordsRequest
+	(*ListAttendanceRecordsResponse)(nil), // 6: oa.service.v1.ListAttendanceRecordsResponse
+	(*RunDailySettlementRequest)(nil),     // 7: oa.service.v1.RunDailySettlementRequest
+	(*RunDailySettlementResponse)(nil),    // 8: oa.service.v1.RunDailySettlementResponse
+	(*timestamppb.Timestamp)(nil),         // 9: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                 // 10: google.protobuf.Empty
 }
 var file_oa_service_v1_attendance_proto_depIdxs = []int32{
-	0,  // 0: oa.service.v1.CheckInResponse.check_result:type_name -> oa.service.v1.CheckInResponse.CheckResult
-	14, // 1: oa.service.v1.AttendanceFence.created_at:type_name -> google.protobuf.Timestamp
-	14, // 2: oa.service.v1.AttendanceFence.updated_at:type_name -> google.protobuf.Timestamp
-	14, // 3: oa.service.v1.AttendanceFence.deleted_at:type_name -> google.protobuf.Timestamp
-	3,  // 4: oa.service.v1.CreateAttendanceFenceRequest.data:type_name -> oa.service.v1.AttendanceFence
-	15, // 5: oa.service.v1.ListAttendanceFenceRequest.paging:type_name -> pagination.PagingRequest
-	3,  // 6: oa.service.v1.ListAttendanceFenceResponse.items:type_name -> oa.service.v1.AttendanceFence
-	3,  // 7: oa.service.v1.UpdateAttendanceFenceRequest.data:type_name -> oa.service.v1.AttendanceFence
-	16, // 8: oa.service.v1.UpdateAttendanceFenceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	14, // 9: oa.service.v1.AttendanceWifi.created_at:type_name -> google.protobuf.Timestamp
-	14, // 10: oa.service.v1.AttendanceWifi.updated_at:type_name -> google.protobuf.Timestamp
-	14, // 11: oa.service.v1.AttendanceWifi.deleted_at:type_name -> google.protobuf.Timestamp
-	9,  // 12: oa.service.v1.CreateAttendanceWifiRequest.data:type_name -> oa.service.v1.AttendanceWifi
-	15, // 13: oa.service.v1.ListAttendanceWifiRequest.paging:type_name -> pagination.PagingRequest
-	9,  // 14: oa.service.v1.ListAttendanceWifiResponse.items:type_name -> oa.service.v1.AttendanceWifi
-	1,  // 15: oa.service.v1.AttendanceService.CheckIn:input_type -> oa.service.v1.CheckInRequest
-	4,  // 16: oa.service.v1.AttendanceService.CreateAttendanceFence:input_type -> oa.service.v1.CreateAttendanceFenceRequest
-	5,  // 17: oa.service.v1.AttendanceService.ListAttendanceFence:input_type -> oa.service.v1.ListAttendanceFenceRequest
-	7,  // 18: oa.service.v1.AttendanceService.UpdateAttendanceFence:input_type -> oa.service.v1.UpdateAttendanceFenceRequest
-	8,  // 19: oa.service.v1.AttendanceService.DeleteAttendanceFence:input_type -> oa.service.v1.DeleteAttendanceFenceRequest
-	10, // 20: oa.service.v1.AttendanceService.CreateAttendanceWifi:input_type -> oa.service.v1.CreateAttendanceWifiRequest
-	11, // 21: oa.service.v1.AttendanceService.ListAttendanceWifi:input_type -> oa.service.v1.ListAttendanceWifiRequest
-	13, // 22: oa.service.v1.AttendanceService.DeleteAttendanceWifi:input_type -> oa.service.v1.DeleteAttendanceWifiRequest
-	2,  // 23: oa.service.v1.AttendanceService.CheckIn:output_type -> oa.service.v1.CheckInResponse
-	3,  // 24: oa.service.v1.AttendanceService.CreateAttendanceFence:output_type -> oa.service.v1.AttendanceFence
-	6,  // 25: oa.service.v1.AttendanceService.ListAttendanceFence:output_type -> oa.service.v1.ListAttendanceFenceResponse
-	3,  // 26: oa.service.v1.AttendanceService.UpdateAttendanceFence:output_type -> oa.service.v1.AttendanceFence
-	17, // 27: oa.service.v1.AttendanceService.DeleteAttendanceFence:output_type -> google.protobuf.Empty
-	9,  // 28: oa.service.v1.AttendanceService.CreateAttendanceWifi:output_type -> oa.service.v1.AttendanceWifi
-	12, // 29: oa.service.v1.AttendanceService.ListAttendanceWifi:output_type -> oa.service.v1.ListAttendanceWifiResponse
-	17, // 30: oa.service.v1.AttendanceService.DeleteAttendanceWifi:output_type -> google.protobuf.Empty
-	23, // [23:31] is the sub-list for method output_type
-	15, // [15:23] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	9,  // 0: oa.service.v1.AttendanceRecord.work_date:type_name -> google.protobuf.Timestamp
+	9,  // 1: oa.service.v1.AttendanceRecord.check_in_at:type_name -> google.protobuf.Timestamp
+	9,  // 2: oa.service.v1.AttendanceRecord.check_out_at:type_name -> google.protobuf.Timestamp
+	0,  // 3: oa.service.v1.AttendanceRecord.day_result:type_name -> oa.service.v1.AttendanceRecord.DayResult
+	9,  // 4: oa.service.v1.AttendanceRecord.created_at:type_name -> google.protobuf.Timestamp
+	9,  // 5: oa.service.v1.AttendanceRecord.updated_at:type_name -> google.protobuf.Timestamp
+	9,  // 6: oa.service.v1.AttendanceSetting.created_at:type_name -> google.protobuf.Timestamp
+	9,  // 7: oa.service.v1.AttendanceSetting.updated_at:type_name -> google.protobuf.Timestamp
+	9,  // 8: oa.service.v1.GetMyAttendanceRecordsRequest.start_date:type_name -> google.protobuf.Timestamp
+	9,  // 9: oa.service.v1.GetMyAttendanceRecordsRequest.end_date:type_name -> google.protobuf.Timestamp
+	9,  // 10: oa.service.v1.ListAttendanceRecordsRequest.work_date:type_name -> google.protobuf.Timestamp
+	1,  // 11: oa.service.v1.ListAttendanceRecordsResponse.items:type_name -> oa.service.v1.AttendanceRecord
+	9,  // 12: oa.service.v1.RunDailySettlementRequest.work_date:type_name -> google.protobuf.Timestamp
+	3,  // 13: oa.service.v1.AttendanceService.CheckIn:input_type -> oa.service.v1.CheckInRequest
+	4,  // 14: oa.service.v1.AttendanceService.GetMyAttendanceRecords:input_type -> oa.service.v1.GetMyAttendanceRecordsRequest
+	5,  // 15: oa.service.v1.AttendanceService.ListAttendanceRecords:input_type -> oa.service.v1.ListAttendanceRecordsRequest
+	10, // 16: oa.service.v1.AttendanceService.GetAttendanceSetting:input_type -> google.protobuf.Empty
+	2,  // 17: oa.service.v1.AttendanceService.UpdateAttendanceSetting:input_type -> oa.service.v1.AttendanceSetting
+	7,  // 18: oa.service.v1.AttendanceService.RunDailySettlement:input_type -> oa.service.v1.RunDailySettlementRequest
+	1,  // 19: oa.service.v1.AttendanceService.CheckIn:output_type -> oa.service.v1.AttendanceRecord
+	6,  // 20: oa.service.v1.AttendanceService.GetMyAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
+	6,  // 21: oa.service.v1.AttendanceService.ListAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
+	2,  // 22: oa.service.v1.AttendanceService.GetAttendanceSetting:output_type -> oa.service.v1.AttendanceSetting
+	10, // 23: oa.service.v1.AttendanceService.UpdateAttendanceSetting:output_type -> google.protobuf.Empty
+	8,  // 24: oa.service.v1.AttendanceService.RunDailySettlement:output_type -> oa.service.v1.RunDailySettlementResponse
+	19, // [19:25] is the sub-list for method output_type
+	13, // [13:19] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_oa_service_v1_attendance_proto_init() }
@@ -1089,15 +835,13 @@ func file_oa_service_v1_attendance_proto_init() {
 	}
 	file_oa_service_v1_attendance_proto_msgTypes[0].OneofWrappers = []any{}
 	file_oa_service_v1_attendance_proto_msgTypes[1].OneofWrappers = []any{}
-	file_oa_service_v1_attendance_proto_msgTypes[2].OneofWrappers = []any{}
-	file_oa_service_v1_attendance_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_oa_service_v1_attendance_proto_rawDesc), len(file_oa_service_v1_attendance_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   13,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

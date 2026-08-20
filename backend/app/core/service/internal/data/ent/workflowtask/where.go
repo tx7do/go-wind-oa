@@ -91,7 +91,7 @@ func TenantID(v uint32) predicate.WorkflowTask {
 }
 
 // NodeIndex applies equality check predicate on the "node_index" field. It's identical to NodeIndexEQ.
-func NodeIndex(v int32) predicate.WorkflowTask {
+func NodeIndex(v int) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldEQ(FieldNodeIndex, v))
 }
 
@@ -451,42 +451,42 @@ func TenantIDNotNil() predicate.WorkflowTask {
 }
 
 // NodeIndexEQ applies the EQ predicate on the "node_index" field.
-func NodeIndexEQ(v int32) predicate.WorkflowTask {
+func NodeIndexEQ(v int) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldEQ(FieldNodeIndex, v))
 }
 
 // NodeIndexNEQ applies the NEQ predicate on the "node_index" field.
-func NodeIndexNEQ(v int32) predicate.WorkflowTask {
+func NodeIndexNEQ(v int) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldNEQ(FieldNodeIndex, v))
 }
 
 // NodeIndexIn applies the In predicate on the "node_index" field.
-func NodeIndexIn(vs ...int32) predicate.WorkflowTask {
+func NodeIndexIn(vs ...int) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldIn(FieldNodeIndex, vs...))
 }
 
 // NodeIndexNotIn applies the NotIn predicate on the "node_index" field.
-func NodeIndexNotIn(vs ...int32) predicate.WorkflowTask {
+func NodeIndexNotIn(vs ...int) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldNotIn(FieldNodeIndex, vs...))
 }
 
 // NodeIndexGT applies the GT predicate on the "node_index" field.
-func NodeIndexGT(v int32) predicate.WorkflowTask {
+func NodeIndexGT(v int) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldGT(FieldNodeIndex, v))
 }
 
 // NodeIndexGTE applies the GTE predicate on the "node_index" field.
-func NodeIndexGTE(v int32) predicate.WorkflowTask {
+func NodeIndexGTE(v int) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldGTE(FieldNodeIndex, v))
 }
 
 // NodeIndexLT applies the LT predicate on the "node_index" field.
-func NodeIndexLT(v int32) predicate.WorkflowTask {
+func NodeIndexLT(v int) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldLT(FieldNodeIndex, v))
 }
 
 // NodeIndexLTE applies the LTE predicate on the "node_index" field.
-func NodeIndexLTE(v int32) predicate.WorkflowTask {
+func NodeIndexLTE(v int) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldLTE(FieldNodeIndex, v))
 }
 

@@ -10,7 +10,8 @@ import (
 	context "context"
 	http "github.com/go-kratos/kratos/v2/transport/http"
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
-	v1 "go-wind-oa/api/gen/go/oa/service/v1"
+	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	v11 "go-wind-oa/api/gen/go/oa/service/v1"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -27,43 +28,80 @@ const OperationWorkflowServiceGetMyTasks = "/admin.service.v1.WorkflowService/Ge
 const OperationWorkflowServiceGetTask = "/admin.service.v1.WorkflowService/GetTask"
 const OperationWorkflowServiceGetWorkflowDefinition = "/admin.service.v1.WorkflowService/GetWorkflowDefinition"
 const OperationWorkflowServiceListWorkflowDefinition = "/admin.service.v1.WorkflowService/ListWorkflowDefinition"
-const OperationWorkflowServiceSubmitApply = "/admin.service.v1.WorkflowService/SubmitApply"
 const OperationWorkflowServiceUpdateWorkflowDefinition = "/admin.service.v1.WorkflowService/UpdateWorkflowDefinition"
 
 type WorkflowServiceHTTPServer interface {
-	// AuditTask 审批/驳回/转办当前待办任务。
-	AuditTask(context.Context, *v1.AuditTaskRequest) (*emptypb.Empty, error)
-	// CreateWorkflowDefinition 创建工作流定义（管理端）。
-	CreateWorkflowDefinition(context.Context, *v1.CreateWorkflowDefinitionRequest) (*v1.WorkflowDefinition, error)
-	// GetMyTasks 获取当前用户的待办 / 已办 / 我的申请列表。
-	GetMyTasks(context.Context, *v1.GetMyTasksRequest) (*v1.GetMyTasksResponse, error)
-	// GetTask 获取单个待办任务详情。
-	GetTask(context.Context, *v1.GetTaskRequest) (*v1.GetTaskResponse, error)
-	// GetWorkflowDefinition 获取单个工作流定义详情（含 node_config / form_schema）。
-	GetWorkflowDefinition(context.Context, *v1.GetWorkflowDefinitionRequest) (*v1.WorkflowDefinition, error)
-	// ListWorkflowDefinition 查询工作流定义列表（管理端）。
-	ListWorkflowDefinition(context.Context, *v1.ListWorkflowDefinitionRequest) (*v1.ListWorkflowDefinitionResponse, error)
-	// SubmitApply 提交申请：发起一个工作流实例。
-	SubmitApply(context.Context, *v1.SubmitApplyRequest) (*v1.SubmitApplyResponse, error)
-	// UpdateWorkflowDefinition 更新工作流定义状态（启用/禁用）。update_mask 须仅含 definition_status。
-	UpdateWorkflowDefinition(context.Context, *v1.UpdateWorkflowDefinitionRequest) (*v1.WorkflowDefinition, error)
+	// AuditTask 审批任务（通过/驳回/转办）
+	AuditTask(context.Context, *v11.AuditTaskRequest) (*emptypb.Empty, error)
+	// CreateWorkflowDefinition 创建流程定义
+	CreateWorkflowDefinition(context.Context, *v11.CreateWorkflowDefinitionRequest) (*v11.WorkflowDefinition, error)
+	// GetMyTasks 查询我的任务（待办/已办/我的申请）
+	GetMyTasks(context.Context, *v11.GetMyTasksRequest) (*v11.GetMyTasksResponse, error)
+	// GetTask 查询任务详情
+	GetTask(context.Context, *v11.GetTaskRequest) (*v11.GetTaskResponse, error)
+	// GetWorkflowDefinition 查询流程定义详情
+	GetWorkflowDefinition(context.Context, *v11.GetWorkflowDefinitionRequest) (*v11.WorkflowDefinition, error)
+	// ListWorkflowDefinition 查询流程定义列表
+	ListWorkflowDefinition(context.Context, *v1.PagingRequest) (*v11.ListWorkflowDefinitionResponse, error)
+	// UpdateWorkflowDefinition 更新流程定义（仅允许切换 definition_status）
+	UpdateWorkflowDefinition(context.Context, *v11.UpdateWorkflowDefinitionRequest) (*emptypb.Empty, error)
 }
 
 func RegisterWorkflowServiceHTTPServer(s *http.Server, srv WorkflowServiceHTTPServer) {
 	r := s.Route("/")
-	r.POST("/admin/v1/oa/workflow/definitions", _WorkflowService_CreateWorkflowDefinition0_HTTP_Handler(srv))
 	r.GET("/admin/v1/oa/workflow/definitions", _WorkflowService_ListWorkflowDefinition0_HTTP_Handler(srv))
-	r.PUT("/admin/v1/oa/workflow/definitions/{id}", _WorkflowService_UpdateWorkflowDefinition0_HTTP_Handler(srv))
 	r.GET("/admin/v1/oa/workflow/definitions/{id}", _WorkflowService_GetWorkflowDefinition0_HTTP_Handler(srv))
-	r.POST("/admin/v1/oa/workflow/apply", _WorkflowService_SubmitApply0_HTTP_Handler(srv))
-	r.POST("/admin/v1/oa/workflow/tasks/{task_id}/audit", _WorkflowService_AuditTask0_HTTP_Handler(srv))
+	r.POST("/admin/v1/oa/workflow/definitions", _WorkflowService_CreateWorkflowDefinition0_HTTP_Handler(srv))
+	r.PUT("/admin/v1/oa/workflow/definitions/{id}", _WorkflowService_UpdateWorkflowDefinition0_HTTP_Handler(srv))
+	r.POST("/admin/v1/oa/workflow/audit-task", _WorkflowService_AuditTask0_HTTP_Handler(srv))
 	r.GET("/admin/v1/oa/workflow/my-tasks", _WorkflowService_GetMyTasks0_HTTP_Handler(srv))
-	r.GET("/admin/v1/oa/workflow/tasks/{task_id}", _WorkflowService_GetTask0_HTTP_Handler(srv))
+	r.GET("/admin/v1/oa/workflow/tasks/{id}", _WorkflowService_GetTask0_HTTP_Handler(srv))
+}
+
+func _WorkflowService_ListWorkflowDefinition0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.PagingRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWorkflowServiceListWorkflowDefinition)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListWorkflowDefinition(ctx, req.(*v1.PagingRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.ListWorkflowDefinitionResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _WorkflowService_GetWorkflowDefinition0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.GetWorkflowDefinitionRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWorkflowServiceGetWorkflowDefinition)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetWorkflowDefinition(ctx, req.(*v11.GetWorkflowDefinitionRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.WorkflowDefinition)
+		return ctx.Result(200, reply)
+	}
 }
 
 func _WorkflowService_CreateWorkflowDefinition0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in v1.CreateWorkflowDefinitionRequest
+		var in v11.CreateWorkflowDefinitionRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
@@ -72,39 +110,20 @@ func _WorkflowService_CreateWorkflowDefinition0_HTTP_Handler(srv WorkflowService
 		}
 		http.SetOperation(ctx, OperationWorkflowServiceCreateWorkflowDefinition)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.CreateWorkflowDefinition(ctx, req.(*v1.CreateWorkflowDefinitionRequest))
+			return srv.CreateWorkflowDefinition(ctx, req.(*v11.CreateWorkflowDefinitionRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.WorkflowDefinition)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _WorkflowService_ListWorkflowDefinition0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in v1.ListWorkflowDefinitionRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationWorkflowServiceListWorkflowDefinition)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.ListWorkflowDefinition(ctx, req.(*v1.ListWorkflowDefinitionRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v1.ListWorkflowDefinitionResponse)
+		reply := out.(*v11.WorkflowDefinition)
 		return ctx.Result(200, reply)
 	}
 }
 
 func _WorkflowService_UpdateWorkflowDefinition0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in v1.UpdateWorkflowDefinitionRequest
+		var in v11.UpdateWorkflowDefinitionRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
@@ -116,76 +135,29 @@ func _WorkflowService_UpdateWorkflowDefinition0_HTTP_Handler(srv WorkflowService
 		}
 		http.SetOperation(ctx, OperationWorkflowServiceUpdateWorkflowDefinition)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.UpdateWorkflowDefinition(ctx, req.(*v1.UpdateWorkflowDefinitionRequest))
+			return srv.UpdateWorkflowDefinition(ctx, req.(*v11.UpdateWorkflowDefinitionRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.WorkflowDefinition)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _WorkflowService_GetWorkflowDefinition0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in v1.GetWorkflowDefinitionRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationWorkflowServiceGetWorkflowDefinition)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetWorkflowDefinition(ctx, req.(*v1.GetWorkflowDefinitionRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v1.WorkflowDefinition)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _WorkflowService_SubmitApply0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in v1.SubmitApplyRequest
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationWorkflowServiceSubmitApply)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.SubmitApply(ctx, req.(*v1.SubmitApplyRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v1.SubmitApplyResponse)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
 
 func _WorkflowService_AuditTask0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in v1.AuditTaskRequest
+		var in v11.AuditTaskRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
 		http.SetOperation(ctx, OperationWorkflowServiceAuditTask)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.AuditTask(ctx, req.(*v1.AuditTaskRequest))
+			return srv.AuditTask(ctx, req.(*v11.AuditTaskRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -198,26 +170,26 @@ func _WorkflowService_AuditTask0_HTTP_Handler(srv WorkflowServiceHTTPServer) fun
 
 func _WorkflowService_GetMyTasks0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in v1.GetMyTasksRequest
+		var in v11.GetMyTasksRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationWorkflowServiceGetMyTasks)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetMyTasks(ctx, req.(*v1.GetMyTasksRequest))
+			return srv.GetMyTasks(ctx, req.(*v11.GetMyTasksRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.GetMyTasksResponse)
+		reply := out.(*v11.GetMyTasksResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
 func _WorkflowService_GetTask0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in v1.GetTaskRequest
+		var in v11.GetTaskRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
@@ -226,34 +198,32 @@ func _WorkflowService_GetTask0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(
 		}
 		http.SetOperation(ctx, OperationWorkflowServiceGetTask)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetTask(ctx, req.(*v1.GetTaskRequest))
+			return srv.GetTask(ctx, req.(*v11.GetTaskRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.GetTaskResponse)
+		reply := out.(*v11.GetTaskResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
 type WorkflowServiceHTTPClient interface {
-	// AuditTask 审批/驳回/转办当前待办任务。
-	AuditTask(ctx context.Context, req *v1.AuditTaskRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
-	// CreateWorkflowDefinition 创建工作流定义（管理端）。
-	CreateWorkflowDefinition(ctx context.Context, req *v1.CreateWorkflowDefinitionRequest, opts ...http.CallOption) (rsp *v1.WorkflowDefinition, err error)
-	// GetMyTasks 获取当前用户的待办 / 已办 / 我的申请列表。
-	GetMyTasks(ctx context.Context, req *v1.GetMyTasksRequest, opts ...http.CallOption) (rsp *v1.GetMyTasksResponse, err error)
-	// GetTask 获取单个待办任务详情。
-	GetTask(ctx context.Context, req *v1.GetTaskRequest, opts ...http.CallOption) (rsp *v1.GetTaskResponse, err error)
-	// GetWorkflowDefinition 获取单个工作流定义详情（含 node_config / form_schema）。
-	GetWorkflowDefinition(ctx context.Context, req *v1.GetWorkflowDefinitionRequest, opts ...http.CallOption) (rsp *v1.WorkflowDefinition, err error)
-	// ListWorkflowDefinition 查询工作流定义列表（管理端）。
-	ListWorkflowDefinition(ctx context.Context, req *v1.ListWorkflowDefinitionRequest, opts ...http.CallOption) (rsp *v1.ListWorkflowDefinitionResponse, err error)
-	// SubmitApply 提交申请：发起一个工作流实例。
-	SubmitApply(ctx context.Context, req *v1.SubmitApplyRequest, opts ...http.CallOption) (rsp *v1.SubmitApplyResponse, err error)
-	// UpdateWorkflowDefinition 更新工作流定义状态（启用/禁用）。update_mask 须仅含 definition_status。
-	UpdateWorkflowDefinition(ctx context.Context, req *v1.UpdateWorkflowDefinitionRequest, opts ...http.CallOption) (rsp *v1.WorkflowDefinition, err error)
+	// AuditTask 审批任务（通过/驳回/转办）
+	AuditTask(ctx context.Context, req *v11.AuditTaskRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// CreateWorkflowDefinition 创建流程定义
+	CreateWorkflowDefinition(ctx context.Context, req *v11.CreateWorkflowDefinitionRequest, opts ...http.CallOption) (rsp *v11.WorkflowDefinition, err error)
+	// GetMyTasks 查询我的任务（待办/已办/我的申请）
+	GetMyTasks(ctx context.Context, req *v11.GetMyTasksRequest, opts ...http.CallOption) (rsp *v11.GetMyTasksResponse, err error)
+	// GetTask 查询任务详情
+	GetTask(ctx context.Context, req *v11.GetTaskRequest, opts ...http.CallOption) (rsp *v11.GetTaskResponse, err error)
+	// GetWorkflowDefinition 查询流程定义详情
+	GetWorkflowDefinition(ctx context.Context, req *v11.GetWorkflowDefinitionRequest, opts ...http.CallOption) (rsp *v11.WorkflowDefinition, err error)
+	// ListWorkflowDefinition 查询流程定义列表
+	ListWorkflowDefinition(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListWorkflowDefinitionResponse, err error)
+	// UpdateWorkflowDefinition 更新流程定义（仅允许切换 definition_status）
+	UpdateWorkflowDefinition(ctx context.Context, req *v11.UpdateWorkflowDefinitionRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type WorkflowServiceHTTPClientImpl struct {
@@ -264,10 +234,10 @@ func NewWorkflowServiceHTTPClient(client *http.Client) WorkflowServiceHTTPClient
 	return &WorkflowServiceHTTPClientImpl{client}
 }
 
-// AuditTask 审批/驳回/转办当前待办任务。
-func (c *WorkflowServiceHTTPClientImpl) AuditTask(ctx context.Context, in *v1.AuditTaskRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+// AuditTask 审批任务（通过/驳回/转办）
+func (c *WorkflowServiceHTTPClientImpl) AuditTask(ctx context.Context, in *v11.AuditTaskRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/admin/v1/oa/workflow/tasks/{task_id}/audit"
+	pattern := "/admin/v1/oa/workflow/audit-task"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationWorkflowServiceAuditTask))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -278,9 +248,9 @@ func (c *WorkflowServiceHTTPClientImpl) AuditTask(ctx context.Context, in *v1.Au
 	return &out, nil
 }
 
-// CreateWorkflowDefinition 创建工作流定义（管理端）。
-func (c *WorkflowServiceHTTPClientImpl) CreateWorkflowDefinition(ctx context.Context, in *v1.CreateWorkflowDefinitionRequest, opts ...http.CallOption) (*v1.WorkflowDefinition, error) {
-	var out v1.WorkflowDefinition
+// CreateWorkflowDefinition 创建流程定义
+func (c *WorkflowServiceHTTPClientImpl) CreateWorkflowDefinition(ctx context.Context, in *v11.CreateWorkflowDefinitionRequest, opts ...http.CallOption) (*v11.WorkflowDefinition, error) {
+	var out v11.WorkflowDefinition
 	pattern := "/admin/v1/oa/workflow/definitions"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationWorkflowServiceCreateWorkflowDefinition))
@@ -292,9 +262,9 @@ func (c *WorkflowServiceHTTPClientImpl) CreateWorkflowDefinition(ctx context.Con
 	return &out, nil
 }
 
-// GetMyTasks 获取当前用户的待办 / 已办 / 我的申请列表。
-func (c *WorkflowServiceHTTPClientImpl) GetMyTasks(ctx context.Context, in *v1.GetMyTasksRequest, opts ...http.CallOption) (*v1.GetMyTasksResponse, error) {
-	var out v1.GetMyTasksResponse
+// GetMyTasks 查询我的任务（待办/已办/我的申请）
+func (c *WorkflowServiceHTTPClientImpl) GetMyTasks(ctx context.Context, in *v11.GetMyTasksRequest, opts ...http.CallOption) (*v11.GetMyTasksResponse, error) {
+	var out v11.GetMyTasksResponse
 	pattern := "/admin/v1/oa/workflow/my-tasks"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationWorkflowServiceGetMyTasks))
@@ -306,10 +276,10 @@ func (c *WorkflowServiceHTTPClientImpl) GetMyTasks(ctx context.Context, in *v1.G
 	return &out, nil
 }
 
-// GetTask 获取单个待办任务详情。
-func (c *WorkflowServiceHTTPClientImpl) GetTask(ctx context.Context, in *v1.GetTaskRequest, opts ...http.CallOption) (*v1.GetTaskResponse, error) {
-	var out v1.GetTaskResponse
-	pattern := "/admin/v1/oa/workflow/tasks/{task_id}"
+// GetTask 查询任务详情
+func (c *WorkflowServiceHTTPClientImpl) GetTask(ctx context.Context, in *v11.GetTaskRequest, opts ...http.CallOption) (*v11.GetTaskResponse, error) {
+	var out v11.GetTaskResponse
+	pattern := "/admin/v1/oa/workflow/tasks/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationWorkflowServiceGetTask))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -320,9 +290,9 @@ func (c *WorkflowServiceHTTPClientImpl) GetTask(ctx context.Context, in *v1.GetT
 	return &out, nil
 }
 
-// GetWorkflowDefinition 获取单个工作流定义详情（含 node_config / form_schema）。
-func (c *WorkflowServiceHTTPClientImpl) GetWorkflowDefinition(ctx context.Context, in *v1.GetWorkflowDefinitionRequest, opts ...http.CallOption) (*v1.WorkflowDefinition, error) {
-	var out v1.WorkflowDefinition
+// GetWorkflowDefinition 查询流程定义详情
+func (c *WorkflowServiceHTTPClientImpl) GetWorkflowDefinition(ctx context.Context, in *v11.GetWorkflowDefinitionRequest, opts ...http.CallOption) (*v11.WorkflowDefinition, error) {
+	var out v11.WorkflowDefinition
 	pattern := "/admin/v1/oa/workflow/definitions/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationWorkflowServiceGetWorkflowDefinition))
@@ -334,9 +304,9 @@ func (c *WorkflowServiceHTTPClientImpl) GetWorkflowDefinition(ctx context.Contex
 	return &out, nil
 }
 
-// ListWorkflowDefinition 查询工作流定义列表（管理端）。
-func (c *WorkflowServiceHTTPClientImpl) ListWorkflowDefinition(ctx context.Context, in *v1.ListWorkflowDefinitionRequest, opts ...http.CallOption) (*v1.ListWorkflowDefinitionResponse, error) {
-	var out v1.ListWorkflowDefinitionResponse
+// ListWorkflowDefinition 查询流程定义列表
+func (c *WorkflowServiceHTTPClientImpl) ListWorkflowDefinition(ctx context.Context, in *v1.PagingRequest, opts ...http.CallOption) (*v11.ListWorkflowDefinitionResponse, error) {
+	var out v11.ListWorkflowDefinitionResponse
 	pattern := "/admin/v1/oa/workflow/definitions"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationWorkflowServiceListWorkflowDefinition))
@@ -348,23 +318,9 @@ func (c *WorkflowServiceHTTPClientImpl) ListWorkflowDefinition(ctx context.Conte
 	return &out, nil
 }
 
-// SubmitApply 提交申请：发起一个工作流实例。
-func (c *WorkflowServiceHTTPClientImpl) SubmitApply(ctx context.Context, in *v1.SubmitApplyRequest, opts ...http.CallOption) (*v1.SubmitApplyResponse, error) {
-	var out v1.SubmitApplyResponse
-	pattern := "/admin/v1/oa/workflow/apply"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationWorkflowServiceSubmitApply))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// UpdateWorkflowDefinition 更新工作流定义状态（启用/禁用）。update_mask 须仅含 definition_status。
-func (c *WorkflowServiceHTTPClientImpl) UpdateWorkflowDefinition(ctx context.Context, in *v1.UpdateWorkflowDefinitionRequest, opts ...http.CallOption) (*v1.WorkflowDefinition, error) {
-	var out v1.WorkflowDefinition
+// UpdateWorkflowDefinition 更新流程定义（仅允许切换 definition_status）
+func (c *WorkflowServiceHTTPClientImpl) UpdateWorkflowDefinition(ctx context.Context, in *v11.UpdateWorkflowDefinitionRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/admin/v1/oa/workflow/definitions/{id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationWorkflowServiceUpdateWorkflowDefinition))

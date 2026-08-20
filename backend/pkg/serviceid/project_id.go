@@ -1,5 +1,5 @@
 package serviceid
 
 const (
-	ProjectName = "gowind-oa"
+	ProjectName = "gowind-cms"
 )

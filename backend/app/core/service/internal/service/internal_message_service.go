@@ -16,6 +16,7 @@ import (
 
 	"go-wind-oa/app/core/service/internal/data"
 
+	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
 	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
 )
 
@@ -27,6 +28,8 @@ type InternalMessageService struct {
 	internalMessageRepo          *data.InternalMessageRepo
 	internalMessageCategoryRepo  *data.InternalMessageCategoryRepo
 	internalMessageRecipientRepo *data.InternalMessageRecipientRepo
+
+	userRepo data.UserRepo
 }
 
 func NewInternalMessageService(
@@ -34,12 +37,14 @@ func NewInternalMessageService(
 	internalMessageRepo *data.InternalMessageRepo,
 	internalMessageCategoryRepo *data.InternalMessageCategoryRepo,
 	internalMessageRecipientRepo *data.InternalMessageRecipientRepo,
+	userRepo data.UserRepo,
 ) *InternalMessageService {
 	return &InternalMessageService{
 		log:                          ctx.NewLoggerHelper("internal-message/service/core-service"),
 		internalMessageRepo:          internalMessageRepo,
 		internalMessageCategoryRepo:  internalMessageCategoryRepo,
 		internalMessageRecipientRepo: internalMessageRecipientRepo,
+		userRepo:                     userRepo,
 	}
 }
 
@@ -161,7 +166,7 @@ func (s *InternalMessageService) DeleteMessage(ctx context.Context, req *interna
 // RevokeMessage 撤销某条消息
 func (s *InternalMessageService) RevokeMessage(ctx context.Context, req *internalMessageV1.RevokeMessageRequest) (*emptypb.Empty, error) {
 	// 仅消息发送者本人（或平台/系统上下文）可撤销消息体，防止跨租户/越权删除他人消息
-	callerUserID, hasUser := data.ViewerUserIDFromContext(ctx)
+	callerUserID, hasUser := viewerUserIDFromContext(ctx)
 	isPlatform := false
 	if vc, exist := viewer.FromContext(ctx); exist && vc != nil && (vc.IsPlatformContext() || vc.IsSystemContext()) {
 		isPlatform = true
@@ -204,9 +209,15 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 	}
 
 	// 发送者身份必须从 viewer context 推导，忽略客户端传入的 send_user_id，防止越权伪造
-	senderUserID, hasUser := data.ViewerUserIDFromContext(ctx)
+	senderUserID, hasUser := viewerUserIDFromContext(ctx)
 	if !hasUser {
 		return nil, internalMessageV1.ErrorBadRequest("sender identity is required")
+	}
+
+	// 从 viewer context 获取发送者的租户 ID，用于限定消息发送范围
+	senderTenantID := uint32(0)
+	if vc, exist := viewer.FromContext(ctx); exist && vc != nil {
+		senderTenantID = uint32(vc.TenantID())
 	}
 
 	now := time.Now()
@@ -228,20 +239,57 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 		return nil, err
 	}
 
-	// 定向投递：按 RecipientUserId 或 TargetUserIds 落收件人记录。
-	// 跨租户 / 收件人存在性校验由调用方保证（工作流引擎的指派人来自同租户定义）；
-	// 收件人行本身由 TenantPrivacy 按发送者租户隔离，非本租户收件人不会在其收件箱可见。
-	if req.RecipientUserId != nil {
-		_ = s.sendNotification(ctx, msg.GetId(), req.GetRecipientUserId(), senderUserID, &now, msg.GetTitle(), msg.GetContent())
-	} else if len(req.TargetUserIds) != 0 {
-		for _, uid := range req.TargetUserIds {
-			_ = s.sendNotification(ctx, msg.GetId(), uid, senderUserID, &now, msg.GetTitle(), msg.GetContent())
+	// 平台管理员（tenant_id=0）可向所有租户用户发送；普通租户用户只能向本租户用户发送
+	if req.GetTargetAll() {
+		users, err := s.userRepo.List(ctx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
+		if err != nil {
+			s.log.Errorf("send message failed, list users failed, %s", err)
+		} else {
+			for _, user := range users.Items {
+				// 非平台上下文时，跳过其他租户的用户
+				if senderTenantID != 0 && user.GetTenantId() != senderTenantID {
+					continue
+				}
+				_ = s.sendNotification(ctx, msg.GetId(), user.GetId(), senderUserID, &now, msg.GetTitle(), msg.GetContent())
+			}
+		}
+	} else {
+		if req.RecipientUserId != nil {
+			if s.isRecipientAllowed(ctx, req.GetRecipientUserId(), senderTenantID) {
+				_ = s.sendNotification(ctx, msg.GetId(), req.GetRecipientUserId(), senderUserID, &now, msg.GetTitle(), msg.GetContent())
+			}
+		} else {
+			if len(req.TargetUserIds) != 0 {
+				for _, uid := range req.TargetUserIds {
+					if s.isRecipientAllowed(ctx, uid, senderTenantID) {
+						_ = s.sendNotification(ctx, msg.GetId(), uid, senderUserID, &now, msg.GetTitle(), msg.GetContent())
+					}
+				}
+			}
 		}
 	}
 
 	return &internalMessageV1.SendMessageResponse{
 		MessageId: msg.GetId(),
 	}, nil
+}
+
+// isRecipientAllowed 校验收件人是否在发送者的可发送范围内。
+// 平台管理员（senderTenantID==0）可向任意租户用户发送；
+// 普通租户用户只能向本租户用户发送。收件人不存在或跨租户时拒绝。
+func (s *InternalMessageService) isRecipientAllowed(ctx context.Context, recipientUserID uint32, senderTenantID uint32) bool {
+	recipient, err := s.userRepo.Get(ctx, &identityV1.GetUserRequest{
+		QueryBy: &identityV1.GetUserRequest_Id{Id: recipientUserID},
+	})
+	if err != nil || recipient == nil {
+		s.log.Errorf("send message failed, recipient not found [%d]: %v", recipientUserID, err)
+		return false
+	}
+	if senderTenantID != 0 && recipient.GetTenantId() != senderTenantID {
+		s.log.Errorf("send message forbidden, tenant mismatch: sender tenant [%d], recipient [%d] tenant [%d]", senderTenantID, recipientUserID, recipient.GetTenantId())
+		return false
+	}
+	return true
 }
 
 // sendNotification 向客户端发送通知消息
@@ -265,4 +313,30 @@ func (s *InternalMessageService) sendNotification(ctx context.Context, messageId
 	recipient.Id = entity.Id
 
 	return nil
+}
+
+// ListMyMessages 当前用户收件箱（app 端）：按收件人过滤，排除已删除/已撤销，
+// 最新在前，默认 50 条。
+func (s *InternalMessageService) ListMyMessages(ctx context.Context, req *internalMessageV1.ListMyMessagesRequest) (*internalMessageV1.ListInternalMessageResponse, error) {
+	tid, uid, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, internalMessageV1.ErrorForbidden("missing viewer context")
+	}
+	limit := int(req.GetLimit())
+	if limit <= 0 || limit > 200 {
+		limit = 50
+	}
+
+	ids, err := s.internalMessageRecipientRepo.ListInboxMessageIDs(ctx, tid, uid, limit)
+	if err != nil {
+		return nil, err
+	}
+	items, err := s.internalMessageRepo.ListByIDs(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+	return &internalMessageV1.ListInternalMessageResponse{
+		Items: items,
+		Total: uint64(len(items)),
+	}, nil
 }

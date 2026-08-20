@@ -35,6 +35,507 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on AttendanceRecord with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *AttendanceRecord) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttendanceRecord with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AttendanceRecordMultiError, or nil if none found.
+func (m *AttendanceRecord) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttendanceRecord) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Id != nil {
+		// no validation rules for Id
+	}
+
+	if m.UserId != nil {
+		// no validation rules for UserId
+	}
+
+	if m.UserName != nil {
+		// no validation rules for UserName
+	}
+
+	if m.WorkDate != nil {
+
+		if all {
+			switch v := interface{}(m.GetWorkDate()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AttendanceRecordValidationError{
+						field:  "WorkDate",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AttendanceRecordValidationError{
+						field:  "WorkDate",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetWorkDate()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AttendanceRecordValidationError{
+					field:  "WorkDate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.CheckInAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCheckInAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AttendanceRecordValidationError{
+						field:  "CheckInAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AttendanceRecordValidationError{
+						field:  "CheckInAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCheckInAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AttendanceRecordValidationError{
+					field:  "CheckInAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.CheckInLatitude != nil {
+		// no validation rules for CheckInLatitude
+	}
+
+	if m.CheckInLongitude != nil {
+		// no validation rules for CheckInLongitude
+	}
+
+	if m.CheckInWifiBssid != nil {
+		// no validation rules for CheckInWifiBssid
+	}
+
+	if m.CheckOutAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCheckOutAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AttendanceRecordValidationError{
+						field:  "CheckOutAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AttendanceRecordValidationError{
+						field:  "CheckOutAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCheckOutAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AttendanceRecordValidationError{
+					field:  "CheckOutAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.CheckOutLatitude != nil {
+		// no validation rules for CheckOutLatitude
+	}
+
+	if m.CheckOutLongitude != nil {
+		// no validation rules for CheckOutLongitude
+	}
+
+	if m.CheckOutWifiBssid != nil {
+		// no validation rules for CheckOutWifiBssid
+	}
+
+	if m.DayResult != nil {
+		// no validation rules for DayResult
+	}
+
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
+	if m.CreatedBy != nil {
+		// no validation rules for CreatedBy
+	}
+
+	if m.UpdatedBy != nil {
+		// no validation rules for UpdatedBy
+	}
+
+	if m.CreatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCreatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AttendanceRecordValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AttendanceRecordValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AttendanceRecordValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.UpdatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetUpdatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AttendanceRecordValidationError{
+						field:  "UpdatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AttendanceRecordValidationError{
+						field:  "UpdatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AttendanceRecordValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return AttendanceRecordMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttendanceRecordMultiError is an error wrapping multiple validation errors
+// returned by AttendanceRecord.ValidateAll() if the designated constraints
+// aren't met.
+type AttendanceRecordMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttendanceRecordMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttendanceRecordMultiError) AllErrors() []error { return m }
+
+// AttendanceRecordValidationError is the validation error returned by
+// AttendanceRecord.Validate if the designated constraints aren't met.
+type AttendanceRecordValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttendanceRecordValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttendanceRecordValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttendanceRecordValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttendanceRecordValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttendanceRecordValidationError) ErrorName() string { return "AttendanceRecordValidationError" }
+
+// Error satisfies the builtin error interface
+func (e AttendanceRecordValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttendanceRecord.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttendanceRecordValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttendanceRecordValidationError{}
+
+// Validate checks the field values on AttendanceSetting with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *AttendanceSetting) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttendanceSetting with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AttendanceSettingMultiError, or nil if none found.
+func (m *AttendanceSetting) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttendanceSetting) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Id != nil {
+		// no validation rules for Id
+	}
+
+	if m.WorkStartTime != nil {
+		// no validation rules for WorkStartTime
+	}
+
+	if m.WorkEndTime != nil {
+		// no validation rules for WorkEndTime
+	}
+
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
+	if m.CreatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCreatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AttendanceSettingValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AttendanceSettingValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AttendanceSettingValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.UpdatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetUpdatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AttendanceSettingValidationError{
+						field:  "UpdatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AttendanceSettingValidationError{
+						field:  "UpdatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AttendanceSettingValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return AttendanceSettingMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttendanceSettingMultiError is an error wrapping multiple validation errors
+// returned by AttendanceSetting.ValidateAll() if the designated constraints
+// aren't met.
+type AttendanceSettingMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttendanceSettingMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttendanceSettingMultiError) AllErrors() []error { return m }
+
+// AttendanceSettingValidationError is the validation error returned by
+// AttendanceSetting.Validate if the designated constraints aren't met.
+type AttendanceSettingValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttendanceSettingValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttendanceSettingValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttendanceSettingValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttendanceSettingValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttendanceSettingValidationError) ErrorName() string {
+	return "AttendanceSettingValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AttendanceSettingValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttendanceSetting.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttendanceSettingValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttendanceSettingValidationError{}
+
 // Validate checks the field values on CheckInRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -57,17 +558,11 @@ func (m *CheckInRequest) validate(all bool) error {
 
 	var errors []error
 
-	if m.Longitude != nil {
-		// no validation rules for Longitude
-	}
+	// no validation rules for Latitude
 
-	if m.Latitude != nil {
-		// no validation rules for Latitude
-	}
+	// no validation rules for Longitude
 
-	if m.Bssid != nil {
-		// no validation rules for Bssid
-	}
+	// no validation rules for WifiBssid
 
 	if len(errors) > 0 {
 		return CheckInRequestMultiError(errors)
@@ -147,369 +642,22 @@ var _ interface {
 	ErrorName() string
 } = CheckInRequestValidationError{}
 
-// Validate checks the field values on CheckInResponse with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *CheckInResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on CheckInResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// CheckInResponseMultiError, or nil if none found.
-func (m *CheckInResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *CheckInResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.CheckResult != nil {
-		// no validation rules for CheckResult
-	}
-
-	if m.Message != nil {
-		// no validation rules for Message
-	}
-
-	if len(errors) > 0 {
-		return CheckInResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// CheckInResponseMultiError is an error wrapping multiple validation errors
-// returned by CheckInResponse.ValidateAll() if the designated constraints
-// aren't met.
-type CheckInResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m CheckInResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m CheckInResponseMultiError) AllErrors() []error { return m }
-
-// CheckInResponseValidationError is the validation error returned by
-// CheckInResponse.Validate if the designated constraints aren't met.
-type CheckInResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e CheckInResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e CheckInResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e CheckInResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e CheckInResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e CheckInResponseValidationError) ErrorName() string { return "CheckInResponseValidationError" }
-
-// Error satisfies the builtin error interface
-func (e CheckInResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sCheckInResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = CheckInResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = CheckInResponseValidationError{}
-
-// Validate checks the field values on AttendanceFence with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *AttendanceFence) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on AttendanceFence with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// AttendanceFenceMultiError, or nil if none found.
-func (m *AttendanceFence) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *AttendanceFence) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.Id != nil {
-		// no validation rules for Id
-	}
-
-	if m.Name != nil {
-		// no validation rules for Name
-	}
-
-	if m.Longitude != nil {
-		// no validation rules for Longitude
-	}
-
-	if m.Latitude != nil {
-		// no validation rules for Latitude
-	}
-
-	if m.Radius != nil {
-		// no validation rules for Radius
-	}
-
-	if m.TenantId != nil {
-		// no validation rules for TenantId
-	}
-
-	if m.TenantName != nil {
-		// no validation rules for TenantName
-	}
-
-	if m.CreatedBy != nil {
-		// no validation rules for CreatedBy
-	}
-
-	if m.UpdatedBy != nil {
-		// no validation rules for UpdatedBy
-	}
-
-	if m.DeletedBy != nil {
-		// no validation rules for DeletedBy
-	}
-
-	if m.CreatedAt != nil {
-
-		if all {
-			switch v := interface{}(m.GetCreatedAt()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AttendanceFenceValidationError{
-						field:  "CreatedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AttendanceFenceValidationError{
-						field:  "CreatedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AttendanceFenceValidationError{
-					field:  "CreatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if m.UpdatedAt != nil {
-
-		if all {
-			switch v := interface{}(m.GetUpdatedAt()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AttendanceFenceValidationError{
-						field:  "UpdatedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AttendanceFenceValidationError{
-						field:  "UpdatedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AttendanceFenceValidationError{
-					field:  "UpdatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if m.DeletedAt != nil {
-
-		if all {
-			switch v := interface{}(m.GetDeletedAt()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AttendanceFenceValidationError{
-						field:  "DeletedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AttendanceFenceValidationError{
-						field:  "DeletedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetDeletedAt()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AttendanceFenceValidationError{
-					field:  "DeletedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if len(errors) > 0 {
-		return AttendanceFenceMultiError(errors)
-	}
-
-	return nil
-}
-
-// AttendanceFenceMultiError is an error wrapping multiple validation errors
-// returned by AttendanceFence.ValidateAll() if the designated constraints
-// aren't met.
-type AttendanceFenceMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m AttendanceFenceMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m AttendanceFenceMultiError) AllErrors() []error { return m }
-
-// AttendanceFenceValidationError is the validation error returned by
-// AttendanceFence.Validate if the designated constraints aren't met.
-type AttendanceFenceValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e AttendanceFenceValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e AttendanceFenceValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e AttendanceFenceValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e AttendanceFenceValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e AttendanceFenceValidationError) ErrorName() string { return "AttendanceFenceValidationError" }
-
-// Error satisfies the builtin error interface
-func (e AttendanceFenceValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sAttendanceFence.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = AttendanceFenceValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = AttendanceFenceValidationError{}
-
-// Validate checks the field values on CreateAttendanceFenceRequest with the
+// Validate checks the field values on GetMyAttendanceRecordsRequest with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *CreateAttendanceFenceRequest) Validate() error {
+func (m *GetMyAttendanceRecordsRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CreateAttendanceFenceRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// CreateAttendanceFenceRequestMultiError, or nil if none found.
-func (m *CreateAttendanceFenceRequest) ValidateAll() error {
+// ValidateAll checks the field values on GetMyAttendanceRecordsRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// GetMyAttendanceRecordsRequestMultiError, or nil if none found.
+func (m *GetMyAttendanceRecordsRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CreateAttendanceFenceRequest) validate(all bool) error {
+func (m *GetMyAttendanceRecordsRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -517,28 +665,57 @@ func (m *CreateAttendanceFenceRequest) validate(all bool) error {
 	var errors []error
 
 	if all {
-		switch v := interface{}(m.GetData()).(type) {
+		switch v := interface{}(m.GetStartDate()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, CreateAttendanceFenceRequestValidationError{
-					field:  "Data",
+				errors = append(errors, GetMyAttendanceRecordsRequestValidationError{
+					field:  "StartDate",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, CreateAttendanceFenceRequestValidationError{
-					field:  "Data",
+				errors = append(errors, GetMyAttendanceRecordsRequestValidationError{
+					field:  "StartDate",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetStartDate()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return CreateAttendanceFenceRequestValidationError{
-				field:  "Data",
+			return GetMyAttendanceRecordsRequestValidationError{
+				field:  "StartDate",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetEndDate()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetMyAttendanceRecordsRequestValidationError{
+					field:  "EndDate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetMyAttendanceRecordsRequestValidationError{
+					field:  "EndDate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetEndDate()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetMyAttendanceRecordsRequestValidationError{
+				field:  "EndDate",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -546,19 +723,19 @@ func (m *CreateAttendanceFenceRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return CreateAttendanceFenceRequestMultiError(errors)
+		return GetMyAttendanceRecordsRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// CreateAttendanceFenceRequestMultiError is an error wrapping multiple
-// validation errors returned by CreateAttendanceFenceRequest.ValidateAll() if
-// the designated constraints aren't met.
-type CreateAttendanceFenceRequestMultiError []error
+// GetMyAttendanceRecordsRequestMultiError is an error wrapping multiple
+// validation errors returned by GetMyAttendanceRecordsRequest.ValidateAll()
+// if the designated constraints aren't met.
+type GetMyAttendanceRecordsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m CreateAttendanceFenceRequestMultiError) Error() string {
+func (m GetMyAttendanceRecordsRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -567,12 +744,12 @@ func (m CreateAttendanceFenceRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m CreateAttendanceFenceRequestMultiError) AllErrors() []error { return m }
+func (m GetMyAttendanceRecordsRequestMultiError) AllErrors() []error { return m }
 
-// CreateAttendanceFenceRequestValidationError is the validation error returned
-// by CreateAttendanceFenceRequest.Validate if the designated constraints
-// aren't met.
-type CreateAttendanceFenceRequestValidationError struct {
+// GetMyAttendanceRecordsRequestValidationError is the validation error
+// returned by GetMyAttendanceRecordsRequest.Validate if the designated
+// constraints aren't met.
+type GetMyAttendanceRecordsRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -580,24 +757,24 @@ type CreateAttendanceFenceRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e CreateAttendanceFenceRequestValidationError) Field() string { return e.field }
+func (e GetMyAttendanceRecordsRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e CreateAttendanceFenceRequestValidationError) Reason() string { return e.reason }
+func (e GetMyAttendanceRecordsRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e CreateAttendanceFenceRequestValidationError) Cause() error { return e.cause }
+func (e GetMyAttendanceRecordsRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e CreateAttendanceFenceRequestValidationError) Key() bool { return e.key }
+func (e GetMyAttendanceRecordsRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e CreateAttendanceFenceRequestValidationError) ErrorName() string {
-	return "CreateAttendanceFenceRequestValidationError"
+func (e GetMyAttendanceRecordsRequestValidationError) ErrorName() string {
+	return "GetMyAttendanceRecordsRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e CreateAttendanceFenceRequestValidationError) Error() string {
+func (e GetMyAttendanceRecordsRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -609,14 +786,14 @@ func (e CreateAttendanceFenceRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCreateAttendanceFenceRequest.%s: %s%s",
+		"invalid %sGetMyAttendanceRecordsRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = CreateAttendanceFenceRequestValidationError{}
+var _ error = GetMyAttendanceRecordsRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -624,24 +801,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = CreateAttendanceFenceRequestValidationError{}
+} = GetMyAttendanceRecordsRequestValidationError{}
 
-// Validate checks the field values on ListAttendanceFenceRequest with the
+// Validate checks the field values on ListAttendanceRecordsRequest with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListAttendanceFenceRequest) Validate() error {
+func (m *ListAttendanceRecordsRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListAttendanceFenceRequest with the
+// ValidateAll checks the field values on ListAttendanceRecordsRequest with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// ListAttendanceFenceRequestMultiError, or nil if none found.
-func (m *ListAttendanceFenceRequest) ValidateAll() error {
+// ListAttendanceRecordsRequestMultiError, or nil if none found.
+func (m *ListAttendanceRecordsRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListAttendanceFenceRequest) validate(all bool) error {
+func (m *ListAttendanceRecordsRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -649,48 +826,50 @@ func (m *ListAttendanceFenceRequest) validate(all bool) error {
 	var errors []error
 
 	if all {
-		switch v := interface{}(m.GetPaging()).(type) {
+		switch v := interface{}(m.GetWorkDate()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, ListAttendanceFenceRequestValidationError{
-					field:  "Paging",
+				errors = append(errors, ListAttendanceRecordsRequestValidationError{
+					field:  "WorkDate",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, ListAttendanceFenceRequestValidationError{
-					field:  "Paging",
+				errors = append(errors, ListAttendanceRecordsRequestValidationError{
+					field:  "WorkDate",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetPaging()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetWorkDate()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return ListAttendanceFenceRequestValidationError{
-				field:  "Paging",
+			return ListAttendanceRecordsRequestValidationError{
+				field:  "WorkDate",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
 		}
 	}
 
+	// no validation rules for UserId
+
 	if len(errors) > 0 {
-		return ListAttendanceFenceRequestMultiError(errors)
+		return ListAttendanceRecordsRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListAttendanceFenceRequestMultiError is an error wrapping multiple
-// validation errors returned by ListAttendanceFenceRequest.ValidateAll() if
+// ListAttendanceRecordsRequestMultiError is an error wrapping multiple
+// validation errors returned by ListAttendanceRecordsRequest.ValidateAll() if
 // the designated constraints aren't met.
-type ListAttendanceFenceRequestMultiError []error
+type ListAttendanceRecordsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListAttendanceFenceRequestMultiError) Error() string {
+func (m ListAttendanceRecordsRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -699,11 +878,12 @@ func (m ListAttendanceFenceRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListAttendanceFenceRequestMultiError) AllErrors() []error { return m }
+func (m ListAttendanceRecordsRequestMultiError) AllErrors() []error { return m }
 
-// ListAttendanceFenceRequestValidationError is the validation error returned
-// by ListAttendanceFenceRequest.Validate if the designated constraints aren't met.
-type ListAttendanceFenceRequestValidationError struct {
+// ListAttendanceRecordsRequestValidationError is the validation error returned
+// by ListAttendanceRecordsRequest.Validate if the designated constraints
+// aren't met.
+type ListAttendanceRecordsRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -711,24 +891,24 @@ type ListAttendanceFenceRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListAttendanceFenceRequestValidationError) Field() string { return e.field }
+func (e ListAttendanceRecordsRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListAttendanceFenceRequestValidationError) Reason() string { return e.reason }
+func (e ListAttendanceRecordsRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListAttendanceFenceRequestValidationError) Cause() error { return e.cause }
+func (e ListAttendanceRecordsRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListAttendanceFenceRequestValidationError) Key() bool { return e.key }
+func (e ListAttendanceRecordsRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListAttendanceFenceRequestValidationError) ErrorName() string {
-	return "ListAttendanceFenceRequestValidationError"
+func (e ListAttendanceRecordsRequestValidationError) ErrorName() string {
+	return "ListAttendanceRecordsRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListAttendanceFenceRequestValidationError) Error() string {
+func (e ListAttendanceRecordsRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -740,14 +920,14 @@ func (e ListAttendanceFenceRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListAttendanceFenceRequest.%s: %s%s",
+		"invalid %sListAttendanceRecordsRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListAttendanceFenceRequestValidationError{}
+var _ error = ListAttendanceRecordsRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -755,24 +935,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListAttendanceFenceRequestValidationError{}
+} = ListAttendanceRecordsRequestValidationError{}
 
-// Validate checks the field values on ListAttendanceFenceResponse with the
+// Validate checks the field values on ListAttendanceRecordsResponse with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListAttendanceFenceResponse) Validate() error {
+func (m *ListAttendanceRecordsResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListAttendanceFenceResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ListAttendanceFenceResponseMultiError, or nil if none found.
-func (m *ListAttendanceFenceResponse) ValidateAll() error {
+// ValidateAll checks the field values on ListAttendanceRecordsResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ListAttendanceRecordsResponseMultiError, or nil if none found.
+func (m *ListAttendanceRecordsResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListAttendanceFenceResponse) validate(all bool) error {
+func (m *ListAttendanceRecordsResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -786,7 +966,7 @@ func (m *ListAttendanceFenceResponse) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ListAttendanceFenceResponseValidationError{
+					errors = append(errors, ListAttendanceRecordsResponseValidationError{
 						field:  fmt.Sprintf("Items[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -794,7 +974,7 @@ func (m *ListAttendanceFenceResponse) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, ListAttendanceFenceResponseValidationError{
+					errors = append(errors, ListAttendanceRecordsResponseValidationError{
 						field:  fmt.Sprintf("Items[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -803,7 +983,7 @@ func (m *ListAttendanceFenceResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return ListAttendanceFenceResponseValidationError{
+				return ListAttendanceRecordsResponseValidationError{
 					field:  fmt.Sprintf("Items[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -816,19 +996,19 @@ func (m *ListAttendanceFenceResponse) validate(all bool) error {
 	// no validation rules for Total
 
 	if len(errors) > 0 {
-		return ListAttendanceFenceResponseMultiError(errors)
+		return ListAttendanceRecordsResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListAttendanceFenceResponseMultiError is an error wrapping multiple
-// validation errors returned by ListAttendanceFenceResponse.ValidateAll() if
-// the designated constraints aren't met.
-type ListAttendanceFenceResponseMultiError []error
+// ListAttendanceRecordsResponseMultiError is an error wrapping multiple
+// validation errors returned by ListAttendanceRecordsResponse.ValidateAll()
+// if the designated constraints aren't met.
+type ListAttendanceRecordsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListAttendanceFenceResponseMultiError) Error() string {
+func (m ListAttendanceRecordsResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -837,12 +1017,12 @@ func (m ListAttendanceFenceResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListAttendanceFenceResponseMultiError) AllErrors() []error { return m }
+func (m ListAttendanceRecordsResponseMultiError) AllErrors() []error { return m }
 
-// ListAttendanceFenceResponseValidationError is the validation error returned
-// by ListAttendanceFenceResponse.Validate if the designated constraints
-// aren't met.
-type ListAttendanceFenceResponseValidationError struct {
+// ListAttendanceRecordsResponseValidationError is the validation error
+// returned by ListAttendanceRecordsResponse.Validate if the designated
+// constraints aren't met.
+type ListAttendanceRecordsResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -850,24 +1030,24 @@ type ListAttendanceFenceResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListAttendanceFenceResponseValidationError) Field() string { return e.field }
+func (e ListAttendanceRecordsResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListAttendanceFenceResponseValidationError) Reason() string { return e.reason }
+func (e ListAttendanceRecordsResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListAttendanceFenceResponseValidationError) Cause() error { return e.cause }
+func (e ListAttendanceRecordsResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListAttendanceFenceResponseValidationError) Key() bool { return e.key }
+func (e ListAttendanceRecordsResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListAttendanceFenceResponseValidationError) ErrorName() string {
-	return "ListAttendanceFenceResponseValidationError"
+func (e ListAttendanceRecordsResponseValidationError) ErrorName() string {
+	return "ListAttendanceRecordsResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListAttendanceFenceResponseValidationError) Error() string {
+func (e ListAttendanceRecordsResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -879,14 +1059,14 @@ func (e ListAttendanceFenceResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListAttendanceFenceResponse.%s: %s%s",
+		"invalid %sListAttendanceRecordsResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListAttendanceFenceResponseValidationError{}
+var _ error = ListAttendanceRecordsResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -894,655 +1074,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListAttendanceFenceResponseValidationError{}
+} = ListAttendanceRecordsResponseValidationError{}
 
-// Validate checks the field values on UpdateAttendanceFenceRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdateAttendanceFenceRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UpdateAttendanceFenceRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UpdateAttendanceFenceRequestMultiError, or nil if none found.
-func (m *UpdateAttendanceFenceRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UpdateAttendanceFenceRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	if all {
-		switch v := interface{}(m.GetData()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, UpdateAttendanceFenceRequestValidationError{
-					field:  "Data",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, UpdateAttendanceFenceRequestValidationError{
-					field:  "Data",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateAttendanceFenceRequestValidationError{
-				field:  "Data",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetUpdateMask()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, UpdateAttendanceFenceRequestValidationError{
-					field:  "UpdateMask",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, UpdateAttendanceFenceRequestValidationError{
-					field:  "UpdateMask",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetUpdateMask()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateAttendanceFenceRequestValidationError{
-				field:  "UpdateMask",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if len(errors) > 0 {
-		return UpdateAttendanceFenceRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// UpdateAttendanceFenceRequestMultiError is an error wrapping multiple
-// validation errors returned by UpdateAttendanceFenceRequest.ValidateAll() if
-// the designated constraints aren't met.
-type UpdateAttendanceFenceRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UpdateAttendanceFenceRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UpdateAttendanceFenceRequestMultiError) AllErrors() []error { return m }
-
-// UpdateAttendanceFenceRequestValidationError is the validation error returned
-// by UpdateAttendanceFenceRequest.Validate if the designated constraints
-// aren't met.
-type UpdateAttendanceFenceRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdateAttendanceFenceRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdateAttendanceFenceRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdateAttendanceFenceRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdateAttendanceFenceRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdateAttendanceFenceRequestValidationError) ErrorName() string {
-	return "UpdateAttendanceFenceRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UpdateAttendanceFenceRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdateAttendanceFenceRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdateAttendanceFenceRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdateAttendanceFenceRequestValidationError{}
-
-// Validate checks the field values on DeleteAttendanceFenceRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *DeleteAttendanceFenceRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on DeleteAttendanceFenceRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// DeleteAttendanceFenceRequestMultiError, or nil if none found.
-func (m *DeleteAttendanceFenceRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *DeleteAttendanceFenceRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	if len(errors) > 0 {
-		return DeleteAttendanceFenceRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// DeleteAttendanceFenceRequestMultiError is an error wrapping multiple
-// validation errors returned by DeleteAttendanceFenceRequest.ValidateAll() if
-// the designated constraints aren't met.
-type DeleteAttendanceFenceRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m DeleteAttendanceFenceRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m DeleteAttendanceFenceRequestMultiError) AllErrors() []error { return m }
-
-// DeleteAttendanceFenceRequestValidationError is the validation error returned
-// by DeleteAttendanceFenceRequest.Validate if the designated constraints
-// aren't met.
-type DeleteAttendanceFenceRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e DeleteAttendanceFenceRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e DeleteAttendanceFenceRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e DeleteAttendanceFenceRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e DeleteAttendanceFenceRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e DeleteAttendanceFenceRequestValidationError) ErrorName() string {
-	return "DeleteAttendanceFenceRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e DeleteAttendanceFenceRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sDeleteAttendanceFenceRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = DeleteAttendanceFenceRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = DeleteAttendanceFenceRequestValidationError{}
-
-// Validate checks the field values on AttendanceWifi with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *AttendanceWifi) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on AttendanceWifi with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in AttendanceWifiMultiError,
-// or nil if none found.
-func (m *AttendanceWifi) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *AttendanceWifi) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.Id != nil {
-		// no validation rules for Id
-	}
-
-	if m.Ssid != nil {
-		// no validation rules for Ssid
-	}
-
-	if m.Bssid != nil {
-		// no validation rules for Bssid
-	}
-
-	if m.TenantId != nil {
-		// no validation rules for TenantId
-	}
-
-	if m.TenantName != nil {
-		// no validation rules for TenantName
-	}
-
-	if m.CreatedBy != nil {
-		// no validation rules for CreatedBy
-	}
-
-	if m.UpdatedBy != nil {
-		// no validation rules for UpdatedBy
-	}
-
-	if m.DeletedBy != nil {
-		// no validation rules for DeletedBy
-	}
-
-	if m.CreatedAt != nil {
-
-		if all {
-			switch v := interface{}(m.GetCreatedAt()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AttendanceWifiValidationError{
-						field:  "CreatedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AttendanceWifiValidationError{
-						field:  "CreatedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AttendanceWifiValidationError{
-					field:  "CreatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if m.UpdatedAt != nil {
-
-		if all {
-			switch v := interface{}(m.GetUpdatedAt()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AttendanceWifiValidationError{
-						field:  "UpdatedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AttendanceWifiValidationError{
-						field:  "UpdatedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AttendanceWifiValidationError{
-					field:  "UpdatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if m.DeletedAt != nil {
-
-		if all {
-			switch v := interface{}(m.GetDeletedAt()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AttendanceWifiValidationError{
-						field:  "DeletedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AttendanceWifiValidationError{
-						field:  "DeletedAt",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetDeletedAt()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AttendanceWifiValidationError{
-					field:  "DeletedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if len(errors) > 0 {
-		return AttendanceWifiMultiError(errors)
-	}
-
-	return nil
-}
-
-// AttendanceWifiMultiError is an error wrapping multiple validation errors
-// returned by AttendanceWifi.ValidateAll() if the designated constraints
-// aren't met.
-type AttendanceWifiMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m AttendanceWifiMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m AttendanceWifiMultiError) AllErrors() []error { return m }
-
-// AttendanceWifiValidationError is the validation error returned by
-// AttendanceWifi.Validate if the designated constraints aren't met.
-type AttendanceWifiValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e AttendanceWifiValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e AttendanceWifiValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e AttendanceWifiValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e AttendanceWifiValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e AttendanceWifiValidationError) ErrorName() string { return "AttendanceWifiValidationError" }
-
-// Error satisfies the builtin error interface
-func (e AttendanceWifiValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sAttendanceWifi.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = AttendanceWifiValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = AttendanceWifiValidationError{}
-
-// Validate checks the field values on CreateAttendanceWifiRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *CreateAttendanceWifiRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on CreateAttendanceWifiRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// CreateAttendanceWifiRequestMultiError, or nil if none found.
-func (m *CreateAttendanceWifiRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *CreateAttendanceWifiRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if all {
-		switch v := interface{}(m.GetData()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, CreateAttendanceWifiRequestValidationError{
-					field:  "Data",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, CreateAttendanceWifiRequestValidationError{
-					field:  "Data",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return CreateAttendanceWifiRequestValidationError{
-				field:  "Data",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if len(errors) > 0 {
-		return CreateAttendanceWifiRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// CreateAttendanceWifiRequestMultiError is an error wrapping multiple
-// validation errors returned by CreateAttendanceWifiRequest.ValidateAll() if
-// the designated constraints aren't met.
-type CreateAttendanceWifiRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m CreateAttendanceWifiRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m CreateAttendanceWifiRequestMultiError) AllErrors() []error { return m }
-
-// CreateAttendanceWifiRequestValidationError is the validation error returned
-// by CreateAttendanceWifiRequest.Validate if the designated constraints
-// aren't met.
-type CreateAttendanceWifiRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e CreateAttendanceWifiRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e CreateAttendanceWifiRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e CreateAttendanceWifiRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e CreateAttendanceWifiRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e CreateAttendanceWifiRequestValidationError) ErrorName() string {
-	return "CreateAttendanceWifiRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e CreateAttendanceWifiRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sCreateAttendanceWifiRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = CreateAttendanceWifiRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = CreateAttendanceWifiRequestValidationError{}
-
-// Validate checks the field values on ListAttendanceWifiRequest with the rules
+// Validate checks the field values on RunDailySettlementRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListAttendanceWifiRequest) Validate() error {
+func (m *RunDailySettlementRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListAttendanceWifiRequest with the
+// ValidateAll checks the field values on RunDailySettlementRequest with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// ListAttendanceWifiRequestMultiError, or nil if none found.
-func (m *ListAttendanceWifiRequest) ValidateAll() error {
+// RunDailySettlementRequestMultiError, or nil if none found.
+func (m *RunDailySettlementRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListAttendanceWifiRequest) validate(all bool) error {
+func (m *RunDailySettlementRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -1550,28 +1099,28 @@ func (m *ListAttendanceWifiRequest) validate(all bool) error {
 	var errors []error
 
 	if all {
-		switch v := interface{}(m.GetPaging()).(type) {
+		switch v := interface{}(m.GetWorkDate()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, ListAttendanceWifiRequestValidationError{
-					field:  "Paging",
+				errors = append(errors, RunDailySettlementRequestValidationError{
+					field:  "WorkDate",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, ListAttendanceWifiRequestValidationError{
-					field:  "Paging",
+				errors = append(errors, RunDailySettlementRequestValidationError{
+					field:  "WorkDate",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetPaging()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetWorkDate()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return ListAttendanceWifiRequestValidationError{
-				field:  "Paging",
+			return RunDailySettlementRequestValidationError{
+				field:  "WorkDate",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -1579,19 +1128,19 @@ func (m *ListAttendanceWifiRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return ListAttendanceWifiRequestMultiError(errors)
+		return RunDailySettlementRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListAttendanceWifiRequestMultiError is an error wrapping multiple validation
-// errors returned by ListAttendanceWifiRequest.ValidateAll() if the
+// RunDailySettlementRequestMultiError is an error wrapping multiple validation
+// errors returned by RunDailySettlementRequest.ValidateAll() if the
 // designated constraints aren't met.
-type ListAttendanceWifiRequestMultiError []error
+type RunDailySettlementRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListAttendanceWifiRequestMultiError) Error() string {
+func (m RunDailySettlementRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1600,11 +1149,11 @@ func (m ListAttendanceWifiRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListAttendanceWifiRequestMultiError) AllErrors() []error { return m }
+func (m RunDailySettlementRequestMultiError) AllErrors() []error { return m }
 
-// ListAttendanceWifiRequestValidationError is the validation error returned by
-// ListAttendanceWifiRequest.Validate if the designated constraints aren't met.
-type ListAttendanceWifiRequestValidationError struct {
+// RunDailySettlementRequestValidationError is the validation error returned by
+// RunDailySettlementRequest.Validate if the designated constraints aren't met.
+type RunDailySettlementRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1612,24 +1161,24 @@ type ListAttendanceWifiRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListAttendanceWifiRequestValidationError) Field() string { return e.field }
+func (e RunDailySettlementRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListAttendanceWifiRequestValidationError) Reason() string { return e.reason }
+func (e RunDailySettlementRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListAttendanceWifiRequestValidationError) Cause() error { return e.cause }
+func (e RunDailySettlementRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListAttendanceWifiRequestValidationError) Key() bool { return e.key }
+func (e RunDailySettlementRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListAttendanceWifiRequestValidationError) ErrorName() string {
-	return "ListAttendanceWifiRequestValidationError"
+func (e RunDailySettlementRequestValidationError) ErrorName() string {
+	return "RunDailySettlementRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListAttendanceWifiRequestValidationError) Error() string {
+func (e RunDailySettlementRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1641,14 +1190,14 @@ func (e ListAttendanceWifiRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListAttendanceWifiRequest.%s: %s%s",
+		"invalid %sRunDailySettlementRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListAttendanceWifiRequestValidationError{}
+var _ error = RunDailySettlementRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -1656,80 +1205,46 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListAttendanceWifiRequestValidationError{}
+} = RunDailySettlementRequestValidationError{}
 
-// Validate checks the field values on ListAttendanceWifiResponse with the
+// Validate checks the field values on RunDailySettlementResponse with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListAttendanceWifiResponse) Validate() error {
+func (m *RunDailySettlementResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListAttendanceWifiResponse with the
+// ValidateAll checks the field values on RunDailySettlementResponse with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// ListAttendanceWifiResponseMultiError, or nil if none found.
-func (m *ListAttendanceWifiResponse) ValidateAll() error {
+// RunDailySettlementResponseMultiError, or nil if none found.
+func (m *RunDailySettlementResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListAttendanceWifiResponse) validate(all bool) error {
+func (m *RunDailySettlementResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	for idx, item := range m.GetItems() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ListAttendanceWifiResponseValidationError{
-						field:  fmt.Sprintf("Items[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, ListAttendanceWifiResponseValidationError{
-						field:  fmt.Sprintf("Items[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ListAttendanceWifiResponseValidationError{
-					field:  fmt.Sprintf("Items[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	// no validation rules for Total
+	// no validation rules for SettledCount
 
 	if len(errors) > 0 {
-		return ListAttendanceWifiResponseMultiError(errors)
+		return RunDailySettlementResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListAttendanceWifiResponseMultiError is an error wrapping multiple
-// validation errors returned by ListAttendanceWifiResponse.ValidateAll() if
+// RunDailySettlementResponseMultiError is an error wrapping multiple
+// validation errors returned by RunDailySettlementResponse.ValidateAll() if
 // the designated constraints aren't met.
-type ListAttendanceWifiResponseMultiError []error
+type RunDailySettlementResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListAttendanceWifiResponseMultiError) Error() string {
+func (m RunDailySettlementResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1738,11 +1253,11 @@ func (m ListAttendanceWifiResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListAttendanceWifiResponseMultiError) AllErrors() []error { return m }
+func (m RunDailySettlementResponseMultiError) AllErrors() []error { return m }
 
-// ListAttendanceWifiResponseValidationError is the validation error returned
-// by ListAttendanceWifiResponse.Validate if the designated constraints aren't met.
-type ListAttendanceWifiResponseValidationError struct {
+// RunDailySettlementResponseValidationError is the validation error returned
+// by RunDailySettlementResponse.Validate if the designated constraints aren't met.
+type RunDailySettlementResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1750,24 +1265,24 @@ type ListAttendanceWifiResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListAttendanceWifiResponseValidationError) Field() string { return e.field }
+func (e RunDailySettlementResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListAttendanceWifiResponseValidationError) Reason() string { return e.reason }
+func (e RunDailySettlementResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListAttendanceWifiResponseValidationError) Cause() error { return e.cause }
+func (e RunDailySettlementResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListAttendanceWifiResponseValidationError) Key() bool { return e.key }
+func (e RunDailySettlementResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListAttendanceWifiResponseValidationError) ErrorName() string {
-	return "ListAttendanceWifiResponseValidationError"
+func (e RunDailySettlementResponseValidationError) ErrorName() string {
+	return "RunDailySettlementResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListAttendanceWifiResponseValidationError) Error() string {
+func (e RunDailySettlementResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1779,14 +1294,14 @@ func (e ListAttendanceWifiResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListAttendanceWifiResponse.%s: %s%s",
+		"invalid %sRunDailySettlementResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListAttendanceWifiResponseValidationError{}
+var _ error = RunDailySettlementResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1794,109 +1309,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListAttendanceWifiResponseValidationError{}
-
-// Validate checks the field values on DeleteAttendanceWifiRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *DeleteAttendanceWifiRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on DeleteAttendanceWifiRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// DeleteAttendanceWifiRequestMultiError, or nil if none found.
-func (m *DeleteAttendanceWifiRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *DeleteAttendanceWifiRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	if len(errors) > 0 {
-		return DeleteAttendanceWifiRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// DeleteAttendanceWifiRequestMultiError is an error wrapping multiple
-// validation errors returned by DeleteAttendanceWifiRequest.ValidateAll() if
-// the designated constraints aren't met.
-type DeleteAttendanceWifiRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m DeleteAttendanceWifiRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m DeleteAttendanceWifiRequestMultiError) AllErrors() []error { return m }
-
-// DeleteAttendanceWifiRequestValidationError is the validation error returned
-// by DeleteAttendanceWifiRequest.Validate if the designated constraints
-// aren't met.
-type DeleteAttendanceWifiRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e DeleteAttendanceWifiRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e DeleteAttendanceWifiRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e DeleteAttendanceWifiRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e DeleteAttendanceWifiRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e DeleteAttendanceWifiRequestValidationError) ErrorName() string {
-	return "DeleteAttendanceWifiRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e DeleteAttendanceWifiRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sDeleteAttendanceWifiRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = DeleteAttendanceWifiRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = DeleteAttendanceWifiRequestValidationError{}
+} = RunDailySettlementResponseValidationError{}

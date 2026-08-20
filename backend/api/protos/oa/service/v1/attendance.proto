@@ -2,139 +2,217 @@ syntax = "proto3";
 
 package oa.service.v1;
 
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/field_behavior.proto";
+
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/field_mask.proto";
+
 import "pagination/v1/pagination.proto";
 
-// OA 考勤服务（core-service gRPC 實現）。
-//
-// 純 gRPC 服務——HTTP 注解由 admin/service/v1/i_attendance.proto（管理端
-// 圍欄庫 CRUD）與 app/service/v1/i_attendance.proto（移動端打卡）分別包裝，
-// 對齊 cms core/admin/app 三層分離模式。所有 RPC 均需鑑權，租戶/操作人
-// 上下文由 auth 中間件注入、由 ent viewer 中間件翻譯，供 TenantPrivacy
-// 策略做行級租戶隔離。
+// OA 考勤服务（打卡记录含 GPS/WifiBSSID，工作日结算自动计算迟到/早退/旷工，
+// 已通过的请假单覆盖工作日时记为请假）
 service AttendanceService {
-  // 打卡（移動端）。上傳當前 GPS 坐標與連接 Wi-Fi 的 BSSID，服務端按本
-  // 租戶圍欄庫與 Wi-Fi 指紋庫判定是否允許，並落打卡記錄。返回判定結果。
-  rpc CheckIn(CheckInRequest) returns (CheckInResponse) {
-  }
+  // 打卡（app 端）。当日首次打卡=上班签到，第二次=下班签退并结算当日结果。
+  rpc CheckIn(CheckInRequest) returns (AttendanceRecord) {}
 
-  // ---- 围栏库 CRUD（管理端） ----
-  rpc CreateAttendanceFence(CreateAttendanceFenceRequest) returns (AttendanceFence) {
-  }
-  rpc ListAttendanceFence(ListAttendanceFenceRequest) returns (ListAttendanceFenceResponse) {
-  }
-  rpc UpdateAttendanceFence(UpdateAttendanceFenceRequest) returns (AttendanceFence) {
-  }
-  rpc DeleteAttendanceFence(DeleteAttendanceFenceRequest) returns (google.protobuf.Empty) {
-  }
+  // 查询本人打卡记录（app 端，按日期范围）
+  rpc GetMyAttendanceRecords(GetMyAttendanceRecordsRequest) returns (ListAttendanceRecordsResponse) {}
 
-  // ---- Wi-Fi 指纹库 CRUD（管理端） ----
-  rpc CreateAttendanceWifi(CreateAttendanceWifiRequest) returns (AttendanceWifi) {
-  }
-  rpc ListAttendanceWifi(ListAttendanceWifiRequest) returns (ListAttendanceWifiResponse) {
-  }
-  rpc DeleteAttendanceWifi(DeleteAttendanceWifiRequest) returns (google.protobuf.Empty) {
-  }
+  // 查询打卡记录（admin，按日期，可选用户过滤）
+  rpc ListAttendanceRecords(ListAttendanceRecordsRequest) returns (ListAttendanceRecordsResponse) {}
+
+  // 读取本租户考勤设置（admin）
+  rpc GetAttendanceSetting(google.protobuf.Empty) returns (AttendanceSetting) {}
+
+  // 更新本租户考勤设置（admin）
+  rpc UpdateAttendanceSetting(AttendanceSetting) returns (google.protobuf.Empty) {}
+
+  // 工作日结算（admin）：对指定日期为全部用户物化记录——无打卡且无请假覆盖记旷工，
+  // 请假覆盖记请假；有签退未结算的记录补结算。可由外部定时任务每日调用。
+  rpc RunDailySettlement(RunDailySettlementRequest) returns (RunDailySettlementResponse) {}
 }
 
-// ---- 打卡 ----
+// 打卡记录（用户 x 工作日 唯一）
+message AttendanceRecord {
+  // 当日结算结果
+  enum DayResult {
+    PENDING = 0;      // 未结算（未签退或未触发结算）
+    NORMAL = 1;       // 正常
+    LATE = 2;         // 迟到
+    EARLY_LEAVE = 3;  // 早退
+    ABSENT = 4;       // 旷工
+    ON_LEAVE = 5;     // 请假（已通过的请假单覆盖当日）
+  }
 
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "记录ID" }
+  ]; // 记录ID
+
+  optional uint32 user_id = 2 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = { description: "用户ID" }
+  ]; // 用户ID
+
+  optional string user_name = 13 [
+    json_name = "userName",
+    (gnostic.openapi.v3.property) = { description: "用户姓名（服务端回填）" }
+  ]; // 用户姓名
+
+  optional google.protobuf.Timestamp work_date = 3 [
+    json_name = "workDate",
+    (gnostic.openapi.v3.property) = { description: "工作日（日期，零点）" }
+  ]; // 工作日
+
+  optional google.protobuf.Timestamp check_in_at = 4 [
+    json_name = "checkInAt",
+    (gnostic.openapi.v3.property) = { description: "上班签到时间" }
+  ]; // 上班签到时间
+
+  optional double check_in_latitude = 5 [
+    json_name = "checkInLatitude",
+    (gnostic.openapi.v3.property) = { description: "签到 GPS 纬度" }
+  ]; // 签到 GPS 纬度
+
+  optional double check_in_longitude = 6 [
+    json_name = "checkInLongitude",
+    (gnostic.openapi.v3.property) = { description: "签到 GPS 经度" }
+  ]; // 签到 GPS 经度
+
+  optional string check_in_wifi_bssid = 7 [
+    json_name = "checkInWifiBssid",
+    (gnostic.openapi.v3.property) = { description: "签到 Wifi BSSID" }
+  ]; // 签到 Wifi BSSID
+
+  optional google.protobuf.Timestamp check_out_at = 8 [
+    json_name = "checkOutAt",
+    (gnostic.openapi.v3.property) = { description: "下班签退时间" }
+  ]; // 下班签退时间
+
+  optional double check_out_latitude = 9 [
+    json_name = "checkOutLatitude",
+    (gnostic.openapi.v3.property) = { description: "签退 GPS 纬度" }
+  ]; // 签退 GPS 纬度
+
+  optional double check_out_longitude = 10 [
+    json_name = "checkOutLongitude",
+    (gnostic.openapi.v3.property) = { description: "签退 GPS 经度" }
+  ]; // 签退 GPS 经度
+
+  optional string check_out_wifi_bssid = 11 [
+    json_name = "checkOutWifiBssid",
+    (gnostic.openapi.v3.property) = { description: "签退 Wifi BSSID" }
+  ]; // 签退 Wifi BSSID
+
+  optional DayResult day_result = 12 [
+    json_name = "dayResult",
+    (gnostic.openapi.v3.property) = { description: "当日结算结果" }
+  ]; // 当日结算结果
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}];
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}];
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];
+}
+
+// 考勤设置（每租户一行）
+message AttendanceSetting {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "设置ID" }
+  ]; // 设置ID
+
+  optional string work_start_time = 2 [
+    json_name = "workStartTime",
+    (gnostic.openapi.v3.property) = { description: "上班时间（HH:MM，默认 09:00），晚于记迟到" }
+  ]; // 上班时间
+
+  optional string work_end_time = 3 [
+    json_name = "workEndTime",
+    (gnostic.openapi.v3.property) = { description: "下班时间（HH:MM，默认 18:00），早于记早退" }
+  ]; // 下班时间
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];
+}
+
+// 打卡 - 请求
 message CheckInRequest {
-  // 打卡提交的 GPS 坐标（WGS84）。
-  optional double longitude = 1;
-  optional double latitude = 2;
-  // 打卡时连接 Wi-Fi 的 BSSID（如可用）。
-  optional string bssid = 3;
+  double latitude = 1 [
+    json_name = "latitude",
+    (gnostic.openapi.v3.property) = { description: "GPS 纬度（不可用时传 0）" }
+  ]; // GPS 纬度
+
+  double longitude = 2 [
+    json_name = "longitude",
+    (gnostic.openapi.v3.property) = { description: "GPS 经度（不可用时传 0）" }
+  ]; // GPS 经度
+
+  string wifi_bssid = 3 [
+    json_name = "wifiBssid",
+    (gnostic.openapi.v3.property) = { description: "Wifi BSSID（尽力采集，可为空）" }
+  ]; // Wifi BSSID
 }
 
-message CheckInResponse {
-  enum CheckResult {
-    DENIED = 0;
-    IN_FENCE = 1;
-    IN_WIFI = 2;
-  }
-  optional CheckResult check_result = 1;
-  optional string message = 2;
+// 查询本人记录 - 请求
+message GetMyAttendanceRecordsRequest {
+  google.protobuf.Timestamp start_date = 1 [
+    json_name = "startDate",
+    (gnostic.openapi.v3.property) = { description: "开始日期（含），不传=近 30 天" }
+  ]; // 开始日期
+
+  google.protobuf.Timestamp end_date = 2 [
+    json_name = "endDate",
+    (gnostic.openapi.v3.property) = { description: "结束日期（含）" }
+  ]; // 结束日期
 }
 
-// ---- 围栏 ----
+// 查询记录 - 请求（admin）
+message ListAttendanceRecordsRequest {
+  google.protobuf.Timestamp work_date = 1 [
+    json_name = "workDate",
+    (gnostic.openapi.v3.property) = { description: "工作日（日期，零点）" }
+  ]; // 工作日
 
-message AttendanceFence {
-  optional uint32 id = 1;
-  optional string name = 2;
-  optional double longitude = 3;
-  optional double latitude = 4;
-  optional double radius = 5;
-
-  // ---- 租户 / 审计字段（固定字段号约定） ----
-  optional uint32 tenant_id = 40;
-  optional string tenant_name = 41;
-  optional uint32 created_by = 100;
-  optional uint32 updated_by = 101;
-  optional uint32 deleted_by = 102;
-  optional google.protobuf.Timestamp created_at = 200;
-  optional google.protobuf.Timestamp updated_at = 201;
-  optional google.protobuf.Timestamp deleted_at = 202;
+  uint32 user_id = 2 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = { description: "用户ID，0=全部" }
+  ]; // 用户ID
 }
 
-message CreateAttendanceFenceRequest {
-  AttendanceFence data = 1;
-}
-
-message ListAttendanceFenceRequest {
-  pagination.PagingRequest paging = 1;
-}
-
-message ListAttendanceFenceResponse {
-  repeated AttendanceFence items = 1;
+// 查询记录 - 回应
+message ListAttendanceRecordsResponse {
+  repeated AttendanceRecord items = 1;
   uint64 total = 2;
 }
 
-message UpdateAttendanceFenceRequest {
-  uint32 id = 1;
-
-  AttendanceFence data = 2;
-
-  google.protobuf.FieldMask update_mask = 3;
+// 工作日结算 - 请求（admin）
+message RunDailySettlementRequest {
+  google.protobuf.Timestamp work_date = 1 [
+    json_name = "workDate",
+    (gnostic.openapi.v3.property) = { description: "结算日期（日期，零点），不传=今天" }
+  ]; // 结算日期
 }
 
-message DeleteAttendanceFenceRequest {
-  uint32 id = 1;
-}
-
-// ---- Wi-Fi 指纹 ----
-
-message AttendanceWifi {
-  optional uint32 id = 1;
-  optional string ssid = 2;
-  optional string bssid = 3;
-
-  // ---- 租户 / 审计字段（固定字段号约定） ----
-  optional uint32 tenant_id = 40;
-  optional string tenant_name = 41;
-  optional uint32 created_by = 100;
-  optional uint32 updated_by = 101;
-  optional uint32 deleted_by = 102;
-  optional google.protobuf.Timestamp created_at = 200;
-  optional google.protobuf.Timestamp updated_at = 201;
-  optional google.protobuf.Timestamp deleted_at = 202;
-}
-
-message CreateAttendanceWifiRequest {
-  AttendanceWifi data = 1;
-}
-
-message ListAttendanceWifiRequest {
-  pagination.PagingRequest paging = 1;
-}
-
-message ListAttendanceWifiResponse {
-  repeated AttendanceWifi items = 1;
-  uint64 total = 2;
-}
-
-message DeleteAttendanceWifiRequest {
-  uint32 id = 1;
+// 工作日结算 - 回应
+message RunDailySettlementResponse {
+  uint32 settled_count = 1 [
+    json_name = "settledCount",
+    (gnostic.openapi.v3.property) = { description: "结算/物化的记录数" }
+  ]; // 结算记录数
 }

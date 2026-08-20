@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package app.service.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination/v1/pagination.proto";
+
+import "oa/service/v1/leave.proto";
+
+// OA 请假参与服务（app 边端，移动端）
+service LeaveService {
+  // 提交请假申请
+  rpc SubmitLeaveApplication(oa.service.v1.SubmitLeaveApplicationRequest) returns (oa.service.v1.SubmitLeaveApplicationResponse) {
+    option (google.api.http) = {
+      post: "/app/v1/oa/leave/applications"
+      body: "*"
+    };
+  }
+
+  // 查询我的请假申请
+  rpc ListLeaveApplications(oa.service.v1.ListLeaveApplicationsRequest) returns (oa.service.v1.ListLeaveApplicationsResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/leave/applications"
+    };
+  }
+
+  // 查询请假申请详情
+  rpc GetLeaveApplication(oa.service.v1.GetLeaveApplicationRequest) returns (oa.service.v1.LeaveApplication) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/leave/applications/{id}"
+    };
+  }
+
+  // 查询请假类型列表
+  rpc ListLeaveTypes(pagination.PagingRequest) returns (oa.service.v1.ListLeaveTypesResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/leave/types"
+    };
+  }
+
+  // 查询我的假期额度
+  rpc ListLeaveBalances(oa.service.v1.ListLeaveBalancesRequest) returns (oa.service.v1.ListLeaveBalancesResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/leave/balances"
+    };
+  }
+}

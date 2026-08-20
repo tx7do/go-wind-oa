@@ -4,10 +4,9 @@
 // 	protoc        (unknown)
 // source: app/service/v1/i_workflow.proto
 
-package apppb
+package servicev1
 
 import (
-	_ "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	v1 "go-wind-oa/api/gen/go/oa/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -28,36 +27,40 @@ var File_app_service_v1_i_workflow_proto protoreflect.FileDescriptor
 
 const file_app_service_v1_i_workflow_proto_rawDesc = "" +
 	"\n" +
-	"\x1fapp/service/v1/i_workflow.proto\x12\x0eapp.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1coa/service/v1/workflow.proto2\xf9\x03\n" +
-	"\x0fWorkflowService\x12z\n" +
-	"\vSubmitApply\x12!.oa.service.v1.SubmitApplyRequest\x1a\".oa.service.v1.SubmitApplyResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/app/v1/oa/workflow/apply\x12z\n" +
-	"\tAuditTask\x12\x1f.oa.service.v1.AuditTaskRequest\x1a\x16.google.protobuf.Empty\"4\x82\xd3\xe4\x93\x02.:\x01*\")/app/v1/oa/workflow/tasks/{task_id}/audit\x12w\n" +
+	"\x1fapp/service/v1/i_workflow.proto\x12\x0eapp.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1coa/service/v1/workflow.proto2\xee\x04\n" +
+	"\x0fWorkflowService\x12\x81\x01\n" +
+	"\vSubmitApply\x12!.oa.service.v1.SubmitApplyRequest\x1a\".oa.service.v1.SubmitApplyResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /app/v1/oa/workflow/submit-apply\x12o\n" +
+	"\tAuditTask\x12\x1f.oa.service.v1.AuditTaskRequest\x1a\x16.google.protobuf.Empty\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/app/v1/oa/workflow/audit-task\x12{\n" +
+	"\rWithdrawApply\x12#.oa.service.v1.WithdrawApplyRequest\x1a\x16.google.protobuf.Empty\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/app/v1/oa/workflow/withdraw-apply\x12w\n" +
 	"\n" +
-	"GetMyTasks\x12 .oa.service.v1.GetMyTasksRequest\x1a!.oa.service.v1.GetMyTasksResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/app/v1/oa/workflow/my-tasks\x12u\n" +
-	"\aGetTask\x12\x1d.oa.service.v1.GetTaskRequest\x1a\x1e.oa.service.v1.GetTaskResponse\"+\x82\xd3\xe4\x93\x02%\x12#/app/v1/oa/workflow/tasks/{task_id}B\xaa\x01\n" +
-	"\x12com.app.service.v1B\x0eIWorkflowProtoP\x01Z*go-wind-oa/api/gen/go/app/service/v1;apppb\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
+	"GetMyTasks\x12 .oa.service.v1.GetMyTasksRequest\x1a!.oa.service.v1.GetMyTasksResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/app/v1/oa/workflow/my-tasks\x12p\n" +
+	"\aGetTask\x12\x1d.oa.service.v1.GetTaskRequest\x1a\x1e.oa.service.v1.GetTaskResponse\"&\x82\xd3\xe4\x93\x02 \x12\x1e/app/v1/oa/workflow/tasks/{id}B\xae\x01\n" +
+	"\x12com.app.service.v1B\x0eIWorkflowProtoP\x01Z.go-wind-oa/api/gen/go/app/service/v1;servicev1\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
 
 var file_app_service_v1_i_workflow_proto_goTypes = []any{
-	(*v1.SubmitApplyRequest)(nil),  // 0: oa.service.v1.SubmitApplyRequest
-	(*v1.AuditTaskRequest)(nil),    // 1: oa.service.v1.AuditTaskRequest
-	(*v1.GetMyTasksRequest)(nil),   // 2: oa.service.v1.GetMyTasksRequest
-	(*v1.GetTaskRequest)(nil),      // 3: oa.service.v1.GetTaskRequest
-	(*v1.SubmitApplyResponse)(nil), // 4: oa.service.v1.SubmitApplyResponse
-	(*emptypb.Empty)(nil),          // 5: google.protobuf.Empty
-	(*v1.GetMyTasksResponse)(nil),  // 6: oa.service.v1.GetMyTasksResponse
-	(*v1.GetTaskResponse)(nil),     // 7: oa.service.v1.GetTaskResponse
+	(*v1.SubmitApplyRequest)(nil),   // 0: oa.service.v1.SubmitApplyRequest
+	(*v1.AuditTaskRequest)(nil),     // 1: oa.service.v1.AuditTaskRequest
+	(*v1.WithdrawApplyRequest)(nil), // 2: oa.service.v1.WithdrawApplyRequest
+	(*v1.GetMyTasksRequest)(nil),    // 3: oa.service.v1.GetMyTasksRequest
+	(*v1.GetTaskRequest)(nil),       // 4: oa.service.v1.GetTaskRequest
+	(*v1.SubmitApplyResponse)(nil),  // 5: oa.service.v1.SubmitApplyResponse
+	(*emptypb.Empty)(nil),           // 6: google.protobuf.Empty
+	(*v1.GetMyTasksResponse)(nil),   // 7: oa.service.v1.GetMyTasksResponse
+	(*v1.GetTaskResponse)(nil),      // 8: oa.service.v1.GetTaskResponse
 }
 var file_app_service_v1_i_workflow_proto_depIdxs = []int32{
 	0, // 0: app.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
 	1, // 1: app.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
-	2, // 2: app.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
-	3, // 3: app.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
-	4, // 4: app.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
-	5, // 5: app.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
-	6, // 6: app.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
-	7, // 7: app.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
-	4, // [4:8] is the sub-list for method output_type
-	0, // [0:4] is the sub-list for method input_type
+	2, // 2: app.service.v1.WorkflowService.WithdrawApply:input_type -> oa.service.v1.WithdrawApplyRequest
+	3, // 3: app.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
+	4, // 4: app.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
+	5, // 5: app.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
+	6, // 6: app.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
+	6, // 7: app.service.v1.WorkflowService.WithdrawApply:output_type -> google.protobuf.Empty
+	7, // 8: app.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
+	8, // 9: app.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
+	5, // [5:10] is the sub-list for method output_type
+	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

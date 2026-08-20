@@ -1,7 +1,51 @@
 package logging
 
-// 本包原為 cms 的 API/登錄審計日誌中間件，依賴已裁剪的 audit 域。
-// OA admin-service 的 REST 中間件鏈改用 kratos 自帶的
-// github.com/go-kratos/kratos/v2/middleware/logging 做請求日誌，
-// 不再接入本包的審計日誌中間件。此處保留 constants.go 的 header 常量，
-// Server 函數留作空殼以避免外部引用斷裂。
+import (
+	"context"
+	"time"
+
+	"github.com/go-kratos/kratos/v2/middleware"
+	"github.com/go-kratos/kratos/v2/transport"
+	"github.com/go-kratos/kratos/v2/transport/http"
+
+	adminV1 "go-wind-oa/api/gen/go/admin/service/v1"
+)
+
+// Server is an server logging middleware.
+func Server(opts ...Option) middleware.Middleware {
+	op := options{
+		loginOperation:  adminV1.OperationAuthenticationServiceLogin,
+		logoutOperation: adminV1.OperationAuthenticationServiceLogout,
+	}
+	for _, o := range opts {
+		o(&op)
+	}
+
+	if op.ecPrivateKey == nil || op.ecPublicKey == nil {
+		op.ecPrivateKey, op.ecPublicKey, _ = generateECDSAKeyPair()
+	}
+
+	loginAuditLogMiddleware := NewLoginAuditLogMiddleware(&op)
+	apiAuditLogMiddleware := NewApiAuditLogMiddleware(&op)
+
+	return func(handler middleware.Handler) middleware.Handler {
+		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
+			startTime := time.Now()
+
+			reply, err = handler(ctx, req)
+
+			// 统计耗时
+			latencyMs := time.Since(startTime).Milliseconds()
+
+			if tr, ok := transport.FromServerContext(ctx); ok {
+				var htr *http.Transport
+				if htr, ok = tr.(*http.Transport); ok {
+					loginAuditLogMiddleware.Handle(ctx, htr, err)
+					apiAuditLogMiddleware.Handle(ctx, htr, err, latencyMs)
+				}
+			}
+
+			return
+		}
+	}
+}

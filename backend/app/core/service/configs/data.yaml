@@ -14,3 +14,9 @@ data:
     dial_timeout: 10s
     read_timeout: 0.4s
     write_timeout: 0.6s
+
+  opensearch:
+    addresses:
+      - "http://localhost:9200"
+    username: "admin"
+    password: "@Abcd#123456"

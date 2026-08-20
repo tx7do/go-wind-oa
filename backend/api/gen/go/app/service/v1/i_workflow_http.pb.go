@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: app/service/v1/i_workflow.proto
 
-package apppb
+package servicev1
 
 import (
 	context "context"
@@ -25,24 +25,28 @@ const OperationWorkflowServiceAuditTask = "/app.service.v1.WorkflowService/Audit
 const OperationWorkflowServiceGetMyTasks = "/app.service.v1.WorkflowService/GetMyTasks"
 const OperationWorkflowServiceGetTask = "/app.service.v1.WorkflowService/GetTask"
 const OperationWorkflowServiceSubmitApply = "/app.service.v1.WorkflowService/SubmitApply"
+const OperationWorkflowServiceWithdrawApply = "/app.service.v1.WorkflowService/WithdrawApply"
 
 type WorkflowServiceHTTPServer interface {
-	// AuditTask 审批/驳回/转办当前待办任务。
+	// AuditTask 审批任务
 	AuditTask(context.Context, *v1.AuditTaskRequest) (*emptypb.Empty, error)
-	// GetMyTasks 获取当前用户的待办 / 已办 / 我的申请列表。
+	// GetMyTasks 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(context.Context, *v1.GetMyTasksRequest) (*v1.GetMyTasksResponse, error)
-	// GetTask 获取单个待办任务详情。
+	// GetTask 查询任务详情
 	GetTask(context.Context, *v1.GetTaskRequest) (*v1.GetTaskResponse, error)
-	// SubmitApply 提交申请：发起一个工作流实例。
+	// SubmitApply 提交申请
 	SubmitApply(context.Context, *v1.SubmitApplyRequest) (*v1.SubmitApplyResponse, error)
+	// WithdrawApply 撤回申请（仅申请人本人，仅进行中的实例）
+	WithdrawApply(context.Context, *v1.WithdrawApplyRequest) (*emptypb.Empty, error)
 }
 
 func RegisterWorkflowServiceHTTPServer(s *http.Server, srv WorkflowServiceHTTPServer) {
 	r := s.Route("/")
-	r.POST("/app/v1/oa/workflow/apply", _WorkflowService_SubmitApply0_HTTP_Handler(srv))
-	r.POST("/app/v1/oa/workflow/tasks/{task_id}/audit", _WorkflowService_AuditTask0_HTTP_Handler(srv))
+	r.POST("/app/v1/oa/workflow/submit-apply", _WorkflowService_SubmitApply0_HTTP_Handler(srv))
+	r.POST("/app/v1/oa/workflow/audit-task", _WorkflowService_AuditTask0_HTTP_Handler(srv))
+	r.POST("/app/v1/oa/workflow/withdraw-apply", _WorkflowService_WithdrawApply0_HTTP_Handler(srv))
 	r.GET("/app/v1/oa/workflow/my-tasks", _WorkflowService_GetMyTasks0_HTTP_Handler(srv))
-	r.GET("/app/v1/oa/workflow/tasks/{task_id}", _WorkflowService_GetTask0_HTTP_Handler(srv))
+	r.GET("/app/v1/oa/workflow/tasks/{id}", _WorkflowService_GetTask0_HTTP_Handler(srv))
 }
 
 func _WorkflowService_SubmitApply0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
@@ -76,12 +80,31 @@ func _WorkflowService_AuditTask0_HTTP_Handler(srv WorkflowServiceHTTPServer) fun
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
 		http.SetOperation(ctx, OperationWorkflowServiceAuditTask)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.AuditTask(ctx, req.(*v1.AuditTaskRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _WorkflowService_WithdrawApply0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.WithdrawApplyRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWorkflowServiceWithdrawApply)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.WithdrawApply(ctx, req.(*v1.WithdrawApplyRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -134,14 +157,16 @@ func _WorkflowService_GetTask0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(
 }
 
 type WorkflowServiceHTTPClient interface {
-	// AuditTask 审批/驳回/转办当前待办任务。
+	// AuditTask 审批任务
 	AuditTask(ctx context.Context, req *v1.AuditTaskRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
-	// GetMyTasks 获取当前用户的待办 / 已办 / 我的申请列表。
+	// GetMyTasks 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(ctx context.Context, req *v1.GetMyTasksRequest, opts ...http.CallOption) (rsp *v1.GetMyTasksResponse, err error)
-	// GetTask 获取单个待办任务详情。
+	// GetTask 查询任务详情
 	GetTask(ctx context.Context, req *v1.GetTaskRequest, opts ...http.CallOption) (rsp *v1.GetTaskResponse, err error)
-	// SubmitApply 提交申请：发起一个工作流实例。
+	// SubmitApply 提交申请
 	SubmitApply(ctx context.Context, req *v1.SubmitApplyRequest, opts ...http.CallOption) (rsp *v1.SubmitApplyResponse, err error)
+	// WithdrawApply 撤回申请（仅申请人本人，仅进行中的实例）
+	WithdrawApply(ctx context.Context, req *v1.WithdrawApplyRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type WorkflowServiceHTTPClientImpl struct {
@@ -152,10 +177,10 @@ func NewWorkflowServiceHTTPClient(client *http.Client) WorkflowServiceHTTPClient
 	return &WorkflowServiceHTTPClientImpl{client}
 }
 
-// AuditTask 审批/驳回/转办当前待办任务。
+// AuditTask 审批任务
 func (c *WorkflowServiceHTTPClientImpl) AuditTask(ctx context.Context, in *v1.AuditTaskRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/app/v1/oa/workflow/tasks/{task_id}/audit"
+	pattern := "/app/v1/oa/workflow/audit-task"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationWorkflowServiceAuditTask))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -166,7 +191,7 @@ func (c *WorkflowServiceHTTPClientImpl) AuditTask(ctx context.Context, in *v1.Au
 	return &out, nil
 }
 
-// GetMyTasks 获取当前用户的待办 / 已办 / 我的申请列表。
+// GetMyTasks 查询我的任务（待办/已办/我的申请）
 func (c *WorkflowServiceHTTPClientImpl) GetMyTasks(ctx context.Context, in *v1.GetMyTasksRequest, opts ...http.CallOption) (*v1.GetMyTasksResponse, error) {
 	var out v1.GetMyTasksResponse
 	pattern := "/app/v1/oa/workflow/my-tasks"
@@ -180,10 +205,10 @@ func (c *WorkflowServiceHTTPClientImpl) GetMyTasks(ctx context.Context, in *v1.G
 	return &out, nil
 }
 
-// GetTask 获取单个待办任务详情。
+// GetTask 查询任务详情
 func (c *WorkflowServiceHTTPClientImpl) GetTask(ctx context.Context, in *v1.GetTaskRequest, opts ...http.CallOption) (*v1.GetTaskResponse, error) {
 	var out v1.GetTaskResponse
-	pattern := "/app/v1/oa/workflow/tasks/{task_id}"
+	pattern := "/app/v1/oa/workflow/tasks/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationWorkflowServiceGetTask))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -194,12 +219,26 @@ func (c *WorkflowServiceHTTPClientImpl) GetTask(ctx context.Context, in *v1.GetT
 	return &out, nil
 }
 
-// SubmitApply 提交申请：发起一个工作流实例。
+// SubmitApply 提交申请
 func (c *WorkflowServiceHTTPClientImpl) SubmitApply(ctx context.Context, in *v1.SubmitApplyRequest, opts ...http.CallOption) (*v1.SubmitApplyResponse, error) {
 	var out v1.SubmitApplyResponse
-	pattern := "/app/v1/oa/workflow/apply"
+	pattern := "/app/v1/oa/workflow/submit-apply"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationWorkflowServiceSubmitApply))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// WithdrawApply 撤回申请（仅申请人本人，仅进行中的实例）
+func (c *WorkflowServiceHTTPClientImpl) WithdrawApply(ctx context.Context, in *v1.WithdrawApplyRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/app/v1/oa/workflow/withdraw-apply"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationWorkflowServiceWithdrawApply))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

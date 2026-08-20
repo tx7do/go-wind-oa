@@ -21,40 +21,26 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AttendanceService_CreateAttendanceFence_FullMethodName = "/admin.service.v1.AttendanceService/CreateAttendanceFence"
-	AttendanceService_ListAttendanceFence_FullMethodName   = "/admin.service.v1.AttendanceService/ListAttendanceFence"
-	AttendanceService_UpdateAttendanceFence_FullMethodName = "/admin.service.v1.AttendanceService/UpdateAttendanceFence"
-	AttendanceService_DeleteAttendanceFence_FullMethodName = "/admin.service.v1.AttendanceService/DeleteAttendanceFence"
-	AttendanceService_CreateAttendanceWifi_FullMethodName  = "/admin.service.v1.AttendanceService/CreateAttendanceWifi"
-	AttendanceService_ListAttendanceWifi_FullMethodName    = "/admin.service.v1.AttendanceService/ListAttendanceWifi"
-	AttendanceService_DeleteAttendanceWifi_FullMethodName  = "/admin.service.v1.AttendanceService/DeleteAttendanceWifi"
+	AttendanceService_ListAttendanceRecords_FullMethodName   = "/admin.service.v1.AttendanceService/ListAttendanceRecords"
+	AttendanceService_GetAttendanceSetting_FullMethodName    = "/admin.service.v1.AttendanceService/GetAttendanceSetting"
+	AttendanceService_UpdateAttendanceSetting_FullMethodName = "/admin.service.v1.AttendanceService/UpdateAttendanceSetting"
+	AttendanceService_RunDailySettlement_FullMethodName      = "/admin.service.v1.AttendanceService/RunDailySettlement"
 )
 
 // AttendanceServiceClient is the client API for AttendanceService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// OA 考勤围栏库管理服务（admin HTTP 边端）。
-//
-// 对齐 cms admin/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
-// adminV1.AttendanceServiceHTTPServer，admin-service 注册并转发到 core gRPC。
-// 仅暴露围栏库与 Wi-Fi 指纹库的 CRUD（管理端），打卡端点不经 admin 边端。
+// OA 考勤管理服务（admin 边端）
 type AttendanceServiceClient interface {
-	// 创建围栏
-	CreateAttendanceFence(ctx context.Context, in *v1.CreateAttendanceFenceRequest, opts ...grpc.CallOption) (*v1.AttendanceFence, error)
-	// 查询围栏列表
-	ListAttendanceFence(ctx context.Context, in *v1.ListAttendanceFenceRequest, opts ...grpc.CallOption) (*v1.ListAttendanceFenceResponse, error)
-	// 更新围栏
-	UpdateAttendanceFence(ctx context.Context, in *v1.UpdateAttendanceFenceRequest, opts ...grpc.CallOption) (*v1.AttendanceFence, error)
-	// 删除围栏
-	DeleteAttendanceFence(ctx context.Context, in *v1.DeleteAttendanceFenceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 创建 Wi-Fi 指纹
-	CreateAttendanceWifi(ctx context.Context, in *v1.CreateAttendanceWifiRequest, opts ...grpc.CallOption) (*v1.AttendanceWifi, error)
-	// 查询 Wi-Fi 指纹列表
-	ListAttendanceWifi(ctx context.Context, in *v1.ListAttendanceWifiRequest, opts ...grpc.CallOption) (*v1.ListAttendanceWifiResponse, error)
-	// 删除 Wi-Fi 指纹
-	DeleteAttendanceWifi(ctx context.Context, in *v1.DeleteAttendanceWifiRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 查询打卡记录（按工作日，可选用户）
+	ListAttendanceRecords(ctx context.Context, in *v1.ListAttendanceRecordsRequest, opts ...grpc.CallOption) (*v1.ListAttendanceRecordsResponse, error)
+	// 读取考勤设置
+	GetAttendanceSetting(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.AttendanceSetting, error)
+	// 更新考勤设置
+	UpdateAttendanceSetting(ctx context.Context, in *v1.AttendanceSetting, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 工作日结算（物化旷工/请假，补结算未签退记录）
+	RunDailySettlement(ctx context.Context, in *v1.RunDailySettlementRequest, opts ...grpc.CallOption) (*v1.RunDailySettlementResponse, error)
 }
 
 type attendanceServiceClient struct {
@@ -65,70 +51,40 @@ func NewAttendanceServiceClient(cc grpc.ClientConnInterface) AttendanceServiceCl
 	return &attendanceServiceClient{cc}
 }
 
-func (c *attendanceServiceClient) CreateAttendanceFence(ctx context.Context, in *v1.CreateAttendanceFenceRequest, opts ...grpc.CallOption) (*v1.AttendanceFence, error) {
+func (c *attendanceServiceClient) ListAttendanceRecords(ctx context.Context, in *v1.ListAttendanceRecordsRequest, opts ...grpc.CallOption) (*v1.ListAttendanceRecordsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.AttendanceFence)
-	err := c.cc.Invoke(ctx, AttendanceService_CreateAttendanceFence_FullMethodName, in, out, cOpts...)
+	out := new(v1.ListAttendanceRecordsResponse)
+	err := c.cc.Invoke(ctx, AttendanceService_ListAttendanceRecords_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *attendanceServiceClient) ListAttendanceFence(ctx context.Context, in *v1.ListAttendanceFenceRequest, opts ...grpc.CallOption) (*v1.ListAttendanceFenceResponse, error) {
+func (c *attendanceServiceClient) GetAttendanceSetting(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.AttendanceSetting, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.ListAttendanceFenceResponse)
-	err := c.cc.Invoke(ctx, AttendanceService_ListAttendanceFence_FullMethodName, in, out, cOpts...)
+	out := new(v1.AttendanceSetting)
+	err := c.cc.Invoke(ctx, AttendanceService_GetAttendanceSetting_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *attendanceServiceClient) UpdateAttendanceFence(ctx context.Context, in *v1.UpdateAttendanceFenceRequest, opts ...grpc.CallOption) (*v1.AttendanceFence, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.AttendanceFence)
-	err := c.cc.Invoke(ctx, AttendanceService_UpdateAttendanceFence_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *attendanceServiceClient) DeleteAttendanceFence(ctx context.Context, in *v1.DeleteAttendanceFenceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *attendanceServiceClient) UpdateAttendanceSetting(ctx context.Context, in *v1.AttendanceSetting, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, AttendanceService_DeleteAttendanceFence_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, AttendanceService_UpdateAttendanceSetting_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *attendanceServiceClient) CreateAttendanceWifi(ctx context.Context, in *v1.CreateAttendanceWifiRequest, opts ...grpc.CallOption) (*v1.AttendanceWifi, error) {
+func (c *attendanceServiceClient) RunDailySettlement(ctx context.Context, in *v1.RunDailySettlementRequest, opts ...grpc.CallOption) (*v1.RunDailySettlementResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.AttendanceWifi)
-	err := c.cc.Invoke(ctx, AttendanceService_CreateAttendanceWifi_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *attendanceServiceClient) ListAttendanceWifi(ctx context.Context, in *v1.ListAttendanceWifiRequest, opts ...grpc.CallOption) (*v1.ListAttendanceWifiResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.ListAttendanceWifiResponse)
-	err := c.cc.Invoke(ctx, AttendanceService_ListAttendanceWifi_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *attendanceServiceClient) DeleteAttendanceWifi(ctx context.Context, in *v1.DeleteAttendanceWifiRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, AttendanceService_DeleteAttendanceWifi_FullMethodName, in, out, cOpts...)
+	out := new(v1.RunDailySettlementResponse)
+	err := c.cc.Invoke(ctx, AttendanceService_RunDailySettlement_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -139,27 +95,16 @@ func (c *attendanceServiceClient) DeleteAttendanceWifi(ctx context.Context, in *
 // All implementations must embed UnimplementedAttendanceServiceServer
 // for forward compatibility.
 //
-// OA 考勤围栏库管理服务（admin HTTP 边端）。
-//
-// 对齐 cms admin/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
-// adminV1.AttendanceServiceHTTPServer，admin-service 注册并转发到 core gRPC。
-// 仅暴露围栏库与 Wi-Fi 指纹库的 CRUD（管理端），打卡端点不经 admin 边端。
+// OA 考勤管理服务（admin 边端）
 type AttendanceServiceServer interface {
-	// 创建围栏
-	CreateAttendanceFence(context.Context, *v1.CreateAttendanceFenceRequest) (*v1.AttendanceFence, error)
-	// 查询围栏列表
-	ListAttendanceFence(context.Context, *v1.ListAttendanceFenceRequest) (*v1.ListAttendanceFenceResponse, error)
-	// 更新围栏
-	UpdateAttendanceFence(context.Context, *v1.UpdateAttendanceFenceRequest) (*v1.AttendanceFence, error)
-	// 删除围栏
-	DeleteAttendanceFence(context.Context, *v1.DeleteAttendanceFenceRequest) (*emptypb.Empty, error)
-	// 创建 Wi-Fi 指纹
-	CreateAttendanceWifi(context.Context, *v1.CreateAttendanceWifiRequest) (*v1.AttendanceWifi, error)
-	// 查询 Wi-Fi 指纹列表
-	ListAttendanceWifi(context.Context, *v1.ListAttendanceWifiRequest) (*v1.ListAttendanceWifiResponse, error)
-	// 删除 Wi-Fi 指纹
-	DeleteAttendanceWifi(context.Context, *v1.DeleteAttendanceWifiRequest) (*emptypb.Empty, error)
+	// 查询打卡记录（按工作日，可选用户）
+	ListAttendanceRecords(context.Context, *v1.ListAttendanceRecordsRequest) (*v1.ListAttendanceRecordsResponse, error)
+	// 读取考勤设置
+	GetAttendanceSetting(context.Context, *emptypb.Empty) (*v1.AttendanceSetting, error)
+	// 更新考勤设置
+	UpdateAttendanceSetting(context.Context, *v1.AttendanceSetting) (*emptypb.Empty, error)
+	// 工作日结算（物化旷工/请假，补结算未签退记录）
+	RunDailySettlement(context.Context, *v1.RunDailySettlementRequest) (*v1.RunDailySettlementResponse, error)
 	mustEmbedUnimplementedAttendanceServiceServer()
 }
 
@@ -170,26 +115,17 @@ type AttendanceServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAttendanceServiceServer struct{}
 
-func (UnimplementedAttendanceServiceServer) CreateAttendanceFence(context.Context, *v1.CreateAttendanceFenceRequest) (*v1.AttendanceFence, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateAttendanceFence not implemented")
+func (UnimplementedAttendanceServiceServer) ListAttendanceRecords(context.Context, *v1.ListAttendanceRecordsRequest) (*v1.ListAttendanceRecordsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListAttendanceRecords not implemented")
 }
-func (UnimplementedAttendanceServiceServer) ListAttendanceFence(context.Context, *v1.ListAttendanceFenceRequest) (*v1.ListAttendanceFenceResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListAttendanceFence not implemented")
+func (UnimplementedAttendanceServiceServer) GetAttendanceSetting(context.Context, *emptypb.Empty) (*v1.AttendanceSetting, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAttendanceSetting not implemented")
 }
-func (UnimplementedAttendanceServiceServer) UpdateAttendanceFence(context.Context, *v1.UpdateAttendanceFenceRequest) (*v1.AttendanceFence, error) {
-	return nil, status.Error(codes.Unimplemented, "method UpdateAttendanceFence not implemented")
+func (UnimplementedAttendanceServiceServer) UpdateAttendanceSetting(context.Context, *v1.AttendanceSetting) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateAttendanceSetting not implemented")
 }
-func (UnimplementedAttendanceServiceServer) DeleteAttendanceFence(context.Context, *v1.DeleteAttendanceFenceRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteAttendanceFence not implemented")
-}
-func (UnimplementedAttendanceServiceServer) CreateAttendanceWifi(context.Context, *v1.CreateAttendanceWifiRequest) (*v1.AttendanceWifi, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateAttendanceWifi not implemented")
-}
-func (UnimplementedAttendanceServiceServer) ListAttendanceWifi(context.Context, *v1.ListAttendanceWifiRequest) (*v1.ListAttendanceWifiResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListAttendanceWifi not implemented")
-}
-func (UnimplementedAttendanceServiceServer) DeleteAttendanceWifi(context.Context, *v1.DeleteAttendanceWifiRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteAttendanceWifi not implemented")
+func (UnimplementedAttendanceServiceServer) RunDailySettlement(context.Context, *v1.RunDailySettlementRequest) (*v1.RunDailySettlementResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RunDailySettlement not implemented")
 }
 func (UnimplementedAttendanceServiceServer) mustEmbedUnimplementedAttendanceServiceServer() {}
 func (UnimplementedAttendanceServiceServer) testEmbeddedByValue()                           {}
@@ -212,128 +148,74 @@ func RegisterAttendanceServiceServer(s grpc.ServiceRegistrar, srv AttendanceServ
 	s.RegisterService(&AttendanceService_ServiceDesc, srv)
 }
 
-func _AttendanceService_CreateAttendanceFence_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.CreateAttendanceFenceRequest)
+func _AttendanceService_ListAttendanceRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.ListAttendanceRecordsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AttendanceServiceServer).CreateAttendanceFence(ctx, in)
+		return srv.(AttendanceServiceServer).ListAttendanceRecords(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AttendanceService_CreateAttendanceFence_FullMethodName,
+		FullMethod: AttendanceService_ListAttendanceRecords_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AttendanceServiceServer).CreateAttendanceFence(ctx, req.(*v1.CreateAttendanceFenceRequest))
+		return srv.(AttendanceServiceServer).ListAttendanceRecords(ctx, req.(*v1.ListAttendanceRecordsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AttendanceService_ListAttendanceFence_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.ListAttendanceFenceRequest)
+func _AttendanceService_GetAttendanceSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AttendanceServiceServer).ListAttendanceFence(ctx, in)
+		return srv.(AttendanceServiceServer).GetAttendanceSetting(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AttendanceService_ListAttendanceFence_FullMethodName,
+		FullMethod: AttendanceService_GetAttendanceSetting_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AttendanceServiceServer).ListAttendanceFence(ctx, req.(*v1.ListAttendanceFenceRequest))
+		return srv.(AttendanceServiceServer).GetAttendanceSetting(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AttendanceService_UpdateAttendanceFence_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.UpdateAttendanceFenceRequest)
+func _AttendanceService_UpdateAttendanceSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.AttendanceSetting)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AttendanceServiceServer).UpdateAttendanceFence(ctx, in)
+		return srv.(AttendanceServiceServer).UpdateAttendanceSetting(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AttendanceService_UpdateAttendanceFence_FullMethodName,
+		FullMethod: AttendanceService_UpdateAttendanceSetting_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AttendanceServiceServer).UpdateAttendanceFence(ctx, req.(*v1.UpdateAttendanceFenceRequest))
+		return srv.(AttendanceServiceServer).UpdateAttendanceSetting(ctx, req.(*v1.AttendanceSetting))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AttendanceService_DeleteAttendanceFence_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.DeleteAttendanceFenceRequest)
+func _AttendanceService_RunDailySettlement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.RunDailySettlementRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AttendanceServiceServer).DeleteAttendanceFence(ctx, in)
+		return srv.(AttendanceServiceServer).RunDailySettlement(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AttendanceService_DeleteAttendanceFence_FullMethodName,
+		FullMethod: AttendanceService_RunDailySettlement_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AttendanceServiceServer).DeleteAttendanceFence(ctx, req.(*v1.DeleteAttendanceFenceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AttendanceService_CreateAttendanceWifi_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.CreateAttendanceWifiRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AttendanceServiceServer).CreateAttendanceWifi(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AttendanceService_CreateAttendanceWifi_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AttendanceServiceServer).CreateAttendanceWifi(ctx, req.(*v1.CreateAttendanceWifiRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AttendanceService_ListAttendanceWifi_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.ListAttendanceWifiRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AttendanceServiceServer).ListAttendanceWifi(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AttendanceService_ListAttendanceWifi_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AttendanceServiceServer).ListAttendanceWifi(ctx, req.(*v1.ListAttendanceWifiRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AttendanceService_DeleteAttendanceWifi_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.DeleteAttendanceWifiRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AttendanceServiceServer).DeleteAttendanceWifi(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AttendanceService_DeleteAttendanceWifi_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AttendanceServiceServer).DeleteAttendanceWifi(ctx, req.(*v1.DeleteAttendanceWifiRequest))
+		return srv.(AttendanceServiceServer).RunDailySettlement(ctx, req.(*v1.RunDailySettlementRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -346,32 +228,20 @@ var AttendanceService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AttendanceServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateAttendanceFence",
-			Handler:    _AttendanceService_CreateAttendanceFence_Handler,
+			MethodName: "ListAttendanceRecords",
+			Handler:    _AttendanceService_ListAttendanceRecords_Handler,
 		},
 		{
-			MethodName: "ListAttendanceFence",
-			Handler:    _AttendanceService_ListAttendanceFence_Handler,
+			MethodName: "GetAttendanceSetting",
+			Handler:    _AttendanceService_GetAttendanceSetting_Handler,
 		},
 		{
-			MethodName: "UpdateAttendanceFence",
-			Handler:    _AttendanceService_UpdateAttendanceFence_Handler,
+			MethodName: "UpdateAttendanceSetting",
+			Handler:    _AttendanceService_UpdateAttendanceSetting_Handler,
 		},
 		{
-			MethodName: "DeleteAttendanceFence",
-			Handler:    _AttendanceService_DeleteAttendanceFence_Handler,
-		},
-		{
-			MethodName: "CreateAttendanceWifi",
-			Handler:    _AttendanceService_CreateAttendanceWifi_Handler,
-		},
-		{
-			MethodName: "ListAttendanceWifi",
-			Handler:    _AttendanceService_ListAttendanceWifi_Handler,
-		},
-		{
-			MethodName: "DeleteAttendanceWifi",
-			Handler:    _AttendanceService_DeleteAttendanceWifi_Handler,
+			MethodName: "RunDailySettlement",
+			Handler:    _AttendanceService_RunDailySettlement_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

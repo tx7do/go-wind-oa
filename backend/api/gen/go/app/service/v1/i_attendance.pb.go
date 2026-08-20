@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: app/service/v1/i_attendance.proto
 
-package apppb
+package servicev1
 
 import (
 	v1 "go-wind-oa/api/gen/go/oa/service/v1"
@@ -26,20 +26,25 @@ var File_app_service_v1_i_attendance_proto protoreflect.FileDescriptor
 
 const file_app_service_v1_i_attendance_proto_rawDesc = "" +
 	"\n" +
-	"!app/service/v1/i_attendance.proto\x12\x0eapp.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1eoa/service/v1/attendance.proto2\x88\x01\n" +
-	"\x11AttendanceService\x12s\n" +
-	"\aCheckIn\x12\x1d.oa.service.v1.CheckInRequest\x1a\x1e.oa.service.v1.CheckInResponse\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/app/v1/oa/attendance/check-inB\xac\x01\n" +
-	"\x12com.app.service.v1B\x10IAttendanceProtoP\x01Z*go-wind-oa/api/gen/go/app/service/v1;apppb\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
+	"!app/service/v1/i_attendance.proto\x12\x0eapp.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1eoa/service/v1/attendance.proto2\xaa\x02\n" +
+	"\x11AttendanceService\x12t\n" +
+	"\aCheckIn\x12\x1d.oa.service.v1.CheckInRequest\x1a\x1f.oa.service.v1.AttendanceRecord\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/app/v1/oa/attendance/check-in\x12\x9e\x01\n" +
+	"\x16GetMyAttendanceRecords\x12,.oa.service.v1.GetMyAttendanceRecordsRequest\x1a,.oa.service.v1.ListAttendanceRecordsResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /app/v1/oa/attendance/my-recordsB\xb0\x01\n" +
+	"\x12com.app.service.v1B\x10IAttendanceProtoP\x01Z.go-wind-oa/api/gen/go/app/service/v1;servicev1\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
 
 var file_app_service_v1_i_attendance_proto_goTypes = []any{
-	(*v1.CheckInRequest)(nil),  // 0: oa.service.v1.CheckInRequest
-	(*v1.CheckInResponse)(nil), // 1: oa.service.v1.CheckInResponse
+	(*v1.CheckInRequest)(nil),                // 0: oa.service.v1.CheckInRequest
+	(*v1.GetMyAttendanceRecordsRequest)(nil), // 1: oa.service.v1.GetMyAttendanceRecordsRequest
+	(*v1.AttendanceRecord)(nil),              // 2: oa.service.v1.AttendanceRecord
+	(*v1.ListAttendanceRecordsResponse)(nil), // 3: oa.service.v1.ListAttendanceRecordsResponse
 }
 var file_app_service_v1_i_attendance_proto_depIdxs = []int32{
 	0, // 0: app.service.v1.AttendanceService.CheckIn:input_type -> oa.service.v1.CheckInRequest
-	1, // 1: app.service.v1.AttendanceService.CheckIn:output_type -> oa.service.v1.CheckInResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	1, // 1: app.service.v1.AttendanceService.GetMyAttendanceRecords:input_type -> oa.service.v1.GetMyAttendanceRecordsRequest
+	2, // 2: app.service.v1.AttendanceService.CheckIn:output_type -> oa.service.v1.AttendanceRecord
+	3, // 3: app.service.v1.AttendanceService.GetMyAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

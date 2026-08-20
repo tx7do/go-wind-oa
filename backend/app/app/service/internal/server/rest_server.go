@@ -1,6 +1,8 @@
 package server
 
 import (
+	"context"
+
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
@@ -18,27 +20,19 @@ import (
 	"go-wind-oa/app/app/service/internal/service"
 
 	appV1 "go-wind-oa/api/gen/go/app/service/v1"
+	auditV1 "go-wind-oa/api/gen/go/audit/service/v1"
 
 	"go-wind-oa/pkg/middleware/auth"
+	applogging "go-wind-oa/pkg/middleware/logging"
 	entmiddleware "go-wind-oa/pkg/middleware/ent"
 )
 
 // NewRestMiddleware 创建中间件
-//
-// OA app-service 的 REST 中間件鏈（與 admin-service 同構）：
-//   - logging：記錄調用
-//   - auth.Server + authz.Server（白名單匹配）：非白名單請求注入 OperatorMetadata
-//   - ent.Server()：按注入的身份構建帶租戶作用域的 viewer
-//
-// auth 必須在 ent 之前：順序顛倒則 ent 總以 md==nil 兜底 SystemViewer，租戶隔離失效。
-// 白名單只含 Login（鑑權雞生蛋）。工作流端點均需鑑權，不在白名單。
-//
-// OA app-service 無匿名公開內容，故不需要 cms 的 TenantResolver——所有請求
-// 都經 auth 注入身份後由 ent 構建 UserViewer。
 func NewRestMiddleware(
 	ctx *bootstrap.Context,
 	accessTokenChecker auth.AccessTokenChecker,
 	authorizer authzEngine.Engine,
+	tenantResolver entmiddleware.TenantResolver,
 ) []middleware.Middleware {
 	var ms []middleware.Middleware
 	ms = append(ms, logging.Server(ctx.GetLogger()))
@@ -46,7 +40,43 @@ func NewRestMiddleware(
 	// add white list for authentication.
 	rpc.AddWhiteList(
 		appV1.OperationAuthenticationServiceLogin,
+
+		appV1.OperationNavigationServiceList,
+		appV1.OperationPageServiceList,
+		appV1.OperationPostServiceList,
+		appV1.OperationCategoryServiceList,
+		appV1.OperationCommentServiceList,
+		appV1.OperationTagServiceList,
+
+		appV1.OperationPageServiceGet,
+		appV1.OperationSectionServiceList,
+		appV1.OperationSectionServiceGet,
+		appV1.OperationSectionServiceGetTranslation,
+		appV1.OperationPostServiceGet,
+		appV1.OperationCategoryServiceGet,
+		appV1.OperationCommentServiceGet,
+		appV1.OperationTagServiceGet,
+
+		// PostService.SearchPosts：公开全文搜索，与文章列表/详情的匿名可见性一致。
+		// tenant_id 由 core 端从 viewer（匿名经路线2 注入的 AnonymousTenantViewer，
+		// 登录为 UserViewer）提取，按 tenant 隔离，仅返回 PUBLISHED。调用方无法
+		// 指定或绕过 tenant。
+		appV1.OperationPostServiceSearchPosts,
+
+		// InteractionService.GetCounts：公开计数（如点赞数）随文章列表展示，
+		// 仅按 tenant 隔离、不依赖 viewer 身份。Like/Unlike/Watch 等写操作
+		// 及 GetInteractionStatus（含 viewer 个人状态）仍需登录，故不在此登记。
+		appV1.OperationInteractionServiceGetCounts,
 	)
+
+	ms = append(ms, applogging.Server(
+		applogging.WithWriteApiLogFunc(func(ctx context.Context, data *auditV1.ApiAuditLog) error {
+			return nil
+		}),
+		applogging.WithWriteLoginLogFunc(func(ctx context.Context, data *auditV1.LoginAuditLog) error {
+			return nil
+		}),
+	))
 
 	// 鉴权必须在 ent.Server() 之前执行：auth.Server 对非白名单请求注入
 	// OperatorMetadata，随后 ent.Server() 才能据此构建带租户作用域的 UserViewer。
@@ -61,33 +91,37 @@ func NewRestMiddleware(
 	).Match(rpc.NewRestWhiteListMatcher()).Build())
 
 	// ent.Server() 必须在 auth.Server 之后：此时非白名单请求已注入 OperatorMetadata，
-	// 可构建 UserViewer；白名单请求（登录）md==nil 但在白名单内，兜底 SystemViewer。
-	ms = append(ms, entmiddleware.Server())
+	// 可构建 UserViewer；白名单请求（公开内容）md==nil，由注入的 TenantResolver 按
+	// Host 解析 tenant_id 并注入只读 AnonymousTenantViewer（按 tenant 隔离）；解析失败
+	// fail-closed 注入 noopContext（拒绝），不再回退 SystemViewer 避免跨租户泄漏。
+	ms = append(ms, entmiddleware.Server(entmiddleware.WithTenantResolver(tenantResolver)))
 
 	return ms
 }
 
 // NewRestServer new an REST server.
-//
-// OA app-service 的 HTTP 邊端註冊的服務：
-//   - AuthenticationService（鑑權：登錄/登出/令牌刷新，轉發 core gRPC）
-//   - WorkflowService（工作流申請/審批/任務查詢，轉發 core gRPC）
-//   - InternalMessageService（站內信查詢，轉發 core gRPC）
-//   - AttendanceService（移動打卡 CheckIn，轉發 core gRPC）
-//
-// 均為轉發層，不持業務邏輯。
 func NewRestServer(
 	ctx *bootstrap.Context,
 
 	middlewares []middleware.Middleware,
 
 	authenticationService *service.AuthenticationService,
-
 	workflowService *service.WorkflowService,
-
-	internalMessageService *service.InternalMessageService,
-
+	leaveService *service.LeaveService,
+	expenseService *service.ExpenseService,
 	attendanceService *service.AttendanceService,
+	internalMessageService *service.InternalMessageService,
+	fileTransferService *service.FileTransferService,
+	userProfileService *service.UserProfileService,
+
+	postService *service.PostService,
+	categoryService *service.CategoryService,
+	commentService *service.CommentService,
+	interactionService *service.InteractionService,
+	tagService *service.TagService,
+	pageService *service.PageService,
+	sectionService *service.SectionService,
+	navigationService *service.NavigationService,
 ) *http.Server {
 	cfg := ctx.GetConfig()
 
@@ -102,13 +136,29 @@ func NewRestServer(
 
 	appV1.RegisterAuthenticationServiceHTTPServer(srv, authenticationService)
 	appV1.RegisterWorkflowServiceHTTPServer(srv, workflowService)
-	appV1.RegisterInternalMessageServiceHTTPServer(srv, internalMessageService)
+	appV1.RegisterLeaveServiceHTTPServer(srv, leaveService)
+	appV1.RegisterExpenseServiceHTTPServer(srv, expenseService)
 	appV1.RegisterAttendanceServiceHTTPServer(srv, attendanceService)
+	appV1.RegisterInternalMessageServiceHTTPServer(srv, internalMessageService)
+	appV1.RegisterFileTransferServiceHTTPServer(srv, fileTransferService)
+	appV1.RegisterUserProfileServiceHTTPServer(srv, userProfileService)
+
+	appV1.RegisterNavigationServiceHTTPServer(srv, navigationService)
+
+	appV1.RegisterPostServiceHTTPServer(srv, postService)
+	appV1.RegisterCategoryServiceHTTPServer(srv, categoryService)
+	appV1.RegisterTagServiceHTTPServer(srv, tagService)
+	appV1.RegisterPageServiceHTTPServer(srv, pageService)
+	appV1.RegisterSectionServiceHTTPServer(srv, sectionService)
+
+	appV1.RegisterCommentServiceHTTPServer(srv, commentService)
+
+	appV1.RegisterInteractionServiceHTTPServer(srv, interactionService)
 
 	if cfg.GetServer().GetRest().GetEnableSwagger() {
 		swaggerUI.RegisterSwaggerUIServerWithOption(
 			srv,
-			swaggerUI.WithTitle("GoWind OA App API"),
+			swaggerUI.WithTitle("GoWind Content Hub App API"),
 			swaggerUI.WithMemoryData(assets.OpenApiData, "yaml"),
 		)
 	}

@@ -21,6 +21,7 @@ import (
 
 	adminV1 "go-wind-oa/api/gen/go/admin/service/v1"
 	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
+	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
 	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
 
 	"go-wind-oa/pkg/middleware/auth"
@@ -39,6 +40,7 @@ type InternalMessageService struct {
 	internalMessageCategoryServiceClient  internalMessageV1.InternalMessageCategoryServiceClient
 	internalMessageRecipientServiceClient internalMessageV1.InternalMessageRecipientServiceClient
 
+	userServiceClient           identityV1.UserServiceClient
 	authenticationServiceClient authenticationV1.AuthenticationServiceClient
 
 	internalMessagePublisher InternalMessagePublisher
@@ -52,6 +54,7 @@ func NewInternalMessageService(
 	internalMessageCategoryRepo internalMessageV1.InternalMessageCategoryServiceClient,
 	internalMessageRecipientRepo internalMessageV1.InternalMessageRecipientServiceClient,
 	authenticationRepo authenticationV1.AuthenticationServiceClient,
+	userRepo identityV1.UserServiceClient,
 	clientType authenticationV1.ClientType,
 ) *InternalMessageService {
 	l := log.NewHelper(log.With(ctx.GetLogger(), "module", "internal-message/service/admin-service"))
@@ -61,6 +64,7 @@ func NewInternalMessageService(
 		internalMessageCategoryServiceClient:  internalMessageCategoryRepo,
 		internalMessageRecipientServiceClient: internalMessageRecipientRepo,
 		authenticationServiceClient:           authenticationRepo,
+		userServiceClient:                     userRepo,
 		clientType:                            clientType,
 	}
 }
@@ -214,20 +218,58 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 		return nil, err
 	}
 
-	// 定向投递：按 RecipientUserId 或 TargetUserIds 落收件人记录并推送 SSE。
-	// 跨租户 / 收件人存在性校验由调用方保证；收件人行由 TenantPrivacy 按發送者
-	// 租戶隔離，非本租戶收件人不在其收件箱可見。
-	if req.RecipientUserId != nil {
-		_ = s.sendNotification(ctx, msg.GetId(), req.GetRecipientUserId(), operator.GetUserId(), &now, msg.GetTitle(), msg.GetContent())
-	} else if len(req.TargetUserIds) != 0 {
-		for _, uid := range req.TargetUserIds {
-			_ = s.sendNotification(ctx, msg.GetId(), uid, operator.GetUserId(), &now, msg.GetTitle(), msg.GetContent())
+	// 平台上下文(tenant==0)可向任意租户用户发送；普通租户用户只能向本租户用户发送
+	senderTenantID := operator.GetTenantId()
+	if req.GetTargetAll() {
+		users, err := s.userServiceClient.List(ctx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
+		if err != nil {
+			s.log.Errorf("send message failed, list users failed, %s", err)
+		} else {
+			for _, user := range users.Items {
+				// 非平台上下文时，跳过其他租户的用户
+				if senderTenantID != 0 && user.GetTenantId() != senderTenantID {
+					continue
+				}
+				_ = s.sendNotification(ctx, msg.GetId(), user.GetId(), operator.GetUserId(), &now, msg.GetTitle(), msg.GetContent())
+			}
+		}
+	} else {
+		if req.RecipientUserId != nil {
+			if s.isRecipientAllowed(ctx, req.GetRecipientUserId(), senderTenantID) {
+				_ = s.sendNotification(ctx, msg.GetId(), req.GetRecipientUserId(), operator.GetUserId(), &now, msg.GetTitle(), msg.GetContent())
+			}
+		} else {
+			if len(req.TargetUserIds) != 0 {
+				for _, uid := range req.TargetUserIds {
+					if s.isRecipientAllowed(ctx, uid, senderTenantID) {
+						_ = s.sendNotification(ctx, msg.GetId(), uid, operator.GetUserId(), &now, msg.GetTitle(), msg.GetContent())
+					}
+				}
+			}
 		}
 	}
 
 	return &internalMessageV1.SendMessageResponse{
 		MessageId: msg.GetId(),
 	}, nil
+}
+
+// isRecipientAllowed 校验收件人是否在发送者的可发送范围内。
+// 平台上下文(senderTenantID==0)可向任意租户用户发送；普通租户用户只能向本租户用户发送。
+// 收件人不存在或跨租户时拒绝。与 core InternalMessageService.SendMessage 的实现保持一致。
+func (s *InternalMessageService) isRecipientAllowed(ctx context.Context, recipientUserID uint32, senderTenantID uint32) bool {
+	recipient, err := s.userServiceClient.Get(ctx, &identityV1.GetUserRequest{
+		QueryBy: &identityV1.GetUserRequest_Id{Id: recipientUserID},
+	})
+	if err != nil || recipient == nil {
+		s.log.Errorf("send message failed, recipient not found [%d]: %v", recipientUserID, err)
+		return false
+	}
+	if senderTenantID != 0 && recipient.GetTenantId() != senderTenantID {
+		s.log.Errorf("send message forbidden, tenant mismatch: sender tenant [%d], recipient [%d] tenant [%d]", senderTenantID, recipientUserID, recipient.GetTenantId())
+		return false
+	}
+	return true
 }
 
 // sendNotification 向客户端发送通知消息

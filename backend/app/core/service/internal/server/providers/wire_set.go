@@ -17,10 +17,8 @@ import (
 )
 
 // ProviderSet is the Wire provider set for server layer.
-//
-// OA core-service 為 gRPC-only：僅註冊 grpc server 與其中間件鏈
-// （logging + ent）。不再持有 asynq 任務隊列。
 var ProviderSet = wire.NewSet(
 	server.NewGrpcMiddleware,
 	server.NewGrpcServer,
+	server.NewAsynqServer,
 )

@@ -5,66 +5,37 @@ package admin.service.v1;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
-import "pagination/v1/pagination.proto";
-
 import "oa/service/v1/attendance.proto";
 
-// OA 考勤围栏库管理服务（admin HTTP 边端）。
-//
-// 对齐 cms admin/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
-// adminV1.AttendanceServiceHTTPServer，admin-service 注册并转发到 core gRPC。
-// 仅暴露围栏库与 Wi-Fi 指纹库的 CRUD（管理端），打卡端点不经 admin 边端。
+// OA 考勤管理服务（admin 边端）
 service AttendanceService {
-  // 创建围栏
-  rpc CreateAttendanceFence(oa.service.v1.CreateAttendanceFenceRequest) returns (oa.service.v1.AttendanceFence) {
+  // 查询打卡记录（按工作日，可选用户）
+  rpc ListAttendanceRecords(oa.service.v1.ListAttendanceRecordsRequest) returns (oa.service.v1.ListAttendanceRecordsResponse) {
     option (google.api.http) = {
-      post: "/admin/v1/oa/attendance/fences"
+      get: "/admin/v1/oa/attendance/records"
+    };
+  }
+
+  // 读取考勤设置
+  rpc GetAttendanceSetting(google.protobuf.Empty) returns (oa.service.v1.AttendanceSetting) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/attendance/settings"
+    };
+  }
+
+  // 更新考勤设置
+  rpc UpdateAttendanceSetting(oa.service.v1.AttendanceSetting) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/oa/attendance/settings"
       body: "*"
     };
   }
 
-  // 查询围栏列表
-  rpc ListAttendanceFence(oa.service.v1.ListAttendanceFenceRequest) returns (oa.service.v1.ListAttendanceFenceResponse) {
+  // 工作日结算（物化旷工/请假，补结算未签退记录）
+  rpc RunDailySettlement(oa.service.v1.RunDailySettlementRequest) returns (oa.service.v1.RunDailySettlementResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/oa/attendance/fences"
-    };
-  }
-
-  // 更新围栏
-  rpc UpdateAttendanceFence(oa.service.v1.UpdateAttendanceFenceRequest) returns (oa.service.v1.AttendanceFence) {
-    option (google.api.http) = {
-      put: "/admin/v1/oa/attendance/fences/{id}"
+      post: "/admin/v1/oa/attendance/settlements"
       body: "*"
-    };
-  }
-
-  // 删除围栏
-  rpc DeleteAttendanceFence(oa.service.v1.DeleteAttendanceFenceRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/admin/v1/oa/attendance/fences/{id}"
-    };
-  }
-
-  // 创建 Wi-Fi 指纹
-  rpc CreateAttendanceWifi(oa.service.v1.CreateAttendanceWifiRequest) returns (oa.service.v1.AttendanceWifi) {
-    option (google.api.http) = {
-      post: "/admin/v1/oa/attendance/wifis"
-      body: "*"
-    };
-  }
-
-  // 查询 Wi-Fi 指纹列表
-  rpc ListAttendanceWifi(oa.service.v1.ListAttendanceWifiRequest) returns (oa.service.v1.ListAttendanceWifiResponse) {
-    option (google.api.http) = {
-      get: "/admin/v1/oa/attendance/wifis"
-    };
-  }
-
-  // 删除 Wi-Fi 指纹
-  rpc DeleteAttendanceWifi(oa.service.v1.DeleteAttendanceWifiRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/admin/v1/oa/attendance/wifis/{id}"
     };
   }
 }

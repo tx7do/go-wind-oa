@@ -11,37 +11,60 @@ import (
 	"github.com/tx7do/go-crud/entgo/mixin"
 )
 
-// WorkflowDefinition OA 工作流定义。流程模板以 JSON 形式存储有序审批节点，
-// 由引擎在提交申请时解析为状态机节点序列。同一 (tenant_id, code, version) 唯一。
-type WorkflowDefinition struct{ ent.Schema }
+// WorkflowDefinition holds the schema definition for the WorkflowDefinition entity.
+type WorkflowDefinition struct {
+	ent.Schema
+}
 
 func (WorkflowDefinition) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "oa_workflow_definition", Charset: "utf8mb4", Collation: "utf8mb4_bin"},
+		entsql.Annotation{
+			Table:     "oa_workflow_definition",
+			Charset:   "utf8mb4",
+			Collation: "utf8mb4_bin",
+		},
 		entsql.WithComments(true),
-		schema.Comment("OA工作流定义表"),
+		schema.Comment("OA 工作流定义表"),
 	}
 }
 
+// Fields of the WorkflowDefinition.
 func (WorkflowDefinition) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").Comment("流程名称").Optional().Nillable(),
-		field.String("code").Comment("流程编码").Immutable().Optional().Nillable(),
-		field.Uint32("version").Comment("版本号").Optional().Nillable().Default(1),
-		field.String("description").Comment("描述").Optional().Nillable(),
-		// 节点配置：有序审批节点（approver 类型、节点序号、元数据）。
-		// 结构由引擎在 internal/workflow 包中解析，DB 仅按任意 JSON 落盘。
-		field.Any("node_config").Comment("节点配置(JSON)").Optional(),
-		// 动态表单 schema：供前端按定义渲染表单字段。
-		field.Any("form_schema").Comment("动态表单schema(JSON)").Optional(),
+		field.String("code").
+			Comment("流程代码").
+			Optional().
+			Nillable(),
+
+		field.Int("version").
+			Comment("版本号").
+			Optional().
+			Nillable(),
+
+		field.String("node_config").
+			Comment("节点配置（JSON 文本）").
+			Optional().
+			Nillable(),
+
+		field.String("form_schema").
+			Comment("表单 schema（JSON 文本）").
+			Optional().
+			Nillable(),
+
 		field.Enum("definition_status").
 			Comment("定义状态").
-			NamedValues("DRAFT", "DRAFT", "ENABLED", "ENABLED", "DISABLED", "DISABLED").
+			NamedValues(
+				"Draft", "DRAFT",
+				"Enabled", "ENABLED",
+				"Disabled", "DISABLED",
+			).
 			Default("DRAFT").
-			Optional(),
+			Optional().
+			Nillable(),
 	}
 }
 
+// Mixin of the WorkflowDefinition.
 func (WorkflowDefinition) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.AutoIncrementId{},
@@ -52,10 +75,11 @@ func (WorkflowDefinition) Mixin() []ent.Mixin {
 	}
 }
 
+// Edges of the WorkflowDefinition.
 func (WorkflowDefinition) Edges() []ent.Edge {
 	return []ent.Edge{
+		// 定义→实例：正向 O2M，外键列 definition_id 在正向 edge.To 側宣告，級聯刪除。
 		edge.To("instances", WorkflowInstance.Type).
-			Required().
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}).
@@ -65,10 +89,13 @@ func (WorkflowDefinition) Edges() []ent.Edge {
 
 func (WorkflowDefinition) Indexes() []ent.Index {
 	return []ent.Index{
+		// 租户筛选
 		index.Fields("tenant_id").
-			StorageKey("idx_oa_wf_def_tenant"),
+			StorageKey("idx_oa_workflow_def_tenant"),
+
+		// 租户级唯一：同租户下 (code, version) 唯一
 		index.Fields("tenant_id", "code", "version").
 			Unique().
-			StorageKey("uix_oa_wf_def_tenant_code_version"),
+			StorageKey("uix_oa_workflow_def_tenant_code_version"),
 	}
 }

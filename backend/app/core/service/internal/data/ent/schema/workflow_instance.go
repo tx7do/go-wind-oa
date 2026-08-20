@@ -11,60 +11,88 @@ import (
 	"github.com/tx7do/go-crud/entgo/mixin"
 )
 
-// WorkflowInstance OA 工作流实例。一次具体申请（请假/报销等）。
-// form_data 为申请人提交的动态表单数据，按任意 JSON 落盘；status 由状态机驱动。
-// current_node_index 仅在 status==PENDING 时有效，指向定义中当前待办节点序号。
-type WorkflowInstance struct{ ent.Schema }
+// WorkflowInstance holds the schema definition for the WorkflowInstance entity.
+type WorkflowInstance struct {
+	ent.Schema
+}
 
 func (WorkflowInstance) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "oa_workflow_instance", Charset: "utf8mb4", Collation: "utf8mb4_bin"},
+		entsql.Annotation{
+			Table:     "oa_workflow_instance",
+			Charset:   "utf8mb4",
+			Collation: "utf8mb4_bin",
+		},
 		entsql.WithComments(true),
-		schema.Comment("OA工作流实例表"),
+		schema.Comment("OA 工作流实例表"),
 	}
 }
 
+// Fields of the WorkflowInstance.
 func (WorkflowInstance) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("title").Comment("申请标题").Optional().Nillable(),
-		// 申请人提交的动态表单数据，任意 JSON 结构。引擎不解释其字段语义。
-		field.Any("form_data").Comment("申请表单数据(JSON)").Optional(),
 		field.Enum("instance_status").
 			Comment("实例状态").
-			NamedValues("PENDING", "PENDING", "APPROVED", "APPROVED", "REJECTED", "REJECTED", "CANCELED", "CANCELED").
+			NamedValues(
+				"Pending", "PENDING",
+				"Approved", "APPROVED",
+				"Rejected", "REJECTED",
+				"Withdrawn", "WITHDRAWN",
+			).
 			Default("PENDING").
-			Optional(),
-		// 当前待办节点序号（指向定义节点序列的下标）。状态非 PENDING 时无意义。
-		field.Int32("current_node_index").Comment("当前节点序号").Optional().Nillable().Default(0),
+			Optional().
+			Nillable(),
+
+		field.Int("current_node_index").
+			Comment("当前节点索引").
+			Optional().
+			Nillable(),
+
+		field.String("form_data").
+			Comment("申请表单数据（JSON 文本）").
+			Optional().
+			Nillable(),
+
+		field.String("business_type").
+			Comment("业务单据类型（LEAVE/EXPENSE 等，审批终结时回调业务模块）").
+			Optional().
+			Nillable(),
+
+		field.Uint32("business_id").
+			Comment("业务单据ID").
+			Optional().
+			Nillable(),
 	}
 }
 
+// Mixin of the WorkflowInstance.
 func (WorkflowInstance) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
 		mixin.TenantID[uint32]{},
-		mixin.Remark{},
 	}
 }
 
+// Edges of the WorkflowInstance.
 func (WorkflowInstance) Edges() []ent.Edge {
 	return []ent.Edge{
-		// 实例必须归属一个定义；定义删除时级联清除实例。
-		// 反向边：外键列名 / Required 约束在正向 edge.To（WorkflowDefinition.Edges）侧声明，
-		// 此处仅声明 Ref + Unique；外键列名与 Required 约束在正向 edge.To 侧声明。
+		// 反向：实例→定义。外鍵列名（definition_id）與 Required 約束在正向
+		// edge.To（WorkflowDefinition.Edges）側宣告，此處僅宣告 Ref + Unique。
 		edge.From("definition", WorkflowDefinition.Type).
 			Ref("instances").
 			Unique(),
+
+		// 正向：实例→任务。外鍵列 instance_id 在此側宣告，級聯刪除。
 		edge.To("tasks", WorkflowTask.Type).
-			Required().
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}).
 			StorageKey(edge.Column("instance_id")),
+
+		// 正向：实例→日志。外鍵列 instance_id 在此側宣告，級聯刪除。
 		edge.To("logs", WorkflowLog.Type).
-			Required().
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}).
@@ -74,10 +102,12 @@ func (WorkflowInstance) Edges() []ent.Edge {
 
 func (WorkflowInstance) Indexes() []ent.Index {
 	return []ent.Index{
+		// 租户筛选
 		index.Fields("tenant_id").
-			StorageKey("idx_oa_wf_inst_tenant"),
-		// “我的申请”列表按 (tenant_id, created_by) 检索；created_by 由 OperatorID mixin 提供。
+			StorageKey("idx_oa_workflow_inst_tenant"),
+
+		// 按租户 + 创建者，用于“我的申请”列表
 		index.Fields("tenant_id", "created_by").
-			StorageKey("idx_oa_wf_inst_tenant_creator"),
+			StorageKey("idx_oa_workflow_inst_tenant_created_by"),
 	}
 }

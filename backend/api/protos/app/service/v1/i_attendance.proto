@@ -6,17 +6,20 @@ import "google/api/annotations.proto";
 
 import "oa/service/v1/attendance.proto";
 
-// OA 考勤打卡服务（app HTTP 边端，移动端）。
-//
-// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。仅暴露 CheckIn
-// 端点供移动端打卡，围栏库 CRUD 不经 app 边端。
+// OA 考勤参与服务（app 边端，移动端）
 service AttendanceService {
-  // 打卡
-  rpc CheckIn(oa.service.v1.CheckInRequest) returns (oa.service.v1.CheckInResponse) {
+  // 打卡（当日首次=签到，第二次=签退并结算）
+  rpc CheckIn(oa.service.v1.CheckInRequest) returns (oa.service.v1.AttendanceRecord) {
     option (google.api.http) = {
       post: "/app/v1/oa/attendance/check-in"
       body: "*"
+    };
+  }
+
+  // 查询本人打卡记录
+  rpc GetMyAttendanceRecords(oa.service.v1.GetMyAttendanceRecordsRequest) returns (oa.service.v1.ListAttendanceRecordsResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/attendance/my-records"
     };
   }
 }

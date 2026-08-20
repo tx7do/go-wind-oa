@@ -21,120 +21,80 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationAttendanceServiceCreateAttendanceFence = "/admin.service.v1.AttendanceService/CreateAttendanceFence"
-const OperationAttendanceServiceCreateAttendanceWifi = "/admin.service.v1.AttendanceService/CreateAttendanceWifi"
-const OperationAttendanceServiceDeleteAttendanceFence = "/admin.service.v1.AttendanceService/DeleteAttendanceFence"
-const OperationAttendanceServiceDeleteAttendanceWifi = "/admin.service.v1.AttendanceService/DeleteAttendanceWifi"
-const OperationAttendanceServiceListAttendanceFence = "/admin.service.v1.AttendanceService/ListAttendanceFence"
-const OperationAttendanceServiceListAttendanceWifi = "/admin.service.v1.AttendanceService/ListAttendanceWifi"
-const OperationAttendanceServiceUpdateAttendanceFence = "/admin.service.v1.AttendanceService/UpdateAttendanceFence"
+const OperationAttendanceServiceGetAttendanceSetting = "/admin.service.v1.AttendanceService/GetAttendanceSetting"
+const OperationAttendanceServiceListAttendanceRecords = "/admin.service.v1.AttendanceService/ListAttendanceRecords"
+const OperationAttendanceServiceRunDailySettlement = "/admin.service.v1.AttendanceService/RunDailySettlement"
+const OperationAttendanceServiceUpdateAttendanceSetting = "/admin.service.v1.AttendanceService/UpdateAttendanceSetting"
 
 type AttendanceServiceHTTPServer interface {
-	// CreateAttendanceFence 创建围栏
-	CreateAttendanceFence(context.Context, *v1.CreateAttendanceFenceRequest) (*v1.AttendanceFence, error)
-	// CreateAttendanceWifi 创建 Wi-Fi 指纹
-	CreateAttendanceWifi(context.Context, *v1.CreateAttendanceWifiRequest) (*v1.AttendanceWifi, error)
-	// DeleteAttendanceFence 删除围栏
-	DeleteAttendanceFence(context.Context, *v1.DeleteAttendanceFenceRequest) (*emptypb.Empty, error)
-	// DeleteAttendanceWifi 删除 Wi-Fi 指纹
-	DeleteAttendanceWifi(context.Context, *v1.DeleteAttendanceWifiRequest) (*emptypb.Empty, error)
-	// ListAttendanceFence 查询围栏列表
-	ListAttendanceFence(context.Context, *v1.ListAttendanceFenceRequest) (*v1.ListAttendanceFenceResponse, error)
-	// ListAttendanceWifi 查询 Wi-Fi 指纹列表
-	ListAttendanceWifi(context.Context, *v1.ListAttendanceWifiRequest) (*v1.ListAttendanceWifiResponse, error)
-	// UpdateAttendanceFence 更新围栏
-	UpdateAttendanceFence(context.Context, *v1.UpdateAttendanceFenceRequest) (*v1.AttendanceFence, error)
+	// GetAttendanceSetting 读取考勤设置
+	GetAttendanceSetting(context.Context, *emptypb.Empty) (*v1.AttendanceSetting, error)
+	// ListAttendanceRecords 查询打卡记录（按工作日，可选用户）
+	ListAttendanceRecords(context.Context, *v1.ListAttendanceRecordsRequest) (*v1.ListAttendanceRecordsResponse, error)
+	// RunDailySettlement 工作日结算（物化旷工/请假，补结算未签退记录）
+	RunDailySettlement(context.Context, *v1.RunDailySettlementRequest) (*v1.RunDailySettlementResponse, error)
+	// UpdateAttendanceSetting 更新考勤设置
+	UpdateAttendanceSetting(context.Context, *v1.AttendanceSetting) (*emptypb.Empty, error)
 }
 
 func RegisterAttendanceServiceHTTPServer(s *http.Server, srv AttendanceServiceHTTPServer) {
 	r := s.Route("/")
-	r.POST("/admin/v1/oa/attendance/fences", _AttendanceService_CreateAttendanceFence0_HTTP_Handler(srv))
-	r.GET("/admin/v1/oa/attendance/fences", _AttendanceService_ListAttendanceFence0_HTTP_Handler(srv))
-	r.PUT("/admin/v1/oa/attendance/fences/{id}", _AttendanceService_UpdateAttendanceFence0_HTTP_Handler(srv))
-	r.DELETE("/admin/v1/oa/attendance/fences/{id}", _AttendanceService_DeleteAttendanceFence0_HTTP_Handler(srv))
-	r.POST("/admin/v1/oa/attendance/wifis", _AttendanceService_CreateAttendanceWifi0_HTTP_Handler(srv))
-	r.GET("/admin/v1/oa/attendance/wifis", _AttendanceService_ListAttendanceWifi0_HTTP_Handler(srv))
-	r.DELETE("/admin/v1/oa/attendance/wifis/{id}", _AttendanceService_DeleteAttendanceWifi0_HTTP_Handler(srv))
+	r.GET("/admin/v1/oa/attendance/records", _AttendanceService_ListAttendanceRecords0_HTTP_Handler(srv))
+	r.GET("/admin/v1/oa/attendance/settings", _AttendanceService_GetAttendanceSetting0_HTTP_Handler(srv))
+	r.PUT("/admin/v1/oa/attendance/settings", _AttendanceService_UpdateAttendanceSetting0_HTTP_Handler(srv))
+	r.POST("/admin/v1/oa/attendance/settlements", _AttendanceService_RunDailySettlement0_HTTP_Handler(srv))
 }
 
-func _AttendanceService_CreateAttendanceFence0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+func _AttendanceService_ListAttendanceRecords0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in v1.CreateAttendanceFenceRequest
+		var in v1.ListAttendanceRecordsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceListAttendanceRecords)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListAttendanceRecords(ctx, req.(*v1.ListAttendanceRecordsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.ListAttendanceRecordsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AttendanceService_GetAttendanceSetting0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in emptypb.Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceGetAttendanceSetting)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetAttendanceSetting(ctx, req.(*emptypb.Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.AttendanceSetting)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AttendanceService_UpdateAttendanceSetting0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.AttendanceSetting
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationAttendanceServiceCreateAttendanceFence)
+		http.SetOperation(ctx, OperationAttendanceServiceUpdateAttendanceSetting)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.CreateAttendanceFence(ctx, req.(*v1.CreateAttendanceFenceRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v1.AttendanceFence)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _AttendanceService_ListAttendanceFence0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in v1.ListAttendanceFenceRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAttendanceServiceListAttendanceFence)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.ListAttendanceFence(ctx, req.(*v1.ListAttendanceFenceRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v1.ListAttendanceFenceResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _AttendanceService_UpdateAttendanceFence0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in v1.UpdateAttendanceFenceRequest
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAttendanceServiceUpdateAttendanceFence)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.UpdateAttendanceFence(ctx, req.(*v1.UpdateAttendanceFenceRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v1.AttendanceFence)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _AttendanceService_DeleteAttendanceFence0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in v1.DeleteAttendanceFenceRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAttendanceServiceDeleteAttendanceFence)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.DeleteAttendanceFence(ctx, req.(*v1.DeleteAttendanceFenceRequest))
+			return srv.UpdateAttendanceSetting(ctx, req.(*v1.AttendanceSetting))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -145,84 +105,37 @@ func _AttendanceService_DeleteAttendanceFence0_HTTP_Handler(srv AttendanceServic
 	}
 }
 
-func _AttendanceService_CreateAttendanceWifi0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+func _AttendanceService_RunDailySettlement0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in v1.CreateAttendanceWifiRequest
+		var in v1.RunDailySettlementRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationAttendanceServiceCreateAttendanceWifi)
+		http.SetOperation(ctx, OperationAttendanceServiceRunDailySettlement)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.CreateAttendanceWifi(ctx, req.(*v1.CreateAttendanceWifiRequest))
+			return srv.RunDailySettlement(ctx, req.(*v1.RunDailySettlementRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.AttendanceWifi)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _AttendanceService_ListAttendanceWifi0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in v1.ListAttendanceWifiRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAttendanceServiceListAttendanceWifi)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.ListAttendanceWifi(ctx, req.(*v1.ListAttendanceWifiRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v1.ListAttendanceWifiResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _AttendanceService_DeleteAttendanceWifi0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in v1.DeleteAttendanceWifiRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAttendanceServiceDeleteAttendanceWifi)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.DeleteAttendanceWifi(ctx, req.(*v1.DeleteAttendanceWifiRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*emptypb.Empty)
+		reply := out.(*v1.RunDailySettlementResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
 type AttendanceServiceHTTPClient interface {
-	// CreateAttendanceFence 创建围栏
-	CreateAttendanceFence(ctx context.Context, req *v1.CreateAttendanceFenceRequest, opts ...http.CallOption) (rsp *v1.AttendanceFence, err error)
-	// CreateAttendanceWifi 创建 Wi-Fi 指纹
-	CreateAttendanceWifi(ctx context.Context, req *v1.CreateAttendanceWifiRequest, opts ...http.CallOption) (rsp *v1.AttendanceWifi, err error)
-	// DeleteAttendanceFence 删除围栏
-	DeleteAttendanceFence(ctx context.Context, req *v1.DeleteAttendanceFenceRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
-	// DeleteAttendanceWifi 删除 Wi-Fi 指纹
-	DeleteAttendanceWifi(ctx context.Context, req *v1.DeleteAttendanceWifiRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
-	// ListAttendanceFence 查询围栏列表
-	ListAttendanceFence(ctx context.Context, req *v1.ListAttendanceFenceRequest, opts ...http.CallOption) (rsp *v1.ListAttendanceFenceResponse, err error)
-	// ListAttendanceWifi 查询 Wi-Fi 指纹列表
-	ListAttendanceWifi(ctx context.Context, req *v1.ListAttendanceWifiRequest, opts ...http.CallOption) (rsp *v1.ListAttendanceWifiResponse, err error)
-	// UpdateAttendanceFence 更新围栏
-	UpdateAttendanceFence(ctx context.Context, req *v1.UpdateAttendanceFenceRequest, opts ...http.CallOption) (rsp *v1.AttendanceFence, err error)
+	// GetAttendanceSetting 读取考勤设置
+	GetAttendanceSetting(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *v1.AttendanceSetting, err error)
+	// ListAttendanceRecords 查询打卡记录（按工作日，可选用户）
+	ListAttendanceRecords(ctx context.Context, req *v1.ListAttendanceRecordsRequest, opts ...http.CallOption) (rsp *v1.ListAttendanceRecordsResponse, err error)
+	// RunDailySettlement 工作日结算（物化旷工/请假，补结算未签退记录）
+	RunDailySettlement(ctx context.Context, req *v1.RunDailySettlementRequest, opts ...http.CallOption) (rsp *v1.RunDailySettlementResponse, err error)
+	// UpdateAttendanceSetting 更新考勤设置
+	UpdateAttendanceSetting(ctx context.Context, req *v1.AttendanceSetting, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type AttendanceServiceHTTPClientImpl struct {
@@ -233,68 +146,12 @@ func NewAttendanceServiceHTTPClient(client *http.Client) AttendanceServiceHTTPCl
 	return &AttendanceServiceHTTPClientImpl{client}
 }
 
-// CreateAttendanceFence 创建围栏
-func (c *AttendanceServiceHTTPClientImpl) CreateAttendanceFence(ctx context.Context, in *v1.CreateAttendanceFenceRequest, opts ...http.CallOption) (*v1.AttendanceFence, error) {
-	var out v1.AttendanceFence
-	pattern := "/admin/v1/oa/attendance/fences"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationAttendanceServiceCreateAttendanceFence))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// CreateAttendanceWifi 创建 Wi-Fi 指纹
-func (c *AttendanceServiceHTTPClientImpl) CreateAttendanceWifi(ctx context.Context, in *v1.CreateAttendanceWifiRequest, opts ...http.CallOption) (*v1.AttendanceWifi, error) {
-	var out v1.AttendanceWifi
-	pattern := "/admin/v1/oa/attendance/wifis"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationAttendanceServiceCreateAttendanceWifi))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// DeleteAttendanceFence 删除围栏
-func (c *AttendanceServiceHTTPClientImpl) DeleteAttendanceFence(ctx context.Context, in *v1.DeleteAttendanceFenceRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
-	var out emptypb.Empty
-	pattern := "/admin/v1/oa/attendance/fences/{id}"
+// GetAttendanceSetting 读取考勤设置
+func (c *AttendanceServiceHTTPClientImpl) GetAttendanceSetting(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*v1.AttendanceSetting, error) {
+	var out v1.AttendanceSetting
+	pattern := "/admin/v1/oa/attendance/settings"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationAttendanceServiceDeleteAttendanceFence))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// DeleteAttendanceWifi 删除 Wi-Fi 指纹
-func (c *AttendanceServiceHTTPClientImpl) DeleteAttendanceWifi(ctx context.Context, in *v1.DeleteAttendanceWifiRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
-	var out emptypb.Empty
-	pattern := "/admin/v1/oa/attendance/wifis/{id}"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationAttendanceServiceDeleteAttendanceWifi))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// ListAttendanceFence 查询围栏列表
-func (c *AttendanceServiceHTTPClientImpl) ListAttendanceFence(ctx context.Context, in *v1.ListAttendanceFenceRequest, opts ...http.CallOption) (*v1.ListAttendanceFenceResponse, error) {
-	var out v1.ListAttendanceFenceResponse
-	pattern := "/admin/v1/oa/attendance/fences"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationAttendanceServiceListAttendanceFence))
+	opts = append(opts, http.Operation(OperationAttendanceServiceGetAttendanceSetting))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -303,12 +160,12 @@ func (c *AttendanceServiceHTTPClientImpl) ListAttendanceFence(ctx context.Contex
 	return &out, nil
 }
 
-// ListAttendanceWifi 查询 Wi-Fi 指纹列表
-func (c *AttendanceServiceHTTPClientImpl) ListAttendanceWifi(ctx context.Context, in *v1.ListAttendanceWifiRequest, opts ...http.CallOption) (*v1.ListAttendanceWifiResponse, error) {
-	var out v1.ListAttendanceWifiResponse
-	pattern := "/admin/v1/oa/attendance/wifis"
+// ListAttendanceRecords 查询打卡记录（按工作日，可选用户）
+func (c *AttendanceServiceHTTPClientImpl) ListAttendanceRecords(ctx context.Context, in *v1.ListAttendanceRecordsRequest, opts ...http.CallOption) (*v1.ListAttendanceRecordsResponse, error) {
+	var out v1.ListAttendanceRecordsResponse
+	pattern := "/admin/v1/oa/attendance/records"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationAttendanceServiceListAttendanceWifi))
+	opts = append(opts, http.Operation(OperationAttendanceServiceListAttendanceRecords))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -317,12 +174,26 @@ func (c *AttendanceServiceHTTPClientImpl) ListAttendanceWifi(ctx context.Context
 	return &out, nil
 }
 
-// UpdateAttendanceFence 更新围栏
-func (c *AttendanceServiceHTTPClientImpl) UpdateAttendanceFence(ctx context.Context, in *v1.UpdateAttendanceFenceRequest, opts ...http.CallOption) (*v1.AttendanceFence, error) {
-	var out v1.AttendanceFence
-	pattern := "/admin/v1/oa/attendance/fences/{id}"
+// RunDailySettlement 工作日结算（物化旷工/请假，补结算未签退记录）
+func (c *AttendanceServiceHTTPClientImpl) RunDailySettlement(ctx context.Context, in *v1.RunDailySettlementRequest, opts ...http.CallOption) (*v1.RunDailySettlementResponse, error) {
+	var out v1.RunDailySettlementResponse
+	pattern := "/admin/v1/oa/attendance/settlements"
 	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationAttendanceServiceUpdateAttendanceFence))
+	opts = append(opts, http.Operation(OperationAttendanceServiceRunDailySettlement))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// UpdateAttendanceSetting 更新考勤设置
+func (c *AttendanceServiceHTTPClientImpl) UpdateAttendanceSetting(ctx context.Context, in *v1.AttendanceSetting, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/oa/attendance/settings"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAttendanceServiceUpdateAttendanceSetting))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {

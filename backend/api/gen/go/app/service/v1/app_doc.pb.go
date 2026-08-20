@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: app/service/v1/app_doc.proto
 
-package apppb
+package servicev1
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -25,10 +25,10 @@ var File_app_service_v1_app_doc_proto protoreflect.FileDescriptor
 
 const file_app_service_v1_app_doc_proto_rawDesc = "" +
 	"\n" +
-	"\x1capp/service/v1/app_doc.proto\x12\x0eapp.service.v1\x1a$gnostic/openapi/v3/annotations.protoB\x99\x06\xbaG\xee\x04\x12\xb6\x01\n" +
-	"\x11GoWind OA App API\x12\x11GoWind OA App API\"A\n" +
-	"\x05tx7do\x12#https://github.com/tx7do/go-wind-oa\x1a\x13yanglinbo@gmail.com*F\n" +
-	"\vMIT License\x127https://github.com/tx7do/go-wind-oa/blob/master/LICENSE2\x031.0*\x96\x03\n" +
+	"\x1capp/service/v1/app_doc.proto\x12\x0eapp.service.v1\x1a$gnostic/openapi/v3/annotations.protoB\xb1\x06\xbaG\x82\x05\x12\xca\x01\n" +
+	"\x1aGoWind Content Hub App API\x12\x1aGoWind Content Hub App API\"B\n" +
+	"\x05tx7do\x12$https://github.com/tx7do/go-wind-cms\x1a\x13yanglinbo@gmail.com*G\n" +
+	"\vMIT License\x128https://github.com/tx7do/go-wind-cms/blob/master/LICENSE2\x031.0*\x96\x03\n" +
 	"\xd4\x01\n" +
 	"\xd1\x01\n" +
 	"\fKratosStatus\x12\xc0\x01\n" +
@@ -59,7 +59,7 @@ const file_app_service_v1_app_doc_proto_rawDesc = "" +
 	"\x06oauth2:.\x12,\x12\x0f/admin/v1/login\x1a\x17/admin/v1/refresh-token\"\x002\x1a\n" +
 	"\x18\n" +
 	"\x14OAuth2PasswordBearer\x12\x00\n" +
-	"\x12com.app.service.v1B\vAppDocProtoP\x01Z*go-wind-oa/api/gen/go/app/service/v1;apppb\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
+	"\x12com.app.service.v1B\vAppDocProtoP\x01Z.go-wind-oa/api/gen/go/app/service/v1;servicev1\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
 
 var file_app_service_v1_app_doc_proto_goTypes = []any{}
 var file_app_service_v1_app_doc_proto_depIdxs = []int32{

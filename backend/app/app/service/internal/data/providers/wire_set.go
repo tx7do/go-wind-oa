@@ -19,12 +19,9 @@ import (
 )
 
 // ProviderSet is the Wire provider set for data layer.
-//
-// OA app-service 只持有鑑權轉發與工作流轉發兩類下游客戶端，以及 redis /
-// discovery / authorizer 等基座 infra。不再持有 DTM、minio、tenant resolver、
-// 或任何 cms 業務域的 gRPC 客戶端。
 var ProviderSet = wire.NewSet(
 	data.NewRedisClient,
+	data.NewMinIoClient,
 	data.NewDiscovery,
 
 	data.NewClientType,
@@ -33,10 +30,34 @@ var ProviderSet = wire.NewSet(
 	auth.NewTokenChecker,
 
 	data.NewAuthenticationServiceClient,
-
+	data.NewUserCredentialServiceClient,
 	data.NewWorkflowServiceClient,
-
+	data.NewLeaveServiceClient,
+	data.NewExpenseServiceClient,
+	data.NewAttendanceServiceClient,
 	data.NewInternalMessageServiceClient,
 
-	data.NewAttendanceServiceClient,
+	data.NewFileServiceClient,
+
+	data.NewUserServiceClient,
+	data.NewTenantServiceClient,
+	data.NewTenantResolver,
+	data.NewRoleServiceClient,
+	data.NewOrgUnitServiceClient,
+	data.NewPositionServiceClient,
+
+	data.NewPageServiceClient,
+	data.NewSectionServiceClient,
+	data.NewCategoryServiceClient,
+	data.NewPostServiceClient,
+	data.NewTagServiceClient,
+
+	data.NewCommentServiceClient,
+
+	data.NewInteractionServiceClient,
+
+	data.NewNavigationServiceClient,
+	data.NewSiteSettingServiceClient,
+
+	data.NewMediaAssetServiceClient,
 )

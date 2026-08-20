@@ -3,20 +3,33 @@ package data
 import (
 	"github.com/redis/go-redis/v9"
 
+	authnEngine "github.com/tx7do/kratos-authn/engine"
+	"github.com/tx7do/kratos-authn/engine/jwt"
+
 	authzEngine "github.com/tx7do/kratos-authz/engine"
 	"github.com/tx7do/kratos-authz/engine/noop"
 
 	"github.com/go-kratos/kratos/v2/registry"
 
+	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	redisClient "github.com/tx7do/kratos-bootstrap/cache/redis"
 	bRegistry "github.com/tx7do/kratos-bootstrap/registry"
 	"github.com/tx7do/kratos-bootstrap/rpc"
 
 	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
+	commentV1 "go-wind-oa/api/gen/go/comment/service/v1"
+	contentV1 "go-wind-oa/api/gen/go/content/service/v1"
+	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
 	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
+	interactionV1 "go-wind-oa/api/gen/go/interaction/service/v1"
+	mediaV1 "go-wind-oa/api/gen/go/media/service/v1"
 	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
+	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
+	siteV1 "go-wind-oa/api/gen/go/site/service/v1"
+	storageV1 "go-wind-oa/api/gen/go/storage/service/v1"
 
+	"go-wind-oa/pkg/oss"
 	"go-wind-oa/pkg/serviceid"
 )
 
@@ -54,7 +67,29 @@ func NewDiscovery(ctx *bootstrap.Context) registry.Discovery {
 		return nil
 	}
 
+	NewDtmDriver(discovery)
+
 	return discovery
+}
+
+func NewMinIoClient(ctx *bootstrap.Context) *oss.MinIOClient {
+	return oss.NewMinIoClient(ctx.GetConfig(), ctx.GetLogger())
+}
+
+// NewAuthenticator 创建认证器
+func NewAuthenticator(cfg *conf.Bootstrap) authnEngine.Authenticator {
+	// 拒绝已知的开发默认密钥，避免生产环境因未设置 jwt_signing_key 而使用
+	// 公开默认值导致令牌可被离线伪造。
+	signingKey := cfg.Server.Rest.Middleware.Auth.Key
+	if signingKey == "" || signingKey == "dev_only_change_me_in_prod" {
+		panic("jwt signing key must be set to a non-default secret in production")
+	}
+
+	authenticator, _ := jwt.NewAuthenticator(
+		jwt.WithKey([]byte(signingKey)),
+		jwt.WithSigningMethod(cfg.Server.Rest.Middleware.Auth.Method),
+	)
+	return authenticator
 }
 
 // NewAuthorizer 创建权鉴器
@@ -71,11 +106,6 @@ func NewAuthenticationServiceClient(ctx *bootstrap.Context, r registry.Discovery
 	return authenticationV1.NewAuthenticationServiceClient(cli)
 }
 
-// NewWorkflowServiceClient 创建对 OA core-service 工作流引擎的 gRPC 客户端。
-//
-// app-service 的 HTTP 邊端收到工作流請求後，經此客戶端轉發到 core-service
-// 的 WorkflowService gRPC 實現（狀態機落庫）。構造方式與 cms app-service 的
-// NewXxxServiceClient 同構。
 func NewWorkflowServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1.WorkflowServiceClient {
 	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
 	if err != nil {
@@ -85,10 +115,33 @@ func NewWorkflowServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1
 	return oaV1.NewWorkflowServiceClient(cli)
 }
 
-// NewInternalMessageServiceClient 创建对 OA core-service 站内信的 gRPC 客户端。
-//
-// app-service 的 HTTP 邊端收到站內信查詢請求後，經此客戶端轉發到 core-service
-// 的 InternalMessageService gRPC 實現。構造方式與 NewWorkflowServiceClient 同構。
+func NewLeaveServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1.LeaveServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return oaV1.NewLeaveServiceClient(cli)
+}
+
+func NewExpenseServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1.ExpenseServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return oaV1.NewExpenseServiceClient(cli)
+}
+
+func NewAttendanceServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1.AttendanceServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return oaV1.NewAttendanceServiceClient(cli)
+}
+
 func NewInternalMessageServiceClient(ctx *bootstrap.Context, r registry.Discovery) internalMessageV1.InternalMessageServiceClient {
 	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
 	if err != nil {
@@ -98,15 +151,155 @@ func NewInternalMessageServiceClient(ctx *bootstrap.Context, r registry.Discover
 	return internalMessageV1.NewInternalMessageServiceClient(cli)
 }
 
-// NewAttendanceServiceClient 创建对 OA core-service 考勤服務的 gRPC 客戶端。
-//
-// app-service 的 HTTP 邊端收到移動打卡請求後，經此客戶端轉發到 core-service
-// 的 AttendanceService gRPC 實現。構造方式與 NewWorkflowServiceClient 同構。
-func NewAttendanceServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1.AttendanceServiceClient {
+func NewUserCredentialServiceClient(ctx *bootstrap.Context, r registry.Discovery) authenticationV1.UserCredentialServiceClient {
 	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
 	if err != nil {
 		return nil
 	}
 
-	return oaV1.NewAttendanceServiceClient(cli)
+	return authenticationV1.NewUserCredentialServiceClient(cli)
+}
+
+func NewUserServiceClient(ctx *bootstrap.Context, r registry.Discovery) identityV1.UserServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return identityV1.NewUserServiceClient(cli)
+}
+
+func NewTenantServiceClient(ctx *bootstrap.Context, r registry.Discovery) identityV1.TenantServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return identityV1.NewTenantServiceClient(cli)
+}
+
+func NewRoleServiceClient(ctx *bootstrap.Context, r registry.Discovery) permissionV1.RoleServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return permissionV1.NewRoleServiceClient(cli)
+}
+
+func NewOrgUnitServiceClient(ctx *bootstrap.Context, r registry.Discovery) identityV1.OrgUnitServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return identityV1.NewOrgUnitServiceClient(cli)
+}
+
+func NewPositionServiceClient(ctx *bootstrap.Context, r registry.Discovery) identityV1.PositionServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return identityV1.NewPositionServiceClient(cli)
+}
+
+func NewFileServiceClient(ctx *bootstrap.Context, r registry.Discovery) storageV1.FileServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return storageV1.NewFileServiceClient(cli)
+}
+
+func NewCommentServiceClient(ctx *bootstrap.Context, r registry.Discovery) commentV1.CommentServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return commentV1.NewCommentServiceClient(cli)
+}
+
+func NewInteractionServiceClient(ctx *bootstrap.Context, r registry.Discovery) interactionV1.InteractionServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return interactionV1.NewInteractionServiceClient(cli)
+}
+
+func NewCategoryServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.CategoryServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return contentV1.NewCategoryServiceClient(cli)
+}
+
+func NewPageServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.PageServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return contentV1.NewPageServiceClient(cli)
+}
+
+func NewSectionServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.SectionServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return contentV1.NewSectionServiceClient(cli)
+}
+
+func NewPostServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.PostServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return contentV1.NewPostServiceClient(cli)
+}
+
+func NewTagServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.TagServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return contentV1.NewTagServiceClient(cli)
+}
+
+func NewNavigationServiceClient(ctx *bootstrap.Context, r registry.Discovery) siteV1.NavigationServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return siteV1.NewNavigationServiceClient(cli)
+}
+
+func NewSiteSettingServiceClient(ctx *bootstrap.Context, r registry.Discovery) siteV1.SiteSettingServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return siteV1.NewSiteSettingServiceClient(cli)
+}
+
+func NewMediaAssetServiceClient(ctx *bootstrap.Context, r registry.Discovery) mediaV1.MediaAssetServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return mediaV1.NewMediaAssetServiceClient(cli)
 }

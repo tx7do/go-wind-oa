@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: app/service/v1/i_attendance.proto
 
-package apppb
+package servicev1
 
 import (
 	context "context"
@@ -21,15 +21,19 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationAttendanceServiceCheckIn = "/app.service.v1.AttendanceService/CheckIn"
+const OperationAttendanceServiceGetMyAttendanceRecords = "/app.service.v1.AttendanceService/GetMyAttendanceRecords"
 
 type AttendanceServiceHTTPServer interface {
-	// CheckIn 打卡
-	CheckIn(context.Context, *v1.CheckInRequest) (*v1.CheckInResponse, error)
+	// CheckIn 打卡（当日首次=签到，第二次=签退并结算）
+	CheckIn(context.Context, *v1.CheckInRequest) (*v1.AttendanceRecord, error)
+	// GetMyAttendanceRecords 查询本人打卡记录
+	GetMyAttendanceRecords(context.Context, *v1.GetMyAttendanceRecordsRequest) (*v1.ListAttendanceRecordsResponse, error)
 }
 
 func RegisterAttendanceServiceHTTPServer(s *http.Server, srv AttendanceServiceHTTPServer) {
 	r := s.Route("/")
 	r.POST("/app/v1/oa/attendance/check-in", _AttendanceService_CheckIn0_HTTP_Handler(srv))
+	r.GET("/app/v1/oa/attendance/my-records", _AttendanceService_GetMyAttendanceRecords0_HTTP_Handler(srv))
 }
 
 func _AttendanceService_CheckIn0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
@@ -49,14 +53,35 @@ func _AttendanceService_CheckIn0_HTTP_Handler(srv AttendanceServiceHTTPServer) f
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.CheckInResponse)
+		reply := out.(*v1.AttendanceRecord)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AttendanceService_GetMyAttendanceRecords0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.GetMyAttendanceRecordsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceGetMyAttendanceRecords)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetMyAttendanceRecords(ctx, req.(*v1.GetMyAttendanceRecordsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.ListAttendanceRecordsResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
 type AttendanceServiceHTTPClient interface {
-	// CheckIn 打卡
-	CheckIn(ctx context.Context, req *v1.CheckInRequest, opts ...http.CallOption) (rsp *v1.CheckInResponse, err error)
+	// CheckIn 打卡（当日首次=签到，第二次=签退并结算）
+	CheckIn(ctx context.Context, req *v1.CheckInRequest, opts ...http.CallOption) (rsp *v1.AttendanceRecord, err error)
+	// GetMyAttendanceRecords 查询本人打卡记录
+	GetMyAttendanceRecords(ctx context.Context, req *v1.GetMyAttendanceRecordsRequest, opts ...http.CallOption) (rsp *v1.ListAttendanceRecordsResponse, err error)
 }
 
 type AttendanceServiceHTTPClientImpl struct {
@@ -67,14 +92,28 @@ func NewAttendanceServiceHTTPClient(client *http.Client) AttendanceServiceHTTPCl
 	return &AttendanceServiceHTTPClientImpl{client}
 }
 
-// CheckIn 打卡
-func (c *AttendanceServiceHTTPClientImpl) CheckIn(ctx context.Context, in *v1.CheckInRequest, opts ...http.CallOption) (*v1.CheckInResponse, error) {
-	var out v1.CheckInResponse
+// CheckIn 打卡（当日首次=签到，第二次=签退并结算）
+func (c *AttendanceServiceHTTPClientImpl) CheckIn(ctx context.Context, in *v1.CheckInRequest, opts ...http.CallOption) (*v1.AttendanceRecord, error) {
+	var out v1.AttendanceRecord
 	pattern := "/app/v1/oa/attendance/check-in"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAttendanceServiceCheckIn))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetMyAttendanceRecords 查询本人打卡记录
+func (c *AttendanceServiceHTTPClientImpl) GetMyAttendanceRecords(ctx context.Context, in *v1.GetMyAttendanceRecordsRequest, opts ...http.CallOption) (*v1.ListAttendanceRecordsResponse, error) {
+	var out v1.ListAttendanceRecordsResponse
+	pattern := "/app/v1/oa/attendance/my-records"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAttendanceServiceGetMyAttendanceRecords))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

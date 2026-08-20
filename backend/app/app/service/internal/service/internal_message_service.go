@@ -6,16 +6,12 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
-	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
-
 	appV1 "go-wind-oa/api/gen/go/app/service/v1"
+	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
 )
 
-// InternalMessageService 站内信转发层（app HTTP 边端）。
-//
-// 仅转发 ListMessage / GetMessage 至 core-service 的 gRPC 实现。
-// 写操作（Send/Update/Delete/Revoke）不经 app 边端。
+// InternalMessageService 是 app 边端的站内信只读转发层（移动端收件箱）。
+// 收件人过滤由 core 侧按 viewer 上下文强制。
 type InternalMessageService struct {
 	appV1.InternalMessageServiceHTTPServer
 
@@ -28,17 +24,17 @@ func NewInternalMessageService(
 	ctx *bootstrap.Context,
 	internalMessageServiceClient internalMessageV1.InternalMessageServiceClient,
 ) *InternalMessageService {
-	l := ctx.NewLoggerHelper("internal-message/service/app-service")
+	l := log.NewHelper(log.With(ctx.GetLogger(), "module", "internal-message/service/app-service"))
 	return &InternalMessageService{
-		log:                           l,
+		log:                          l,
 		internalMessageServiceClient: internalMessageServiceClient,
 	}
 }
 
-func (s *InternalMessageService) ListMessage(ctx context.Context, req *paginationV1.PagingRequest) (*internalMessageV1.ListInternalMessageResponse, error) {
-	return s.internalMessageServiceClient.ListMessage(ctx, req)
-}
-
-func (s *InternalMessageService) GetMessage(ctx context.Context, req *internalMessageV1.GetInternalMessageRequest) (*internalMessageV1.InternalMessage, error) {
-	return s.internalMessageServiceClient.GetMessage(ctx, req)
+func (s *InternalMessageService) ListMyMessages(ctx context.Context, req *internalMessageV1.ListMyMessagesRequest) (*internalMessageV1.ListInternalMessageResponse, error) {
+	resp, err := s.internalMessageServiceClient.ListMyMessages(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }

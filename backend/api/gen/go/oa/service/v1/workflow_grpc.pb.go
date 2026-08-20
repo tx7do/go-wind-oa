@@ -8,6 +8,7 @@ package oapb
 
 import (
 	context "context"
+	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -26,6 +27,7 @@ const (
 	WorkflowService_GetWorkflowDefinition_FullMethodName    = "/oa.service.v1.WorkflowService/GetWorkflowDefinition"
 	WorkflowService_SubmitApply_FullMethodName              = "/oa.service.v1.WorkflowService/SubmitApply"
 	WorkflowService_AuditTask_FullMethodName                = "/oa.service.v1.WorkflowService/AuditTask"
+	WorkflowService_WithdrawApply_FullMethodName            = "/oa.service.v1.WorkflowService/WithdrawApply"
 	WorkflowService_GetMyTasks_FullMethodName               = "/oa.service.v1.WorkflowService/GetMyTasks"
 	WorkflowService_GetTask_FullMethodName                  = "/oa.service.v1.WorkflowService/GetTask"
 )
@@ -34,36 +36,25 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// OA 工作流审批服务（core-service gRPC 實現）。
-//
-// 純 gRPC 服務——HTTP 注解由 admin/service/v1/i_workflow.proto 與
-// app/service/v1/i_workflow.proto 分別以 /admin/v1/ 與 /app/v1/ 路徑包裝，
-// 對齊 cms core/admin/app 三層分離模式。所有 RPC 均需鑑權，租戶/操作人
-// 上下文由 auth 中間件注入、由 ent viewer 中間件翻譯，供 TenantPrivacy
-// 策略做行級租戶隔離。
+// OA 工作流审批引擎服务
 type WorkflowServiceClient interface {
-	// 创建工作流定义（管理端）。
+	// 创建流程定义
 	CreateWorkflowDefinition(ctx context.Context, in *CreateWorkflowDefinitionRequest, opts ...grpc.CallOption) (*WorkflowDefinition, error)
-	// 查询工作流定义列表（管理端）。
-	ListWorkflowDefinition(ctx context.Context, in *ListWorkflowDefinitionRequest, opts ...grpc.CallOption) (*ListWorkflowDefinitionResponse, error)
-	// 更新工作流定义（管理端）。当前仅允许切换 definition_status（启用/禁用），
-	// 由 update_mask 限定字段；其余字段忽略。状态机对 ENABLED 定义才允许提交申请。
-	UpdateWorkflowDefinition(ctx context.Context, in *UpdateWorkflowDefinitionRequest, opts ...grpc.CallOption) (*WorkflowDefinition, error)
-	// 获取单个工作流定义详情（管理端）。含 node_config / form_schema 原始 JSON 文本，
-	// 供管理端查看节点配置与表单 schema。仅本租户定义可达（TenantPrivacy 隔离）。
+	// 查询流程定义列表
+	ListWorkflowDefinition(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListWorkflowDefinitionResponse, error)
+	// 更新流程定义（仅允许切换 definition_status）
+	UpdateWorkflowDefinition(ctx context.Context, in *UpdateWorkflowDefinitionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 查询流程定义详情
 	GetWorkflowDefinition(ctx context.Context, in *GetWorkflowDefinitionRequest, opts ...grpc.CallOption) (*WorkflowDefinition, error)
-	// 提交申请：发起一个工作流实例，按定义的首节点生成首条待办任务并通知该审批人。
+	// 提交申请
 	SubmitApply(ctx context.Context, in *SubmitApplyRequest, opts ...grpc.CallOption) (*SubmitApplyResponse, error)
-	// 审批/驳回/转办当前待办任务。状态机在此推进实例状态、生成下一节点任务或终结实例。
+	// 审批任务
 	AuditTask(ctx context.Context, in *AuditTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 获取当前用户的待办 / 已办 / 我的申请列表。
+	// 撤回申请（仅申请人本人，仅进行中的实例）
+	WithdrawApply(ctx context.Context, in *WithdrawApplyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(ctx context.Context, in *GetMyTasksRequest, opts ...grpc.CallOption) (*GetMyTasksResponse, error)
-	// 获取单个待办任务详情：申请标题、申请表单数据、该实例的审批日志轨迹。
-	//
-	// 鉴权：仅当前指派审批人可查其处于 PENDING 的任务（与 AuditTask 同款授权，
-	// IDEQ + AssigneeUserIDEQ(caller) + TaskStatusEQ(PENDING)，见
-	// WorkflowTaskRepo.GetDetailByAssignee）。其余字段（definition_id /
-	// current_node_index / tenant_id 等）不投影，对齐 MyTaskItem 的最小披露原则。
+	// 查询任务详情
 	GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*GetTaskResponse, error)
 }
 
@@ -85,7 +76,7 @@ func (c *workflowServiceClient) CreateWorkflowDefinition(ctx context.Context, in
 	return out, nil
 }
 
-func (c *workflowServiceClient) ListWorkflowDefinition(ctx context.Context, in *ListWorkflowDefinitionRequest, opts ...grpc.CallOption) (*ListWorkflowDefinitionResponse, error) {
+func (c *workflowServiceClient) ListWorkflowDefinition(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListWorkflowDefinitionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListWorkflowDefinitionResponse)
 	err := c.cc.Invoke(ctx, WorkflowService_ListWorkflowDefinition_FullMethodName, in, out, cOpts...)
@@ -95,9 +86,9 @@ func (c *workflowServiceClient) ListWorkflowDefinition(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *workflowServiceClient) UpdateWorkflowDefinition(ctx context.Context, in *UpdateWorkflowDefinitionRequest, opts ...grpc.CallOption) (*WorkflowDefinition, error) {
+func (c *workflowServiceClient) UpdateWorkflowDefinition(ctx context.Context, in *UpdateWorkflowDefinitionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(WorkflowDefinition)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, WorkflowService_UpdateWorkflowDefinition_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -135,6 +126,16 @@ func (c *workflowServiceClient) AuditTask(ctx context.Context, in *AuditTaskRequ
 	return out, nil
 }
 
+func (c *workflowServiceClient) WithdrawApply(ctx context.Context, in *WithdrawApplyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, WorkflowService_WithdrawApply_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *workflowServiceClient) GetMyTasks(ctx context.Context, in *GetMyTasksRequest, opts ...grpc.CallOption) (*GetMyTasksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetMyTasksResponse)
@@ -159,36 +160,25 @@ func (c *workflowServiceClient) GetTask(ctx context.Context, in *GetTaskRequest,
 // All implementations must embed UnimplementedWorkflowServiceServer
 // for forward compatibility.
 //
-// OA 工作流审批服务（core-service gRPC 實現）。
-//
-// 純 gRPC 服務——HTTP 注解由 admin/service/v1/i_workflow.proto 與
-// app/service/v1/i_workflow.proto 分別以 /admin/v1/ 與 /app/v1/ 路徑包裝，
-// 對齊 cms core/admin/app 三層分離模式。所有 RPC 均需鑑權，租戶/操作人
-// 上下文由 auth 中間件注入、由 ent viewer 中間件翻譯，供 TenantPrivacy
-// 策略做行級租戶隔離。
+// OA 工作流审批引擎服务
 type WorkflowServiceServer interface {
-	// 创建工作流定义（管理端）。
+	// 创建流程定义
 	CreateWorkflowDefinition(context.Context, *CreateWorkflowDefinitionRequest) (*WorkflowDefinition, error)
-	// 查询工作流定义列表（管理端）。
-	ListWorkflowDefinition(context.Context, *ListWorkflowDefinitionRequest) (*ListWorkflowDefinitionResponse, error)
-	// 更新工作流定义（管理端）。当前仅允许切换 definition_status（启用/禁用），
-	// 由 update_mask 限定字段；其余字段忽略。状态机对 ENABLED 定义才允许提交申请。
-	UpdateWorkflowDefinition(context.Context, *UpdateWorkflowDefinitionRequest) (*WorkflowDefinition, error)
-	// 获取单个工作流定义详情（管理端）。含 node_config / form_schema 原始 JSON 文本，
-	// 供管理端查看节点配置与表单 schema。仅本租户定义可达（TenantPrivacy 隔离）。
+	// 查询流程定义列表
+	ListWorkflowDefinition(context.Context, *v1.PagingRequest) (*ListWorkflowDefinitionResponse, error)
+	// 更新流程定义（仅允许切换 definition_status）
+	UpdateWorkflowDefinition(context.Context, *UpdateWorkflowDefinitionRequest) (*emptypb.Empty, error)
+	// 查询流程定义详情
 	GetWorkflowDefinition(context.Context, *GetWorkflowDefinitionRequest) (*WorkflowDefinition, error)
-	// 提交申请：发起一个工作流实例，按定义的首节点生成首条待办任务并通知该审批人。
+	// 提交申请
 	SubmitApply(context.Context, *SubmitApplyRequest) (*SubmitApplyResponse, error)
-	// 审批/驳回/转办当前待办任务。状态机在此推进实例状态、生成下一节点任务或终结实例。
+	// 审批任务
 	AuditTask(context.Context, *AuditTaskRequest) (*emptypb.Empty, error)
-	// 获取当前用户的待办 / 已办 / 我的申请列表。
+	// 撤回申请（仅申请人本人，仅进行中的实例）
+	WithdrawApply(context.Context, *WithdrawApplyRequest) (*emptypb.Empty, error)
+	// 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(context.Context, *GetMyTasksRequest) (*GetMyTasksResponse, error)
-	// 获取单个待办任务详情：申请标题、申请表单数据、该实例的审批日志轨迹。
-	//
-	// 鉴权：仅当前指派审批人可查其处于 PENDING 的任务（与 AuditTask 同款授权，
-	// IDEQ + AssigneeUserIDEQ(caller) + TaskStatusEQ(PENDING)，见
-	// WorkflowTaskRepo.GetDetailByAssignee）。其余字段（definition_id /
-	// current_node_index / tenant_id 等）不投影，对齐 MyTaskItem 的最小披露原则。
+	// 查询任务详情
 	GetTask(context.Context, *GetTaskRequest) (*GetTaskResponse, error)
 	mustEmbedUnimplementedWorkflowServiceServer()
 }
@@ -203,10 +193,10 @@ type UnimplementedWorkflowServiceServer struct{}
 func (UnimplementedWorkflowServiceServer) CreateWorkflowDefinition(context.Context, *CreateWorkflowDefinitionRequest) (*WorkflowDefinition, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateWorkflowDefinition not implemented")
 }
-func (UnimplementedWorkflowServiceServer) ListWorkflowDefinition(context.Context, *ListWorkflowDefinitionRequest) (*ListWorkflowDefinitionResponse, error) {
+func (UnimplementedWorkflowServiceServer) ListWorkflowDefinition(context.Context, *v1.PagingRequest) (*ListWorkflowDefinitionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListWorkflowDefinition not implemented")
 }
-func (UnimplementedWorkflowServiceServer) UpdateWorkflowDefinition(context.Context, *UpdateWorkflowDefinitionRequest) (*WorkflowDefinition, error) {
+func (UnimplementedWorkflowServiceServer) UpdateWorkflowDefinition(context.Context, *UpdateWorkflowDefinitionRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateWorkflowDefinition not implemented")
 }
 func (UnimplementedWorkflowServiceServer) GetWorkflowDefinition(context.Context, *GetWorkflowDefinitionRequest) (*WorkflowDefinition, error) {
@@ -217,6 +207,9 @@ func (UnimplementedWorkflowServiceServer) SubmitApply(context.Context, *SubmitAp
 }
 func (UnimplementedWorkflowServiceServer) AuditTask(context.Context, *AuditTaskRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuditTask not implemented")
+}
+func (UnimplementedWorkflowServiceServer) WithdrawApply(context.Context, *WithdrawApplyRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method WithdrawApply not implemented")
 }
 func (UnimplementedWorkflowServiceServer) GetMyTasks(context.Context, *GetMyTasksRequest) (*GetMyTasksResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMyTasks not implemented")
@@ -264,7 +257,7 @@ func _WorkflowService_CreateWorkflowDefinition_Handler(srv interface{}, ctx cont
 }
 
 func _WorkflowService_ListWorkflowDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListWorkflowDefinitionRequest)
+	in := new(v1.PagingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -276,7 +269,7 @@ func _WorkflowService_ListWorkflowDefinition_Handler(srv interface{}, ctx contex
 		FullMethod: WorkflowService_ListWorkflowDefinition_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ListWorkflowDefinition(ctx, req.(*ListWorkflowDefinitionRequest))
+		return srv.(WorkflowServiceServer).ListWorkflowDefinition(ctx, req.(*v1.PagingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -353,6 +346,24 @@ func _WorkflowService_AuditTask_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkflowService_WithdrawApply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WithdrawApplyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).WithdrawApply(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_WithdrawApply_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).WithdrawApply(ctx, req.(*WithdrawApplyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _WorkflowService_GetMyTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetMyTasksRequest)
 	if err := dec(in); err != nil {
@@ -419,6 +430,10 @@ var WorkflowService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuditTask",
 			Handler:    _WorkflowService_AuditTask_Handler,
+		},
+		{
+			MethodName: "WithdrawApply",
+			Handler:    _WorkflowService_WithdrawApply_Handler,
 		},
 		{
 			MethodName: "GetMyTasks",

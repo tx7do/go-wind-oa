@@ -4,12 +4,11 @@
 // - protoc             (unknown)
 // source: app/service/v1/i_internal_message.proto
 
-package apppb
+package servicev1
 
 import (
 	context "context"
-	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	v11 "go-wind-oa/api/gen/go/internal_message/service/v1"
+	v1 "go-wind-oa/api/gen/go/internal_message/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -21,25 +20,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	InternalMessageService_ListMessage_FullMethodName = "/app.service.v1.InternalMessageService/ListMessage"
-	InternalMessageService_GetMessage_FullMethodName  = "/app.service.v1.InternalMessageService/GetMessage"
+	InternalMessageService_ListMyMessages_FullMethodName = "/app.service.v1.InternalMessageService/ListMyMessages"
 )
 
 // InternalMessageServiceClient is the client API for InternalMessageService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// 站内信消息服务（app HTTP 边端，只读）。
-//
-// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-// 消息类型引用自 internal_message.service.v1（core-service 的 gRPC 实现）。
-// 移动端经此接口查询其收件箱消息。仅暴露 List/Get，写操作（Send/Update/Delete/
-// Revoke）不经 app 边端。
+// 站内信参与服务（app 边端，移动端，只读收件箱）
 type InternalMessageServiceClient interface {
-	// 查询站内信消息列表
-	ListMessage(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListInternalMessageResponse, error)
-	// 查询站内信消息详情
-	GetMessage(ctx context.Context, in *v11.GetInternalMessageRequest, opts ...grpc.CallOption) (*v11.InternalMessage, error)
+	// 查询我的收件箱（按当前操作者过滤）
+	ListMyMessages(ctx context.Context, in *v1.ListMyMessagesRequest, opts ...grpc.CallOption) (*v1.ListInternalMessageResponse, error)
 }
 
 type internalMessageServiceClient struct {
@@ -50,20 +41,10 @@ func NewInternalMessageServiceClient(cc grpc.ClientConnInterface) InternalMessag
 	return &internalMessageServiceClient{cc}
 }
 
-func (c *internalMessageServiceClient) ListMessage(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListInternalMessageResponse, error) {
+func (c *internalMessageServiceClient) ListMyMessages(ctx context.Context, in *v1.ListMyMessagesRequest, opts ...grpc.CallOption) (*v1.ListInternalMessageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v11.ListInternalMessageResponse)
-	err := c.cc.Invoke(ctx, InternalMessageService_ListMessage_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *internalMessageServiceClient) GetMessage(ctx context.Context, in *v11.GetInternalMessageRequest, opts ...grpc.CallOption) (*v11.InternalMessage, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v11.InternalMessage)
-	err := c.cc.Invoke(ctx, InternalMessageService_GetMessage_FullMethodName, in, out, cOpts...)
+	out := new(v1.ListInternalMessageResponse)
+	err := c.cc.Invoke(ctx, InternalMessageService_ListMyMessages_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,17 +55,10 @@ func (c *internalMessageServiceClient) GetMessage(ctx context.Context, in *v11.G
 // All implementations must embed UnimplementedInternalMessageServiceServer
 // for forward compatibility.
 //
-// 站内信消息服务（app HTTP 边端，只读）。
-//
-// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-// 消息类型引用自 internal_message.service.v1（core-service 的 gRPC 实现）。
-// 移动端经此接口查询其收件箱消息。仅暴露 List/Get，写操作（Send/Update/Delete/
-// Revoke）不经 app 边端。
+// 站内信参与服务（app 边端，移动端，只读收件箱）
 type InternalMessageServiceServer interface {
-	// 查询站内信消息列表
-	ListMessage(context.Context, *v1.PagingRequest) (*v11.ListInternalMessageResponse, error)
-	// 查询站内信消息详情
-	GetMessage(context.Context, *v11.GetInternalMessageRequest) (*v11.InternalMessage, error)
+	// 查询我的收件箱（按当前操作者过滤）
+	ListMyMessages(context.Context, *v1.ListMyMessagesRequest) (*v1.ListInternalMessageResponse, error)
 	mustEmbedUnimplementedInternalMessageServiceServer()
 }
 
@@ -95,11 +69,8 @@ type InternalMessageServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedInternalMessageServiceServer struct{}
 
-func (UnimplementedInternalMessageServiceServer) ListMessage(context.Context, *v1.PagingRequest) (*v11.ListInternalMessageResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListMessage not implemented")
-}
-func (UnimplementedInternalMessageServiceServer) GetMessage(context.Context, *v11.GetInternalMessageRequest) (*v11.InternalMessage, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetMessage not implemented")
+func (UnimplementedInternalMessageServiceServer) ListMyMessages(context.Context, *v1.ListMyMessagesRequest) (*v1.ListInternalMessageResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyMessages not implemented")
 }
 func (UnimplementedInternalMessageServiceServer) mustEmbedUnimplementedInternalMessageServiceServer() {
 }
@@ -123,38 +94,20 @@ func RegisterInternalMessageServiceServer(s grpc.ServiceRegistrar, srv InternalM
 	s.RegisterService(&InternalMessageService_ServiceDesc, srv)
 }
 
-func _InternalMessageService_ListMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.PagingRequest)
+func _InternalMessageService_ListMyMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.ListMyMessagesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(InternalMessageServiceServer).ListMessage(ctx, in)
+		return srv.(InternalMessageServiceServer).ListMyMessages(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: InternalMessageService_ListMessage_FullMethodName,
+		FullMethod: InternalMessageService_ListMyMessages_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InternalMessageServiceServer).ListMessage(ctx, req.(*v1.PagingRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _InternalMessageService_GetMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v11.GetInternalMessageRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(InternalMessageServiceServer).GetMessage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: InternalMessageService_GetMessage_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InternalMessageServiceServer).GetMessage(ctx, req.(*v11.GetInternalMessageRequest))
+		return srv.(InternalMessageServiceServer).ListMyMessages(ctx, req.(*v1.ListMyMessagesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -167,12 +120,8 @@ var InternalMessageService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*InternalMessageServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListMessage",
-			Handler:    _InternalMessageService_ListMessage_Handler,
-		},
-		{
-			MethodName: "GetMessage",
-			Handler:    _InternalMessageService_GetMessage_Handler,
+			MethodName: "ListMyMessages",
+			Handler:    _InternalMessageService_ListMyMessages_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

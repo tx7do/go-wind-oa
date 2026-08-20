@@ -1,0 +1,401 @@
+package data
+
+import (
+	"context"
+	"time"
+
+	"entgo.io/ent/dialect/sql"
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/tx7do/kratos-bootstrap/bootstrap"
+
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	entCrud "github.com/tx7do/go-crud/entgo"
+
+	"github.com/tx7do/go-utils/copierutil"
+	"github.com/tx7do/go-utils/mapper"
+	"github.com/tx7do/go-utils/timeutil"
+
+	"go-wind-oa/app/core/service/internal/data/ent"
+	"go-wind-oa/app/core/service/internal/data/ent/predicate"
+	"go-wind-oa/app/core/service/internal/data/ent/tenant"
+
+	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
+)
+
+type TenantRepo struct {
+	entClient *entCrud.EntClient[*ent.Client]
+	log       *log.Helper
+
+	mapper               *mapper.CopierMapper[identityV1.Tenant, ent.Tenant]
+	statusConverter      *mapper.EnumTypeConverter[identityV1.Tenant_Status, tenant.Status]
+	typeConverter        *mapper.EnumTypeConverter[identityV1.Tenant_Type, tenant.Type]
+	auditStatusConverter *mapper.EnumTypeConverter[identityV1.Tenant_AuditStatus, tenant.AuditStatus]
+
+	repository *entCrud.Repository[
+		ent.TenantQuery, ent.TenantSelect,
+		ent.TenantCreate, ent.TenantCreateBulk,
+		ent.TenantUpdate, ent.TenantUpdateOne,
+		ent.TenantDelete,
+		predicate.Tenant,
+		identityV1.Tenant, ent.Tenant,
+	]
+}
+
+func NewTenantRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *TenantRepo {
+	repo := &TenantRepo{
+		log:                  ctx.NewLoggerHelper("tenant/repo/core-service"),
+		entClient:            entClient,
+		mapper:               mapper.NewCopierMapper[identityV1.Tenant, ent.Tenant](),
+		statusConverter:      mapper.NewEnumTypeConverter[identityV1.Tenant_Status, tenant.Status](identityV1.Tenant_Status_name, identityV1.Tenant_Status_value),
+		typeConverter:        mapper.NewEnumTypeConverter[identityV1.Tenant_Type, tenant.Type](identityV1.Tenant_Type_name, identityV1.Tenant_Type_value),
+		auditStatusConverter: mapper.NewEnumTypeConverter[identityV1.Tenant_AuditStatus, tenant.AuditStatus](identityV1.Tenant_AuditStatus_name, identityV1.Tenant_AuditStatus_value),
+	}
+
+	repo.init()
+
+	return repo
+}
+
+func (r *TenantRepo) init() {
+	r.repository = entCrud.NewRepository[
+		ent.TenantQuery, ent.TenantSelect,
+		ent.TenantCreate, ent.TenantCreateBulk,
+		ent.TenantUpdate, ent.TenantUpdateOne,
+		ent.TenantDelete,
+		predicate.Tenant,
+		identityV1.Tenant, ent.Tenant,
+	](r.mapper)
+
+	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
+	r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
+
+	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
+	r.mapper.AppendConverters(r.typeConverter.NewConverterPair())
+	r.mapper.AppendConverters(r.auditStatusConverter.NewConverterPair())
+}
+
+func (r *TenantRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (int, error) {
+	builder := r.entClient.Client().Tenant.Query()
+
+	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
+	if len(whereSelectors) != 0 {
+		builder.Modify(whereSelectors...)
+	}
+
+	count, err := builder.Count(ctx)
+	if err != nil {
+		r.log.Errorf("query tenant count failed: %s", err.Error())
+		return 0, identityV1.ErrorInternalServerError("query count failed")
+	}
+
+	return count, nil
+}
+
+func (r *TenantRepo) count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
+	builder := r.entClient.Client().Tenant.Query()
+	if len(whereCond) != 0 {
+		builder.Modify(whereCond...)
+	}
+
+	count, err := builder.Count(ctx)
+	if err != nil {
+		r.log.Errorf("query tenant count failed: %s", err.Error())
+		return 0, identityV1.ErrorInternalServerError("query count failed")
+	}
+
+	return count, nil
+}
+
+func (r *TenantRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListTenantResponse, error) {
+	if req == nil {
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
+	}
+
+	builder := r.entClient.Client().Tenant.Query()
+
+	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
+	if err != nil {
+		return nil, err
+	}
+	if ret == nil {
+		return &identityV1.ListTenantResponse{Total: 0, Items: nil}, nil
+	}
+
+	return &identityV1.ListTenantResponse{
+		Total: ret.Total,
+		Items: ret.Items,
+	}, nil
+}
+
+func (r *TenantRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+	exist, err := r.entClient.Client().Tenant.Query().
+		Where(tenant.IDEQ(id)).
+		Exist(ctx)
+	if err != nil {
+		r.log.Errorf("query exist failed: %s", err.Error())
+		return false, identityV1.ErrorInternalServerError("query exist failed")
+	}
+	return exist, nil
+}
+
+func (r *TenantRepo) Get(ctx context.Context, req *identityV1.GetTenantRequest) (*identityV1.Tenant, error) {
+	if req == nil {
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
+	}
+
+	builder := r.entClient.Client().Tenant.Query()
+
+	var whereCond []func(s *sql.Selector)
+	switch req.QueryBy.(type) {
+	default:
+	case *identityV1.GetTenantRequest_Id:
+		whereCond = append(whereCond, tenant.IDEQ(req.GetId()))
+
+	case *identityV1.GetTenantRequest_Code:
+		whereCond = append(whereCond, tenant.CodeEQ(req.GetCode()))
+
+	case *identityV1.GetTenantRequest_Name:
+		whereCond = append(whereCond, tenant.NameEQ(req.GetName()))
+	}
+
+	dto, err := r.repository.Get(ctx, builder, req.GetViewMask(), whereCond...)
+	if err != nil {
+		return nil, err
+	}
+
+	return dto, err
+}
+
+func (r *TenantRepo) BeginTx(ctx context.Context) (tx *ent.Tx, err error) {
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return nil, identityV1.ErrorInternalServerError("start transaction failed")
+	}
+	return tx, nil
+}
+
+// FinishTx 根据调用方的命名返回值 err 决定回滚或提交。
+// 必须在 defer 中调用：defer func() { r.FinishTx(tx, err) }()
+func (r *TenantRepo) FinishTx(tx *ent.Tx, err error) {
+	if tx == nil {
+		return
+	}
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+		}
+		return
+	}
+	if commitErr := tx.Commit(); commitErr != nil {
+		r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+	}
+}
+
+func (r *TenantRepo) Create(ctx context.Context, data *identityV1.Tenant) (tenant *identityV1.Tenant, err error) {
+	if data == nil {
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
+	}
+
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return nil, identityV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	return r.CreateWithTx(ctx, tx, data)
+}
+
+func (r *TenantRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identityV1.Tenant) (*identityV1.Tenant, error) {
+	if data == nil {
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
+	}
+
+	builder := tx.Tenant.Create().
+		SetNillableName(data.Name).
+		SetNillableCode(data.Code).
+		SetNillableDomain(data.Domain).
+		SetNillableLogoURL(data.LogoUrl).
+		SetNillableRemark(data.Remark).
+		SetNillableIndustry(data.Industry).
+		SetNillableAdminUserID(data.AdminUserId).
+		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
+		SetNillableType(r.typeConverter.ToEntity(data.Type)).
+		SetNillableAuditStatus(r.auditStatusConverter.ToEntity(data.AuditStatus)).
+		SetNillableSubscriptionPlan(data.SubscriptionPlan).
+		SetNillableExpiredAt(timeutil.TimestamppbToTime(data.ExpiredAt)).
+		SetNillableSubscriptionAt(timeutil.TimestamppbToTime(data.SubscriptionAt)).
+		SetNillableUnsubscribeAt(timeutil.TimestamppbToTime(data.UnsubscribeAt)).
+		SetNillableCreatedBy(data.CreatedBy).
+		SetCreatedAt(time.Now())
+
+	if data.Id != nil {
+		builder.SetID(data.GetId())
+	}
+
+	if ret, err := builder.Save(ctx); err != nil {
+		r.log.Errorf("insert tenant failed: %s", err.Error())
+		return nil, identityV1.ErrorInternalServerError("insert tenant failed")
+	} else {
+		return r.mapper.ToDTO(ret), nil
+	}
+}
+
+func (r *TenantRepo) Update(ctx context.Context, req *identityV1.UpdateTenantRequest) error {
+	if req == nil || req.Data == nil {
+		return identityV1.ErrorBadRequest("invalid parameter")
+	}
+
+	// 如果不存在则创建
+	if req.GetAllowMissing() {
+		exist, err := r.IsExist(ctx, req.GetId())
+		if err != nil {
+			return err
+		}
+		if !exist {
+			createReq := &identityV1.CreateTenantRequest{Data: req.Data}
+			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
+			createReq.Data.UpdatedBy = nil
+			_, err = r.Create(ctx, createReq.Data)
+			return err
+		}
+	}
+
+	builder := r.entClient.Client().Debug().Tenant.Update()
+	callerUserID, hasUser := viewerUserIDFromContext(ctx)
+	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
+		func(dto *identityV1.Tenant) {
+			// 仅允许更新展示性字段；计费/生命周期/管理类字段
+			//（Status/Type/AuditStatus/SubscriptionPlan/ExpiredAt/SubscriptionAt/
+			// UnsubscribeAt/AdminUserID/Code/Domain）须由专门的平台管理端点修改，
+			// 防止租户管理员通过普通 Update 自我续期或提升套餐。
+			builder.
+				SetNillableName(req.Data.Name).
+				SetNillableLogoURL(req.Data.LogoUrl).
+				SetNillableRemark(req.Data.Remark).
+				SetNillableIndustry(req.Data.Industry).
+				SetUpdatedAt(time.Now())
+
+			// updated_by 强制取调用者身份，保证审计归属真实，忽略客户端值
+			if hasUser {
+				builder.SetUpdatedBy(callerUserID)
+			}
+		},
+		func(s *sql.Selector) {
+			s.Where(sql.EQ(tenant.FieldID, req.GetId()))
+		},
+	)
+
+	return err
+}
+
+// AssignTenantAdmin assigns an admin user to a tenant within a transaction.
+func (r *TenantRepo) AssignTenantAdmin(ctx context.Context, tx *ent.Tx, tenantId uint32, userId uint32) error {
+	_, err := tx.Tenant.Update().
+		Where(tenant.IDEQ(tenantId)).
+		SetAdminUserID(userId).
+		Save(ctx)
+	if err != nil {
+		r.log.Errorf("assign tenant admin failed: %s", err.Error())
+		return identityV1.ErrorInternalServerError("assign tenant admin failed")
+	}
+
+	return nil
+}
+
+func (r *TenantRepo) Delete(ctx context.Context, req *identityV1.DeleteTenantRequest) error {
+	if req == nil {
+		return identityV1.ErrorBadRequest("invalid parameter")
+	}
+
+	if err := r.entClient.Client().Tenant.DeleteOneID(req.GetId()).Exec(ctx); err != nil {
+		if ent.IsNotFound(err) {
+			return identityV1.ErrorNotFound("tenant not found")
+		}
+
+		r.log.Errorf("delete one data failed: %s", err.Error())
+
+		return identityV1.ErrorInternalServerError("delete failed")
+	}
+
+	return nil
+}
+
+// TenantExists checks if a tenant with the given username exists.
+func (r *TenantRepo) TenantExists(ctx context.Context, req *identityV1.TenantExistsRequest) (*identityV1.TenantExistsResponse, error) {
+	exist, err := r.entClient.Client().Tenant.Query().
+		Where(
+			tenant.CodeEQ(req.GetCode()),
+			tenant.NameEQ(req.GetName()),
+		).
+		Exist(ctx)
+	if err != nil {
+		r.log.Errorf("query exist failed: %s", err.Error())
+		return nil, identityV1.ErrorInternalServerError("query exist failed")
+	}
+
+	return &identityV1.TenantExistsResponse{
+		Exist: exist,
+	}, nil
+}
+
+// GetTenantIdByDomain 按域名解析租户ID。
+//
+// 仅供 app BFF 在匿名（白名单）请求中按 Host 解析 tenant_id。domain 现为全局
+// 唯一索引，至多匹配一行；未匹配到（含 domain 为空）返回 (0, nil)，调用方据此
+// fail-closed。仅返回 id，不映射/泄露其他租户字段。
+func (r *TenantRepo) GetTenantIdByDomain(ctx context.Context, domain string) (uint32, error) {
+	if domain == "" {
+		return 0, nil
+	}
+	entity, err := r.entClient.Client().Tenant.Query().
+		Where(tenant.DomainEQ(domain)).
+		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return 0, nil
+		}
+		r.log.Errorf("query tenant by domain failed: %s", err.Error())
+		return 0, identityV1.ErrorInternalServerError("query tenant by domain failed")
+	}
+	if entity == nil || entity.ID == 0 {
+		return 0, nil
+	}
+	return entity.ID, nil
+}
+
+// ListTenantsByIds gets tenants by a list of IDs.
+func (r *TenantRepo) ListTenantsByIds(ctx context.Context, ids []uint32) ([]*identityV1.Tenant, error) {
+	if len(ids) == 0 {
+		return []*identityV1.Tenant{}, nil
+	}
+
+	entities, err := r.entClient.Client().Tenant.Query().
+		Where(tenant.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf("query tenant by ids failed: %s", err.Error())
+		return nil, identityV1.ErrorInternalServerError("query tenant by ids failed")
+	}
+
+	dtos := make([]*identityV1.Tenant, 0, len(entities))
+	for _, entity := range entities {
+		dto := r.mapper.ToDTO(entity)
+		dtos = append(dtos, dto)
+	}
+
+	return dtos, nil
+}

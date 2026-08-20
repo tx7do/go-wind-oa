@@ -94,8 +94,6 @@ var (
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
 	DefaultTenantID uint32
-	// DefaultNodeIndex holds the default value on creation for the "node_index" field.
-	DefaultNodeIndex int32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -103,16 +101,16 @@ var (
 // LogAction defines the type for the "log_action" enum field.
 type LogAction string
 
-// LogActionSUBMIT is the default value of the LogAction enum.
-const DefaultLogAction = LogActionSUBMIT
+// LogActionSubmit is the default value of the LogAction enum.
+const DefaultLogAction = LogActionSubmit
 
 // LogAction values.
 const (
-	LogActionSUBMIT  LogAction = "SUBMIT"
-	LogActionAPPROVE LogAction = "APPROVE"
-	LogActionREJECT  LogAction = "REJECT"
-	LogActionFORWARD LogAction = "FORWARD"
-	LogActionCANCEL  LogAction = "CANCEL"
+	LogActionSubmit   LogAction = "SUBMIT"
+	LogActionApprove  LogAction = "APPROVE"
+	LogActionReject   LogAction = "REJECT"
+	LogActionForward  LogAction = "FORWARD"
+	LogActionWithdraw LogAction = "WITHDRAW"
 )
 
 func (la LogAction) String() string {
@@ -122,7 +120,7 @@ func (la LogAction) String() string {
 // LogActionValidator is a validator for the "log_action" field enum values. It is called by the builders before save.
 func LogActionValidator(la LogAction) error {
 	switch la {
-	case LogActionSUBMIT, LogActionAPPROVE, LogActionREJECT, LogActionFORWARD, LogActionCANCEL:
+	case LogActionSubmit, LogActionApprove, LogActionReject, LogActionForward, LogActionWithdraw:
 		return nil
 	default:
 		return fmt.Errorf("workflowlog: invalid enum value for log_action field: %q", la)

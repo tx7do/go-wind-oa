@@ -4,14 +4,13 @@
 // - protoc             (unknown)
 // source: app/service/v1/i_internal_message.proto
 
-package apppb
+package servicev1
 
 import (
 	context "context"
 	http "github.com/go-kratos/kratos/v2/transport/http"
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
-	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	v11 "go-wind-oa/api/gen/go/internal_message/service/v1"
+	v1 "go-wind-oa/api/gen/go/internal_message/service/v1"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,68 +20,40 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationInternalMessageServiceGetMessage = "/app.service.v1.InternalMessageService/GetMessage"
-const OperationInternalMessageServiceListMessage = "/app.service.v1.InternalMessageService/ListMessage"
+const OperationInternalMessageServiceListMyMessages = "/app.service.v1.InternalMessageService/ListMyMessages"
 
 type InternalMessageServiceHTTPServer interface {
-	// GetMessage 查询站内信消息详情
-	GetMessage(context.Context, *v11.GetInternalMessageRequest) (*v11.InternalMessage, error)
-	// ListMessage 查询站内信消息列表
-	ListMessage(context.Context, *v1.PagingRequest) (*v11.ListInternalMessageResponse, error)
+	// ListMyMessages 查询我的收件箱（按当前操作者过滤）
+	ListMyMessages(context.Context, *v1.ListMyMessagesRequest) (*v1.ListInternalMessageResponse, error)
 }
 
 func RegisterInternalMessageServiceHTTPServer(s *http.Server, srv InternalMessageServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/app/v1/internal-message/messages", _InternalMessageService_ListMessage0_HTTP_Handler(srv))
-	r.GET("/app/v1/internal-message/messages/{id}", _InternalMessageService_GetMessage0_HTTP_Handler(srv))
+	r.GET("/app/v1/internal-message/my-messages", _InternalMessageService_ListMyMessages0_HTTP_Handler(srv))
 }
 
-func _InternalMessageService_ListMessage0_HTTP_Handler(srv InternalMessageServiceHTTPServer) func(ctx http.Context) error {
+func _InternalMessageService_ListMyMessages0_HTTP_Handler(srv InternalMessageServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in v1.PagingRequest
+		var in v1.ListMyMessagesRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationInternalMessageServiceListMessage)
+		http.SetOperation(ctx, OperationInternalMessageServiceListMyMessages)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.ListMessage(ctx, req.(*v1.PagingRequest))
+			return srv.ListMyMessages(ctx, req.(*v1.ListMyMessagesRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*v11.ListInternalMessageResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _InternalMessageService_GetMessage0_HTTP_Handler(srv InternalMessageServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in v11.GetInternalMessageRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationInternalMessageServiceGetMessage)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetMessage(ctx, req.(*v11.GetInternalMessageRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v11.InternalMessage)
+		reply := out.(*v1.ListInternalMessageResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
 type InternalMessageServiceHTTPClient interface {
-	// GetMessage 查询站内信消息详情
-	GetMessage(ctx context.Context, req *v11.GetInternalMessageRequest, opts ...http.CallOption) (rsp *v11.InternalMessage, err error)
-	// ListMessage 查询站内信消息列表
-	ListMessage(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListInternalMessageResponse, err error)
+	// ListMyMessages 查询我的收件箱（按当前操作者过滤）
+	ListMyMessages(ctx context.Context, req *v1.ListMyMessagesRequest, opts ...http.CallOption) (rsp *v1.ListInternalMessageResponse, err error)
 }
 
 type InternalMessageServiceHTTPClientImpl struct {
@@ -93,26 +64,12 @@ func NewInternalMessageServiceHTTPClient(client *http.Client) InternalMessageSer
 	return &InternalMessageServiceHTTPClientImpl{client}
 }
 
-// GetMessage 查询站内信消息详情
-func (c *InternalMessageServiceHTTPClientImpl) GetMessage(ctx context.Context, in *v11.GetInternalMessageRequest, opts ...http.CallOption) (*v11.InternalMessage, error) {
-	var out v11.InternalMessage
-	pattern := "/app/v1/internal-message/messages/{id}"
+// ListMyMessages 查询我的收件箱（按当前操作者过滤）
+func (c *InternalMessageServiceHTTPClientImpl) ListMyMessages(ctx context.Context, in *v1.ListMyMessagesRequest, opts ...http.CallOption) (*v1.ListInternalMessageResponse, error) {
+	var out v1.ListInternalMessageResponse
+	pattern := "/app/v1/internal-message/my-messages"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationInternalMessageServiceGetMessage))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// ListMessage 查询站内信消息列表
-func (c *InternalMessageServiceHTTPClientImpl) ListMessage(ctx context.Context, in *v1.PagingRequest, opts ...http.CallOption) (*v11.ListInternalMessageResponse, error) {
-	var out v11.ListInternalMessageResponse
-	pattern := "/app/v1/internal-message/messages"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationInternalMessageServiceListMessage))
+	opts = append(opts, http.Operation(OperationInternalMessageServiceListMyMessages))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

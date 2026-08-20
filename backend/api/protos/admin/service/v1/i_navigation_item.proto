@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination/v1/pagination.proto";
+import "site/service/v1/navigation_item.proto";
+
+// 导航项目服务
+service NavigationItemService {
+  // 获取导航项目列表
+  rpc List (pagination.PagingRequest) returns (site.service.v1.ListNavigationItemResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/navigation-items"
+    };
+  }
+
+  // 获取导航项目数据
+  rpc Get (site.service.v1.GetNavigationItemRequest) returns (site.service.v1.NavigationItem) {
+    option (google.api.http) = {
+      get: "/admin/v1/navigation-items/{id}"
+    };
+  }
+
+  // 创建导航项目
+  rpc Create (site.service.v1.CreateNavigationItemRequest) returns (site.service.v1.NavigationItem) {
+    option (google.api.http) = {
+      post: "/admin/v1/navigation-items"
+      body: "*"
+    };
+  }
+
+  // 更新导航项目
+  rpc Update (site.service.v1.UpdateNavigationItemRequest) returns (site.service.v1.NavigationItem) {
+    option (google.api.http) = {
+      put: "/admin/v1/navigation-items/{id}"
+      body: "*"
+    };
+  }
+
+  // 删除导航
+  rpc Delete (site.service.v1.DeleteNavigationItemRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/navigation-items/{id}"
+    };
+  }
+}

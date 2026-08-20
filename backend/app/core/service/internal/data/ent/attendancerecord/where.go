@@ -89,24 +89,54 @@ func TenantID(v uint32) predicate.AttendanceRecord {
 	return predicate.AttendanceRecord(sql.FieldEQ(FieldTenantID, v))
 }
 
-// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
-func Remark(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEQ(FieldRemark, v))
+// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
+func UserID(v uint32) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldUserID, v))
 }
 
-// Longitude applies equality check predicate on the "longitude" field. It's identical to LongitudeEQ.
-func Longitude(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEQ(FieldLongitude, v))
+// WorkDate applies equality check predicate on the "work_date" field. It's identical to WorkDateEQ.
+func WorkDate(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldWorkDate, v))
 }
 
-// Latitude applies equality check predicate on the "latitude" field. It's identical to LatitudeEQ.
-func Latitude(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEQ(FieldLatitude, v))
+// CheckInAt applies equality check predicate on the "check_in_at" field. It's identical to CheckInAtEQ.
+func CheckInAt(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckInAt, v))
 }
 
-// Bssid applies equality check predicate on the "bssid" field. It's identical to BssidEQ.
-func Bssid(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEQ(FieldBssid, v))
+// CheckInLatitude applies equality check predicate on the "check_in_latitude" field. It's identical to CheckInLatitudeEQ.
+func CheckInLatitude(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckInLatitude, v))
+}
+
+// CheckInLongitude applies equality check predicate on the "check_in_longitude" field. It's identical to CheckInLongitudeEQ.
+func CheckInLongitude(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckInLongitude, v))
+}
+
+// CheckInWifiBssid applies equality check predicate on the "check_in_wifi_bssid" field. It's identical to CheckInWifiBssidEQ.
+func CheckInWifiBssid(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckInWifiBssid, v))
+}
+
+// CheckOutAt applies equality check predicate on the "check_out_at" field. It's identical to CheckOutAtEQ.
+func CheckOutAt(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckOutAt, v))
+}
+
+// CheckOutLatitude applies equality check predicate on the "check_out_latitude" field. It's identical to CheckOutLatitudeEQ.
+func CheckOutLatitude(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckOutLatitude, v))
+}
+
+// CheckOutLongitude applies equality check predicate on the "check_out_longitude" field. It's identical to CheckOutLongitudeEQ.
+func CheckOutLongitude(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckOutLongitude, v))
+}
+
+// CheckOutWifiBssid applies equality check predicate on the "check_out_wifi_bssid" field. It's identical to CheckOutWifiBssidEQ.
+func CheckOutWifiBssid(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckOutWifiBssid, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -459,284 +489,564 @@ func TenantIDNotNil() predicate.AttendanceRecord {
 	return predicate.AttendanceRecord(sql.FieldNotNull(FieldTenantID))
 }
 
-// RemarkEQ applies the EQ predicate on the "remark" field.
-func RemarkEQ(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEQ(FieldRemark, v))
+// UserIDEQ applies the EQ predicate on the "user_id" field.
+func UserIDEQ(v uint32) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldUserID, v))
 }
 
-// RemarkNEQ applies the NEQ predicate on the "remark" field.
-func RemarkNEQ(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNEQ(FieldRemark, v))
+// UserIDNEQ applies the NEQ predicate on the "user_id" field.
+func UserIDNEQ(v uint32) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldUserID, v))
 }
 
-// RemarkIn applies the In predicate on the "remark" field.
-func RemarkIn(vs ...string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldIn(FieldRemark, vs...))
+// UserIDIn applies the In predicate on the "user_id" field.
+func UserIDIn(vs ...uint32) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldUserID, vs...))
 }
 
-// RemarkNotIn applies the NotIn predicate on the "remark" field.
-func RemarkNotIn(vs ...string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNotIn(FieldRemark, vs...))
+// UserIDNotIn applies the NotIn predicate on the "user_id" field.
+func UserIDNotIn(vs ...uint32) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldUserID, vs...))
 }
 
-// RemarkGT applies the GT predicate on the "remark" field.
-func RemarkGT(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldGT(FieldRemark, v))
+// UserIDGT applies the GT predicate on the "user_id" field.
+func UserIDGT(v uint32) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGT(FieldUserID, v))
 }
 
-// RemarkGTE applies the GTE predicate on the "remark" field.
-func RemarkGTE(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldGTE(FieldRemark, v))
+// UserIDGTE applies the GTE predicate on the "user_id" field.
+func UserIDGTE(v uint32) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGTE(FieldUserID, v))
 }
 
-// RemarkLT applies the LT predicate on the "remark" field.
-func RemarkLT(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldLT(FieldRemark, v))
+// UserIDLT applies the LT predicate on the "user_id" field.
+func UserIDLT(v uint32) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLT(FieldUserID, v))
 }
 
-// RemarkLTE applies the LTE predicate on the "remark" field.
-func RemarkLTE(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldLTE(FieldRemark, v))
+// UserIDLTE applies the LTE predicate on the "user_id" field.
+func UserIDLTE(v uint32) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLTE(FieldUserID, v))
 }
 
-// RemarkContains applies the Contains predicate on the "remark" field.
-func RemarkContains(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldContains(FieldRemark, v))
+// WorkDateEQ applies the EQ predicate on the "work_date" field.
+func WorkDateEQ(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldWorkDate, v))
 }
 
-// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
-func RemarkHasPrefix(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldHasPrefix(FieldRemark, v))
+// WorkDateNEQ applies the NEQ predicate on the "work_date" field.
+func WorkDateNEQ(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldWorkDate, v))
 }
 
-// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
-func RemarkHasSuffix(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldHasSuffix(FieldRemark, v))
+// WorkDateIn applies the In predicate on the "work_date" field.
+func WorkDateIn(vs ...time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldWorkDate, vs...))
 }
 
-// RemarkIsNil applies the IsNil predicate on the "remark" field.
-func RemarkIsNil() predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldIsNull(FieldRemark))
+// WorkDateNotIn applies the NotIn predicate on the "work_date" field.
+func WorkDateNotIn(vs ...time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldWorkDate, vs...))
 }
 
-// RemarkNotNil applies the NotNil predicate on the "remark" field.
-func RemarkNotNil() predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNotNull(FieldRemark))
+// WorkDateGT applies the GT predicate on the "work_date" field.
+func WorkDateGT(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGT(FieldWorkDate, v))
 }
 
-// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
-func RemarkEqualFold(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEqualFold(FieldRemark, v))
+// WorkDateGTE applies the GTE predicate on the "work_date" field.
+func WorkDateGTE(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGTE(FieldWorkDate, v))
 }
 
-// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
-func RemarkContainsFold(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldContainsFold(FieldRemark, v))
+// WorkDateLT applies the LT predicate on the "work_date" field.
+func WorkDateLT(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLT(FieldWorkDate, v))
 }
 
-// CheckResultEQ applies the EQ predicate on the "check_result" field.
-func CheckResultEQ(v CheckResult) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckResult, v))
+// WorkDateLTE applies the LTE predicate on the "work_date" field.
+func WorkDateLTE(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLTE(FieldWorkDate, v))
 }
 
-// CheckResultNEQ applies the NEQ predicate on the "check_result" field.
-func CheckResultNEQ(v CheckResult) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNEQ(FieldCheckResult, v))
+// CheckInAtEQ applies the EQ predicate on the "check_in_at" field.
+func CheckInAtEQ(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckInAt, v))
 }
 
-// CheckResultIn applies the In predicate on the "check_result" field.
-func CheckResultIn(vs ...CheckResult) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldIn(FieldCheckResult, vs...))
+// CheckInAtNEQ applies the NEQ predicate on the "check_in_at" field.
+func CheckInAtNEQ(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldCheckInAt, v))
 }
 
-// CheckResultNotIn applies the NotIn predicate on the "check_result" field.
-func CheckResultNotIn(vs ...CheckResult) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNotIn(FieldCheckResult, vs...))
+// CheckInAtIn applies the In predicate on the "check_in_at" field.
+func CheckInAtIn(vs ...time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldCheckInAt, vs...))
 }
 
-// CheckResultIsNil applies the IsNil predicate on the "check_result" field.
-func CheckResultIsNil() predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldIsNull(FieldCheckResult))
+// CheckInAtNotIn applies the NotIn predicate on the "check_in_at" field.
+func CheckInAtNotIn(vs ...time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldCheckInAt, vs...))
 }
 
-// CheckResultNotNil applies the NotNil predicate on the "check_result" field.
-func CheckResultNotNil() predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNotNull(FieldCheckResult))
+// CheckInAtGT applies the GT predicate on the "check_in_at" field.
+func CheckInAtGT(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGT(FieldCheckInAt, v))
 }
 
-// LongitudeEQ applies the EQ predicate on the "longitude" field.
-func LongitudeEQ(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEQ(FieldLongitude, v))
+// CheckInAtGTE applies the GTE predicate on the "check_in_at" field.
+func CheckInAtGTE(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGTE(FieldCheckInAt, v))
 }
 
-// LongitudeNEQ applies the NEQ predicate on the "longitude" field.
-func LongitudeNEQ(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNEQ(FieldLongitude, v))
+// CheckInAtLT applies the LT predicate on the "check_in_at" field.
+func CheckInAtLT(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLT(FieldCheckInAt, v))
 }
 
-// LongitudeIn applies the In predicate on the "longitude" field.
-func LongitudeIn(vs ...float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldIn(FieldLongitude, vs...))
+// CheckInAtLTE applies the LTE predicate on the "check_in_at" field.
+func CheckInAtLTE(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLTE(FieldCheckInAt, v))
 }
 
-// LongitudeNotIn applies the NotIn predicate on the "longitude" field.
-func LongitudeNotIn(vs ...float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNotIn(FieldLongitude, vs...))
+// CheckInAtIsNil applies the IsNil predicate on the "check_in_at" field.
+func CheckInAtIsNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIsNull(FieldCheckInAt))
 }
 
-// LongitudeGT applies the GT predicate on the "longitude" field.
-func LongitudeGT(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldGT(FieldLongitude, v))
+// CheckInAtNotNil applies the NotNil predicate on the "check_in_at" field.
+func CheckInAtNotNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotNull(FieldCheckInAt))
 }
 
-// LongitudeGTE applies the GTE predicate on the "longitude" field.
-func LongitudeGTE(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldGTE(FieldLongitude, v))
+// CheckInLatitudeEQ applies the EQ predicate on the "check_in_latitude" field.
+func CheckInLatitudeEQ(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckInLatitude, v))
 }
 
-// LongitudeLT applies the LT predicate on the "longitude" field.
-func LongitudeLT(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldLT(FieldLongitude, v))
+// CheckInLatitudeNEQ applies the NEQ predicate on the "check_in_latitude" field.
+func CheckInLatitudeNEQ(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldCheckInLatitude, v))
 }
 
-// LongitudeLTE applies the LTE predicate on the "longitude" field.
-func LongitudeLTE(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldLTE(FieldLongitude, v))
+// CheckInLatitudeIn applies the In predicate on the "check_in_latitude" field.
+func CheckInLatitudeIn(vs ...float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldCheckInLatitude, vs...))
 }
 
-// LongitudeIsNil applies the IsNil predicate on the "longitude" field.
-func LongitudeIsNil() predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldIsNull(FieldLongitude))
+// CheckInLatitudeNotIn applies the NotIn predicate on the "check_in_latitude" field.
+func CheckInLatitudeNotIn(vs ...float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldCheckInLatitude, vs...))
 }
 
-// LongitudeNotNil applies the NotNil predicate on the "longitude" field.
-func LongitudeNotNil() predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNotNull(FieldLongitude))
+// CheckInLatitudeGT applies the GT predicate on the "check_in_latitude" field.
+func CheckInLatitudeGT(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGT(FieldCheckInLatitude, v))
 }
 
-// LatitudeEQ applies the EQ predicate on the "latitude" field.
-func LatitudeEQ(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEQ(FieldLatitude, v))
+// CheckInLatitudeGTE applies the GTE predicate on the "check_in_latitude" field.
+func CheckInLatitudeGTE(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGTE(FieldCheckInLatitude, v))
 }
 
-// LatitudeNEQ applies the NEQ predicate on the "latitude" field.
-func LatitudeNEQ(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNEQ(FieldLatitude, v))
+// CheckInLatitudeLT applies the LT predicate on the "check_in_latitude" field.
+func CheckInLatitudeLT(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLT(FieldCheckInLatitude, v))
 }
 
-// LatitudeIn applies the In predicate on the "latitude" field.
-func LatitudeIn(vs ...float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldIn(FieldLatitude, vs...))
+// CheckInLatitudeLTE applies the LTE predicate on the "check_in_latitude" field.
+func CheckInLatitudeLTE(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLTE(FieldCheckInLatitude, v))
 }
 
-// LatitudeNotIn applies the NotIn predicate on the "latitude" field.
-func LatitudeNotIn(vs ...float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNotIn(FieldLatitude, vs...))
+// CheckInLatitudeIsNil applies the IsNil predicate on the "check_in_latitude" field.
+func CheckInLatitudeIsNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIsNull(FieldCheckInLatitude))
 }
 
-// LatitudeGT applies the GT predicate on the "latitude" field.
-func LatitudeGT(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldGT(FieldLatitude, v))
+// CheckInLatitudeNotNil applies the NotNil predicate on the "check_in_latitude" field.
+func CheckInLatitudeNotNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotNull(FieldCheckInLatitude))
 }
 
-// LatitudeGTE applies the GTE predicate on the "latitude" field.
-func LatitudeGTE(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldGTE(FieldLatitude, v))
+// CheckInLongitudeEQ applies the EQ predicate on the "check_in_longitude" field.
+func CheckInLongitudeEQ(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckInLongitude, v))
 }
 
-// LatitudeLT applies the LT predicate on the "latitude" field.
-func LatitudeLT(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldLT(FieldLatitude, v))
+// CheckInLongitudeNEQ applies the NEQ predicate on the "check_in_longitude" field.
+func CheckInLongitudeNEQ(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldCheckInLongitude, v))
 }
 
-// LatitudeLTE applies the LTE predicate on the "latitude" field.
-func LatitudeLTE(v float64) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldLTE(FieldLatitude, v))
+// CheckInLongitudeIn applies the In predicate on the "check_in_longitude" field.
+func CheckInLongitudeIn(vs ...float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldCheckInLongitude, vs...))
 }
 
-// LatitudeIsNil applies the IsNil predicate on the "latitude" field.
-func LatitudeIsNil() predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldIsNull(FieldLatitude))
+// CheckInLongitudeNotIn applies the NotIn predicate on the "check_in_longitude" field.
+func CheckInLongitudeNotIn(vs ...float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldCheckInLongitude, vs...))
 }
 
-// LatitudeNotNil applies the NotNil predicate on the "latitude" field.
-func LatitudeNotNil() predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNotNull(FieldLatitude))
+// CheckInLongitudeGT applies the GT predicate on the "check_in_longitude" field.
+func CheckInLongitudeGT(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGT(FieldCheckInLongitude, v))
 }
 
-// BssidEQ applies the EQ predicate on the "bssid" field.
-func BssidEQ(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEQ(FieldBssid, v))
+// CheckInLongitudeGTE applies the GTE predicate on the "check_in_longitude" field.
+func CheckInLongitudeGTE(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGTE(FieldCheckInLongitude, v))
 }
 
-// BssidNEQ applies the NEQ predicate on the "bssid" field.
-func BssidNEQ(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNEQ(FieldBssid, v))
+// CheckInLongitudeLT applies the LT predicate on the "check_in_longitude" field.
+func CheckInLongitudeLT(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLT(FieldCheckInLongitude, v))
 }
 
-// BssidIn applies the In predicate on the "bssid" field.
-func BssidIn(vs ...string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldIn(FieldBssid, vs...))
+// CheckInLongitudeLTE applies the LTE predicate on the "check_in_longitude" field.
+func CheckInLongitudeLTE(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLTE(FieldCheckInLongitude, v))
 }
 
-// BssidNotIn applies the NotIn predicate on the "bssid" field.
-func BssidNotIn(vs ...string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNotIn(FieldBssid, vs...))
+// CheckInLongitudeIsNil applies the IsNil predicate on the "check_in_longitude" field.
+func CheckInLongitudeIsNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIsNull(FieldCheckInLongitude))
 }
 
-// BssidGT applies the GT predicate on the "bssid" field.
-func BssidGT(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldGT(FieldBssid, v))
+// CheckInLongitudeNotNil applies the NotNil predicate on the "check_in_longitude" field.
+func CheckInLongitudeNotNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotNull(FieldCheckInLongitude))
 }
 
-// BssidGTE applies the GTE predicate on the "bssid" field.
-func BssidGTE(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldGTE(FieldBssid, v))
+// CheckInWifiBssidEQ applies the EQ predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidEQ(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckInWifiBssid, v))
 }
 
-// BssidLT applies the LT predicate on the "bssid" field.
-func BssidLT(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldLT(FieldBssid, v))
+// CheckInWifiBssidNEQ applies the NEQ predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidNEQ(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldCheckInWifiBssid, v))
 }
 
-// BssidLTE applies the LTE predicate on the "bssid" field.
-func BssidLTE(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldLTE(FieldBssid, v))
+// CheckInWifiBssidIn applies the In predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidIn(vs ...string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldCheckInWifiBssid, vs...))
 }
 
-// BssidContains applies the Contains predicate on the "bssid" field.
-func BssidContains(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldContains(FieldBssid, v))
+// CheckInWifiBssidNotIn applies the NotIn predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidNotIn(vs ...string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldCheckInWifiBssid, vs...))
 }
 
-// BssidHasPrefix applies the HasPrefix predicate on the "bssid" field.
-func BssidHasPrefix(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldHasPrefix(FieldBssid, v))
+// CheckInWifiBssidGT applies the GT predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidGT(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGT(FieldCheckInWifiBssid, v))
 }
 
-// BssidHasSuffix applies the HasSuffix predicate on the "bssid" field.
-func BssidHasSuffix(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldHasSuffix(FieldBssid, v))
+// CheckInWifiBssidGTE applies the GTE predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidGTE(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGTE(FieldCheckInWifiBssid, v))
 }
 
-// BssidIsNil applies the IsNil predicate on the "bssid" field.
-func BssidIsNil() predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldIsNull(FieldBssid))
+// CheckInWifiBssidLT applies the LT predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidLT(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLT(FieldCheckInWifiBssid, v))
 }
 
-// BssidNotNil applies the NotNil predicate on the "bssid" field.
-func BssidNotNil() predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldNotNull(FieldBssid))
+// CheckInWifiBssidLTE applies the LTE predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidLTE(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLTE(FieldCheckInWifiBssid, v))
 }
 
-// BssidEqualFold applies the EqualFold predicate on the "bssid" field.
-func BssidEqualFold(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldEqualFold(FieldBssid, v))
+// CheckInWifiBssidContains applies the Contains predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidContains(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldContains(FieldCheckInWifiBssid, v))
 }
 
-// BssidContainsFold applies the ContainsFold predicate on the "bssid" field.
-func BssidContainsFold(v string) predicate.AttendanceRecord {
-	return predicate.AttendanceRecord(sql.FieldContainsFold(FieldBssid, v))
+// CheckInWifiBssidHasPrefix applies the HasPrefix predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidHasPrefix(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldHasPrefix(FieldCheckInWifiBssid, v))
+}
+
+// CheckInWifiBssidHasSuffix applies the HasSuffix predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidHasSuffix(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldHasSuffix(FieldCheckInWifiBssid, v))
+}
+
+// CheckInWifiBssidIsNil applies the IsNil predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidIsNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIsNull(FieldCheckInWifiBssid))
+}
+
+// CheckInWifiBssidNotNil applies the NotNil predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidNotNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotNull(FieldCheckInWifiBssid))
+}
+
+// CheckInWifiBssidEqualFold applies the EqualFold predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidEqualFold(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEqualFold(FieldCheckInWifiBssid, v))
+}
+
+// CheckInWifiBssidContainsFold applies the ContainsFold predicate on the "check_in_wifi_bssid" field.
+func CheckInWifiBssidContainsFold(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldContainsFold(FieldCheckInWifiBssid, v))
+}
+
+// CheckOutAtEQ applies the EQ predicate on the "check_out_at" field.
+func CheckOutAtEQ(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckOutAt, v))
+}
+
+// CheckOutAtNEQ applies the NEQ predicate on the "check_out_at" field.
+func CheckOutAtNEQ(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldCheckOutAt, v))
+}
+
+// CheckOutAtIn applies the In predicate on the "check_out_at" field.
+func CheckOutAtIn(vs ...time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldCheckOutAt, vs...))
+}
+
+// CheckOutAtNotIn applies the NotIn predicate on the "check_out_at" field.
+func CheckOutAtNotIn(vs ...time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldCheckOutAt, vs...))
+}
+
+// CheckOutAtGT applies the GT predicate on the "check_out_at" field.
+func CheckOutAtGT(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGT(FieldCheckOutAt, v))
+}
+
+// CheckOutAtGTE applies the GTE predicate on the "check_out_at" field.
+func CheckOutAtGTE(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGTE(FieldCheckOutAt, v))
+}
+
+// CheckOutAtLT applies the LT predicate on the "check_out_at" field.
+func CheckOutAtLT(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLT(FieldCheckOutAt, v))
+}
+
+// CheckOutAtLTE applies the LTE predicate on the "check_out_at" field.
+func CheckOutAtLTE(v time.Time) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLTE(FieldCheckOutAt, v))
+}
+
+// CheckOutAtIsNil applies the IsNil predicate on the "check_out_at" field.
+func CheckOutAtIsNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIsNull(FieldCheckOutAt))
+}
+
+// CheckOutAtNotNil applies the NotNil predicate on the "check_out_at" field.
+func CheckOutAtNotNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotNull(FieldCheckOutAt))
+}
+
+// CheckOutLatitudeEQ applies the EQ predicate on the "check_out_latitude" field.
+func CheckOutLatitudeEQ(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckOutLatitude, v))
+}
+
+// CheckOutLatitudeNEQ applies the NEQ predicate on the "check_out_latitude" field.
+func CheckOutLatitudeNEQ(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldCheckOutLatitude, v))
+}
+
+// CheckOutLatitudeIn applies the In predicate on the "check_out_latitude" field.
+func CheckOutLatitudeIn(vs ...float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldCheckOutLatitude, vs...))
+}
+
+// CheckOutLatitudeNotIn applies the NotIn predicate on the "check_out_latitude" field.
+func CheckOutLatitudeNotIn(vs ...float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldCheckOutLatitude, vs...))
+}
+
+// CheckOutLatitudeGT applies the GT predicate on the "check_out_latitude" field.
+func CheckOutLatitudeGT(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGT(FieldCheckOutLatitude, v))
+}
+
+// CheckOutLatitudeGTE applies the GTE predicate on the "check_out_latitude" field.
+func CheckOutLatitudeGTE(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGTE(FieldCheckOutLatitude, v))
+}
+
+// CheckOutLatitudeLT applies the LT predicate on the "check_out_latitude" field.
+func CheckOutLatitudeLT(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLT(FieldCheckOutLatitude, v))
+}
+
+// CheckOutLatitudeLTE applies the LTE predicate on the "check_out_latitude" field.
+func CheckOutLatitudeLTE(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLTE(FieldCheckOutLatitude, v))
+}
+
+// CheckOutLatitudeIsNil applies the IsNil predicate on the "check_out_latitude" field.
+func CheckOutLatitudeIsNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIsNull(FieldCheckOutLatitude))
+}
+
+// CheckOutLatitudeNotNil applies the NotNil predicate on the "check_out_latitude" field.
+func CheckOutLatitudeNotNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotNull(FieldCheckOutLatitude))
+}
+
+// CheckOutLongitudeEQ applies the EQ predicate on the "check_out_longitude" field.
+func CheckOutLongitudeEQ(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckOutLongitude, v))
+}
+
+// CheckOutLongitudeNEQ applies the NEQ predicate on the "check_out_longitude" field.
+func CheckOutLongitudeNEQ(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldCheckOutLongitude, v))
+}
+
+// CheckOutLongitudeIn applies the In predicate on the "check_out_longitude" field.
+func CheckOutLongitudeIn(vs ...float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldCheckOutLongitude, vs...))
+}
+
+// CheckOutLongitudeNotIn applies the NotIn predicate on the "check_out_longitude" field.
+func CheckOutLongitudeNotIn(vs ...float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldCheckOutLongitude, vs...))
+}
+
+// CheckOutLongitudeGT applies the GT predicate on the "check_out_longitude" field.
+func CheckOutLongitudeGT(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGT(FieldCheckOutLongitude, v))
+}
+
+// CheckOutLongitudeGTE applies the GTE predicate on the "check_out_longitude" field.
+func CheckOutLongitudeGTE(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGTE(FieldCheckOutLongitude, v))
+}
+
+// CheckOutLongitudeLT applies the LT predicate on the "check_out_longitude" field.
+func CheckOutLongitudeLT(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLT(FieldCheckOutLongitude, v))
+}
+
+// CheckOutLongitudeLTE applies the LTE predicate on the "check_out_longitude" field.
+func CheckOutLongitudeLTE(v float64) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLTE(FieldCheckOutLongitude, v))
+}
+
+// CheckOutLongitudeIsNil applies the IsNil predicate on the "check_out_longitude" field.
+func CheckOutLongitudeIsNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIsNull(FieldCheckOutLongitude))
+}
+
+// CheckOutLongitudeNotNil applies the NotNil predicate on the "check_out_longitude" field.
+func CheckOutLongitudeNotNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotNull(FieldCheckOutLongitude))
+}
+
+// CheckOutWifiBssidEQ applies the EQ predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidEQ(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldCheckOutWifiBssid, v))
+}
+
+// CheckOutWifiBssidNEQ applies the NEQ predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidNEQ(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldCheckOutWifiBssid, v))
+}
+
+// CheckOutWifiBssidIn applies the In predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidIn(vs ...string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldCheckOutWifiBssid, vs...))
+}
+
+// CheckOutWifiBssidNotIn applies the NotIn predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidNotIn(vs ...string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldCheckOutWifiBssid, vs...))
+}
+
+// CheckOutWifiBssidGT applies the GT predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidGT(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGT(FieldCheckOutWifiBssid, v))
+}
+
+// CheckOutWifiBssidGTE applies the GTE predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidGTE(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldGTE(FieldCheckOutWifiBssid, v))
+}
+
+// CheckOutWifiBssidLT applies the LT predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidLT(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLT(FieldCheckOutWifiBssid, v))
+}
+
+// CheckOutWifiBssidLTE applies the LTE predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidLTE(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldLTE(FieldCheckOutWifiBssid, v))
+}
+
+// CheckOutWifiBssidContains applies the Contains predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidContains(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldContains(FieldCheckOutWifiBssid, v))
+}
+
+// CheckOutWifiBssidHasPrefix applies the HasPrefix predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidHasPrefix(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldHasPrefix(FieldCheckOutWifiBssid, v))
+}
+
+// CheckOutWifiBssidHasSuffix applies the HasSuffix predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidHasSuffix(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldHasSuffix(FieldCheckOutWifiBssid, v))
+}
+
+// CheckOutWifiBssidIsNil applies the IsNil predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidIsNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIsNull(FieldCheckOutWifiBssid))
+}
+
+// CheckOutWifiBssidNotNil applies the NotNil predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidNotNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotNull(FieldCheckOutWifiBssid))
+}
+
+// CheckOutWifiBssidEqualFold applies the EqualFold predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidEqualFold(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEqualFold(FieldCheckOutWifiBssid, v))
+}
+
+// CheckOutWifiBssidContainsFold applies the ContainsFold predicate on the "check_out_wifi_bssid" field.
+func CheckOutWifiBssidContainsFold(v string) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldContainsFold(FieldCheckOutWifiBssid, v))
+}
+
+// DayResultEQ applies the EQ predicate on the "day_result" field.
+func DayResultEQ(v DayResult) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldEQ(FieldDayResult, v))
+}
+
+// DayResultNEQ applies the NEQ predicate on the "day_result" field.
+func DayResultNEQ(v DayResult) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNEQ(FieldDayResult, v))
+}
+
+// DayResultIn applies the In predicate on the "day_result" field.
+func DayResultIn(vs ...DayResult) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIn(FieldDayResult, vs...))
+}
+
+// DayResultNotIn applies the NotIn predicate on the "day_result" field.
+func DayResultNotIn(vs ...DayResult) predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotIn(FieldDayResult, vs...))
+}
+
+// DayResultIsNil applies the IsNil predicate on the "day_result" field.
+func DayResultIsNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldIsNull(FieldDayResult))
+}
+
+// DayResultNotNil applies the NotNil predicate on the "day_result" field.
+func DayResultNotNil() predicate.AttendanceRecord {
+	return predicate.AttendanceRecord(sql.FieldNotNull(FieldDayResult))
 }
 
 // And groups predicates with the AND operator between them.

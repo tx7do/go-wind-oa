@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+
+import "oa/service/v1/expense.proto";
+
+// OA 报销管理服务（admin 边端）
+service ExpenseService {
+  // 查询报销申请列表
+  rpc ListExpenseApplications(oa.service.v1.ListExpenseApplicationsRequest) returns (oa.service.v1.ListExpenseApplicationsResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/expense/applications"
+    };
+  }
+
+  // 查询报销申请详情
+  rpc GetExpenseApplication(oa.service.v1.GetExpenseApplicationRequest) returns (oa.service.v1.ExpenseApplication) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/expense/applications/{id}"
+    };
+  }
+}

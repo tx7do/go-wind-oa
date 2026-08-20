@@ -1,14 +1,3 @@
-# OA admin 前端（vue-element 基座）TypeScript API 客户端生成模板。
-#
-# inputs 僅覆蓋 admin/service/v1（鑑權 + 站內信 + 工作的 admin HTTP 端點包裝）。
-# 工作流的 HTTP 注解定義在 admin/service/v1/i_workflow.proto，引用
-# oa.service.v1 的消息類型——TS 生成器會自動跟隨 import 解析消息定義，
-# 但只在有 http annotation 的 admin wrapper proto 上生成 service client。
-# 不含 oa/service/v1（core 純 gRPC proto，無 http annotation）。
-#
-# 运行：cd backend/api && buf generate --template buf.vue-element.oa.typescript.gen.yaml
-# 产物落到 frontend/admin/src/api/generated/，供 src/api/composables/ 封装为 Vue Query hooks。
-
 version: v2
 
 clean: true
@@ -19,11 +8,11 @@ managed:
   disable:
     - module: buf.build/googleapis/googleapis
     - module: 'buf.build/envoyproxy/protoc-gen-validate'
-    - module: buf.build/kratos/apis
-    - module: buf.build/gnostic/gnostic
-    - module: buf.build/gogo/protobuf
-    - module: buf.build/tx7do/pagination
-    - module: buf.build/go-wind/redact
+    - module: 'buf.build/kratos/apis'
+    - module: 'buf.build/gnostic/gnostic'
+    - module: 'buf.build/gogo/protobuf'
+    - module: 'buf.build/tx7do/pagination'
+    - module: 'buf.build/go-wind/redact'
 
 inputs:
   - directory: protos
@@ -32,4 +21,4 @@ inputs:
 
 plugins:
   - local: protoc-gen-typescript-http
-    out: ../../frontend/admin/src/api/generated/
+    out: ../../frontend/admin/src/api/generated

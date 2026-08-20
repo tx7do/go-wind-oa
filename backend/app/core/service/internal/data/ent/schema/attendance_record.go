@@ -10,55 +10,113 @@ import (
 	"github.com/tx7do/go-crud/entgo/mixin"
 )
 
-// AttendanceRecord 考勤打卡记录。每次打卡落一条，记录打卡人、时间、提交的
-// GPS 坐标、提交的 BSSID、判定结果（IN_FENCE / IN_WIFI / DENIED）。
-// 由 TenantPrivacy 按租户隔离，并由 (tenant_id, created_by) 索引支撑
-// "我的打卡记录"查询。
-type AttendanceRecord struct{ ent.Schema }
+// AttendanceRecord holds the schema definition for the AttendanceRecord entity.
+type AttendanceRecord struct {
+	ent.Schema
+}
 
 func (AttendanceRecord) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "oa_attendance_record", Charset: "utf8mb4", Collation: "utf8mb4_bin"},
+		entsql.Annotation{
+			Table:     "oa_attendance_record",
+			Charset:   "utf8mb4",
+			Collation: "utf8mb4_bin",
+		},
 		entsql.WithComments(true),
-		schema.Comment("OA考勤打卡记录表"),
+		schema.Comment("OA 考勤打卡记录表（用户 x 工作日 唯一）"),
 	}
 }
 
+// Fields of the AttendanceRecord.
 func (AttendanceRecord) Fields() []ent.Field {
 	return []ent.Field{
-		// 打卡判定结果。
-		field.Enum("check_result").
-			Comment("打卡判定结果").
-			NamedValues("IN_FENCE", "IN_FENCE", "IN_WIFI", "IN_WIFI", "DENIED", "DENIED").
-			Default("DENIED").
-			Optional(),
-		// 打卡提交的 GPS 坐标（WGS84）。
-		field.Float("longitude").Comment("提交经度").Optional().Nillable(),
-		field.Float("latitude").Comment("提交纬度").Optional().Nillable(),
-		// 打卡提交的 BSSID（如可用）。
-		field.String("bssid").Comment("提交BSSID").Optional().Nillable(),
+		field.Uint32("user_id").
+			Comment("用户ID"),
+
+		field.Time("work_date").
+			Comment("工作日（日期，零点）"),
+
+		field.Time("check_in_at").
+			Comment("上班签到时间").
+			Optional().
+			Nillable(),
+
+		field.Float("check_in_latitude").
+			Comment("签到 GPS 纬度").
+			Optional().
+			Nillable(),
+
+		field.Float("check_in_longitude").
+			Comment("签到 GPS 经度").
+			Optional().
+			Nillable(),
+
+		field.String("check_in_wifi_bssid").
+			Comment("签到 Wifi BSSID").
+			MaxLen(64).
+			Optional().
+			Nillable(),
+
+		field.Time("check_out_at").
+			Comment("下班签退时间").
+			Optional().
+			Nillable(),
+
+		field.Float("check_out_latitude").
+			Comment("签退 GPS 纬度").
+			Optional().
+			Nillable(),
+
+		field.Float("check_out_longitude").
+			Comment("签退 GPS 经度").
+			Optional().
+			Nillable(),
+
+		field.String("check_out_wifi_bssid").
+			Comment("签退 Wifi BSSID").
+			MaxLen(64).
+			Optional().
+			Nillable(),
+
+		field.Enum("day_result").
+			Comment("当日结算结果").
+			NamedValues(
+				"Pending", "PENDING",
+				"Normal", "NORMAL",
+				"Late", "LATE",
+				"EarlyLeave", "EARLY_LEAVE",
+				"Absent", "ABSENT",
+				"OnLeave", "ON_LEAVE",
+			).
+			Default("PENDING").
+			Optional().
+			Nillable(),
 	}
 }
 
+// Mixin of the AttendanceRecord.
 func (AttendanceRecord) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
 		mixin.TenantID[uint32]{},
-		mixin.Remark{},
 	}
-}
-
-func (AttendanceRecord) Edges() []ent.Edge {
-	return nil
 }
 
 func (AttendanceRecord) Indexes() []ent.Index {
 	return []ent.Index{
+		// 租户筛选
 		index.Fields("tenant_id").
-			StorageKey("idx_oa_att_rec_tenant"),
-		index.Fields("tenant_id", "created_by").
-			StorageKey("idx_oa_att_rec_tenant_user"),
+			StorageKey("idx_oa_attendance_tenant"),
+
+		// 租户 + 工作日（admin 按日查全部）
+		index.Fields("tenant_id", "work_date").
+			StorageKey("idx_oa_attendance_tenant_work_date"),
+
+		// 租户 + 用户 + 工作日 唯一
+		index.Fields("tenant_id", "user_id", "work_date").
+			Unique().
+			StorageKey("uix_oa_attendance_tenant_user_date"),
 	}
 }

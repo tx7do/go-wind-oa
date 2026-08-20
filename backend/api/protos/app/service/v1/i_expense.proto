@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package app.service.v1;
+
+import "google/api/annotations.proto";
+
+import "oa/service/v1/expense.proto";
+
+// OA 报销参与服务（app 边端，移动端）
+service ExpenseService {
+  // 提交报销申请
+  rpc SubmitExpenseApplication(oa.service.v1.SubmitExpenseApplicationRequest) returns (oa.service.v1.SubmitExpenseApplicationResponse) {
+    option (google.api.http) = {
+      post: "/app/v1/oa/expense/applications"
+      body: "*"
+    };
+  }
+
+  // 查询我的报销申请
+  rpc ListExpenseApplications(oa.service.v1.ListExpenseApplicationsRequest) returns (oa.service.v1.ListExpenseApplicationsResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/expense/applications"
+    };
+  }
+
+  // 查询报销申请详情
+  rpc GetExpenseApplication(oa.service.v1.GetExpenseApplicationRequest) returns (oa.service.v1.ExpenseApplication) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/expense/applications/{id}"
+    };
+  }
+}

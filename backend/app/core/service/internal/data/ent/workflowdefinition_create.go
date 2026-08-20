@@ -135,20 +135,6 @@ func (_c *WorkflowDefinitionCreate) SetNillableRemark(v *string) *WorkflowDefini
 	return _c
 }
 
-// SetName sets the "name" field.
-func (_c *WorkflowDefinitionCreate) SetName(v string) *WorkflowDefinitionCreate {
-	_c.mutation.SetName(v)
-	return _c
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_c *WorkflowDefinitionCreate) SetNillableName(v *string) *WorkflowDefinitionCreate {
-	if v != nil {
-		_c.SetName(*v)
-	}
-	return _c
-}
-
 // SetCode sets the "code" field.
 func (_c *WorkflowDefinitionCreate) SetCode(v string) *WorkflowDefinitionCreate {
 	_c.mutation.SetCode(v)
@@ -164,42 +150,44 @@ func (_c *WorkflowDefinitionCreate) SetNillableCode(v *string) *WorkflowDefiniti
 }
 
 // SetVersion sets the "version" field.
-func (_c *WorkflowDefinitionCreate) SetVersion(v uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetVersion(v int) *WorkflowDefinitionCreate {
 	_c.mutation.SetVersion(v)
 	return _c
 }
 
 // SetNillableVersion sets the "version" field if the given value is not nil.
-func (_c *WorkflowDefinitionCreate) SetNillableVersion(v *uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetNillableVersion(v *int) *WorkflowDefinitionCreate {
 	if v != nil {
 		_c.SetVersion(*v)
 	}
 	return _c
 }
 
-// SetDescription sets the "description" field.
-func (_c *WorkflowDefinitionCreate) SetDescription(v string) *WorkflowDefinitionCreate {
-	_c.mutation.SetDescription(v)
-	return _c
-}
-
-// SetNillableDescription sets the "description" field if the given value is not nil.
-func (_c *WorkflowDefinitionCreate) SetNillableDescription(v *string) *WorkflowDefinitionCreate {
-	if v != nil {
-		_c.SetDescription(*v)
-	}
-	return _c
-}
-
 // SetNodeConfig sets the "node_config" field.
-func (_c *WorkflowDefinitionCreate) SetNodeConfig(v any) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetNodeConfig(v string) *WorkflowDefinitionCreate {
 	_c.mutation.SetNodeConfig(v)
 	return _c
 }
 
+// SetNillableNodeConfig sets the "node_config" field if the given value is not nil.
+func (_c *WorkflowDefinitionCreate) SetNillableNodeConfig(v *string) *WorkflowDefinitionCreate {
+	if v != nil {
+		_c.SetNodeConfig(*v)
+	}
+	return _c
+}
+
 // SetFormSchema sets the "form_schema" field.
-func (_c *WorkflowDefinitionCreate) SetFormSchema(v any) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetFormSchema(v string) *WorkflowDefinitionCreate {
 	_c.mutation.SetFormSchema(v)
+	return _c
+}
+
+// SetNillableFormSchema sets the "form_schema" field if the given value is not nil.
+func (_c *WorkflowDefinitionCreate) SetNillableFormSchema(v *string) *WorkflowDefinitionCreate {
+	if v != nil {
+		_c.SetFormSchema(*v)
+	}
 	return _c
 }
 
@@ -279,10 +267,6 @@ func (_c *WorkflowDefinitionCreate) defaults() error {
 		v := workflowdefinition.DefaultTenantID
 		_c.mutation.SetTenantID(v)
 	}
-	if _, ok := _c.mutation.Version(); !ok {
-		v := workflowdefinition.DefaultVersion
-		_c.mutation.SetVersion(v)
-	}
 	if _, ok := _c.mutation.DefinitionStatus(); !ok {
 		v := workflowdefinition.DefaultDefinitionStatus
 		_c.mutation.SetDefinitionStatus(v)
@@ -301,9 +285,6 @@ func (_c *WorkflowDefinitionCreate) check() error {
 		if err := workflowdefinition.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "WorkflowDefinition.id": %w`, err)}
 		}
-	}
-	if len(_c.mutation.InstancesIDs()) == 0 {
-		return &ValidationError{Name: "instances", err: errors.New(`ent: missing required edge "WorkflowDefinition.instances"`)}
 	}
 	return nil
 }
@@ -370,33 +351,25 @@ func (_c *WorkflowDefinitionCreate) createSpec() (*WorkflowDefinition, *sqlgraph
 		_spec.SetField(workflowdefinition.FieldRemark, field.TypeString, value)
 		_node.Remark = &value
 	}
-	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(workflowdefinition.FieldName, field.TypeString, value)
-		_node.Name = &value
-	}
 	if value, ok := _c.mutation.Code(); ok {
 		_spec.SetField(workflowdefinition.FieldCode, field.TypeString, value)
 		_node.Code = &value
 	}
 	if value, ok := _c.mutation.Version(); ok {
-		_spec.SetField(workflowdefinition.FieldVersion, field.TypeUint32, value)
+		_spec.SetField(workflowdefinition.FieldVersion, field.TypeInt, value)
 		_node.Version = &value
 	}
-	if value, ok := _c.mutation.Description(); ok {
-		_spec.SetField(workflowdefinition.FieldDescription, field.TypeString, value)
-		_node.Description = &value
-	}
 	if value, ok := _c.mutation.NodeConfig(); ok {
-		_spec.SetField(workflowdefinition.FieldNodeConfig, field.TypeJSON, value)
-		_node.NodeConfig = value
+		_spec.SetField(workflowdefinition.FieldNodeConfig, field.TypeString, value)
+		_node.NodeConfig = &value
 	}
 	if value, ok := _c.mutation.FormSchema(); ok {
-		_spec.SetField(workflowdefinition.FieldFormSchema, field.TypeJSON, value)
-		_node.FormSchema = value
+		_spec.SetField(workflowdefinition.FieldFormSchema, field.TypeString, value)
+		_node.FormSchema = &value
 	}
 	if value, ok := _c.mutation.DefinitionStatus(); ok {
 		_spec.SetField(workflowdefinition.FieldDefinitionStatus, field.TypeEnum, value)
-		_node.DefinitionStatus = value
+		_node.DefinitionStatus = &value
 	}
 	if nodes := _c.mutation.InstancesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -592,26 +565,26 @@ func (u *WorkflowDefinitionUpsert) ClearRemark() *WorkflowDefinitionUpsert {
 	return u
 }
 
-// SetName sets the "name" field.
-func (u *WorkflowDefinitionUpsert) SetName(v string) *WorkflowDefinitionUpsert {
-	u.Set(workflowdefinition.FieldName, v)
+// SetCode sets the "code" field.
+func (u *WorkflowDefinitionUpsert) SetCode(v string) *WorkflowDefinitionUpsert {
+	u.Set(workflowdefinition.FieldCode, v)
 	return u
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *WorkflowDefinitionUpsert) UpdateName() *WorkflowDefinitionUpsert {
-	u.SetExcluded(workflowdefinition.FieldName)
+// UpdateCode sets the "code" field to the value that was provided on create.
+func (u *WorkflowDefinitionUpsert) UpdateCode() *WorkflowDefinitionUpsert {
+	u.SetExcluded(workflowdefinition.FieldCode)
 	return u
 }
 
-// ClearName clears the value of the "name" field.
-func (u *WorkflowDefinitionUpsert) ClearName() *WorkflowDefinitionUpsert {
-	u.SetNull(workflowdefinition.FieldName)
+// ClearCode clears the value of the "code" field.
+func (u *WorkflowDefinitionUpsert) ClearCode() *WorkflowDefinitionUpsert {
+	u.SetNull(workflowdefinition.FieldCode)
 	return u
 }
 
 // SetVersion sets the "version" field.
-func (u *WorkflowDefinitionUpsert) SetVersion(v uint32) *WorkflowDefinitionUpsert {
+func (u *WorkflowDefinitionUpsert) SetVersion(v int) *WorkflowDefinitionUpsert {
 	u.Set(workflowdefinition.FieldVersion, v)
 	return u
 }
@@ -623,7 +596,7 @@ func (u *WorkflowDefinitionUpsert) UpdateVersion() *WorkflowDefinitionUpsert {
 }
 
 // AddVersion adds v to the "version" field.
-func (u *WorkflowDefinitionUpsert) AddVersion(v uint32) *WorkflowDefinitionUpsert {
+func (u *WorkflowDefinitionUpsert) AddVersion(v int) *WorkflowDefinitionUpsert {
 	u.Add(workflowdefinition.FieldVersion, v)
 	return u
 }
@@ -634,26 +607,8 @@ func (u *WorkflowDefinitionUpsert) ClearVersion() *WorkflowDefinitionUpsert {
 	return u
 }
 
-// SetDescription sets the "description" field.
-func (u *WorkflowDefinitionUpsert) SetDescription(v string) *WorkflowDefinitionUpsert {
-	u.Set(workflowdefinition.FieldDescription, v)
-	return u
-}
-
-// UpdateDescription sets the "description" field to the value that was provided on create.
-func (u *WorkflowDefinitionUpsert) UpdateDescription() *WorkflowDefinitionUpsert {
-	u.SetExcluded(workflowdefinition.FieldDescription)
-	return u
-}
-
-// ClearDescription clears the value of the "description" field.
-func (u *WorkflowDefinitionUpsert) ClearDescription() *WorkflowDefinitionUpsert {
-	u.SetNull(workflowdefinition.FieldDescription)
-	return u
-}
-
 // SetNodeConfig sets the "node_config" field.
-func (u *WorkflowDefinitionUpsert) SetNodeConfig(v any) *WorkflowDefinitionUpsert {
+func (u *WorkflowDefinitionUpsert) SetNodeConfig(v string) *WorkflowDefinitionUpsert {
 	u.Set(workflowdefinition.FieldNodeConfig, v)
 	return u
 }
@@ -671,7 +626,7 @@ func (u *WorkflowDefinitionUpsert) ClearNodeConfig() *WorkflowDefinitionUpsert {
 }
 
 // SetFormSchema sets the "form_schema" field.
-func (u *WorkflowDefinitionUpsert) SetFormSchema(v any) *WorkflowDefinitionUpsert {
+func (u *WorkflowDefinitionUpsert) SetFormSchema(v string) *WorkflowDefinitionUpsert {
 	u.Set(workflowdefinition.FieldFormSchema, v)
 	return u
 }
@@ -728,9 +683,6 @@ func (u *WorkflowDefinitionUpsertOne) UpdateNewValues() *WorkflowDefinitionUpser
 		}
 		if _, exists := u.create.mutation.TenantID(); exists {
 			s.SetIgnore(workflowdefinition.FieldTenantID)
-		}
-		if _, exists := u.create.mutation.Code(); exists {
-			s.SetIgnore(workflowdefinition.FieldCode)
 		}
 	}))
 	return u
@@ -910,36 +862,36 @@ func (u *WorkflowDefinitionUpsertOne) ClearRemark() *WorkflowDefinitionUpsertOne
 	})
 }
 
-// SetName sets the "name" field.
-func (u *WorkflowDefinitionUpsertOne) SetName(v string) *WorkflowDefinitionUpsertOne {
+// SetCode sets the "code" field.
+func (u *WorkflowDefinitionUpsertOne) SetCode(v string) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.SetName(v)
+		s.SetCode(v)
 	})
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *WorkflowDefinitionUpsertOne) UpdateName() *WorkflowDefinitionUpsertOne {
+// UpdateCode sets the "code" field to the value that was provided on create.
+func (u *WorkflowDefinitionUpsertOne) UpdateCode() *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.UpdateName()
+		s.UpdateCode()
 	})
 }
 
-// ClearName clears the value of the "name" field.
-func (u *WorkflowDefinitionUpsertOne) ClearName() *WorkflowDefinitionUpsertOne {
+// ClearCode clears the value of the "code" field.
+func (u *WorkflowDefinitionUpsertOne) ClearCode() *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.ClearName()
+		s.ClearCode()
 	})
 }
 
 // SetVersion sets the "version" field.
-func (u *WorkflowDefinitionUpsertOne) SetVersion(v uint32) *WorkflowDefinitionUpsertOne {
+func (u *WorkflowDefinitionUpsertOne) SetVersion(v int) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetVersion(v)
 	})
 }
 
 // AddVersion adds v to the "version" field.
-func (u *WorkflowDefinitionUpsertOne) AddVersion(v uint32) *WorkflowDefinitionUpsertOne {
+func (u *WorkflowDefinitionUpsertOne) AddVersion(v int) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.AddVersion(v)
 	})
@@ -959,29 +911,8 @@ func (u *WorkflowDefinitionUpsertOne) ClearVersion() *WorkflowDefinitionUpsertOn
 	})
 }
 
-// SetDescription sets the "description" field.
-func (u *WorkflowDefinitionUpsertOne) SetDescription(v string) *WorkflowDefinitionUpsertOne {
-	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.SetDescription(v)
-	})
-}
-
-// UpdateDescription sets the "description" field to the value that was provided on create.
-func (u *WorkflowDefinitionUpsertOne) UpdateDescription() *WorkflowDefinitionUpsertOne {
-	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.UpdateDescription()
-	})
-}
-
-// ClearDescription clears the value of the "description" field.
-func (u *WorkflowDefinitionUpsertOne) ClearDescription() *WorkflowDefinitionUpsertOne {
-	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.ClearDescription()
-	})
-}
-
 // SetNodeConfig sets the "node_config" field.
-func (u *WorkflowDefinitionUpsertOne) SetNodeConfig(v any) *WorkflowDefinitionUpsertOne {
+func (u *WorkflowDefinitionUpsertOne) SetNodeConfig(v string) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetNodeConfig(v)
 	})
@@ -1002,7 +933,7 @@ func (u *WorkflowDefinitionUpsertOne) ClearNodeConfig() *WorkflowDefinitionUpser
 }
 
 // SetFormSchema sets the "form_schema" field.
-func (u *WorkflowDefinitionUpsertOne) SetFormSchema(v any) *WorkflowDefinitionUpsertOne {
+func (u *WorkflowDefinitionUpsertOne) SetFormSchema(v string) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetFormSchema(v)
 	})
@@ -1231,9 +1162,6 @@ func (u *WorkflowDefinitionUpsertBulk) UpdateNewValues() *WorkflowDefinitionUpse
 			if _, exists := b.mutation.TenantID(); exists {
 				s.SetIgnore(workflowdefinition.FieldTenantID)
 			}
-			if _, exists := b.mutation.Code(); exists {
-				s.SetIgnore(workflowdefinition.FieldCode)
-			}
 		}
 	}))
 	return u
@@ -1413,36 +1341,36 @@ func (u *WorkflowDefinitionUpsertBulk) ClearRemark() *WorkflowDefinitionUpsertBu
 	})
 }
 
-// SetName sets the "name" field.
-func (u *WorkflowDefinitionUpsertBulk) SetName(v string) *WorkflowDefinitionUpsertBulk {
+// SetCode sets the "code" field.
+func (u *WorkflowDefinitionUpsertBulk) SetCode(v string) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.SetName(v)
+		s.SetCode(v)
 	})
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *WorkflowDefinitionUpsertBulk) UpdateName() *WorkflowDefinitionUpsertBulk {
+// UpdateCode sets the "code" field to the value that was provided on create.
+func (u *WorkflowDefinitionUpsertBulk) UpdateCode() *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.UpdateName()
+		s.UpdateCode()
 	})
 }
 
-// ClearName clears the value of the "name" field.
-func (u *WorkflowDefinitionUpsertBulk) ClearName() *WorkflowDefinitionUpsertBulk {
+// ClearCode clears the value of the "code" field.
+func (u *WorkflowDefinitionUpsertBulk) ClearCode() *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.ClearName()
+		s.ClearCode()
 	})
 }
 
 // SetVersion sets the "version" field.
-func (u *WorkflowDefinitionUpsertBulk) SetVersion(v uint32) *WorkflowDefinitionUpsertBulk {
+func (u *WorkflowDefinitionUpsertBulk) SetVersion(v int) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetVersion(v)
 	})
 }
 
 // AddVersion adds v to the "version" field.
-func (u *WorkflowDefinitionUpsertBulk) AddVersion(v uint32) *WorkflowDefinitionUpsertBulk {
+func (u *WorkflowDefinitionUpsertBulk) AddVersion(v int) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.AddVersion(v)
 	})
@@ -1462,29 +1390,8 @@ func (u *WorkflowDefinitionUpsertBulk) ClearVersion() *WorkflowDefinitionUpsertB
 	})
 }
 
-// SetDescription sets the "description" field.
-func (u *WorkflowDefinitionUpsertBulk) SetDescription(v string) *WorkflowDefinitionUpsertBulk {
-	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.SetDescription(v)
-	})
-}
-
-// UpdateDescription sets the "description" field to the value that was provided on create.
-func (u *WorkflowDefinitionUpsertBulk) UpdateDescription() *WorkflowDefinitionUpsertBulk {
-	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.UpdateDescription()
-	})
-}
-
-// ClearDescription clears the value of the "description" field.
-func (u *WorkflowDefinitionUpsertBulk) ClearDescription() *WorkflowDefinitionUpsertBulk {
-	return u.Update(func(s *WorkflowDefinitionUpsert) {
-		s.ClearDescription()
-	})
-}
-
 // SetNodeConfig sets the "node_config" field.
-func (u *WorkflowDefinitionUpsertBulk) SetNodeConfig(v any) *WorkflowDefinitionUpsertBulk {
+func (u *WorkflowDefinitionUpsertBulk) SetNodeConfig(v string) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetNodeConfig(v)
 	})
@@ -1505,7 +1412,7 @@ func (u *WorkflowDefinitionUpsertBulk) ClearNodeConfig() *WorkflowDefinitionUpse
 }
 
 // SetFormSchema sets the "form_schema" field.
-func (u *WorkflowDefinitionUpsertBulk) SetFormSchema(v any) *WorkflowDefinitionUpsertBulk {
+func (u *WorkflowDefinitionUpsertBulk) SetFormSchema(v string) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetFormSchema(v)
 	})

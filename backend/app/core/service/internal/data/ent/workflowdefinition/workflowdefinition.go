@@ -31,14 +31,10 @@ const (
 	FieldTenantID = "tenant_id"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
 	// FieldVersion holds the string denoting the version field in the database.
 	FieldVersion = "version"
-	// FieldDescription holds the string denoting the description field in the database.
-	FieldDescription = "description"
 	// FieldNodeConfig holds the string denoting the node_config field in the database.
 	FieldNodeConfig = "node_config"
 	// FieldFormSchema holds the string denoting the form_schema field in the database.
@@ -69,10 +65,8 @@ var Columns = []string{
 	FieldDeletedBy,
 	FieldTenantID,
 	FieldRemark,
-	FieldName,
 	FieldCode,
 	FieldVersion,
-	FieldDescription,
 	FieldNodeConfig,
 	FieldFormSchema,
 	FieldDefinitionStatus,
@@ -98,8 +92,6 @@ var (
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
 	DefaultTenantID uint32
-	// DefaultVersion holds the default value on creation for the "version" field.
-	DefaultVersion uint32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -107,14 +99,14 @@ var (
 // DefinitionStatus defines the type for the "definition_status" enum field.
 type DefinitionStatus string
 
-// DefinitionStatusDRAFT is the default value of the DefinitionStatus enum.
-const DefaultDefinitionStatus = DefinitionStatusDRAFT
+// DefinitionStatusDraft is the default value of the DefinitionStatus enum.
+const DefaultDefinitionStatus = DefinitionStatusDraft
 
 // DefinitionStatus values.
 const (
-	DefinitionStatusDRAFT    DefinitionStatus = "DRAFT"
-	DefinitionStatusENABLED  DefinitionStatus = "ENABLED"
-	DefinitionStatusDISABLED DefinitionStatus = "DISABLED"
+	DefinitionStatusDraft    DefinitionStatus = "DRAFT"
+	DefinitionStatusEnabled  DefinitionStatus = "ENABLED"
+	DefinitionStatusDisabled DefinitionStatus = "DISABLED"
 )
 
 func (ds DefinitionStatus) String() string {
@@ -124,7 +116,7 @@ func (ds DefinitionStatus) String() string {
 // DefinitionStatusValidator is a validator for the "definition_status" field enum values. It is called by the builders before save.
 func DefinitionStatusValidator(ds DefinitionStatus) error {
 	switch ds {
-	case DefinitionStatusDRAFT, DefinitionStatusENABLED, DefinitionStatusDISABLED:
+	case DefinitionStatusDraft, DefinitionStatusEnabled, DefinitionStatusDisabled:
 		return nil
 	default:
 		return fmt.Errorf("workflowdefinition: invalid enum value for definition_status field: %q", ds)
@@ -179,11 +171,6 @@ func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemark, opts...).ToFunc()
 }
 
-// ByName orders the results by the name field.
-func ByName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldName, opts...).ToFunc()
-}
-
 // ByCode orders the results by the code field.
 func ByCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCode, opts...).ToFunc()
@@ -194,9 +181,14 @@ func ByVersion(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldVersion, opts...).ToFunc()
 }
 
-// ByDescription orders the results by the description field.
-func ByDescription(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+// ByNodeConfig orders the results by the node_config field.
+func ByNodeConfig(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNodeConfig, opts...).ToFunc()
+}
+
+// ByFormSchema orders the results by the form_schema field.
+func ByFormSchema(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFormSchema, opts...).ToFunc()
 }
 
 // ByDefinitionStatus orders the results by the definition_status field.

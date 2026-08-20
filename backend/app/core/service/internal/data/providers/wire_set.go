@@ -15,18 +15,70 @@ import (
 
 	"go-wind-oa/app/core/service/internal/data"
 	"go-wind-oa/app/core/service/internal/data/client"
+	"go-wind-oa/pkg/authorizer"
 )
 
 // ProviderSet is the Wire provider set for data layer.
-//
-// OA core-service 只持有工作流引擎與站內信通知兩類數據訪問：
-//   - infra：ent/redis/discovery 客戶端
-//   - internal_message 倉庫（工作流通知落 cms 站內信表）
-//   - workflow 倉庫（定義/實例/任務/日誌）
 var ProviderSet = wire.NewSet(
 	client.NewRedisClient,
 	client.NewEntClient,
 	client.NewDiscovery,
+	client.NewMinIoClient,
+	client.NewElasticSearchClient,
+
+	authorizer.NewAuthorizer,
+
+	data.NewAuthenticatorConfig,
+	data.NewAuthenticator,
+	data.NewUserTokenCache,
+
+	data.NewPasswordCrypto,
+
+	data.NewSearchRepo,
+
+	data.NewDictTypeRepo,
+	data.NewDictEntryRepo,
+	data.NewDictEntryI18nRepo,
+	data.NewLanguageRepo,
+
+	data.NewTaskRepo,
+	data.NewLoginPolicyRepo,
+
+	data.NewOrgUnitRepo,
+	data.NewPositionRepo,
+	data.NewTenantRepo,
+
+	data.NewUserRepo,
+	data.NewUserCredentialRepo,
+	data.NewUserOrgUnitRepo,
+	data.NewUserPositionRepo,
+	data.NewUserRoleRepo,
+
+	data.NewRoleRepo,
+	data.NewRoleMetadataRepo,
+	data.NewRolePermissionRepo,
+
+	data.NewMembershipRepo,
+	data.NewMembershipOrgUnitRepo,
+	data.NewMembershipPositionRepo,
+	data.NewMembershipRoleRepo,
+
+	data.NewApiRepo,
+	data.NewMenuRepo,
+
+	data.NewPermissionRepo,
+	data.NewPermissionGroupRepo,
+	data.NewPermissionApiRepo,
+	data.NewPermissionMenuRepo,
+	data.NewPermissionAuditLogRepo,
+	data.NewPolicyEvaluationLogRepo,
+
+	data.NewLoginAuditLogRepo,
+	data.NewApiAuditLogRepo,
+	data.NewOperationAuditLogRepo,
+	data.NewDataAccessAuditLogRepo,
+
+	data.NewFileRepo,
 
 	data.NewInternalMessageRepo,
 	data.NewInternalMessageCategoryRepo,
@@ -36,8 +88,41 @@ var ProviderSet = wire.NewSet(
 	data.NewWorkflowInstanceRepo,
 	data.NewWorkflowTaskRepo,
 	data.NewWorkflowLogRepo,
+	data.NewWorkflowResolverRepo,
 
-	data.NewAttendanceFenceRepo,
-	data.NewAttendanceWifiRepo,
-	data.NewAttendanceRecordRepo,
+	data.NewLeaveTypeRepo,
+	data.NewLeaveBalanceRepo,
+	data.NewLeaveApplicationRepo,
+	data.NewExpenseApplicationRepo,
+	data.NewAttendanceRepo,
+
+	data.NewCategoryRepo,
+	data.NewCategoryTranslationRepo,
+
+	data.NewCommentRepo,
+
+	data.NewInteractionRepo,
+
+	data.NewMediaAssetRepo,
+	data.NewMediaVariantRepo,
+
+	data.NewNavigationRepo,
+	data.NewNavigationItemRepo,
+
+	data.NewPageRepo,
+	data.NewPageTranslationRepo,
+
+	data.NewSectionRepo,
+	data.NewSectionTranslationRepo,
+
+	data.NewPostRepo,
+	data.NewPostTranslationRepo,
+	data.NewPostCategoryRepo,
+	data.NewPostTagRepo,
+
+	data.NewSiteSettingRepo,
+	data.NewSiteRepo,
+
+	data.NewTagRepo,
+	data.NewTagTranslationRepo,
 )

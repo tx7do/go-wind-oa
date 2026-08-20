@@ -16,16 +16,64 @@ import (
 	"go-wind-oa/app/admin/service/internal/service"
 )
 
-// ProviderSet is the Wire provider set for service layer.
-//
-// OA admin-service 暴露鑑權轉發、站內信通知、工作流轉發三類 HTTP 邊端服務，
-// 均為轉發層——業務邏輯在 core-service 的 gRPC 實現內。
+// ProviderSet is the Wire provider set for data layer.
 var ProviderSet = wire.NewSet(
 	service.NewAuthenticationService,
+	service.NewLoginPolicyService,
+
+	service.NewUserService,
+	service.NewRoleService,
+	service.NewTenantService,
+	service.NewUserProfileService,
+	service.NewPositionService,
+	service.NewOrgUnitService,
+
+	service.NewMenuService,
+	service.NewApiService,
+	service.NewPermissionGroupService,
+	service.NewPermissionService,
+
+	service.NewRouterService,
+
+	service.NewTaskService,
+
+	service.NewFileTransferService,
+	service.NewFileService,
+
+	service.NewDictTypeService,
+	service.NewDictEntryService,
+	service.NewLanguageService,
+
+	service.NewApiAuditLogService,
+	service.NewDataAccessAuditLogService,
+	service.NewLoginAuditLogService,
+	service.NewOperationAuditLogService,
+	service.NewPermissionAuditLogService,
+	service.NewPolicyEvaluationLogService,
+
 	service.NewInternalMessageService,
 	service.NewInternalMessageCategoryService,
 	service.NewInternalMessageRecipientService,
 	service.NewWorkflowService,
-
+	service.NewLeaveService,
+	service.NewExpenseService,
 	service.NewAttendanceService,
+
+	service.NewCategoryService,
+	service.NewTagService,
+	service.NewPageService,
+	service.NewSectionService,
+	service.NewPostService,
+
+	service.NewCommentService,
+	service.NewInteractionAdminService,
+
+	service.NewMediaAssetService,
+
+	service.NewNavigationService,
+	service.NewNavigationItemService,
+	service.NewSiteSettingService,
+	service.NewSiteService,
+
+	service.NewTranslatorService,
 )

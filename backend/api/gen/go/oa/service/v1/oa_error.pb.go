@@ -22,37 +22,185 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// OaErrorReason OA 服务错误枚举。由 protoc-gen-go-errors 生成
-// oav1.ErrorBadRequest / ErrorForbidden / ... 等具名构造器，供服务层
-// 返回带 HTTP 状态码的 kratos 错误。
+// OA 工作流系统错误定义
 type OaErrorReason int32
 
 const (
-	OaErrorReason_INTERNAL_ERROR OaErrorReason = 0
-	OaErrorReason_BAD_REQUEST    OaErrorReason = 1
-	OaErrorReason_UNAUTHORIZED   OaErrorReason = 2
-	OaErrorReason_FORBIDDEN      OaErrorReason = 3
-	OaErrorReason_NOT_FOUND      OaErrorReason = 4
-	OaErrorReason_CONFLICT       OaErrorReason = 5
+	// 400
+	OaErrorReason_BAD_REQUEST OaErrorReason = 0 // 错误请求
+	// 401
+	OaErrorReason_UNAUTHORIZED OaErrorReason = 100 // 未授权
+	// 402
+	OaErrorReason_PAYMENT_REQUIRED OaErrorReason = 200 // 需要支付
+	// 403
+	OaErrorReason_FORBIDDEN OaErrorReason = 300 // 禁止访问
+	// 404
+	OaErrorReason_NOT_FOUND OaErrorReason = 400 // 找不到资源
+	// 405
+	OaErrorReason_METHOD_NOT_ALLOWED OaErrorReason = 500 // 方法不允许
+	// 406
+	OaErrorReason_NOT_ACCEPTABLE OaErrorReason = 600 // 不可接受的请求
+	// 407
+	OaErrorReason_PROXY_AUTHENTICATION_REQUIRED OaErrorReason = 700 // 代理身份验证需要
+	// 408
+	OaErrorReason_REQUEST_TIMEOUT OaErrorReason = 800 // 请求超时
+	// 409
+	OaErrorReason_CONFLICT OaErrorReason = 900 // 冲突
+	// 410
+	OaErrorReason_GONE OaErrorReason = 1000 // 已删除
+	// 411
+	OaErrorReason_LENGTH_REQUIRED OaErrorReason = 1010 // 需要Content-Length
+	// 412
+	OaErrorReason_PRECONDITION_FAILED OaErrorReason = 1020 // 前置条件失败
+	// 413
+	OaErrorReason_PAYLOAD_TOO_LARGE OaErrorReason = 1030 // 负载过大
+	// 414
+	OaErrorReason_URI_TOO_LONG OaErrorReason = 1040 // URI过长
+	// 415
+	OaErrorReason_UNSUPPORTED_MEDIA_TYPE OaErrorReason = 1050 // 不支持的媒体类型
+	// 416
+	OaErrorReason_RANGE_NOT_SATISFIABLE OaErrorReason = 1060 // 请求范围无法满足
+	// 417
+	OaErrorReason_EXPECTATION_FAILED OaErrorReason = 1070 // 期望失败
+	// 418
+	OaErrorReason_IM_A_TEAPOT OaErrorReason = 1080 // 我是茶壶 (RFC 2324)
+	// 421
+	OaErrorReason_MISDIRECTED_REQUEST OaErrorReason = 1090 // 错误的请求
+	// 422
+	OaErrorReason_UNPROCESSABLE_ENTITY OaErrorReason = 1100 // 不可处理的实体
+	// 423
+	OaErrorReason_LOCKED OaErrorReason = 1110 // 已锁定
+	// 424
+	OaErrorReason_FAILED_DEPENDENCY OaErrorReason = 1120 // 依赖失败
+	// 425
+	OaErrorReason_TOO_EARLY OaErrorReason = 1130 // 请求过早
+	// 426
+	OaErrorReason_UPGRADE_REQUIRED OaErrorReason = 1140 // 需要升级
+	// 428
+	OaErrorReason_PRECONDITION_REQUIRED OaErrorReason = 1150 // 需要前置条件
+	// 429
+	OaErrorReason_TOO_MANY_REQUESTS OaErrorReason = 1160 // 请求过多
+	// 431
+	OaErrorReason_REQUEST_HEADER_FIELDS_TOO_LARGE OaErrorReason = 1170 // 请求头字段过大
+	// 451
+	OaErrorReason_UNAVAILABLE_FOR_LEGAL_REASONS OaErrorReason = 1180 // 因法律原因不可用
+	// 500
+	OaErrorReason_INTERNAL_SERVER_ERROR OaErrorReason = 2000 // 内部服务器错误
+	// 501
+	OaErrorReason_NOT_IMPLEMENTED OaErrorReason = 2100 // 未实现
+	// 502
+	OaErrorReason_BAD_GATEWAY OaErrorReason = 2200 // 错误网关
+	// 503
+	OaErrorReason_SERVICE_UNAVAILABLE OaErrorReason = 2300 // 服务不可用
+	// 504
+	OaErrorReason_GATEWAY_TIMEOUT OaErrorReason = 2400 // 网关超时
+	// 505
+	OaErrorReason_HTTP_VERSION_NOT_SUPPORTED OaErrorReason = 2500 // HTTP版本不支持
+	// 506
+	OaErrorReason_VARIANT_ALSO_NEGOTIATES OaErrorReason = 2600 // 变体也协商
+	// 507
+	OaErrorReason_INSUFFICIENT_STORAGE OaErrorReason = 2700 // 存储空间不足
+	// 508
+	OaErrorReason_LOOP_DETECTED OaErrorReason = 2800 // 检测到循环
+	// 510
+	OaErrorReason_NOT_EXTENDED OaErrorReason = 2900 // 未扩展
+	// 511
+	OaErrorReason_NETWORK_AUTHENTICATION_REQUIRED OaErrorReason = 3000 // 需要网络认证
+	// 598
+	OaErrorReason_NETWORK_READ_TIMEOUT_ERROR OaErrorReason = 3100 // 网络读取超时
+	// 599
+	OaErrorReason_NETWORK_CONNECT_TIMEOUT_ERROR OaErrorReason = 3200 // 网络连接超时
 )
 
 // Enum value maps for OaErrorReason.
 var (
 	OaErrorReason_name = map[int32]string{
-		0: "INTERNAL_ERROR",
-		1: "BAD_REQUEST",
-		2: "UNAUTHORIZED",
-		3: "FORBIDDEN",
-		4: "NOT_FOUND",
-		5: "CONFLICT",
+		0:    "BAD_REQUEST",
+		100:  "UNAUTHORIZED",
+		200:  "PAYMENT_REQUIRED",
+		300:  "FORBIDDEN",
+		400:  "NOT_FOUND",
+		500:  "METHOD_NOT_ALLOWED",
+		600:  "NOT_ACCEPTABLE",
+		700:  "PROXY_AUTHENTICATION_REQUIRED",
+		800:  "REQUEST_TIMEOUT",
+		900:  "CONFLICT",
+		1000: "GONE",
+		1010: "LENGTH_REQUIRED",
+		1020: "PRECONDITION_FAILED",
+		1030: "PAYLOAD_TOO_LARGE",
+		1040: "URI_TOO_LONG",
+		1050: "UNSUPPORTED_MEDIA_TYPE",
+		1060: "RANGE_NOT_SATISFIABLE",
+		1070: "EXPECTATION_FAILED",
+		1080: "IM_A_TEAPOT",
+		1090: "MISDIRECTED_REQUEST",
+		1100: "UNPROCESSABLE_ENTITY",
+		1110: "LOCKED",
+		1120: "FAILED_DEPENDENCY",
+		1130: "TOO_EARLY",
+		1140: "UPGRADE_REQUIRED",
+		1150: "PRECONDITION_REQUIRED",
+		1160: "TOO_MANY_REQUESTS",
+		1170: "REQUEST_HEADER_FIELDS_TOO_LARGE",
+		1180: "UNAVAILABLE_FOR_LEGAL_REASONS",
+		2000: "INTERNAL_SERVER_ERROR",
+		2100: "NOT_IMPLEMENTED",
+		2200: "BAD_GATEWAY",
+		2300: "SERVICE_UNAVAILABLE",
+		2400: "GATEWAY_TIMEOUT",
+		2500: "HTTP_VERSION_NOT_SUPPORTED",
+		2600: "VARIANT_ALSO_NEGOTIATES",
+		2700: "INSUFFICIENT_STORAGE",
+		2800: "LOOP_DETECTED",
+		2900: "NOT_EXTENDED",
+		3000: "NETWORK_AUTHENTICATION_REQUIRED",
+		3100: "NETWORK_READ_TIMEOUT_ERROR",
+		3200: "NETWORK_CONNECT_TIMEOUT_ERROR",
 	}
 	OaErrorReason_value = map[string]int32{
-		"INTERNAL_ERROR": 0,
-		"BAD_REQUEST":    1,
-		"UNAUTHORIZED":   2,
-		"FORBIDDEN":      3,
-		"NOT_FOUND":      4,
-		"CONFLICT":       5,
+		"BAD_REQUEST":                     0,
+		"UNAUTHORIZED":                    100,
+		"PAYMENT_REQUIRED":                200,
+		"FORBIDDEN":                       300,
+		"NOT_FOUND":                       400,
+		"METHOD_NOT_ALLOWED":              500,
+		"NOT_ACCEPTABLE":                  600,
+		"PROXY_AUTHENTICATION_REQUIRED":   700,
+		"REQUEST_TIMEOUT":                 800,
+		"CONFLICT":                        900,
+		"GONE":                            1000,
+		"LENGTH_REQUIRED":                 1010,
+		"PRECONDITION_FAILED":             1020,
+		"PAYLOAD_TOO_LARGE":               1030,
+		"URI_TOO_LONG":                    1040,
+		"UNSUPPORTED_MEDIA_TYPE":          1050,
+		"RANGE_NOT_SATISFIABLE":           1060,
+		"EXPECTATION_FAILED":              1070,
+		"IM_A_TEAPOT":                     1080,
+		"MISDIRECTED_REQUEST":             1090,
+		"UNPROCESSABLE_ENTITY":            1100,
+		"LOCKED":                          1110,
+		"FAILED_DEPENDENCY":               1120,
+		"TOO_EARLY":                       1130,
+		"UPGRADE_REQUIRED":                1140,
+		"PRECONDITION_REQUIRED":           1150,
+		"TOO_MANY_REQUESTS":               1160,
+		"REQUEST_HEADER_FIELDS_TOO_LARGE": 1170,
+		"UNAVAILABLE_FOR_LEGAL_REASONS":   1180,
+		"INTERNAL_SERVER_ERROR":           2000,
+		"NOT_IMPLEMENTED":                 2100,
+		"BAD_GATEWAY":                     2200,
+		"SERVICE_UNAVAILABLE":             2300,
+		"GATEWAY_TIMEOUT":                 2400,
+		"HTTP_VERSION_NOT_SUPPORTED":      2500,
+		"VARIANT_ALSO_NEGOTIATES":         2600,
+		"INSUFFICIENT_STORAGE":            2700,
+		"LOOP_DETECTED":                   2800,
+		"NOT_EXTENDED":                    2900,
+		"NETWORK_AUTHENTICATION_REQUIRED": 3000,
+		"NETWORK_READ_TIMEOUT_ERROR":      3100,
+		"NETWORK_CONNECT_TIMEOUT_ERROR":   3200,
 	}
 )
 
@@ -87,14 +235,51 @@ var File_oa_service_v1_oa_error_proto protoreflect.FileDescriptor
 
 const file_oa_service_v1_oa_error_proto_rawDesc = "" +
 	"\n" +
-	"\x1coa/service/v1/oa_error.proto\x12\roa.service.v1\x1a\x13errors/errors.proto*\x9c\x01\n" +
-	"\rOaErrorReason\x12\x18\n" +
-	"\x0eINTERNAL_ERROR\x10\x00\x1a\x04\xa8E\xf4\x03\x12\x15\n" +
-	"\vBAD_REQUEST\x10\x01\x1a\x04\xa8E\x90\x03\x12\x16\n" +
-	"\fUNAUTHORIZED\x10\x02\x1a\x04\xa8E\x91\x03\x12\x13\n" +
-	"\tFORBIDDEN\x10\x03\x1a\x04\xa8E\x93\x03\x12\x13\n" +
-	"\tNOT_FOUND\x10\x04\x1a\x04\xa8E\x94\x03\x12\x12\n" +
-	"\bCONFLICT\x10\x05\x1a\x04\xa8E\x99\x03\x1a\x04\xa0E\xf4\x03B\xa1\x01\n" +
+	"\x1coa/service/v1/oa_error.proto\x12\roa.service.v1\x1a\x13errors/errors.proto*\x8b\n" +
+	"\n" +
+	"\rOaErrorReason\x12\x15\n" +
+	"\vBAD_REQUEST\x10\x00\x1a\x04\xa8E\x90\x03\x12\x16\n" +
+	"\fUNAUTHORIZED\x10d\x1a\x04\xa8E\x91\x03\x12\x1b\n" +
+	"\x10PAYMENT_REQUIRED\x10\xc8\x01\x1a\x04\xa8E\x92\x03\x12\x14\n" +
+	"\tFORBIDDEN\x10\xac\x02\x1a\x04\xa8E\x93\x03\x12\x14\n" +
+	"\tNOT_FOUND\x10\x90\x03\x1a\x04\xa8E\x94\x03\x12\x1d\n" +
+	"\x12METHOD_NOT_ALLOWED\x10\xf4\x03\x1a\x04\xa8E\x95\x03\x12\x19\n" +
+	"\x0eNOT_ACCEPTABLE\x10\xd8\x04\x1a\x04\xa8E\x96\x03\x12(\n" +
+	"\x1dPROXY_AUTHENTICATION_REQUIRED\x10\xbc\x05\x1a\x04\xa8E\x97\x03\x12\x1a\n" +
+	"\x0fREQUEST_TIMEOUT\x10\xa0\x06\x1a\x04\xa8E\x98\x03\x12\x13\n" +
+	"\bCONFLICT\x10\x84\a\x1a\x04\xa8E\x99\x03\x12\x0f\n" +
+	"\x04GONE\x10\xe8\a\x1a\x04\xa8E\x9a\x03\x12\x1a\n" +
+	"\x0fLENGTH_REQUIRED\x10\xf2\a\x1a\x04\xa8E\x9b\x03\x12\x1e\n" +
+	"\x13PRECONDITION_FAILED\x10\xfc\a\x1a\x04\xa8E\x9c\x03\x12\x1c\n" +
+	"\x11PAYLOAD_TOO_LARGE\x10\x86\b\x1a\x04\xa8E\x9d\x03\x12\x17\n" +
+	"\fURI_TOO_LONG\x10\x90\b\x1a\x04\xa8E\x9e\x03\x12!\n" +
+	"\x16UNSUPPORTED_MEDIA_TYPE\x10\x9a\b\x1a\x04\xa8E\x9f\x03\x12 \n" +
+	"\x15RANGE_NOT_SATISFIABLE\x10\xa4\b\x1a\x04\xa8E\xa0\x03\x12\x1d\n" +
+	"\x12EXPECTATION_FAILED\x10\xae\b\x1a\x04\xa8E\xa1\x03\x12\x16\n" +
+	"\vIM_A_TEAPOT\x10\xb8\b\x1a\x04\xa8E\xa2\x03\x12\x1e\n" +
+	"\x13MISDIRECTED_REQUEST\x10\xc2\b\x1a\x04\xa8E\xa5\x03\x12\x1f\n" +
+	"\x14UNPROCESSABLE_ENTITY\x10\xcc\b\x1a\x04\xa8E\xa6\x03\x12\x11\n" +
+	"\x06LOCKED\x10\xd6\b\x1a\x04\xa8E\xa7\x03\x12\x1c\n" +
+	"\x11FAILED_DEPENDENCY\x10\xe0\b\x1a\x04\xa8E\xa8\x03\x12\x14\n" +
+	"\tTOO_EARLY\x10\xea\b\x1a\x04\xa8E\xa9\x03\x12\x1b\n" +
+	"\x10UPGRADE_REQUIRED\x10\xf4\b\x1a\x04\xa8E\xaa\x03\x12 \n" +
+	"\x15PRECONDITION_REQUIRED\x10\xfe\b\x1a\x04\xa8E\xac\x03\x12\x1c\n" +
+	"\x11TOO_MANY_REQUESTS\x10\x88\t\x1a\x04\xa8E\xad\x03\x12*\n" +
+	"\x1fREQUEST_HEADER_FIELDS_TOO_LARGE\x10\x92\t\x1a\x04\xa8E\xaf\x03\x12(\n" +
+	"\x1dUNAVAILABLE_FOR_LEGAL_REASONS\x10\x9c\t\x1a\x04\xa8E\xc3\x03\x12 \n" +
+	"\x15INTERNAL_SERVER_ERROR\x10\xd0\x0f\x1a\x04\xa8E\xf4\x03\x12\x1a\n" +
+	"\x0fNOT_IMPLEMENTED\x10\xb4\x10\x1a\x04\xa8E\xf5\x03\x12\x16\n" +
+	"\vBAD_GATEWAY\x10\x98\x11\x1a\x04\xa8E\xf6\x03\x12\x1e\n" +
+	"\x13SERVICE_UNAVAILABLE\x10\xfc\x11\x1a\x04\xa8E\xf7\x03\x12\x1a\n" +
+	"\x0fGATEWAY_TIMEOUT\x10\xe0\x12\x1a\x04\xa8E\xf8\x03\x12%\n" +
+	"\x1aHTTP_VERSION_NOT_SUPPORTED\x10\xc4\x13\x1a\x04\xa8E\xf9\x03\x12\"\n" +
+	"\x17VARIANT_ALSO_NEGOTIATES\x10\xa8\x14\x1a\x04\xa8E\xfa\x03\x12\x1f\n" +
+	"\x14INSUFFICIENT_STORAGE\x10\x8c\x15\x1a\x04\xa8E\xfb\x03\x12\x18\n" +
+	"\rLOOP_DETECTED\x10\xf0\x15\x1a\x04\xa8E\xfc\x03\x12\x17\n" +
+	"\fNOT_EXTENDED\x10\xd4\x16\x1a\x04\xa8E\xfe\x03\x12*\n" +
+	"\x1fNETWORK_AUTHENTICATION_REQUIRED\x10\xb8\x17\x1a\x04\xa8E\xff\x03\x12%\n" +
+	"\x1aNETWORK_READ_TIMEOUT_ERROR\x10\x9c\x18\x1a\x04\xa8E\xd6\x04\x12(\n" +
+	"\x1dNETWORK_CONNECT_TIMEOUT_ERROR\x10\x80\x19\x1a\x04\xa8E\xd7\x04\x1a\x04\xa0E\xf4\x03B\xa1\x01\n" +
 	"\x11com.oa.service.v1B\fOaErrorProtoP\x01Z(go-wind-oa/api/gen/go/oa/service/v1;oapb\xa2\x02\x03OSX\xaa\x02\rOa.Service.V1\xca\x02\rOa\\Service\\V1\xe2\x02\x19Oa\\Service\\V1\\GPBMetadata\xea\x02\x0fOa::Service::V1b\x06proto3"
 
 var (

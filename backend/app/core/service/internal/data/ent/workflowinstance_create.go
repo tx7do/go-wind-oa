@@ -123,40 +123,6 @@ func (_c *WorkflowInstanceCreate) SetNillableTenantID(v *uint32) *WorkflowInstan
 	return _c
 }
 
-// SetRemark sets the "remark" field.
-func (_c *WorkflowInstanceCreate) SetRemark(v string) *WorkflowInstanceCreate {
-	_c.mutation.SetRemark(v)
-	return _c
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_c *WorkflowInstanceCreate) SetNillableRemark(v *string) *WorkflowInstanceCreate {
-	if v != nil {
-		_c.SetRemark(*v)
-	}
-	return _c
-}
-
-// SetTitle sets the "title" field.
-func (_c *WorkflowInstanceCreate) SetTitle(v string) *WorkflowInstanceCreate {
-	_c.mutation.SetTitle(v)
-	return _c
-}
-
-// SetNillableTitle sets the "title" field if the given value is not nil.
-func (_c *WorkflowInstanceCreate) SetNillableTitle(v *string) *WorkflowInstanceCreate {
-	if v != nil {
-		_c.SetTitle(*v)
-	}
-	return _c
-}
-
-// SetFormData sets the "form_data" field.
-func (_c *WorkflowInstanceCreate) SetFormData(v any) *WorkflowInstanceCreate {
-	_c.mutation.SetFormData(v)
-	return _c
-}
-
 // SetInstanceStatus sets the "instance_status" field.
 func (_c *WorkflowInstanceCreate) SetInstanceStatus(v workflowinstance.InstanceStatus) *WorkflowInstanceCreate {
 	_c.mutation.SetInstanceStatus(v)
@@ -172,15 +138,57 @@ func (_c *WorkflowInstanceCreate) SetNillableInstanceStatus(v *workflowinstance.
 }
 
 // SetCurrentNodeIndex sets the "current_node_index" field.
-func (_c *WorkflowInstanceCreate) SetCurrentNodeIndex(v int32) *WorkflowInstanceCreate {
+func (_c *WorkflowInstanceCreate) SetCurrentNodeIndex(v int) *WorkflowInstanceCreate {
 	_c.mutation.SetCurrentNodeIndex(v)
 	return _c
 }
 
 // SetNillableCurrentNodeIndex sets the "current_node_index" field if the given value is not nil.
-func (_c *WorkflowInstanceCreate) SetNillableCurrentNodeIndex(v *int32) *WorkflowInstanceCreate {
+func (_c *WorkflowInstanceCreate) SetNillableCurrentNodeIndex(v *int) *WorkflowInstanceCreate {
 	if v != nil {
 		_c.SetCurrentNodeIndex(*v)
+	}
+	return _c
+}
+
+// SetFormData sets the "form_data" field.
+func (_c *WorkflowInstanceCreate) SetFormData(v string) *WorkflowInstanceCreate {
+	_c.mutation.SetFormData(v)
+	return _c
+}
+
+// SetNillableFormData sets the "form_data" field if the given value is not nil.
+func (_c *WorkflowInstanceCreate) SetNillableFormData(v *string) *WorkflowInstanceCreate {
+	if v != nil {
+		_c.SetFormData(*v)
+	}
+	return _c
+}
+
+// SetBusinessType sets the "business_type" field.
+func (_c *WorkflowInstanceCreate) SetBusinessType(v string) *WorkflowInstanceCreate {
+	_c.mutation.SetBusinessType(v)
+	return _c
+}
+
+// SetNillableBusinessType sets the "business_type" field if the given value is not nil.
+func (_c *WorkflowInstanceCreate) SetNillableBusinessType(v *string) *WorkflowInstanceCreate {
+	if v != nil {
+		_c.SetBusinessType(*v)
+	}
+	return _c
+}
+
+// SetBusinessID sets the "business_id" field.
+func (_c *WorkflowInstanceCreate) SetBusinessID(v uint32) *WorkflowInstanceCreate {
+	_c.mutation.SetBusinessID(v)
+	return _c
+}
+
+// SetNillableBusinessID sets the "business_id" field if the given value is not nil.
+func (_c *WorkflowInstanceCreate) SetNillableBusinessID(v *uint32) *WorkflowInstanceCreate {
+	if v != nil {
+		_c.SetBusinessID(*v)
 	}
 	return _c
 }
@@ -285,10 +293,6 @@ func (_c *WorkflowInstanceCreate) defaults() error {
 		v := workflowinstance.DefaultInstanceStatus
 		_c.mutation.SetInstanceStatus(v)
 	}
-	if _, ok := _c.mutation.CurrentNodeIndex(); !ok {
-		v := workflowinstance.DefaultCurrentNodeIndex
-		_c.mutation.SetCurrentNodeIndex(v)
-	}
 	return nil
 }
 
@@ -303,12 +307,6 @@ func (_c *WorkflowInstanceCreate) check() error {
 		if err := workflowinstance.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "WorkflowInstance.id": %w`, err)}
 		}
-	}
-	if len(_c.mutation.TasksIDs()) == 0 {
-		return &ValidationError{Name: "tasks", err: errors.New(`ent: missing required edge "WorkflowInstance.tasks"`)}
-	}
-	if len(_c.mutation.LogsIDs()) == 0 {
-		return &ValidationError{Name: "logs", err: errors.New(`ent: missing required edge "WorkflowInstance.logs"`)}
 	}
 	return nil
 }
@@ -371,25 +369,25 @@ func (_c *WorkflowInstanceCreate) createSpec() (*WorkflowInstance, *sqlgraph.Cre
 		_spec.SetField(workflowinstance.FieldTenantID, field.TypeUint32, value)
 		_node.TenantID = &value
 	}
-	if value, ok := _c.mutation.Remark(); ok {
-		_spec.SetField(workflowinstance.FieldRemark, field.TypeString, value)
-		_node.Remark = &value
-	}
-	if value, ok := _c.mutation.Title(); ok {
-		_spec.SetField(workflowinstance.FieldTitle, field.TypeString, value)
-		_node.Title = &value
-	}
-	if value, ok := _c.mutation.FormData(); ok {
-		_spec.SetField(workflowinstance.FieldFormData, field.TypeJSON, value)
-		_node.FormData = value
-	}
 	if value, ok := _c.mutation.InstanceStatus(); ok {
 		_spec.SetField(workflowinstance.FieldInstanceStatus, field.TypeEnum, value)
-		_node.InstanceStatus = value
+		_node.InstanceStatus = &value
 	}
 	if value, ok := _c.mutation.CurrentNodeIndex(); ok {
-		_spec.SetField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt32, value)
+		_spec.SetField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt, value)
 		_node.CurrentNodeIndex = &value
+	}
+	if value, ok := _c.mutation.FormData(); ok {
+		_spec.SetField(workflowinstance.FieldFormData, field.TypeString, value)
+		_node.FormData = &value
+	}
+	if value, ok := _c.mutation.BusinessType(); ok {
+		_spec.SetField(workflowinstance.FieldBusinessType, field.TypeString, value)
+		_node.BusinessType = &value
+	}
+	if value, ok := _c.mutation.BusinessID(); ok {
+		_spec.SetField(workflowinstance.FieldBusinessID, field.TypeUint32, value)
+		_node.BusinessID = &value
 	}
 	if nodes := _c.mutation.DefinitionIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -600,60 +598,6 @@ func (u *WorkflowInstanceUpsert) ClearDeletedBy() *WorkflowInstanceUpsert {
 	return u
 }
 
-// SetRemark sets the "remark" field.
-func (u *WorkflowInstanceUpsert) SetRemark(v string) *WorkflowInstanceUpsert {
-	u.Set(workflowinstance.FieldRemark, v)
-	return u
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsert) UpdateRemark() *WorkflowInstanceUpsert {
-	u.SetExcluded(workflowinstance.FieldRemark)
-	return u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *WorkflowInstanceUpsert) ClearRemark() *WorkflowInstanceUpsert {
-	u.SetNull(workflowinstance.FieldRemark)
-	return u
-}
-
-// SetTitle sets the "title" field.
-func (u *WorkflowInstanceUpsert) SetTitle(v string) *WorkflowInstanceUpsert {
-	u.Set(workflowinstance.FieldTitle, v)
-	return u
-}
-
-// UpdateTitle sets the "title" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsert) UpdateTitle() *WorkflowInstanceUpsert {
-	u.SetExcluded(workflowinstance.FieldTitle)
-	return u
-}
-
-// ClearTitle clears the value of the "title" field.
-func (u *WorkflowInstanceUpsert) ClearTitle() *WorkflowInstanceUpsert {
-	u.SetNull(workflowinstance.FieldTitle)
-	return u
-}
-
-// SetFormData sets the "form_data" field.
-func (u *WorkflowInstanceUpsert) SetFormData(v any) *WorkflowInstanceUpsert {
-	u.Set(workflowinstance.FieldFormData, v)
-	return u
-}
-
-// UpdateFormData sets the "form_data" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsert) UpdateFormData() *WorkflowInstanceUpsert {
-	u.SetExcluded(workflowinstance.FieldFormData)
-	return u
-}
-
-// ClearFormData clears the value of the "form_data" field.
-func (u *WorkflowInstanceUpsert) ClearFormData() *WorkflowInstanceUpsert {
-	u.SetNull(workflowinstance.FieldFormData)
-	return u
-}
-
 // SetInstanceStatus sets the "instance_status" field.
 func (u *WorkflowInstanceUpsert) SetInstanceStatus(v workflowinstance.InstanceStatus) *WorkflowInstanceUpsert {
 	u.Set(workflowinstance.FieldInstanceStatus, v)
@@ -673,7 +617,7 @@ func (u *WorkflowInstanceUpsert) ClearInstanceStatus() *WorkflowInstanceUpsert {
 }
 
 // SetCurrentNodeIndex sets the "current_node_index" field.
-func (u *WorkflowInstanceUpsert) SetCurrentNodeIndex(v int32) *WorkflowInstanceUpsert {
+func (u *WorkflowInstanceUpsert) SetCurrentNodeIndex(v int) *WorkflowInstanceUpsert {
 	u.Set(workflowinstance.FieldCurrentNodeIndex, v)
 	return u
 }
@@ -685,7 +629,7 @@ func (u *WorkflowInstanceUpsert) UpdateCurrentNodeIndex() *WorkflowInstanceUpser
 }
 
 // AddCurrentNodeIndex adds v to the "current_node_index" field.
-func (u *WorkflowInstanceUpsert) AddCurrentNodeIndex(v int32) *WorkflowInstanceUpsert {
+func (u *WorkflowInstanceUpsert) AddCurrentNodeIndex(v int) *WorkflowInstanceUpsert {
 	u.Add(workflowinstance.FieldCurrentNodeIndex, v)
 	return u
 }
@@ -693,6 +637,66 @@ func (u *WorkflowInstanceUpsert) AddCurrentNodeIndex(v int32) *WorkflowInstanceU
 // ClearCurrentNodeIndex clears the value of the "current_node_index" field.
 func (u *WorkflowInstanceUpsert) ClearCurrentNodeIndex() *WorkflowInstanceUpsert {
 	u.SetNull(workflowinstance.FieldCurrentNodeIndex)
+	return u
+}
+
+// SetFormData sets the "form_data" field.
+func (u *WorkflowInstanceUpsert) SetFormData(v string) *WorkflowInstanceUpsert {
+	u.Set(workflowinstance.FieldFormData, v)
+	return u
+}
+
+// UpdateFormData sets the "form_data" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsert) UpdateFormData() *WorkflowInstanceUpsert {
+	u.SetExcluded(workflowinstance.FieldFormData)
+	return u
+}
+
+// ClearFormData clears the value of the "form_data" field.
+func (u *WorkflowInstanceUpsert) ClearFormData() *WorkflowInstanceUpsert {
+	u.SetNull(workflowinstance.FieldFormData)
+	return u
+}
+
+// SetBusinessType sets the "business_type" field.
+func (u *WorkflowInstanceUpsert) SetBusinessType(v string) *WorkflowInstanceUpsert {
+	u.Set(workflowinstance.FieldBusinessType, v)
+	return u
+}
+
+// UpdateBusinessType sets the "business_type" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsert) UpdateBusinessType() *WorkflowInstanceUpsert {
+	u.SetExcluded(workflowinstance.FieldBusinessType)
+	return u
+}
+
+// ClearBusinessType clears the value of the "business_type" field.
+func (u *WorkflowInstanceUpsert) ClearBusinessType() *WorkflowInstanceUpsert {
+	u.SetNull(workflowinstance.FieldBusinessType)
+	return u
+}
+
+// SetBusinessID sets the "business_id" field.
+func (u *WorkflowInstanceUpsert) SetBusinessID(v uint32) *WorkflowInstanceUpsert {
+	u.Set(workflowinstance.FieldBusinessID, v)
+	return u
+}
+
+// UpdateBusinessID sets the "business_id" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsert) UpdateBusinessID() *WorkflowInstanceUpsert {
+	u.SetExcluded(workflowinstance.FieldBusinessID)
+	return u
+}
+
+// AddBusinessID adds v to the "business_id" field.
+func (u *WorkflowInstanceUpsert) AddBusinessID(v uint32) *WorkflowInstanceUpsert {
+	u.Add(workflowinstance.FieldBusinessID, v)
+	return u
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (u *WorkflowInstanceUpsert) ClearBusinessID() *WorkflowInstanceUpsert {
+	u.SetNull(workflowinstance.FieldBusinessID)
 	return u
 }
 
@@ -876,69 +880,6 @@ func (u *WorkflowInstanceUpsertOne) ClearDeletedBy() *WorkflowInstanceUpsertOne 
 	})
 }
 
-// SetRemark sets the "remark" field.
-func (u *WorkflowInstanceUpsertOne) SetRemark(v string) *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsertOne) UpdateRemark() *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *WorkflowInstanceUpsertOne) ClearRemark() *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.ClearRemark()
-	})
-}
-
-// SetTitle sets the "title" field.
-func (u *WorkflowInstanceUpsertOne) SetTitle(v string) *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.SetTitle(v)
-	})
-}
-
-// UpdateTitle sets the "title" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsertOne) UpdateTitle() *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.UpdateTitle()
-	})
-}
-
-// ClearTitle clears the value of the "title" field.
-func (u *WorkflowInstanceUpsertOne) ClearTitle() *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.ClearTitle()
-	})
-}
-
-// SetFormData sets the "form_data" field.
-func (u *WorkflowInstanceUpsertOne) SetFormData(v any) *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.SetFormData(v)
-	})
-}
-
-// UpdateFormData sets the "form_data" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsertOne) UpdateFormData() *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.UpdateFormData()
-	})
-}
-
-// ClearFormData clears the value of the "form_data" field.
-func (u *WorkflowInstanceUpsertOne) ClearFormData() *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.ClearFormData()
-	})
-}
-
 // SetInstanceStatus sets the "instance_status" field.
 func (u *WorkflowInstanceUpsertOne) SetInstanceStatus(v workflowinstance.InstanceStatus) *WorkflowInstanceUpsertOne {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
@@ -961,14 +902,14 @@ func (u *WorkflowInstanceUpsertOne) ClearInstanceStatus() *WorkflowInstanceUpser
 }
 
 // SetCurrentNodeIndex sets the "current_node_index" field.
-func (u *WorkflowInstanceUpsertOne) SetCurrentNodeIndex(v int32) *WorkflowInstanceUpsertOne {
+func (u *WorkflowInstanceUpsertOne) SetCurrentNodeIndex(v int) *WorkflowInstanceUpsertOne {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
 		s.SetCurrentNodeIndex(v)
 	})
 }
 
 // AddCurrentNodeIndex adds v to the "current_node_index" field.
-func (u *WorkflowInstanceUpsertOne) AddCurrentNodeIndex(v int32) *WorkflowInstanceUpsertOne {
+func (u *WorkflowInstanceUpsertOne) AddCurrentNodeIndex(v int) *WorkflowInstanceUpsertOne {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
 		s.AddCurrentNodeIndex(v)
 	})
@@ -985,6 +926,76 @@ func (u *WorkflowInstanceUpsertOne) UpdateCurrentNodeIndex() *WorkflowInstanceUp
 func (u *WorkflowInstanceUpsertOne) ClearCurrentNodeIndex() *WorkflowInstanceUpsertOne {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
 		s.ClearCurrentNodeIndex()
+	})
+}
+
+// SetFormData sets the "form_data" field.
+func (u *WorkflowInstanceUpsertOne) SetFormData(v string) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetFormData(v)
+	})
+}
+
+// UpdateFormData sets the "form_data" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertOne) UpdateFormData() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateFormData()
+	})
+}
+
+// ClearFormData clears the value of the "form_data" field.
+func (u *WorkflowInstanceUpsertOne) ClearFormData() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearFormData()
+	})
+}
+
+// SetBusinessType sets the "business_type" field.
+func (u *WorkflowInstanceUpsertOne) SetBusinessType(v string) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetBusinessType(v)
+	})
+}
+
+// UpdateBusinessType sets the "business_type" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertOne) UpdateBusinessType() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateBusinessType()
+	})
+}
+
+// ClearBusinessType clears the value of the "business_type" field.
+func (u *WorkflowInstanceUpsertOne) ClearBusinessType() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearBusinessType()
+	})
+}
+
+// SetBusinessID sets the "business_id" field.
+func (u *WorkflowInstanceUpsertOne) SetBusinessID(v uint32) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetBusinessID(v)
+	})
+}
+
+// AddBusinessID adds v to the "business_id" field.
+func (u *WorkflowInstanceUpsertOne) AddBusinessID(v uint32) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.AddBusinessID(v)
+	})
+}
+
+// UpdateBusinessID sets the "business_id" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertOne) UpdateBusinessID() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateBusinessID()
+	})
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (u *WorkflowInstanceUpsertOne) ClearBusinessID() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearBusinessID()
 	})
 }
 
@@ -1334,69 +1345,6 @@ func (u *WorkflowInstanceUpsertBulk) ClearDeletedBy() *WorkflowInstanceUpsertBul
 	})
 }
 
-// SetRemark sets the "remark" field.
-func (u *WorkflowInstanceUpsertBulk) SetRemark(v string) *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsertBulk) UpdateRemark() *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *WorkflowInstanceUpsertBulk) ClearRemark() *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.ClearRemark()
-	})
-}
-
-// SetTitle sets the "title" field.
-func (u *WorkflowInstanceUpsertBulk) SetTitle(v string) *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.SetTitle(v)
-	})
-}
-
-// UpdateTitle sets the "title" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsertBulk) UpdateTitle() *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.UpdateTitle()
-	})
-}
-
-// ClearTitle clears the value of the "title" field.
-func (u *WorkflowInstanceUpsertBulk) ClearTitle() *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.ClearTitle()
-	})
-}
-
-// SetFormData sets the "form_data" field.
-func (u *WorkflowInstanceUpsertBulk) SetFormData(v any) *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.SetFormData(v)
-	})
-}
-
-// UpdateFormData sets the "form_data" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsertBulk) UpdateFormData() *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.UpdateFormData()
-	})
-}
-
-// ClearFormData clears the value of the "form_data" field.
-func (u *WorkflowInstanceUpsertBulk) ClearFormData() *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.ClearFormData()
-	})
-}
-
 // SetInstanceStatus sets the "instance_status" field.
 func (u *WorkflowInstanceUpsertBulk) SetInstanceStatus(v workflowinstance.InstanceStatus) *WorkflowInstanceUpsertBulk {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
@@ -1419,14 +1367,14 @@ func (u *WorkflowInstanceUpsertBulk) ClearInstanceStatus() *WorkflowInstanceUpse
 }
 
 // SetCurrentNodeIndex sets the "current_node_index" field.
-func (u *WorkflowInstanceUpsertBulk) SetCurrentNodeIndex(v int32) *WorkflowInstanceUpsertBulk {
+func (u *WorkflowInstanceUpsertBulk) SetCurrentNodeIndex(v int) *WorkflowInstanceUpsertBulk {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
 		s.SetCurrentNodeIndex(v)
 	})
 }
 
 // AddCurrentNodeIndex adds v to the "current_node_index" field.
-func (u *WorkflowInstanceUpsertBulk) AddCurrentNodeIndex(v int32) *WorkflowInstanceUpsertBulk {
+func (u *WorkflowInstanceUpsertBulk) AddCurrentNodeIndex(v int) *WorkflowInstanceUpsertBulk {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
 		s.AddCurrentNodeIndex(v)
 	})
@@ -1443,6 +1391,76 @@ func (u *WorkflowInstanceUpsertBulk) UpdateCurrentNodeIndex() *WorkflowInstanceU
 func (u *WorkflowInstanceUpsertBulk) ClearCurrentNodeIndex() *WorkflowInstanceUpsertBulk {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
 		s.ClearCurrentNodeIndex()
+	})
+}
+
+// SetFormData sets the "form_data" field.
+func (u *WorkflowInstanceUpsertBulk) SetFormData(v string) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetFormData(v)
+	})
+}
+
+// UpdateFormData sets the "form_data" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertBulk) UpdateFormData() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateFormData()
+	})
+}
+
+// ClearFormData clears the value of the "form_data" field.
+func (u *WorkflowInstanceUpsertBulk) ClearFormData() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearFormData()
+	})
+}
+
+// SetBusinessType sets the "business_type" field.
+func (u *WorkflowInstanceUpsertBulk) SetBusinessType(v string) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetBusinessType(v)
+	})
+}
+
+// UpdateBusinessType sets the "business_type" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertBulk) UpdateBusinessType() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateBusinessType()
+	})
+}
+
+// ClearBusinessType clears the value of the "business_type" field.
+func (u *WorkflowInstanceUpsertBulk) ClearBusinessType() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearBusinessType()
+	})
+}
+
+// SetBusinessID sets the "business_id" field.
+func (u *WorkflowInstanceUpsertBulk) SetBusinessID(v uint32) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetBusinessID(v)
+	})
+}
+
+// AddBusinessID adds v to the "business_id" field.
+func (u *WorkflowInstanceUpsertBulk) AddBusinessID(v uint32) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.AddBusinessID(v)
+	})
+}
+
+// UpdateBusinessID sets the "business_id" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertBulk) UpdateBusinessID() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateBusinessID()
+	})
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (u *WorkflowInstanceUpsertBulk) ClearBusinessID() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearBusinessID()
 	})
 }
 

@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// OA考勤打卡记录表
+// OA 考勤打卡记录表（用户 x 工作日 唯一）
 type AttendanceRecord struct {
 	config `json:"-"`
 	// ID of the ent.
@@ -32,16 +32,28 @@ type AttendanceRecord struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 备注
-	Remark *string `json:"remark,omitempty"`
-	// 打卡判定结果
-	CheckResult attendancerecord.CheckResult `json:"check_result,omitempty"`
-	// 提交经度
-	Longitude *float64 `json:"longitude,omitempty"`
-	// 提交纬度
-	Latitude *float64 `json:"latitude,omitempty"`
-	// 提交BSSID
-	Bssid        *string `json:"bssid,omitempty"`
+	// 用户ID
+	UserID uint32 `json:"user_id,omitempty"`
+	// 工作日（日期，零点）
+	WorkDate time.Time `json:"work_date,omitempty"`
+	// 上班签到时间
+	CheckInAt *time.Time `json:"check_in_at,omitempty"`
+	// 签到 GPS 纬度
+	CheckInLatitude *float64 `json:"check_in_latitude,omitempty"`
+	// 签到 GPS 经度
+	CheckInLongitude *float64 `json:"check_in_longitude,omitempty"`
+	// 签到 Wifi BSSID
+	CheckInWifiBssid *string `json:"check_in_wifi_bssid,omitempty"`
+	// 下班签退时间
+	CheckOutAt *time.Time `json:"check_out_at,omitempty"`
+	// 签退 GPS 纬度
+	CheckOutLatitude *float64 `json:"check_out_latitude,omitempty"`
+	// 签退 GPS 经度
+	CheckOutLongitude *float64 `json:"check_out_longitude,omitempty"`
+	// 签退 Wifi BSSID
+	CheckOutWifiBssid *string `json:"check_out_wifi_bssid,omitempty"`
+	// 当日结算结果
+	DayResult    *attendancerecord.DayResult `json:"day_result,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -50,13 +62,13 @@ func (*AttendanceRecord) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case attendancerecord.FieldLongitude, attendancerecord.FieldLatitude:
+		case attendancerecord.FieldCheckInLatitude, attendancerecord.FieldCheckInLongitude, attendancerecord.FieldCheckOutLatitude, attendancerecord.FieldCheckOutLongitude:
 			values[i] = new(sql.NullFloat64)
-		case attendancerecord.FieldID, attendancerecord.FieldCreatedBy, attendancerecord.FieldUpdatedBy, attendancerecord.FieldDeletedBy, attendancerecord.FieldTenantID:
+		case attendancerecord.FieldID, attendancerecord.FieldCreatedBy, attendancerecord.FieldUpdatedBy, attendancerecord.FieldDeletedBy, attendancerecord.FieldTenantID, attendancerecord.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case attendancerecord.FieldRemark, attendancerecord.FieldCheckResult, attendancerecord.FieldBssid:
+		case attendancerecord.FieldCheckInWifiBssid, attendancerecord.FieldCheckOutWifiBssid, attendancerecord.FieldDayResult:
 			values[i] = new(sql.NullString)
-		case attendancerecord.FieldCreatedAt, attendancerecord.FieldUpdatedAt, attendancerecord.FieldDeletedAt:
+		case attendancerecord.FieldCreatedAt, attendancerecord.FieldUpdatedAt, attendancerecord.FieldDeletedAt, attendancerecord.FieldWorkDate, attendancerecord.FieldCheckInAt, attendancerecord.FieldCheckOutAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -128,39 +140,80 @@ func (_m *AttendanceRecord) assignValues(columns []string, values []any) error {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
 			}
-		case attendancerecord.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
+		case attendancerecord.FieldUserID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.Remark = new(string)
-				*_m.Remark = value.String
+				_m.UserID = uint32(value.Int64)
 			}
-		case attendancerecord.FieldCheckResult:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field check_result", values[i])
+		case attendancerecord.FieldWorkDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field work_date", values[i])
 			} else if value.Valid {
-				_m.CheckResult = attendancerecord.CheckResult(value.String)
+				_m.WorkDate = value.Time
 			}
-		case attendancerecord.FieldLongitude:
+		case attendancerecord.FieldCheckInAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field check_in_at", values[i])
+			} else if value.Valid {
+				_m.CheckInAt = new(time.Time)
+				*_m.CheckInAt = value.Time
+			}
+		case attendancerecord.FieldCheckInLatitude:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field longitude", values[i])
+				return fmt.Errorf("unexpected type %T for field check_in_latitude", values[i])
 			} else if value.Valid {
-				_m.Longitude = new(float64)
-				*_m.Longitude = value.Float64
+				_m.CheckInLatitude = new(float64)
+				*_m.CheckInLatitude = value.Float64
 			}
-		case attendancerecord.FieldLatitude:
+		case attendancerecord.FieldCheckInLongitude:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field latitude", values[i])
+				return fmt.Errorf("unexpected type %T for field check_in_longitude", values[i])
 			} else if value.Valid {
-				_m.Latitude = new(float64)
-				*_m.Latitude = value.Float64
+				_m.CheckInLongitude = new(float64)
+				*_m.CheckInLongitude = value.Float64
 			}
-		case attendancerecord.FieldBssid:
+		case attendancerecord.FieldCheckInWifiBssid:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field bssid", values[i])
+				return fmt.Errorf("unexpected type %T for field check_in_wifi_bssid", values[i])
 			} else if value.Valid {
-				_m.Bssid = new(string)
-				*_m.Bssid = value.String
+				_m.CheckInWifiBssid = new(string)
+				*_m.CheckInWifiBssid = value.String
+			}
+		case attendancerecord.FieldCheckOutAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field check_out_at", values[i])
+			} else if value.Valid {
+				_m.CheckOutAt = new(time.Time)
+				*_m.CheckOutAt = value.Time
+			}
+		case attendancerecord.FieldCheckOutLatitude:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field check_out_latitude", values[i])
+			} else if value.Valid {
+				_m.CheckOutLatitude = new(float64)
+				*_m.CheckOutLatitude = value.Float64
+			}
+		case attendancerecord.FieldCheckOutLongitude:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field check_out_longitude", values[i])
+			} else if value.Valid {
+				_m.CheckOutLongitude = new(float64)
+				*_m.CheckOutLongitude = value.Float64
+			}
+		case attendancerecord.FieldCheckOutWifiBssid:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field check_out_wifi_bssid", values[i])
+			} else if value.Valid {
+				_m.CheckOutWifiBssid = new(string)
+				*_m.CheckOutWifiBssid = value.String
+			}
+		case attendancerecord.FieldDayResult:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field day_result", values[i])
+			} else if value.Valid {
+				_m.DayResult = new(attendancerecord.DayResult)
+				*_m.DayResult = attendancerecord.DayResult(value.String)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -233,27 +286,55 @@ func (_m *AttendanceRecord) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.Remark; v != nil {
-		builder.WriteString("remark=")
-		builder.WriteString(*v)
+	builder.WriteString("user_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.UserID))
+	builder.WriteString(", ")
+	builder.WriteString("work_date=")
+	builder.WriteString(_m.WorkDate.Format(time.ANSIC))
+	builder.WriteString(", ")
+	if v := _m.CheckInAt; v != nil {
+		builder.WriteString("check_in_at=")
+		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("check_result=")
-	builder.WriteString(fmt.Sprintf("%v", _m.CheckResult))
-	builder.WriteString(", ")
-	if v := _m.Longitude; v != nil {
-		builder.WriteString("longitude=")
+	if v := _m.CheckInLatitude; v != nil {
+		builder.WriteString("check_in_latitude=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.Latitude; v != nil {
-		builder.WriteString("latitude=")
+	if v := _m.CheckInLongitude; v != nil {
+		builder.WriteString("check_in_longitude=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.Bssid; v != nil {
-		builder.WriteString("bssid=")
+	if v := _m.CheckInWifiBssid; v != nil {
+		builder.WriteString("check_in_wifi_bssid=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.CheckOutAt; v != nil {
+		builder.WriteString("check_out_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.CheckOutLatitude; v != nil {
+		builder.WriteString("check_out_latitude=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.CheckOutLongitude; v != nil {
+		builder.WriteString("check_out_longitude=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.CheckOutWifiBssid; v != nil {
+		builder.WriteString("check_out_wifi_bssid=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.DayResult; v != nil {
+		builder.WriteString("day_result=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

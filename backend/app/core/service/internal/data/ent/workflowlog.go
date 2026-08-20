@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// OA工作流审计日志表
+// OA 工作流审批日志表（append-only）
 type WorkflowLog struct {
 	config `json:"-"`
 	// ID of the ent.
@@ -33,10 +33,10 @@ type WorkflowLog struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 节点序号
-	NodeIndex *int32 `json:"node_index,omitempty"`
-	// 审计动作
-	LogAction workflowlog.LogAction `json:"log_action,omitempty"`
+	// 节点索引
+	NodeIndex *int `json:"node_index,omitempty"`
+	// 日志动作
+	LogAction *workflowlog.LogAction `json:"log_action,omitempty"`
 	// 审批意见
 	Comment *string `json:"comment,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -153,14 +153,15 @@ func (_m *WorkflowLog) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field node_index", values[i])
 			} else if value.Valid {
-				_m.NodeIndex = new(int32)
-				*_m.NodeIndex = int32(value.Int64)
+				_m.NodeIndex = new(int)
+				*_m.NodeIndex = int(value.Int64)
 			}
 		case workflowlog.FieldLogAction:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field log_action", values[i])
 			} else if value.Valid {
-				_m.LogAction = workflowlog.LogAction(value.String)
+				_m.LogAction = new(workflowlog.LogAction)
+				*_m.LogAction = workflowlog.LogAction(value.String)
 			}
 		case workflowlog.FieldComment:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -257,8 +258,10 @@ func (_m *WorkflowLog) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("log_action=")
-	builder.WriteString(fmt.Sprintf("%v", _m.LogAction))
+	if v := _m.LogAction; v != nil {
+		builder.WriteString("log_action=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	if v := _m.Comment; v != nil {
 		builder.WriteString("comment=")

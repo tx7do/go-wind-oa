@@ -16,14 +16,23 @@ import (
 	"go-wind-oa/app/app/service/internal/service"
 )
 
-// ProviderSet is the Wire provider set for service layer.
-//
-// OA app-service 只暴露鑑權轉發與工作流轉發兩類 HTTP 邊端服務，均為轉發層。
+// ProviderSet is the Wire provider set for data layer.
 var ProviderSet = wire.NewSet(
 	service.NewAuthenticationService,
 	service.NewWorkflowService,
-
-	service.NewInternalMessageService,
-
+	service.NewLeaveService,
+	service.NewExpenseService,
 	service.NewAttendanceService,
+	service.NewInternalMessageService,
+	service.NewUserProfileService,
+	service.NewFileTransferService,
+
+	service.NewCategoryService,
+	service.NewTagService,
+	service.NewCommentService,
+	service.NewInteractionService,
+	service.NewPageService,
+	service.NewSectionService,
+	service.NewPostService,
+	service.NewNavigationService,
 )

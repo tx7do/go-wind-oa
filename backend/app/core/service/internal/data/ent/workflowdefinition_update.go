@@ -171,35 +171,35 @@ func (_u *WorkflowDefinitionUpdate) ClearRemark() *WorkflowDefinitionUpdate {
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *WorkflowDefinitionUpdate) SetName(v string) *WorkflowDefinitionUpdate {
-	_u.mutation.SetName(v)
+// SetCode sets the "code" field.
+func (_u *WorkflowDefinitionUpdate) SetCode(v string) *WorkflowDefinitionUpdate {
+	_u.mutation.SetCode(v)
 	return _u
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *WorkflowDefinitionUpdate) SetNillableName(v *string) *WorkflowDefinitionUpdate {
+// SetNillableCode sets the "code" field if the given value is not nil.
+func (_u *WorkflowDefinitionUpdate) SetNillableCode(v *string) *WorkflowDefinitionUpdate {
 	if v != nil {
-		_u.SetName(*v)
+		_u.SetCode(*v)
 	}
 	return _u
 }
 
-// ClearName clears the value of the "name" field.
-func (_u *WorkflowDefinitionUpdate) ClearName() *WorkflowDefinitionUpdate {
-	_u.mutation.ClearName()
+// ClearCode clears the value of the "code" field.
+func (_u *WorkflowDefinitionUpdate) ClearCode() *WorkflowDefinitionUpdate {
+	_u.mutation.ClearCode()
 	return _u
 }
 
 // SetVersion sets the "version" field.
-func (_u *WorkflowDefinitionUpdate) SetVersion(v uint32) *WorkflowDefinitionUpdate {
+func (_u *WorkflowDefinitionUpdate) SetVersion(v int) *WorkflowDefinitionUpdate {
 	_u.mutation.ResetVersion()
 	_u.mutation.SetVersion(v)
 	return _u
 }
 
 // SetNillableVersion sets the "version" field if the given value is not nil.
-func (_u *WorkflowDefinitionUpdate) SetNillableVersion(v *uint32) *WorkflowDefinitionUpdate {
+func (_u *WorkflowDefinitionUpdate) SetNillableVersion(v *int) *WorkflowDefinitionUpdate {
 	if v != nil {
 		_u.SetVersion(*v)
 	}
@@ -207,7 +207,7 @@ func (_u *WorkflowDefinitionUpdate) SetNillableVersion(v *uint32) *WorkflowDefin
 }
 
 // AddVersion adds value to the "version" field.
-func (_u *WorkflowDefinitionUpdate) AddVersion(v int32) *WorkflowDefinitionUpdate {
+func (_u *WorkflowDefinitionUpdate) AddVersion(v int) *WorkflowDefinitionUpdate {
 	_u.mutation.AddVersion(v)
 	return _u
 }
@@ -218,29 +218,17 @@ func (_u *WorkflowDefinitionUpdate) ClearVersion() *WorkflowDefinitionUpdate {
 	return _u
 }
 
-// SetDescription sets the "description" field.
-func (_u *WorkflowDefinitionUpdate) SetDescription(v string) *WorkflowDefinitionUpdate {
-	_u.mutation.SetDescription(v)
-	return _u
-}
-
-// SetNillableDescription sets the "description" field if the given value is not nil.
-func (_u *WorkflowDefinitionUpdate) SetNillableDescription(v *string) *WorkflowDefinitionUpdate {
-	if v != nil {
-		_u.SetDescription(*v)
-	}
-	return _u
-}
-
-// ClearDescription clears the value of the "description" field.
-func (_u *WorkflowDefinitionUpdate) ClearDescription() *WorkflowDefinitionUpdate {
-	_u.mutation.ClearDescription()
-	return _u
-}
-
 // SetNodeConfig sets the "node_config" field.
-func (_u *WorkflowDefinitionUpdate) SetNodeConfig(v any) *WorkflowDefinitionUpdate {
+func (_u *WorkflowDefinitionUpdate) SetNodeConfig(v string) *WorkflowDefinitionUpdate {
 	_u.mutation.SetNodeConfig(v)
+	return _u
+}
+
+// SetNillableNodeConfig sets the "node_config" field if the given value is not nil.
+func (_u *WorkflowDefinitionUpdate) SetNillableNodeConfig(v *string) *WorkflowDefinitionUpdate {
+	if v != nil {
+		_u.SetNodeConfig(*v)
+	}
 	return _u
 }
 
@@ -251,8 +239,16 @@ func (_u *WorkflowDefinitionUpdate) ClearNodeConfig() *WorkflowDefinitionUpdate 
 }
 
 // SetFormSchema sets the "form_schema" field.
-func (_u *WorkflowDefinitionUpdate) SetFormSchema(v any) *WorkflowDefinitionUpdate {
+func (_u *WorkflowDefinitionUpdate) SetFormSchema(v string) *WorkflowDefinitionUpdate {
 	_u.mutation.SetFormSchema(v)
+	return _u
+}
+
+// SetNillableFormSchema sets the "form_schema" field if the given value is not nil.
+func (_u *WorkflowDefinitionUpdate) SetNillableFormSchema(v *string) *WorkflowDefinitionUpdate {
+	if v != nil {
+		_u.SetFormSchema(*v)
+	}
 	return _u
 }
 
@@ -429,41 +425,32 @@ func (_u *WorkflowDefinitionUpdate) sqlSave(ctx context.Context) (_node int, err
 	if _u.mutation.RemarkCleared() {
 		_spec.ClearField(workflowdefinition.FieldRemark, field.TypeString)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(workflowdefinition.FieldName, field.TypeString, value)
-	}
-	if _u.mutation.NameCleared() {
-		_spec.ClearField(workflowdefinition.FieldName, field.TypeString)
+	if value, ok := _u.mutation.Code(); ok {
+		_spec.SetField(workflowdefinition.FieldCode, field.TypeString, value)
 	}
 	if _u.mutation.CodeCleared() {
 		_spec.ClearField(workflowdefinition.FieldCode, field.TypeString)
 	}
 	if value, ok := _u.mutation.Version(); ok {
-		_spec.SetField(workflowdefinition.FieldVersion, field.TypeUint32, value)
+		_spec.SetField(workflowdefinition.FieldVersion, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.AddedVersion(); ok {
-		_spec.AddField(workflowdefinition.FieldVersion, field.TypeUint32, value)
+		_spec.AddField(workflowdefinition.FieldVersion, field.TypeInt, value)
 	}
 	if _u.mutation.VersionCleared() {
-		_spec.ClearField(workflowdefinition.FieldVersion, field.TypeUint32)
-	}
-	if value, ok := _u.mutation.Description(); ok {
-		_spec.SetField(workflowdefinition.FieldDescription, field.TypeString, value)
-	}
-	if _u.mutation.DescriptionCleared() {
-		_spec.ClearField(workflowdefinition.FieldDescription, field.TypeString)
+		_spec.ClearField(workflowdefinition.FieldVersion, field.TypeInt)
 	}
 	if value, ok := _u.mutation.NodeConfig(); ok {
-		_spec.SetField(workflowdefinition.FieldNodeConfig, field.TypeJSON, value)
+		_spec.SetField(workflowdefinition.FieldNodeConfig, field.TypeString, value)
 	}
 	if _u.mutation.NodeConfigCleared() {
-		_spec.ClearField(workflowdefinition.FieldNodeConfig, field.TypeJSON)
+		_spec.ClearField(workflowdefinition.FieldNodeConfig, field.TypeString)
 	}
 	if value, ok := _u.mutation.FormSchema(); ok {
-		_spec.SetField(workflowdefinition.FieldFormSchema, field.TypeJSON, value)
+		_spec.SetField(workflowdefinition.FieldFormSchema, field.TypeString, value)
 	}
 	if _u.mutation.FormSchemaCleared() {
-		_spec.ClearField(workflowdefinition.FieldFormSchema, field.TypeJSON)
+		_spec.ClearField(workflowdefinition.FieldFormSchema, field.TypeString)
 	}
 	if value, ok := _u.mutation.DefinitionStatus(); ok {
 		_spec.SetField(workflowdefinition.FieldDefinitionStatus, field.TypeEnum, value)
@@ -679,35 +666,35 @@ func (_u *WorkflowDefinitionUpdateOne) ClearRemark() *WorkflowDefinitionUpdateOn
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *WorkflowDefinitionUpdateOne) SetName(v string) *WorkflowDefinitionUpdateOne {
-	_u.mutation.SetName(v)
+// SetCode sets the "code" field.
+func (_u *WorkflowDefinitionUpdateOne) SetCode(v string) *WorkflowDefinitionUpdateOne {
+	_u.mutation.SetCode(v)
 	return _u
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *WorkflowDefinitionUpdateOne) SetNillableName(v *string) *WorkflowDefinitionUpdateOne {
+// SetNillableCode sets the "code" field if the given value is not nil.
+func (_u *WorkflowDefinitionUpdateOne) SetNillableCode(v *string) *WorkflowDefinitionUpdateOne {
 	if v != nil {
-		_u.SetName(*v)
+		_u.SetCode(*v)
 	}
 	return _u
 }
 
-// ClearName clears the value of the "name" field.
-func (_u *WorkflowDefinitionUpdateOne) ClearName() *WorkflowDefinitionUpdateOne {
-	_u.mutation.ClearName()
+// ClearCode clears the value of the "code" field.
+func (_u *WorkflowDefinitionUpdateOne) ClearCode() *WorkflowDefinitionUpdateOne {
+	_u.mutation.ClearCode()
 	return _u
 }
 
 // SetVersion sets the "version" field.
-func (_u *WorkflowDefinitionUpdateOne) SetVersion(v uint32) *WorkflowDefinitionUpdateOne {
+func (_u *WorkflowDefinitionUpdateOne) SetVersion(v int) *WorkflowDefinitionUpdateOne {
 	_u.mutation.ResetVersion()
 	_u.mutation.SetVersion(v)
 	return _u
 }
 
 // SetNillableVersion sets the "version" field if the given value is not nil.
-func (_u *WorkflowDefinitionUpdateOne) SetNillableVersion(v *uint32) *WorkflowDefinitionUpdateOne {
+func (_u *WorkflowDefinitionUpdateOne) SetNillableVersion(v *int) *WorkflowDefinitionUpdateOne {
 	if v != nil {
 		_u.SetVersion(*v)
 	}
@@ -715,7 +702,7 @@ func (_u *WorkflowDefinitionUpdateOne) SetNillableVersion(v *uint32) *WorkflowDe
 }
 
 // AddVersion adds value to the "version" field.
-func (_u *WorkflowDefinitionUpdateOne) AddVersion(v int32) *WorkflowDefinitionUpdateOne {
+func (_u *WorkflowDefinitionUpdateOne) AddVersion(v int) *WorkflowDefinitionUpdateOne {
 	_u.mutation.AddVersion(v)
 	return _u
 }
@@ -726,29 +713,17 @@ func (_u *WorkflowDefinitionUpdateOne) ClearVersion() *WorkflowDefinitionUpdateO
 	return _u
 }
 
-// SetDescription sets the "description" field.
-func (_u *WorkflowDefinitionUpdateOne) SetDescription(v string) *WorkflowDefinitionUpdateOne {
-	_u.mutation.SetDescription(v)
-	return _u
-}
-
-// SetNillableDescription sets the "description" field if the given value is not nil.
-func (_u *WorkflowDefinitionUpdateOne) SetNillableDescription(v *string) *WorkflowDefinitionUpdateOne {
-	if v != nil {
-		_u.SetDescription(*v)
-	}
-	return _u
-}
-
-// ClearDescription clears the value of the "description" field.
-func (_u *WorkflowDefinitionUpdateOne) ClearDescription() *WorkflowDefinitionUpdateOne {
-	_u.mutation.ClearDescription()
-	return _u
-}
-
 // SetNodeConfig sets the "node_config" field.
-func (_u *WorkflowDefinitionUpdateOne) SetNodeConfig(v any) *WorkflowDefinitionUpdateOne {
+func (_u *WorkflowDefinitionUpdateOne) SetNodeConfig(v string) *WorkflowDefinitionUpdateOne {
 	_u.mutation.SetNodeConfig(v)
+	return _u
+}
+
+// SetNillableNodeConfig sets the "node_config" field if the given value is not nil.
+func (_u *WorkflowDefinitionUpdateOne) SetNillableNodeConfig(v *string) *WorkflowDefinitionUpdateOne {
+	if v != nil {
+		_u.SetNodeConfig(*v)
+	}
 	return _u
 }
 
@@ -759,8 +734,16 @@ func (_u *WorkflowDefinitionUpdateOne) ClearNodeConfig() *WorkflowDefinitionUpda
 }
 
 // SetFormSchema sets the "form_schema" field.
-func (_u *WorkflowDefinitionUpdateOne) SetFormSchema(v any) *WorkflowDefinitionUpdateOne {
+func (_u *WorkflowDefinitionUpdateOne) SetFormSchema(v string) *WorkflowDefinitionUpdateOne {
 	_u.mutation.SetFormSchema(v)
+	return _u
+}
+
+// SetNillableFormSchema sets the "form_schema" field if the given value is not nil.
+func (_u *WorkflowDefinitionUpdateOne) SetNillableFormSchema(v *string) *WorkflowDefinitionUpdateOne {
+	if v != nil {
+		_u.SetFormSchema(*v)
+	}
 	return _u
 }
 
@@ -967,41 +950,32 @@ func (_u *WorkflowDefinitionUpdateOne) sqlSave(ctx context.Context) (_node *Work
 	if _u.mutation.RemarkCleared() {
 		_spec.ClearField(workflowdefinition.FieldRemark, field.TypeString)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(workflowdefinition.FieldName, field.TypeString, value)
-	}
-	if _u.mutation.NameCleared() {
-		_spec.ClearField(workflowdefinition.FieldName, field.TypeString)
+	if value, ok := _u.mutation.Code(); ok {
+		_spec.SetField(workflowdefinition.FieldCode, field.TypeString, value)
 	}
 	if _u.mutation.CodeCleared() {
 		_spec.ClearField(workflowdefinition.FieldCode, field.TypeString)
 	}
 	if value, ok := _u.mutation.Version(); ok {
-		_spec.SetField(workflowdefinition.FieldVersion, field.TypeUint32, value)
+		_spec.SetField(workflowdefinition.FieldVersion, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.AddedVersion(); ok {
-		_spec.AddField(workflowdefinition.FieldVersion, field.TypeUint32, value)
+		_spec.AddField(workflowdefinition.FieldVersion, field.TypeInt, value)
 	}
 	if _u.mutation.VersionCleared() {
-		_spec.ClearField(workflowdefinition.FieldVersion, field.TypeUint32)
-	}
-	if value, ok := _u.mutation.Description(); ok {
-		_spec.SetField(workflowdefinition.FieldDescription, field.TypeString, value)
-	}
-	if _u.mutation.DescriptionCleared() {
-		_spec.ClearField(workflowdefinition.FieldDescription, field.TypeString)
+		_spec.ClearField(workflowdefinition.FieldVersion, field.TypeInt)
 	}
 	if value, ok := _u.mutation.NodeConfig(); ok {
-		_spec.SetField(workflowdefinition.FieldNodeConfig, field.TypeJSON, value)
+		_spec.SetField(workflowdefinition.FieldNodeConfig, field.TypeString, value)
 	}
 	if _u.mutation.NodeConfigCleared() {
-		_spec.ClearField(workflowdefinition.FieldNodeConfig, field.TypeJSON)
+		_spec.ClearField(workflowdefinition.FieldNodeConfig, field.TypeString)
 	}
 	if value, ok := _u.mutation.FormSchema(); ok {
-		_spec.SetField(workflowdefinition.FieldFormSchema, field.TypeJSON, value)
+		_spec.SetField(workflowdefinition.FieldFormSchema, field.TypeString, value)
 	}
 	if _u.mutation.FormSchemaCleared() {
-		_spec.ClearField(workflowdefinition.FieldFormSchema, field.TypeJSON)
+		_spec.ClearField(workflowdefinition.FieldFormSchema, field.TypeString)
 	}
 	if value, ok := _u.mutation.DefinitionStatus(); ok {
 		_spec.SetField(workflowdefinition.FieldDefinitionStatus, field.TypeEnum, value)

@@ -132,18 +132,9 @@ api:
 	buf generate
 
 # generate protobuf api OpenAPI v3 docs
-# 根據當前 service 選擇對應的 openapi 模板：
-#   admin → buf.admin.openapi.gen.yaml
-#   app   → buf.app.openapi.gen.yaml
-#   core  → 無 openapi（core 為 gRPC-only，無 HTTP 端點）
-OPENAPI_TEMPLATE := $(if $(filter admin,$(SERVICE_NAME)),buf.admin.openapi.gen.yaml,$(if $(filter app,$(SERVICE_NAME)),buf.app.openapi.gen.yaml,))
 openapi:
-ifneq ($(OPENAPI_TEMPLATE),)
 	@cd ../../../api && \
-	buf generate --template $(OPENAPI_TEMPLATE)
-else
-	@echo "core-service has no HTTP endpoints, skipping openapi generation"
-endif
+	buf generate --template buf.admin.openapi.gen.yaml
 
 # build docker image
 docker:

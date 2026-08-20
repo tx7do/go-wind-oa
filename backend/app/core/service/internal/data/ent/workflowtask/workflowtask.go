@@ -94,8 +94,6 @@ var (
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
 	DefaultTenantID uint32
-	// DefaultNodeIndex holds the default value on creation for the "node_index" field.
-	DefaultNodeIndex int32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -103,15 +101,15 @@ var (
 // TaskStatus defines the type for the "task_status" enum field.
 type TaskStatus string
 
-// TaskStatusPENDING is the default value of the TaskStatus enum.
-const DefaultTaskStatus = TaskStatusPENDING
+// TaskStatusPending is the default value of the TaskStatus enum.
+const DefaultTaskStatus = TaskStatusPending
 
 // TaskStatus values.
 const (
-	TaskStatusPENDING   TaskStatus = "PENDING"
-	TaskStatusAPPROVED  TaskStatus = "APPROVED"
-	TaskStatusREJECTED  TaskStatus = "REJECTED"
-	TaskStatusFORWARDED TaskStatus = "FORWARDED"
+	TaskStatusPending   TaskStatus = "PENDING"
+	TaskStatusApproved  TaskStatus = "APPROVED"
+	TaskStatusRejected  TaskStatus = "REJECTED"
+	TaskStatusCancelled TaskStatus = "CANCELLED"
 )
 
 func (ts TaskStatus) String() string {
@@ -121,7 +119,7 @@ func (ts TaskStatus) String() string {
 // TaskStatusValidator is a validator for the "task_status" field enum values. It is called by the builders before save.
 func TaskStatusValidator(ts TaskStatus) error {
 	switch ts {
-	case TaskStatusPENDING, TaskStatusAPPROVED, TaskStatusREJECTED, TaskStatusFORWARDED:
+	case TaskStatusPending, TaskStatusApproved, TaskStatusRejected, TaskStatusCancelled:
 		return nil
 	default:
 		return fmt.Errorf("workflowtask: invalid enum value for task_status field: %q", ts)

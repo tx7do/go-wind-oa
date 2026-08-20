@@ -122,13 +122,13 @@ func (_c *WorkflowTaskCreate) SetNillableTenantID(v *uint32) *WorkflowTaskCreate
 }
 
 // SetNodeIndex sets the "node_index" field.
-func (_c *WorkflowTaskCreate) SetNodeIndex(v int32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetNodeIndex(v int) *WorkflowTaskCreate {
 	_c.mutation.SetNodeIndex(v)
 	return _c
 }
 
 // SetNillableNodeIndex sets the "node_index" field if the given value is not nil.
-func (_c *WorkflowTaskCreate) SetNillableNodeIndex(v *int32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetNillableNodeIndex(v *int) *WorkflowTaskCreate {
 	if v != nil {
 		_c.SetNodeIndex(*v)
 	}
@@ -229,10 +229,6 @@ func (_c *WorkflowTaskCreate) defaults() error {
 		v := workflowtask.DefaultTenantID
 		_c.mutation.SetTenantID(v)
 	}
-	if _, ok := _c.mutation.NodeIndex(); !ok {
-		v := workflowtask.DefaultNodeIndex
-		_c.mutation.SetNodeIndex(v)
-	}
 	if _, ok := _c.mutation.TaskStatus(); !ok {
 		v := workflowtask.DefaultTaskStatus
 		_c.mutation.SetTaskStatus(v)
@@ -314,7 +310,7 @@ func (_c *WorkflowTaskCreate) createSpec() (*WorkflowTask, *sqlgraph.CreateSpec)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.NodeIndex(); ok {
-		_spec.SetField(workflowtask.FieldNodeIndex, field.TypeInt32, value)
+		_spec.SetField(workflowtask.FieldNodeIndex, field.TypeInt, value)
 		_node.NodeIndex = &value
 	}
 	if value, ok := _c.mutation.AssigneeUserID(); ok {
@@ -323,7 +319,7 @@ func (_c *WorkflowTaskCreate) createSpec() (*WorkflowTask, *sqlgraph.CreateSpec)
 	}
 	if value, ok := _c.mutation.TaskStatus(); ok {
 		_spec.SetField(workflowtask.FieldTaskStatus, field.TypeEnum, value)
-		_node.TaskStatus = value
+		_node.TaskStatus = &value
 	}
 	if nodes := _c.mutation.InstanceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -503,7 +499,7 @@ func (u *WorkflowTaskUpsert) ClearDeletedBy() *WorkflowTaskUpsert {
 }
 
 // SetNodeIndex sets the "node_index" field.
-func (u *WorkflowTaskUpsert) SetNodeIndex(v int32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) SetNodeIndex(v int) *WorkflowTaskUpsert {
 	u.Set(workflowtask.FieldNodeIndex, v)
 	return u
 }
@@ -515,7 +511,7 @@ func (u *WorkflowTaskUpsert) UpdateNodeIndex() *WorkflowTaskUpsert {
 }
 
 // AddNodeIndex adds v to the "node_index" field.
-func (u *WorkflowTaskUpsert) AddNodeIndex(v int32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) AddNodeIndex(v int) *WorkflowTaskUpsert {
 	u.Add(workflowtask.FieldNodeIndex, v)
 	return u
 }
@@ -749,14 +745,14 @@ func (u *WorkflowTaskUpsertOne) ClearDeletedBy() *WorkflowTaskUpsertOne {
 }
 
 // SetNodeIndex sets the "node_index" field.
-func (u *WorkflowTaskUpsertOne) SetNodeIndex(v int32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) SetNodeIndex(v int) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetNodeIndex(v)
 	})
 }
 
 // AddNodeIndex adds v to the "node_index" field.
-func (u *WorkflowTaskUpsertOne) AddNodeIndex(v int32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) AddNodeIndex(v int) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddNodeIndex(v)
 	})
@@ -1172,14 +1168,14 @@ func (u *WorkflowTaskUpsertBulk) ClearDeletedBy() *WorkflowTaskUpsertBulk {
 }
 
 // SetNodeIndex sets the "node_index" field.
-func (u *WorkflowTaskUpsertBulk) SetNodeIndex(v int32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) SetNodeIndex(v int) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetNodeIndex(v)
 	})
 }
 
 // AddNodeIndex adds v to the "node_index" field.
-func (u *WorkflowTaskUpsertBulk) AddNodeIndex(v int32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) AddNodeIndex(v int) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddNodeIndex(v)
 	})

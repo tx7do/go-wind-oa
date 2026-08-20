@@ -1,6 +1,8 @@
 package server
 
 import (
+	"github.com/dtm-labs/dtm/client/workflow"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
@@ -10,6 +12,7 @@ import (
 	"github.com/tx7do/kratos-bootstrap/rpc"
 
 	"go-wind-oa/pkg/middleware/ent"
+	serviceName "go-wind-oa/pkg/serviceid"
 )
 
 type GrpcMiddlewares []middleware.Middleware
@@ -22,8 +25,6 @@ func NewGrpcMiddleware(ctx *bootstrap.Context) GrpcMiddlewares {
 }
 
 // NewGrpcServer creates a gRPC server.
-//
-// OA app-service 不再接入 DTM，grpc server 僅作服務發現註冊用。
 func NewGrpcServer(
 	ctx *bootstrap.Context,
 	middlewares GrpcMiddlewares,
@@ -45,6 +46,9 @@ func NewGrpcServer(
 	}
 
 	log.Infof("grpc server listening on: %s", en.String())
+
+	// 注册操作需要在业务服务启动之后执行，因为当进程crash，dtm会回调业务服务器，继续未完成的任务
+	workflow.InitGrpc(serviceName.DtmServiceAddress, en.String(), srv.Server)
 
 	return srv, nil
 }

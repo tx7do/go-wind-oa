@@ -2,199 +2,234 @@ package data
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
-	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
-
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
+	"github.com/tx7do/go-utils/timeutil"
+	"github.com/tx7do/go-utils/trans"
 
 	"go-wind-oa/app/core/service/internal/data/ent"
-	"go-wind-oa/app/core/service/internal/data/ent/predicate"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
 
-	oav1 "go-wind-oa/api/gen/go/oa/service/v1"
+	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
 )
 
-// WorkflowInstanceRepo OA 工作流实例的数据访问层。
 type WorkflowInstanceRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper                   *mapper.CopierMapper[oav1.WorkflowInstance, ent.WorkflowInstance]
-	instanceStatusConverter *mapper.EnumTypeConverter[oav1.WorkflowInstance_InstanceStatus, workflowinstance.InstanceStatus]
-
-	repository *entCrud.Repository[
-		ent.WorkflowInstanceQuery, ent.WorkflowInstanceSelect,
-		ent.WorkflowInstanceCreate, ent.WorkflowInstanceCreateBulk,
-		ent.WorkflowInstanceUpdate, ent.WorkflowInstanceUpdateOne,
-		ent.WorkflowInstanceDelete,
-		predicate.WorkflowInstance,
-		oav1.WorkflowInstance, ent.WorkflowInstance,
-	]
+	mapper                  *mapper.CopierMapper[oaV1.WorkflowInstance, ent.WorkflowInstance]
+	instanceStatusConverter *mapper.EnumTypeConverter[oaV1.WorkflowInstance_InstanceStatus, workflowinstance.InstanceStatus]
 }
 
-func NewWorkflowInstanceRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *WorkflowInstanceRepo {
+func NewWorkflowInstanceRepo(
+	ctx *bootstrap.Context,
+	entClient *entCrud.EntClient[*ent.Client],
+) *WorkflowInstanceRepo {
 	repo := &WorkflowInstanceRepo{
-		log:                     ctx.NewLoggerHelper("workflow-instance/repo/oa-service"),
+		log:                     ctx.NewLoggerHelper("workflow-instance/repo/core-service"),
 		entClient:               entClient,
-		mapper:                  mapper.NewCopierMapper[oav1.WorkflowInstance, ent.WorkflowInstance](),
-		instanceStatusConverter: mapper.NewEnumTypeConverter[oav1.WorkflowInstance_InstanceStatus, workflowinstance.InstanceStatus](oav1.WorkflowInstance_InstanceStatus_name, oav1.WorkflowInstance_InstanceStatus_value),
+		mapper:                  mapper.NewCopierMapper[oaV1.WorkflowInstance, ent.WorkflowInstance](),
+		instanceStatusConverter: mapper.NewEnumTypeConverter[oaV1.WorkflowInstance_InstanceStatus, workflowinstance.InstanceStatus](oaV1.WorkflowInstance_InstanceStatus_name, oaV1.WorkflowInstance_InstanceStatus_value),
 	}
+
 	repo.init()
+
 	return repo
 }
 
 func (r *WorkflowInstanceRepo) init() {
-	r.repository = entCrud.NewRepository[
-		ent.WorkflowInstanceQuery, ent.WorkflowInstanceSelect,
-		ent.WorkflowInstanceCreate, ent.WorkflowInstanceCreateBulk,
-		ent.WorkflowInstanceUpdate, ent.WorkflowInstanceUpdateOne,
-		ent.WorkflowInstanceDelete,
-		predicate.WorkflowInstance,
-		oav1.WorkflowInstance, ent.WorkflowInstance,
-	](r.mapper)
-
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
 	r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
 	r.mapper.AppendConverters(r.instanceStatusConverter.NewConverterPair())
 }
 
-// GetState 直接读取实例的运行时状态，供状态机推进使用。
-//
-// 不走 mapper / DTO：status 以 0=活跃(PENDING) / 1=非活的整数返回，避免
-// any/指针字段在 mapper 中的不确定性。tenant 由 TenantPrivacy 策略按 viewer 隔离。
-func (r *WorkflowInstanceRepo) GetState(ctx context.Context, instanceID uint32) (int, int32, uint32, error) {
-	if instanceID == 0 {
-		return 0, 0, 0, oav1.ErrorBadRequest("invalid parameter")
-	}
-	entity, err := r.entClient.Client().WorkflowInstance.Query().
-		Where(workflowinstance.IDEQ(instanceID)).
-		Only(ctx)
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return 0, 0, 0, oav1.ErrorNotFound("workflow instance not found")
-		}
-		r.log.Errorf("query workflow instance state failed: %s", err)
-		return 0, 0, 0, oav1.ErrorInternalError("query workflow instance state failed")
-	}
-	status := 1
-	if entity.InstanceStatus == workflowinstance.InstanceStatusPENDING {
-		status = 0
-	}
-	// CurrentNodeIndex / CreatedBy 为 *int32 / *uint32（Optional+Nilable）；
-	// nil 时按 0 返回，调用方在状态机中据此判断“无下一节点 / 未知申请人”。
-	var nodeIdx int32
-	if entity.CurrentNodeIndex != nil {
-		nodeIdx = *entity.CurrentNodeIndex
-	}
-	var creator uint32
-	if entity.CreatedBy != nil {
-		creator = *entity.CreatedBy
-	}
-	return status, nodeIdx, creator, nil
-}
-
-// GetDefinitionNodeConfig 经实例的 definition 边取其定义的节点配置（any → JSON 文本）。
-// 状态机审批通过、推进下一节点时调用。tenant 隔离对边遍历到的定义查询同样生效。
-func (r *WorkflowInstanceRepo) GetDefinitionNodeConfig(ctx context.Context, instanceID uint32) (string, error) {
-	if instanceID == 0 {
-		return "", oav1.ErrorBadRequest("invalid parameter")
-	}
-	entity, err := r.entClient.Client().WorkflowInstance.Query().
-		Where(workflowinstance.IDEQ(instanceID)).
-		Only(ctx)
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return "", oav1.ErrorNotFound("workflow instance not found")
-		}
-		r.log.Errorf("query workflow instance for definition failed: %s", err)
-		return "", oav1.ErrorInternalError("query workflow instance for definition failed")
-	}
-	defEntity, err := entity.QueryDefinition().Only(ctx)
-	if err != nil {
-		r.log.Errorf("query definition via instance edge failed: %s", err)
-		return "", oav1.ErrorInternalError("query definition via instance edge failed")
-	}
-	var nodeConfig string
-	if v := defEntity.NodeConfig; v != nil {
-		if b, mErr := json.Marshal(v); mErr == nil {
-			p := string(b)
-			nodeConfig = p
-		}
-	}
-	return nodeConfig, nil
-}
-
-func (r *WorkflowInstanceRepo) Create(ctx context.Context, req *oav1.WorkflowInstance) (*oav1.WorkflowInstance, error) {
-	if req == nil {
-		return nil, oav1.ErrorBadRequest("invalid parameter")
-	}
+func (r *WorkflowInstanceRepo) Create(
+	ctx context.Context,
+	tenantID uint32,
+	creatorUserID uint32,
+	definitionID uint32,
+	formData string,
+	businessType string,
+	businessID uint32,
+) (uint32, error) {
 	builder := r.entClient.Client().WorkflowInstance.Create().
-		SetNillableTenantID(req.TenantId).
-		SetNillableCreatedBy(req.CreatedBy).
-		SetNillableTitle(req.Title).
-		SetNillableInstanceStatus(r.instanceStatusConverter.ToEntity(req.InstanceStatus)).
-		SetNillableCurrentNodeIndex(req.CurrentNodeIndex).
-		SetDefinitionID(req.GetDefinitionId()).
+		SetDefinitionID(definitionID).
+		SetInstanceStatus(workflowinstance.InstanceStatusPending).
+		SetCurrentNodeIndex(0).
+		SetNillableFormData(&formData).
+		SetTenantID(tenantID).
+		SetCreatedBy(creatorUserID).
 		SetCreatedAt(time.Now())
-
-	// 申请表单数据：DTO JSON 文本 → entity any。
-	if req.FormData != nil {
-		var v any
-		if err := json.Unmarshal([]byte(*req.FormData), &v); err == nil {
-			builder.SetFormData(v)
-		}
+	if businessType != "" {
+		builder.SetNillableBusinessType(&businessType)
+	}
+	if businessID != 0 {
+		builder.SetNillableBusinessID(&businessID)
 	}
 
 	entity, err := builder.Save(ctx)
 	if err != nil {
-		r.log.Errorf("insert workflow instance failed: %s", err)
-		return nil, oav1.ErrorInternalError("insert workflow instance failed")
+		r.log.Errorf("insert workflow instance failed: %s", err.Error())
+		return 0, oaV1.ErrorInternalServerError("insert workflow instance failed")
 	}
-	return r.mapper.ToDTO(entity), nil
+	return entity.ID, nil
 }
 
-// UpdateStatus 状态机推进：写实例状态 + 当前节点指针。currentNodeIndex 为 nil 时清空指针（终结态）。
-func (r *WorkflowInstanceRepo) UpdateStatus(ctx context.Context, id uint32, status oav1.WorkflowInstance_InstanceStatus, currentNodeIndex *int32) error {
-	builder := r.entClient.Client().WorkflowInstance.UpdateOneID(id).
-		SetNillableInstanceStatus(r.instanceStatusConverter.ToEntity(&status)).
-		SetNillableCurrentNodeIndex(currentNodeIndex).
-		SetUpdatedAt(time.Now())
-	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("update workflow instance status failed: %s", err)
-		return oav1.ErrorInternalError("update workflow instance status failed")
+// GetState 直读 entity 的 InstanceStatus 字段（绕过 mapper）。
+// 仅返回是否处于 PENDING（活跃），供状态机校验。终结态（APPROVED/REJECTED）返回 false。
+func (r *WorkflowInstanceRepo) GetState(ctx context.Context, id uint32, tenantID uint32) (bool, error) {
+	entity, err := r.entClient.Client().WorkflowInstance.Query().
+		Where(
+			workflowinstance.IDEQ(id),
+			workflowinstance.TenantIDEQ(tenantID),
+		).
+		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return false, oaV1.ErrorNotFound("workflow instance not found")
+		}
+		r.log.Errorf("query instance state failed: %s", err.Error())
+		return false, oaV1.ErrorInternalServerError("query instance state failed")
+	}
+	if entity.InstanceStatus == nil {
+		return false, oaV1.ErrorConflict("instance state corrupt")
+	}
+	return *entity.InstanceStatus == workflowinstance.InstanceStatusPending, nil
+}
+
+// UpdateStatus 推进实例状态。newNodeIndex==nil 表示终结态，清空 current_node_index。
+func (r *WorkflowInstanceRepo) UpdateStatus(
+	ctx context.Context,
+	id uint32,
+	tenantID uint32,
+	newStatus *oaV1.WorkflowInstance_InstanceStatus,
+	newNodeIndex *int,
+) error {
+	builder := r.entClient.Client().WorkflowInstance.Update()
+	builder.Where(
+		workflowinstance.IDEQ(id),
+		workflowinstance.TenantIDEQ(tenantID),
+	)
+	builder.SetNillableInstanceStatus(r.instanceStatusConverter.ToEntity(newStatus))
+	if newNodeIndex == nil {
+		builder.ClearCurrentNodeIndex()
+	} else {
+		builder.SetNillableCurrentNodeIndex(newNodeIndex)
+	}
+	builder.SetUpdatedAt(time.Now())
+
+	if _, err := builder.Save(ctx); err != nil {
+		r.log.Errorf("update instance state failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("update instance state failed")
 	}
 	return nil
 }
 
-// ListByCreator “我的申请”视图：按调用人 created_by 过滤，tenant 由策略自动隔离。
-func (r *WorkflowInstanceRepo) ListByCreator(ctx context.Context, creatorUserID uint32, req *paginationV1.PagingRequest) (*oav1.GetMyTasksResponse, error) {
-	if req == nil {
-		return nil, oav1.ErrorBadRequest("invalid parameter")
-	}
-	builder := r.entClient.Client().WorkflowInstance.Query().
-		Where(workflowinstance.CreatedByEQ(creatorUserID))
-	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
+// GetMeta 读取实例创建者（申请人）与业务单据关联。推进时解析 LEADER/POSITION 审批人
+// 需以申请人身份为寻人基准；审批终结时按 business_type 回调业务模块。
+func (r *WorkflowInstanceRepo) GetMeta(ctx context.Context, id uint32, tenantID uint32) (uint32, string, uint32, error) {
+	entity, err := r.entClient.Client().WorkflowInstance.Query().
+		Where(
+			workflowinstance.IDEQ(id),
+			workflowinstance.TenantIDEQ(tenantID),
+		).
+		Only(ctx)
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return 0, "", 0, oaV1.ErrorNotFound("workflow instance not found")
+		}
+		r.log.Errorf("query instance meta failed: %s", err.Error())
+		return 0, "", 0, oaV1.ErrorInternalServerError("query instance failed")
 	}
-	if ret == nil {
-		return &oav1.GetMyTasksResponse{Total: 0, Items: nil}, nil
+	if entity.CreatedBy == nil || *entity.CreatedBy == 0 {
+		return 0, "", 0, oaV1.ErrorConflict("instance creator missing")
 	}
-	items := make([]*oav1.MyTaskItem, 0, len(ret.Items))
-	for _, inst := range ret.Items {
-		items = append(items, &oav1.MyTaskItem{
-			InstanceId:  inst.Id,
-			Title:       inst.Title,
-			StatusLabel: ptr(inst.GetInstanceStatus().String()),
-			OccurredAt:  inst.CreatedAt,
-		})
+	creator := *entity.CreatedBy
+	businessType := ""
+	if entity.BusinessType != nil {
+		businessType = *entity.BusinessType
 	}
-	return &oav1.GetMyTasksResponse{Total: ret.Total, Items: items}, nil
+	businessID := uint32(0)
+	if entity.BusinessID != nil {
+		businessID = *entity.BusinessID
+	}
+	return creator, businessType, businessID, nil
+}
+
+// GetDefinitionNodeConfig 经 instance→definition 边读取定义的 node_config（JSON 文本）。
+// 供状态机 APPROVE 推进时解析下一节点审批人。
+func (r *WorkflowInstanceRepo) GetDefinitionNodeConfig(ctx context.Context, id uint32, tenantID uint32) (string, error) {
+	entity, err := r.entClient.Client().WorkflowInstance.Query().
+		Where(
+			workflowinstance.IDEQ(id),
+			workflowinstance.TenantIDEQ(tenantID),
+		).
+		WithDefinition().
+		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return "", oaV1.ErrorNotFound("workflow instance not found")
+		}
+		r.log.Errorf("query instance for node config failed: %s", err.Error())
+		return "", oaV1.ErrorInternalServerError("query instance failed")
+	}
+	def := entity.Edges.Definition
+	if def == nil || def.NodeConfig == nil {
+		return "", oaV1.ErrorConflict("definition node config missing")
+	}
+	return *def.NodeConfig, nil
+}
+
+// ListByCreator “我的申请”列表。按创建者+租户查询实例。
+func (r *WorkflowInstanceRepo) ListByCreator(ctx context.Context, tenantID uint32, creatorUserID uint32) ([]*oaV1.MyTaskItem, error) {
+	entities, err := r.entClient.Client().WorkflowInstance.Query().
+		Where(
+			workflowinstance.CreatedByEQ(creatorUserID),
+			workflowinstance.TenantIDEQ(tenantID),
+		).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf("list instances by creator failed: %s", err.Error())
+		return nil, oaV1.ErrorInternalServerError("list instances failed")
+	}
+
+	items := make([]*oaV1.MyTaskItem, 0, len(entities))
+	for _, e := range entities {
+		item := &oaV1.MyTaskItem{}
+		if e.ID != 0 {
+			item.InstanceId = trans.Ptr(e.ID)
+		}
+		if e.CreatedAt != nil {
+			item.CreatedAt = timeutil.TimeToTimestamppb(e.CreatedAt)
+		}
+		label := instanceStatusLabel(e.InstanceStatus)
+		if label != "" {
+			item.StatusLabel = trans.Ptr(label)
+		}
+		items = append(items, item)
+	}
+	return items, nil
+}
+
+func instanceStatusLabel(s *workflowinstance.InstanceStatus) string {
+	if s == nil {
+		return ""
+	}
+	switch *s {
+	case workflowinstance.InstanceStatusPending:
+		return "进行中"
+	case workflowinstance.InstanceStatusApproved:
+		return "已通过"
+	case workflowinstance.InstanceStatusRejected:
+		return "已驳回"
+	case workflowinstance.InstanceStatusWithdrawn:
+		return "已撤回"
+	}
+	return ""
 }

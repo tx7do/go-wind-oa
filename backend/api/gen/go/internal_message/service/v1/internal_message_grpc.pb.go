@@ -21,13 +21,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	InternalMessageService_ListMessage_FullMethodName   = "/internal_message.service.v1.InternalMessageService/ListMessage"
-	InternalMessageService_GetMessage_FullMethodName    = "/internal_message.service.v1.InternalMessageService/GetMessage"
-	InternalMessageService_CreateMessage_FullMethodName = "/internal_message.service.v1.InternalMessageService/CreateMessage"
-	InternalMessageService_UpdateMessage_FullMethodName = "/internal_message.service.v1.InternalMessageService/UpdateMessage"
-	InternalMessageService_DeleteMessage_FullMethodName = "/internal_message.service.v1.InternalMessageService/DeleteMessage"
-	InternalMessageService_SendMessage_FullMethodName   = "/internal_message.service.v1.InternalMessageService/SendMessage"
-	InternalMessageService_RevokeMessage_FullMethodName = "/internal_message.service.v1.InternalMessageService/RevokeMessage"
+	InternalMessageService_ListMessage_FullMethodName    = "/internal_message.service.v1.InternalMessageService/ListMessage"
+	InternalMessageService_GetMessage_FullMethodName     = "/internal_message.service.v1.InternalMessageService/GetMessage"
+	InternalMessageService_CreateMessage_FullMethodName  = "/internal_message.service.v1.InternalMessageService/CreateMessage"
+	InternalMessageService_UpdateMessage_FullMethodName  = "/internal_message.service.v1.InternalMessageService/UpdateMessage"
+	InternalMessageService_DeleteMessage_FullMethodName  = "/internal_message.service.v1.InternalMessageService/DeleteMessage"
+	InternalMessageService_SendMessage_FullMethodName    = "/internal_message.service.v1.InternalMessageService/SendMessage"
+	InternalMessageService_RevokeMessage_FullMethodName  = "/internal_message.service.v1.InternalMessageService/RevokeMessage"
+	InternalMessageService_ListMyMessages_FullMethodName = "/internal_message.service.v1.InternalMessageService/ListMyMessages"
 )
 
 // InternalMessageServiceClient is the client API for InternalMessageService service.
@@ -50,6 +51,8 @@ type InternalMessageServiceClient interface {
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*SendMessageResponse, error)
 	// 撤销消息
 	RevokeMessage(ctx context.Context, in *RevokeMessageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 查询当前用户收件箱（app 端：按收件人过滤，不含已删除/已撤销）
+	ListMyMessages(ctx context.Context, in *ListMyMessagesRequest, opts ...grpc.CallOption) (*ListInternalMessageResponse, error)
 }
 
 type internalMessageServiceClient struct {
@@ -130,6 +133,16 @@ func (c *internalMessageServiceClient) RevokeMessage(ctx context.Context, in *Re
 	return out, nil
 }
 
+func (c *internalMessageServiceClient) ListMyMessages(ctx context.Context, in *ListMyMessagesRequest, opts ...grpc.CallOption) (*ListInternalMessageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListInternalMessageResponse)
+	err := c.cc.Invoke(ctx, InternalMessageService_ListMyMessages_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InternalMessageServiceServer is the server API for InternalMessageService service.
 // All implementations must embed UnimplementedInternalMessageServiceServer
 // for forward compatibility.
@@ -150,6 +163,8 @@ type InternalMessageServiceServer interface {
 	SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error)
 	// 撤销消息
 	RevokeMessage(context.Context, *RevokeMessageRequest) (*emptypb.Empty, error)
+	// 查询当前用户收件箱（app 端：按收件人过滤，不含已删除/已撤销）
+	ListMyMessages(context.Context, *ListMyMessagesRequest) (*ListInternalMessageResponse, error)
 	mustEmbedUnimplementedInternalMessageServiceServer()
 }
 
@@ -180,6 +195,9 @@ func (UnimplementedInternalMessageServiceServer) SendMessage(context.Context, *S
 }
 func (UnimplementedInternalMessageServiceServer) RevokeMessage(context.Context, *RevokeMessageRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method RevokeMessage not implemented")
+}
+func (UnimplementedInternalMessageServiceServer) ListMyMessages(context.Context, *ListMyMessagesRequest) (*ListInternalMessageResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMyMessages not implemented")
 }
 func (UnimplementedInternalMessageServiceServer) mustEmbedUnimplementedInternalMessageServiceServer() {
 }
@@ -329,6 +347,24 @@ func _InternalMessageService_RevokeMessage_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InternalMessageService_ListMyMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMyMessagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InternalMessageServiceServer).ListMyMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InternalMessageService_ListMyMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InternalMessageServiceServer).ListMyMessages(ctx, req.(*ListMyMessagesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InternalMessageService_ServiceDesc is the grpc.ServiceDesc for InternalMessageService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -363,6 +399,10 @@ var InternalMessageService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RevokeMessage",
 			Handler:    _InternalMessageService_RevokeMessage_Handler,
+		},
+		{
+			MethodName: "ListMyMessages",
+			Handler:    _InternalMessageService_ListMyMessages_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

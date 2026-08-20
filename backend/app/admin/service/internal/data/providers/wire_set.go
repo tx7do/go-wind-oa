@@ -19,28 +19,70 @@ import (
 )
 
 // ProviderSet is the Wire provider set for data layer.
-//
-// OA admin-service 只持有鑑權轉發與站內信通知兩類下游客戶端，以及 captcha /
-// redis / discovery / authorizer / translator 等基座 infra。不再持有 DTM、
-// minio、或任何 cms 業務域的 gRPC 客戶端。
 var ProviderSet = wire.NewSet(
 	data.NewRedisClient,
 	data.NewCaptcha,
+	data.NewMinIoClient,
 	data.NewDiscovery,
 
 	data.NewClientType,
 	data.NewAuthorizer,
+
 	data.NewTranslator,
 
 	auth.NewTokenChecker,
 
 	data.NewAuthenticationServiceClient,
+	data.NewUserCredentialServiceClient,
+	data.NewLoginPolicyServiceClient,
+
+	data.NewUserServiceClient,
+	data.NewRoleServiceClient,
+	data.NewTenantServiceClient,
+	data.NewOrgUnitServiceClient,
+	data.NewPositionServiceClient,
 
 	data.NewInternalMessageCategoryServiceClient,
 	data.NewInternalMessageServiceClient,
 	data.NewInternalMessageRecipientServiceClient,
-
 	data.NewWorkflowServiceClient,
-
+	data.NewLeaveServiceClient,
+	data.NewExpenseServiceClient,
 	data.NewAttendanceServiceClient,
+
+	data.NewFileServiceClient,
+
+	data.NewPermissionGroupServiceClient,
+	data.NewPermissionServiceClient,
+	data.NewApiServiceClient,
+	data.NewMenuServiceClient,
+
+	data.NewDictEntryServiceClient,
+	data.NewDictTypeServiceClient,
+	data.NewLanguageServiceClient,
+
+	data.NewTaskServiceClient,
+
+	data.NewPermissionAuditLogServiceClient,
+	data.NewPolicyEvaluationLogServiceClient,
+	data.NewApiAuditLogServiceClient,
+	data.NewDataAccessAuditLogServiceClient,
+	data.NewLoginAuditLogServiceClient,
+	data.NewOperationAuditLogServiceClient,
+
+	data.NewPageServiceClient,
+	data.NewSectionServiceClient,
+	data.NewCategoryServiceClient,
+	data.NewPostServiceClient,
+	data.NewTagServiceClient,
+
+	data.NewCommentServiceClient,
+	data.NewInteractionAdminServiceClient,
+
+	data.NewNavigationServiceClient,
+	data.NewNavigationItemServiceClient,
+	data.NewSiteSettingServiceClient,
+	data.NewSiteServiceClient,
+
+	data.NewMediaAssetServiceClient,
 )

@@ -29,16 +29,16 @@ const (
 	FieldDeletedBy = "deleted_by"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
-	// FieldRemark holds the string denoting the remark field in the database.
-	FieldRemark = "remark"
-	// FieldTitle holds the string denoting the title field in the database.
-	FieldTitle = "title"
-	// FieldFormData holds the string denoting the form_data field in the database.
-	FieldFormData = "form_data"
 	// FieldInstanceStatus holds the string denoting the instance_status field in the database.
 	FieldInstanceStatus = "instance_status"
 	// FieldCurrentNodeIndex holds the string denoting the current_node_index field in the database.
 	FieldCurrentNodeIndex = "current_node_index"
+	// FieldFormData holds the string denoting the form_data field in the database.
+	FieldFormData = "form_data"
+	// FieldBusinessType holds the string denoting the business_type field in the database.
+	FieldBusinessType = "business_type"
+	// FieldBusinessID holds the string denoting the business_id field in the database.
+	FieldBusinessID = "business_id"
 	// EdgeDefinition holds the string denoting the definition edge name in mutations.
 	EdgeDefinition = "definition"
 	// EdgeTasks holds the string denoting the tasks edge name in mutations.
@@ -80,11 +80,11 @@ var Columns = []string{
 	FieldUpdatedBy,
 	FieldDeletedBy,
 	FieldTenantID,
-	FieldRemark,
-	FieldTitle,
-	FieldFormData,
 	FieldInstanceStatus,
 	FieldCurrentNodeIndex,
+	FieldFormData,
+	FieldBusinessType,
+	FieldBusinessID,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "oa_workflow_instance"
@@ -118,8 +118,6 @@ var (
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
 	DefaultTenantID uint32
-	// DefaultCurrentNodeIndex holds the default value on creation for the "current_node_index" field.
-	DefaultCurrentNodeIndex int32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -127,15 +125,15 @@ var (
 // InstanceStatus defines the type for the "instance_status" enum field.
 type InstanceStatus string
 
-// InstanceStatusPENDING is the default value of the InstanceStatus enum.
-const DefaultInstanceStatus = InstanceStatusPENDING
+// InstanceStatusPending is the default value of the InstanceStatus enum.
+const DefaultInstanceStatus = InstanceStatusPending
 
 // InstanceStatus values.
 const (
-	InstanceStatusPENDING  InstanceStatus = "PENDING"
-	InstanceStatusAPPROVED InstanceStatus = "APPROVED"
-	InstanceStatusREJECTED InstanceStatus = "REJECTED"
-	InstanceStatusCANCELED InstanceStatus = "CANCELED"
+	InstanceStatusPending   InstanceStatus = "PENDING"
+	InstanceStatusApproved  InstanceStatus = "APPROVED"
+	InstanceStatusRejected  InstanceStatus = "REJECTED"
+	InstanceStatusWithdrawn InstanceStatus = "WITHDRAWN"
 )
 
 func (is InstanceStatus) String() string {
@@ -145,7 +143,7 @@ func (is InstanceStatus) String() string {
 // InstanceStatusValidator is a validator for the "instance_status" field enum values. It is called by the builders before save.
 func InstanceStatusValidator(is InstanceStatus) error {
 	switch is {
-	case InstanceStatusPENDING, InstanceStatusAPPROVED, InstanceStatusREJECTED, InstanceStatusCANCELED:
+	case InstanceStatusPending, InstanceStatusApproved, InstanceStatusRejected, InstanceStatusWithdrawn:
 		return nil
 	default:
 		return fmt.Errorf("workflowinstance: invalid enum value for instance_status field: %q", is)
@@ -195,16 +193,6 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
-// ByRemark orders the results by the remark field.
-func ByRemark(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRemark, opts...).ToFunc()
-}
-
-// ByTitle orders the results by the title field.
-func ByTitle(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTitle, opts...).ToFunc()
-}
-
 // ByInstanceStatus orders the results by the instance_status field.
 func ByInstanceStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldInstanceStatus, opts...).ToFunc()
@@ -213,6 +201,21 @@ func ByInstanceStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByCurrentNodeIndex orders the results by the current_node_index field.
 func ByCurrentNodeIndex(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCurrentNodeIndex, opts...).ToFunc()
+}
+
+// ByFormData orders the results by the form_data field.
+func ByFormData(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFormData, opts...).ToFunc()
+}
+
+// ByBusinessType orders the results by the business_type field.
+func ByBusinessType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBusinessType, opts...).ToFunc()
+}
+
+// ByBusinessID orders the results by the business_id field.
+func ByBusinessID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBusinessID, opts...).ToFunc()
 }
 
 // ByDefinitionField orders the results by definition field.

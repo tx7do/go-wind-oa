@@ -95,24 +95,24 @@ func Remark(v string) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldEQ(FieldRemark, v))
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldEQ(FieldName, v))
-}
-
 // Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
 func Code(v string) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldEQ(FieldCode, v))
 }
 
 // Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
-func Version(v uint32) predicate.WorkflowDefinition {
+func Version(v int) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldEQ(FieldVersion, v))
 }
 
-// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
-func Description(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldEQ(FieldDescription, v))
+// NodeConfig applies equality check predicate on the "node_config" field. It's identical to NodeConfigEQ.
+func NodeConfig(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldEQ(FieldNodeConfig, v))
+}
+
+// FormSchema applies equality check predicate on the "form_schema" field. It's identical to FormSchemaEQ.
+func FormSchema(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldEQ(FieldFormSchema, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -540,81 +540,6 @@ func RemarkContainsFold(v string) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldContainsFold(FieldRemark, v))
 }
 
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldEQ(FieldName, v))
-}
-
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldNEQ(FieldName, v))
-}
-
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldIn(FieldName, vs...))
-}
-
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldNotIn(FieldName, vs...))
-}
-
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldGT(FieldName, v))
-}
-
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldGTE(FieldName, v))
-}
-
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldLT(FieldName, v))
-}
-
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldLTE(FieldName, v))
-}
-
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldContains(FieldName, v))
-}
-
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldHasPrefix(FieldName, v))
-}
-
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldHasSuffix(FieldName, v))
-}
-
-// NameIsNil applies the IsNil predicate on the "name" field.
-func NameIsNil() predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldIsNull(FieldName))
-}
-
-// NameNotNil applies the NotNil predicate on the "name" field.
-func NameNotNil() predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldNotNull(FieldName))
-}
-
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldEqualFold(FieldName, v))
-}
-
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldContainsFold(FieldName, v))
-}
-
 // CodeEQ applies the EQ predicate on the "code" field.
 func CodeEQ(v string) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldEQ(FieldCode, v))
@@ -691,42 +616,42 @@ func CodeContainsFold(v string) predicate.WorkflowDefinition {
 }
 
 // VersionEQ applies the EQ predicate on the "version" field.
-func VersionEQ(v uint32) predicate.WorkflowDefinition {
+func VersionEQ(v int) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldEQ(FieldVersion, v))
 }
 
 // VersionNEQ applies the NEQ predicate on the "version" field.
-func VersionNEQ(v uint32) predicate.WorkflowDefinition {
+func VersionNEQ(v int) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldNEQ(FieldVersion, v))
 }
 
 // VersionIn applies the In predicate on the "version" field.
-func VersionIn(vs ...uint32) predicate.WorkflowDefinition {
+func VersionIn(vs ...int) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldIn(FieldVersion, vs...))
 }
 
 // VersionNotIn applies the NotIn predicate on the "version" field.
-func VersionNotIn(vs ...uint32) predicate.WorkflowDefinition {
+func VersionNotIn(vs ...int) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldNotIn(FieldVersion, vs...))
 }
 
 // VersionGT applies the GT predicate on the "version" field.
-func VersionGT(v uint32) predicate.WorkflowDefinition {
+func VersionGT(v int) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldGT(FieldVersion, v))
 }
 
 // VersionGTE applies the GTE predicate on the "version" field.
-func VersionGTE(v uint32) predicate.WorkflowDefinition {
+func VersionGTE(v int) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldGTE(FieldVersion, v))
 }
 
 // VersionLT applies the LT predicate on the "version" field.
-func VersionLT(v uint32) predicate.WorkflowDefinition {
+func VersionLT(v int) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldLT(FieldVersion, v))
 }
 
 // VersionLTE applies the LTE predicate on the "version" field.
-func VersionLTE(v uint32) predicate.WorkflowDefinition {
+func VersionLTE(v int) predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldLTE(FieldVersion, v))
 }
 
@@ -740,79 +665,59 @@ func VersionNotNil() predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldNotNull(FieldVersion))
 }
 
-// DescriptionEQ applies the EQ predicate on the "description" field.
-func DescriptionEQ(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldEQ(FieldDescription, v))
+// NodeConfigEQ applies the EQ predicate on the "node_config" field.
+func NodeConfigEQ(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldEQ(FieldNodeConfig, v))
 }
 
-// DescriptionNEQ applies the NEQ predicate on the "description" field.
-func DescriptionNEQ(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldNEQ(FieldDescription, v))
+// NodeConfigNEQ applies the NEQ predicate on the "node_config" field.
+func NodeConfigNEQ(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldNEQ(FieldNodeConfig, v))
 }
 
-// DescriptionIn applies the In predicate on the "description" field.
-func DescriptionIn(vs ...string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldIn(FieldDescription, vs...))
+// NodeConfigIn applies the In predicate on the "node_config" field.
+func NodeConfigIn(vs ...string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldIn(FieldNodeConfig, vs...))
 }
 
-// DescriptionNotIn applies the NotIn predicate on the "description" field.
-func DescriptionNotIn(vs ...string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldNotIn(FieldDescription, vs...))
+// NodeConfigNotIn applies the NotIn predicate on the "node_config" field.
+func NodeConfigNotIn(vs ...string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldNotIn(FieldNodeConfig, vs...))
 }
 
-// DescriptionGT applies the GT predicate on the "description" field.
-func DescriptionGT(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldGT(FieldDescription, v))
+// NodeConfigGT applies the GT predicate on the "node_config" field.
+func NodeConfigGT(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldGT(FieldNodeConfig, v))
 }
 
-// DescriptionGTE applies the GTE predicate on the "description" field.
-func DescriptionGTE(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldGTE(FieldDescription, v))
+// NodeConfigGTE applies the GTE predicate on the "node_config" field.
+func NodeConfigGTE(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldGTE(FieldNodeConfig, v))
 }
 
-// DescriptionLT applies the LT predicate on the "description" field.
-func DescriptionLT(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldLT(FieldDescription, v))
+// NodeConfigLT applies the LT predicate on the "node_config" field.
+func NodeConfigLT(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldLT(FieldNodeConfig, v))
 }
 
-// DescriptionLTE applies the LTE predicate on the "description" field.
-func DescriptionLTE(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldLTE(FieldDescription, v))
+// NodeConfigLTE applies the LTE predicate on the "node_config" field.
+func NodeConfigLTE(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldLTE(FieldNodeConfig, v))
 }
 
-// DescriptionContains applies the Contains predicate on the "description" field.
-func DescriptionContains(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldContains(FieldDescription, v))
+// NodeConfigContains applies the Contains predicate on the "node_config" field.
+func NodeConfigContains(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldContains(FieldNodeConfig, v))
 }
 
-// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
-func DescriptionHasPrefix(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldHasPrefix(FieldDescription, v))
+// NodeConfigHasPrefix applies the HasPrefix predicate on the "node_config" field.
+func NodeConfigHasPrefix(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldHasPrefix(FieldNodeConfig, v))
 }
 
-// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
-func DescriptionHasSuffix(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldHasSuffix(FieldDescription, v))
-}
-
-// DescriptionIsNil applies the IsNil predicate on the "description" field.
-func DescriptionIsNil() predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldIsNull(FieldDescription))
-}
-
-// DescriptionNotNil applies the NotNil predicate on the "description" field.
-func DescriptionNotNil() predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldNotNull(FieldDescription))
-}
-
-// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
-func DescriptionEqualFold(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldEqualFold(FieldDescription, v))
-}
-
-// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
-func DescriptionContainsFold(v string) predicate.WorkflowDefinition {
-	return predicate.WorkflowDefinition(sql.FieldContainsFold(FieldDescription, v))
+// NodeConfigHasSuffix applies the HasSuffix predicate on the "node_config" field.
+func NodeConfigHasSuffix(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldHasSuffix(FieldNodeConfig, v))
 }
 
 // NodeConfigIsNil applies the IsNil predicate on the "node_config" field.
@@ -825,6 +730,71 @@ func NodeConfigNotNil() predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldNotNull(FieldNodeConfig))
 }
 
+// NodeConfigEqualFold applies the EqualFold predicate on the "node_config" field.
+func NodeConfigEqualFold(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldEqualFold(FieldNodeConfig, v))
+}
+
+// NodeConfigContainsFold applies the ContainsFold predicate on the "node_config" field.
+func NodeConfigContainsFold(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldContainsFold(FieldNodeConfig, v))
+}
+
+// FormSchemaEQ applies the EQ predicate on the "form_schema" field.
+func FormSchemaEQ(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldEQ(FieldFormSchema, v))
+}
+
+// FormSchemaNEQ applies the NEQ predicate on the "form_schema" field.
+func FormSchemaNEQ(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldNEQ(FieldFormSchema, v))
+}
+
+// FormSchemaIn applies the In predicate on the "form_schema" field.
+func FormSchemaIn(vs ...string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldIn(FieldFormSchema, vs...))
+}
+
+// FormSchemaNotIn applies the NotIn predicate on the "form_schema" field.
+func FormSchemaNotIn(vs ...string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldNotIn(FieldFormSchema, vs...))
+}
+
+// FormSchemaGT applies the GT predicate on the "form_schema" field.
+func FormSchemaGT(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldGT(FieldFormSchema, v))
+}
+
+// FormSchemaGTE applies the GTE predicate on the "form_schema" field.
+func FormSchemaGTE(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldGTE(FieldFormSchema, v))
+}
+
+// FormSchemaLT applies the LT predicate on the "form_schema" field.
+func FormSchemaLT(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldLT(FieldFormSchema, v))
+}
+
+// FormSchemaLTE applies the LTE predicate on the "form_schema" field.
+func FormSchemaLTE(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldLTE(FieldFormSchema, v))
+}
+
+// FormSchemaContains applies the Contains predicate on the "form_schema" field.
+func FormSchemaContains(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldContains(FieldFormSchema, v))
+}
+
+// FormSchemaHasPrefix applies the HasPrefix predicate on the "form_schema" field.
+func FormSchemaHasPrefix(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldHasPrefix(FieldFormSchema, v))
+}
+
+// FormSchemaHasSuffix applies the HasSuffix predicate on the "form_schema" field.
+func FormSchemaHasSuffix(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldHasSuffix(FieldFormSchema, v))
+}
+
 // FormSchemaIsNil applies the IsNil predicate on the "form_schema" field.
 func FormSchemaIsNil() predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldIsNull(FieldFormSchema))
@@ -833,6 +803,16 @@ func FormSchemaIsNil() predicate.WorkflowDefinition {
 // FormSchemaNotNil applies the NotNil predicate on the "form_schema" field.
 func FormSchemaNotNil() predicate.WorkflowDefinition {
 	return predicate.WorkflowDefinition(sql.FieldNotNull(FieldFormSchema))
+}
+
+// FormSchemaEqualFold applies the EqualFold predicate on the "form_schema" field.
+func FormSchemaEqualFold(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldEqualFold(FieldFormSchema, v))
+}
+
+// FormSchemaContainsFold applies the ContainsFold predicate on the "form_schema" field.
+func FormSchemaContainsFold(v string) predicate.WorkflowDefinition {
+	return predicate.WorkflowDefinition(sql.FieldContainsFold(FieldFormSchema, v))
 }
 
 // DefinitionStatusEQ applies the EQ predicate on the "definition_status" field.

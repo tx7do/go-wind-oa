@@ -90,19 +90,24 @@ func TenantID(v uint32) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldEQ(FieldTenantID, v))
 }
 
-// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
-func Remark(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldEQ(FieldRemark, v))
-}
-
-// Title applies equality check predicate on the "title" field. It's identical to TitleEQ.
-func Title(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldEQ(FieldTitle, v))
-}
-
 // CurrentNodeIndex applies equality check predicate on the "current_node_index" field. It's identical to CurrentNodeIndexEQ.
-func CurrentNodeIndex(v int32) predicate.WorkflowInstance {
+func CurrentNodeIndex(v int) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldEQ(FieldCurrentNodeIndex, v))
+}
+
+// FormData applies equality check predicate on the "form_data" field. It's identical to FormDataEQ.
+func FormData(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldFormData, v))
+}
+
+// BusinessType applies equality check predicate on the "business_type" field. It's identical to BusinessTypeEQ.
+func BusinessType(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldBusinessType, v))
+}
+
+// BusinessID applies equality check predicate on the "business_id" field. It's identical to BusinessIDEQ.
+func BusinessID(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldBusinessID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -455,166 +460,6 @@ func TenantIDNotNil() predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldNotNull(FieldTenantID))
 }
 
-// RemarkEQ applies the EQ predicate on the "remark" field.
-func RemarkEQ(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldEQ(FieldRemark, v))
-}
-
-// RemarkNEQ applies the NEQ predicate on the "remark" field.
-func RemarkNEQ(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldNEQ(FieldRemark, v))
-}
-
-// RemarkIn applies the In predicate on the "remark" field.
-func RemarkIn(vs ...string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldIn(FieldRemark, vs...))
-}
-
-// RemarkNotIn applies the NotIn predicate on the "remark" field.
-func RemarkNotIn(vs ...string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldNotIn(FieldRemark, vs...))
-}
-
-// RemarkGT applies the GT predicate on the "remark" field.
-func RemarkGT(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldGT(FieldRemark, v))
-}
-
-// RemarkGTE applies the GTE predicate on the "remark" field.
-func RemarkGTE(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldGTE(FieldRemark, v))
-}
-
-// RemarkLT applies the LT predicate on the "remark" field.
-func RemarkLT(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldLT(FieldRemark, v))
-}
-
-// RemarkLTE applies the LTE predicate on the "remark" field.
-func RemarkLTE(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldLTE(FieldRemark, v))
-}
-
-// RemarkContains applies the Contains predicate on the "remark" field.
-func RemarkContains(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldContains(FieldRemark, v))
-}
-
-// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
-func RemarkHasPrefix(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldHasPrefix(FieldRemark, v))
-}
-
-// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
-func RemarkHasSuffix(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldHasSuffix(FieldRemark, v))
-}
-
-// RemarkIsNil applies the IsNil predicate on the "remark" field.
-func RemarkIsNil() predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldIsNull(FieldRemark))
-}
-
-// RemarkNotNil applies the NotNil predicate on the "remark" field.
-func RemarkNotNil() predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldNotNull(FieldRemark))
-}
-
-// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
-func RemarkEqualFold(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldEqualFold(FieldRemark, v))
-}
-
-// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
-func RemarkContainsFold(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldContainsFold(FieldRemark, v))
-}
-
-// TitleEQ applies the EQ predicate on the "title" field.
-func TitleEQ(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldEQ(FieldTitle, v))
-}
-
-// TitleNEQ applies the NEQ predicate on the "title" field.
-func TitleNEQ(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldNEQ(FieldTitle, v))
-}
-
-// TitleIn applies the In predicate on the "title" field.
-func TitleIn(vs ...string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldIn(FieldTitle, vs...))
-}
-
-// TitleNotIn applies the NotIn predicate on the "title" field.
-func TitleNotIn(vs ...string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldNotIn(FieldTitle, vs...))
-}
-
-// TitleGT applies the GT predicate on the "title" field.
-func TitleGT(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldGT(FieldTitle, v))
-}
-
-// TitleGTE applies the GTE predicate on the "title" field.
-func TitleGTE(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldGTE(FieldTitle, v))
-}
-
-// TitleLT applies the LT predicate on the "title" field.
-func TitleLT(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldLT(FieldTitle, v))
-}
-
-// TitleLTE applies the LTE predicate on the "title" field.
-func TitleLTE(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldLTE(FieldTitle, v))
-}
-
-// TitleContains applies the Contains predicate on the "title" field.
-func TitleContains(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldContains(FieldTitle, v))
-}
-
-// TitleHasPrefix applies the HasPrefix predicate on the "title" field.
-func TitleHasPrefix(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldHasPrefix(FieldTitle, v))
-}
-
-// TitleHasSuffix applies the HasSuffix predicate on the "title" field.
-func TitleHasSuffix(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldHasSuffix(FieldTitle, v))
-}
-
-// TitleIsNil applies the IsNil predicate on the "title" field.
-func TitleIsNil() predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldIsNull(FieldTitle))
-}
-
-// TitleNotNil applies the NotNil predicate on the "title" field.
-func TitleNotNil() predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldNotNull(FieldTitle))
-}
-
-// TitleEqualFold applies the EqualFold predicate on the "title" field.
-func TitleEqualFold(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldEqualFold(FieldTitle, v))
-}
-
-// TitleContainsFold applies the ContainsFold predicate on the "title" field.
-func TitleContainsFold(v string) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldContainsFold(FieldTitle, v))
-}
-
-// FormDataIsNil applies the IsNil predicate on the "form_data" field.
-func FormDataIsNil() predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldIsNull(FieldFormData))
-}
-
-// FormDataNotNil applies the NotNil predicate on the "form_data" field.
-func FormDataNotNil() predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldNotNull(FieldFormData))
-}
-
 // InstanceStatusEQ applies the EQ predicate on the "instance_status" field.
 func InstanceStatusEQ(v InstanceStatus) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldEQ(FieldInstanceStatus, v))
@@ -646,42 +491,42 @@ func InstanceStatusNotNil() predicate.WorkflowInstance {
 }
 
 // CurrentNodeIndexEQ applies the EQ predicate on the "current_node_index" field.
-func CurrentNodeIndexEQ(v int32) predicate.WorkflowInstance {
+func CurrentNodeIndexEQ(v int) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldEQ(FieldCurrentNodeIndex, v))
 }
 
 // CurrentNodeIndexNEQ applies the NEQ predicate on the "current_node_index" field.
-func CurrentNodeIndexNEQ(v int32) predicate.WorkflowInstance {
+func CurrentNodeIndexNEQ(v int) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldNEQ(FieldCurrentNodeIndex, v))
 }
 
 // CurrentNodeIndexIn applies the In predicate on the "current_node_index" field.
-func CurrentNodeIndexIn(vs ...int32) predicate.WorkflowInstance {
+func CurrentNodeIndexIn(vs ...int) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldIn(FieldCurrentNodeIndex, vs...))
 }
 
 // CurrentNodeIndexNotIn applies the NotIn predicate on the "current_node_index" field.
-func CurrentNodeIndexNotIn(vs ...int32) predicate.WorkflowInstance {
+func CurrentNodeIndexNotIn(vs ...int) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldNotIn(FieldCurrentNodeIndex, vs...))
 }
 
 // CurrentNodeIndexGT applies the GT predicate on the "current_node_index" field.
-func CurrentNodeIndexGT(v int32) predicate.WorkflowInstance {
+func CurrentNodeIndexGT(v int) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldGT(FieldCurrentNodeIndex, v))
 }
 
 // CurrentNodeIndexGTE applies the GTE predicate on the "current_node_index" field.
-func CurrentNodeIndexGTE(v int32) predicate.WorkflowInstance {
+func CurrentNodeIndexGTE(v int) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldGTE(FieldCurrentNodeIndex, v))
 }
 
 // CurrentNodeIndexLT applies the LT predicate on the "current_node_index" field.
-func CurrentNodeIndexLT(v int32) predicate.WorkflowInstance {
+func CurrentNodeIndexLT(v int) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldLT(FieldCurrentNodeIndex, v))
 }
 
 // CurrentNodeIndexLTE applies the LTE predicate on the "current_node_index" field.
-func CurrentNodeIndexLTE(v int32) predicate.WorkflowInstance {
+func CurrentNodeIndexLTE(v int) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldLTE(FieldCurrentNodeIndex, v))
 }
 
@@ -693,6 +538,206 @@ func CurrentNodeIndexIsNil() predicate.WorkflowInstance {
 // CurrentNodeIndexNotNil applies the NotNil predicate on the "current_node_index" field.
 func CurrentNodeIndexNotNil() predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldNotNull(FieldCurrentNodeIndex))
+}
+
+// FormDataEQ applies the EQ predicate on the "form_data" field.
+func FormDataEQ(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldFormData, v))
+}
+
+// FormDataNEQ applies the NEQ predicate on the "form_data" field.
+func FormDataNEQ(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNEQ(FieldFormData, v))
+}
+
+// FormDataIn applies the In predicate on the "form_data" field.
+func FormDataIn(vs ...string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIn(FieldFormData, vs...))
+}
+
+// FormDataNotIn applies the NotIn predicate on the "form_data" field.
+func FormDataNotIn(vs ...string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotIn(FieldFormData, vs...))
+}
+
+// FormDataGT applies the GT predicate on the "form_data" field.
+func FormDataGT(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGT(FieldFormData, v))
+}
+
+// FormDataGTE applies the GTE predicate on the "form_data" field.
+func FormDataGTE(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGTE(FieldFormData, v))
+}
+
+// FormDataLT applies the LT predicate on the "form_data" field.
+func FormDataLT(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLT(FieldFormData, v))
+}
+
+// FormDataLTE applies the LTE predicate on the "form_data" field.
+func FormDataLTE(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLTE(FieldFormData, v))
+}
+
+// FormDataContains applies the Contains predicate on the "form_data" field.
+func FormDataContains(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldContains(FieldFormData, v))
+}
+
+// FormDataHasPrefix applies the HasPrefix predicate on the "form_data" field.
+func FormDataHasPrefix(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldHasPrefix(FieldFormData, v))
+}
+
+// FormDataHasSuffix applies the HasSuffix predicate on the "form_data" field.
+func FormDataHasSuffix(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldHasSuffix(FieldFormData, v))
+}
+
+// FormDataIsNil applies the IsNil predicate on the "form_data" field.
+func FormDataIsNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIsNull(FieldFormData))
+}
+
+// FormDataNotNil applies the NotNil predicate on the "form_data" field.
+func FormDataNotNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotNull(FieldFormData))
+}
+
+// FormDataEqualFold applies the EqualFold predicate on the "form_data" field.
+func FormDataEqualFold(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEqualFold(FieldFormData, v))
+}
+
+// FormDataContainsFold applies the ContainsFold predicate on the "form_data" field.
+func FormDataContainsFold(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldContainsFold(FieldFormData, v))
+}
+
+// BusinessTypeEQ applies the EQ predicate on the "business_type" field.
+func BusinessTypeEQ(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldBusinessType, v))
+}
+
+// BusinessTypeNEQ applies the NEQ predicate on the "business_type" field.
+func BusinessTypeNEQ(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNEQ(FieldBusinessType, v))
+}
+
+// BusinessTypeIn applies the In predicate on the "business_type" field.
+func BusinessTypeIn(vs ...string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIn(FieldBusinessType, vs...))
+}
+
+// BusinessTypeNotIn applies the NotIn predicate on the "business_type" field.
+func BusinessTypeNotIn(vs ...string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotIn(FieldBusinessType, vs...))
+}
+
+// BusinessTypeGT applies the GT predicate on the "business_type" field.
+func BusinessTypeGT(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGT(FieldBusinessType, v))
+}
+
+// BusinessTypeGTE applies the GTE predicate on the "business_type" field.
+func BusinessTypeGTE(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGTE(FieldBusinessType, v))
+}
+
+// BusinessTypeLT applies the LT predicate on the "business_type" field.
+func BusinessTypeLT(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLT(FieldBusinessType, v))
+}
+
+// BusinessTypeLTE applies the LTE predicate on the "business_type" field.
+func BusinessTypeLTE(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLTE(FieldBusinessType, v))
+}
+
+// BusinessTypeContains applies the Contains predicate on the "business_type" field.
+func BusinessTypeContains(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldContains(FieldBusinessType, v))
+}
+
+// BusinessTypeHasPrefix applies the HasPrefix predicate on the "business_type" field.
+func BusinessTypeHasPrefix(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldHasPrefix(FieldBusinessType, v))
+}
+
+// BusinessTypeHasSuffix applies the HasSuffix predicate on the "business_type" field.
+func BusinessTypeHasSuffix(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldHasSuffix(FieldBusinessType, v))
+}
+
+// BusinessTypeIsNil applies the IsNil predicate on the "business_type" field.
+func BusinessTypeIsNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIsNull(FieldBusinessType))
+}
+
+// BusinessTypeNotNil applies the NotNil predicate on the "business_type" field.
+func BusinessTypeNotNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotNull(FieldBusinessType))
+}
+
+// BusinessTypeEqualFold applies the EqualFold predicate on the "business_type" field.
+func BusinessTypeEqualFold(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEqualFold(FieldBusinessType, v))
+}
+
+// BusinessTypeContainsFold applies the ContainsFold predicate on the "business_type" field.
+func BusinessTypeContainsFold(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldContainsFold(FieldBusinessType, v))
+}
+
+// BusinessIDEQ applies the EQ predicate on the "business_id" field.
+func BusinessIDEQ(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldBusinessID, v))
+}
+
+// BusinessIDNEQ applies the NEQ predicate on the "business_id" field.
+func BusinessIDNEQ(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNEQ(FieldBusinessID, v))
+}
+
+// BusinessIDIn applies the In predicate on the "business_id" field.
+func BusinessIDIn(vs ...uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIn(FieldBusinessID, vs...))
+}
+
+// BusinessIDNotIn applies the NotIn predicate on the "business_id" field.
+func BusinessIDNotIn(vs ...uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotIn(FieldBusinessID, vs...))
+}
+
+// BusinessIDGT applies the GT predicate on the "business_id" field.
+func BusinessIDGT(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGT(FieldBusinessID, v))
+}
+
+// BusinessIDGTE applies the GTE predicate on the "business_id" field.
+func BusinessIDGTE(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGTE(FieldBusinessID, v))
+}
+
+// BusinessIDLT applies the LT predicate on the "business_id" field.
+func BusinessIDLT(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLT(FieldBusinessID, v))
+}
+
+// BusinessIDLTE applies the LTE predicate on the "business_id" field.
+func BusinessIDLTE(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLTE(FieldBusinessID, v))
+}
+
+// BusinessIDIsNil applies the IsNil predicate on the "business_id" field.
+func BusinessIDIsNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIsNull(FieldBusinessID))
+}
+
+// BusinessIDNotNil applies the NotNil predicate on the "business_id" field.
+func BusinessIDNotNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotNull(FieldBusinessID))
 }
 
 // HasDefinition applies the HasEdge predicate on the "definition" edge.

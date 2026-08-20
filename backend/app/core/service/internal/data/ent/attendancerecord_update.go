@@ -150,117 +150,246 @@ func (_u *AttendanceRecordUpdate) ClearDeletedBy() *AttendanceRecordUpdate {
 	return _u
 }
 
-// SetRemark sets the "remark" field.
-func (_u *AttendanceRecordUpdate) SetRemark(v string) *AttendanceRecordUpdate {
-	_u.mutation.SetRemark(v)
+// SetUserID sets the "user_id" field.
+func (_u *AttendanceRecordUpdate) SetUserID(v uint32) *AttendanceRecordUpdate {
+	_u.mutation.ResetUserID()
+	_u.mutation.SetUserID(v)
 	return _u
 }
 
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_u *AttendanceRecordUpdate) SetNillableRemark(v *string) *AttendanceRecordUpdate {
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableUserID(v *uint32) *AttendanceRecordUpdate {
 	if v != nil {
-		_u.SetRemark(*v)
+		_u.SetUserID(*v)
 	}
 	return _u
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (_u *AttendanceRecordUpdate) ClearRemark() *AttendanceRecordUpdate {
-	_u.mutation.ClearRemark()
+// AddUserID adds value to the "user_id" field.
+func (_u *AttendanceRecordUpdate) AddUserID(v int32) *AttendanceRecordUpdate {
+	_u.mutation.AddUserID(v)
 	return _u
 }
 
-// SetCheckResult sets the "check_result" field.
-func (_u *AttendanceRecordUpdate) SetCheckResult(v attendancerecord.CheckResult) *AttendanceRecordUpdate {
-	_u.mutation.SetCheckResult(v)
+// SetWorkDate sets the "work_date" field.
+func (_u *AttendanceRecordUpdate) SetWorkDate(v time.Time) *AttendanceRecordUpdate {
+	_u.mutation.SetWorkDate(v)
 	return _u
 }
 
-// SetNillableCheckResult sets the "check_result" field if the given value is not nil.
-func (_u *AttendanceRecordUpdate) SetNillableCheckResult(v *attendancerecord.CheckResult) *AttendanceRecordUpdate {
+// SetNillableWorkDate sets the "work_date" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableWorkDate(v *time.Time) *AttendanceRecordUpdate {
 	if v != nil {
-		_u.SetCheckResult(*v)
+		_u.SetWorkDate(*v)
 	}
 	return _u
 }
 
-// ClearCheckResult clears the value of the "check_result" field.
-func (_u *AttendanceRecordUpdate) ClearCheckResult() *AttendanceRecordUpdate {
-	_u.mutation.ClearCheckResult()
+// SetCheckInAt sets the "check_in_at" field.
+func (_u *AttendanceRecordUpdate) SetCheckInAt(v time.Time) *AttendanceRecordUpdate {
+	_u.mutation.SetCheckInAt(v)
 	return _u
 }
 
-// SetLongitude sets the "longitude" field.
-func (_u *AttendanceRecordUpdate) SetLongitude(v float64) *AttendanceRecordUpdate {
-	_u.mutation.ResetLongitude()
-	_u.mutation.SetLongitude(v)
-	return _u
-}
-
-// SetNillableLongitude sets the "longitude" field if the given value is not nil.
-func (_u *AttendanceRecordUpdate) SetNillableLongitude(v *float64) *AttendanceRecordUpdate {
+// SetNillableCheckInAt sets the "check_in_at" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableCheckInAt(v *time.Time) *AttendanceRecordUpdate {
 	if v != nil {
-		_u.SetLongitude(*v)
+		_u.SetCheckInAt(*v)
 	}
 	return _u
 }
 
-// AddLongitude adds value to the "longitude" field.
-func (_u *AttendanceRecordUpdate) AddLongitude(v float64) *AttendanceRecordUpdate {
-	_u.mutation.AddLongitude(v)
+// ClearCheckInAt clears the value of the "check_in_at" field.
+func (_u *AttendanceRecordUpdate) ClearCheckInAt() *AttendanceRecordUpdate {
+	_u.mutation.ClearCheckInAt()
 	return _u
 }
 
-// ClearLongitude clears the value of the "longitude" field.
-func (_u *AttendanceRecordUpdate) ClearLongitude() *AttendanceRecordUpdate {
-	_u.mutation.ClearLongitude()
+// SetCheckInLatitude sets the "check_in_latitude" field.
+func (_u *AttendanceRecordUpdate) SetCheckInLatitude(v float64) *AttendanceRecordUpdate {
+	_u.mutation.ResetCheckInLatitude()
+	_u.mutation.SetCheckInLatitude(v)
 	return _u
 }
 
-// SetLatitude sets the "latitude" field.
-func (_u *AttendanceRecordUpdate) SetLatitude(v float64) *AttendanceRecordUpdate {
-	_u.mutation.ResetLatitude()
-	_u.mutation.SetLatitude(v)
-	return _u
-}
-
-// SetNillableLatitude sets the "latitude" field if the given value is not nil.
-func (_u *AttendanceRecordUpdate) SetNillableLatitude(v *float64) *AttendanceRecordUpdate {
+// SetNillableCheckInLatitude sets the "check_in_latitude" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableCheckInLatitude(v *float64) *AttendanceRecordUpdate {
 	if v != nil {
-		_u.SetLatitude(*v)
+		_u.SetCheckInLatitude(*v)
 	}
 	return _u
 }
 
-// AddLatitude adds value to the "latitude" field.
-func (_u *AttendanceRecordUpdate) AddLatitude(v float64) *AttendanceRecordUpdate {
-	_u.mutation.AddLatitude(v)
+// AddCheckInLatitude adds value to the "check_in_latitude" field.
+func (_u *AttendanceRecordUpdate) AddCheckInLatitude(v float64) *AttendanceRecordUpdate {
+	_u.mutation.AddCheckInLatitude(v)
 	return _u
 }
 
-// ClearLatitude clears the value of the "latitude" field.
-func (_u *AttendanceRecordUpdate) ClearLatitude() *AttendanceRecordUpdate {
-	_u.mutation.ClearLatitude()
+// ClearCheckInLatitude clears the value of the "check_in_latitude" field.
+func (_u *AttendanceRecordUpdate) ClearCheckInLatitude() *AttendanceRecordUpdate {
+	_u.mutation.ClearCheckInLatitude()
 	return _u
 }
 
-// SetBssid sets the "bssid" field.
-func (_u *AttendanceRecordUpdate) SetBssid(v string) *AttendanceRecordUpdate {
-	_u.mutation.SetBssid(v)
+// SetCheckInLongitude sets the "check_in_longitude" field.
+func (_u *AttendanceRecordUpdate) SetCheckInLongitude(v float64) *AttendanceRecordUpdate {
+	_u.mutation.ResetCheckInLongitude()
+	_u.mutation.SetCheckInLongitude(v)
 	return _u
 }
 
-// SetNillableBssid sets the "bssid" field if the given value is not nil.
-func (_u *AttendanceRecordUpdate) SetNillableBssid(v *string) *AttendanceRecordUpdate {
+// SetNillableCheckInLongitude sets the "check_in_longitude" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableCheckInLongitude(v *float64) *AttendanceRecordUpdate {
 	if v != nil {
-		_u.SetBssid(*v)
+		_u.SetCheckInLongitude(*v)
 	}
 	return _u
 }
 
-// ClearBssid clears the value of the "bssid" field.
-func (_u *AttendanceRecordUpdate) ClearBssid() *AttendanceRecordUpdate {
-	_u.mutation.ClearBssid()
+// AddCheckInLongitude adds value to the "check_in_longitude" field.
+func (_u *AttendanceRecordUpdate) AddCheckInLongitude(v float64) *AttendanceRecordUpdate {
+	_u.mutation.AddCheckInLongitude(v)
+	return _u
+}
+
+// ClearCheckInLongitude clears the value of the "check_in_longitude" field.
+func (_u *AttendanceRecordUpdate) ClearCheckInLongitude() *AttendanceRecordUpdate {
+	_u.mutation.ClearCheckInLongitude()
+	return _u
+}
+
+// SetCheckInWifiBssid sets the "check_in_wifi_bssid" field.
+func (_u *AttendanceRecordUpdate) SetCheckInWifiBssid(v string) *AttendanceRecordUpdate {
+	_u.mutation.SetCheckInWifiBssid(v)
+	return _u
+}
+
+// SetNillableCheckInWifiBssid sets the "check_in_wifi_bssid" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableCheckInWifiBssid(v *string) *AttendanceRecordUpdate {
+	if v != nil {
+		_u.SetCheckInWifiBssid(*v)
+	}
+	return _u
+}
+
+// ClearCheckInWifiBssid clears the value of the "check_in_wifi_bssid" field.
+func (_u *AttendanceRecordUpdate) ClearCheckInWifiBssid() *AttendanceRecordUpdate {
+	_u.mutation.ClearCheckInWifiBssid()
+	return _u
+}
+
+// SetCheckOutAt sets the "check_out_at" field.
+func (_u *AttendanceRecordUpdate) SetCheckOutAt(v time.Time) *AttendanceRecordUpdate {
+	_u.mutation.SetCheckOutAt(v)
+	return _u
+}
+
+// SetNillableCheckOutAt sets the "check_out_at" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableCheckOutAt(v *time.Time) *AttendanceRecordUpdate {
+	if v != nil {
+		_u.SetCheckOutAt(*v)
+	}
+	return _u
+}
+
+// ClearCheckOutAt clears the value of the "check_out_at" field.
+func (_u *AttendanceRecordUpdate) ClearCheckOutAt() *AttendanceRecordUpdate {
+	_u.mutation.ClearCheckOutAt()
+	return _u
+}
+
+// SetCheckOutLatitude sets the "check_out_latitude" field.
+func (_u *AttendanceRecordUpdate) SetCheckOutLatitude(v float64) *AttendanceRecordUpdate {
+	_u.mutation.ResetCheckOutLatitude()
+	_u.mutation.SetCheckOutLatitude(v)
+	return _u
+}
+
+// SetNillableCheckOutLatitude sets the "check_out_latitude" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableCheckOutLatitude(v *float64) *AttendanceRecordUpdate {
+	if v != nil {
+		_u.SetCheckOutLatitude(*v)
+	}
+	return _u
+}
+
+// AddCheckOutLatitude adds value to the "check_out_latitude" field.
+func (_u *AttendanceRecordUpdate) AddCheckOutLatitude(v float64) *AttendanceRecordUpdate {
+	_u.mutation.AddCheckOutLatitude(v)
+	return _u
+}
+
+// ClearCheckOutLatitude clears the value of the "check_out_latitude" field.
+func (_u *AttendanceRecordUpdate) ClearCheckOutLatitude() *AttendanceRecordUpdate {
+	_u.mutation.ClearCheckOutLatitude()
+	return _u
+}
+
+// SetCheckOutLongitude sets the "check_out_longitude" field.
+func (_u *AttendanceRecordUpdate) SetCheckOutLongitude(v float64) *AttendanceRecordUpdate {
+	_u.mutation.ResetCheckOutLongitude()
+	_u.mutation.SetCheckOutLongitude(v)
+	return _u
+}
+
+// SetNillableCheckOutLongitude sets the "check_out_longitude" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableCheckOutLongitude(v *float64) *AttendanceRecordUpdate {
+	if v != nil {
+		_u.SetCheckOutLongitude(*v)
+	}
+	return _u
+}
+
+// AddCheckOutLongitude adds value to the "check_out_longitude" field.
+func (_u *AttendanceRecordUpdate) AddCheckOutLongitude(v float64) *AttendanceRecordUpdate {
+	_u.mutation.AddCheckOutLongitude(v)
+	return _u
+}
+
+// ClearCheckOutLongitude clears the value of the "check_out_longitude" field.
+func (_u *AttendanceRecordUpdate) ClearCheckOutLongitude() *AttendanceRecordUpdate {
+	_u.mutation.ClearCheckOutLongitude()
+	return _u
+}
+
+// SetCheckOutWifiBssid sets the "check_out_wifi_bssid" field.
+func (_u *AttendanceRecordUpdate) SetCheckOutWifiBssid(v string) *AttendanceRecordUpdate {
+	_u.mutation.SetCheckOutWifiBssid(v)
+	return _u
+}
+
+// SetNillableCheckOutWifiBssid sets the "check_out_wifi_bssid" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableCheckOutWifiBssid(v *string) *AttendanceRecordUpdate {
+	if v != nil {
+		_u.SetCheckOutWifiBssid(*v)
+	}
+	return _u
+}
+
+// ClearCheckOutWifiBssid clears the value of the "check_out_wifi_bssid" field.
+func (_u *AttendanceRecordUpdate) ClearCheckOutWifiBssid() *AttendanceRecordUpdate {
+	_u.mutation.ClearCheckOutWifiBssid()
+	return _u
+}
+
+// SetDayResult sets the "day_result" field.
+func (_u *AttendanceRecordUpdate) SetDayResult(v attendancerecord.DayResult) *AttendanceRecordUpdate {
+	_u.mutation.SetDayResult(v)
+	return _u
+}
+
+// SetNillableDayResult sets the "day_result" field if the given value is not nil.
+func (_u *AttendanceRecordUpdate) SetNillableDayResult(v *attendancerecord.DayResult) *AttendanceRecordUpdate {
+	if v != nil {
+		_u.SetDayResult(*v)
+	}
+	return _u
+}
+
+// ClearDayResult clears the value of the "day_result" field.
+func (_u *AttendanceRecordUpdate) ClearDayResult() *AttendanceRecordUpdate {
+	_u.mutation.ClearDayResult()
 	return _u
 }
 
@@ -298,9 +427,19 @@ func (_u *AttendanceRecordUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *AttendanceRecordUpdate) check() error {
-	if v, ok := _u.mutation.CheckResult(); ok {
-		if err := attendancerecord.CheckResultValidator(v); err != nil {
-			return &ValidationError{Name: "check_result", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.check_result": %w`, err)}
+	if v, ok := _u.mutation.CheckInWifiBssid(); ok {
+		if err := attendancerecord.CheckInWifiBssidValidator(v); err != nil {
+			return &ValidationError{Name: "check_in_wifi_bssid", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.check_in_wifi_bssid": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.CheckOutWifiBssid(); ok {
+		if err := attendancerecord.CheckOutWifiBssidValidator(v); err != nil {
+			return &ValidationError{Name: "check_out_wifi_bssid", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.check_out_wifi_bssid": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.DayResult(); ok {
+		if err := attendancerecord.DayResultValidator(v); err != nil {
+			return &ValidationError{Name: "day_result", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.day_result": %w`, err)}
 		}
 	}
 	return nil
@@ -369,41 +508,80 @@ func (_u *AttendanceRecordUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(attendancerecord.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Remark(); ok {
-		_spec.SetField(attendancerecord.FieldRemark, field.TypeString, value)
+	if value, ok := _u.mutation.UserID(); ok {
+		_spec.SetField(attendancerecord.FieldUserID, field.TypeUint32, value)
 	}
-	if _u.mutation.RemarkCleared() {
-		_spec.ClearField(attendancerecord.FieldRemark, field.TypeString)
+	if value, ok := _u.mutation.AddedUserID(); ok {
+		_spec.AddField(attendancerecord.FieldUserID, field.TypeUint32, value)
 	}
-	if value, ok := _u.mutation.CheckResult(); ok {
-		_spec.SetField(attendancerecord.FieldCheckResult, field.TypeEnum, value)
+	if value, ok := _u.mutation.WorkDate(); ok {
+		_spec.SetField(attendancerecord.FieldWorkDate, field.TypeTime, value)
 	}
-	if _u.mutation.CheckResultCleared() {
-		_spec.ClearField(attendancerecord.FieldCheckResult, field.TypeEnum)
+	if value, ok := _u.mutation.CheckInAt(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.Longitude(); ok {
-		_spec.SetField(attendancerecord.FieldLongitude, field.TypeFloat64, value)
+	if _u.mutation.CheckInAtCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckInAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.AddedLongitude(); ok {
-		_spec.AddField(attendancerecord.FieldLongitude, field.TypeFloat64, value)
+	if value, ok := _u.mutation.CheckInLatitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInLatitude, field.TypeFloat64, value)
 	}
-	if _u.mutation.LongitudeCleared() {
-		_spec.ClearField(attendancerecord.FieldLongitude, field.TypeFloat64)
+	if value, ok := _u.mutation.AddedCheckInLatitude(); ok {
+		_spec.AddField(attendancerecord.FieldCheckInLatitude, field.TypeFloat64, value)
 	}
-	if value, ok := _u.mutation.Latitude(); ok {
-		_spec.SetField(attendancerecord.FieldLatitude, field.TypeFloat64, value)
+	if _u.mutation.CheckInLatitudeCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckInLatitude, field.TypeFloat64)
 	}
-	if value, ok := _u.mutation.AddedLatitude(); ok {
-		_spec.AddField(attendancerecord.FieldLatitude, field.TypeFloat64, value)
+	if value, ok := _u.mutation.CheckInLongitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInLongitude, field.TypeFloat64, value)
 	}
-	if _u.mutation.LatitudeCleared() {
-		_spec.ClearField(attendancerecord.FieldLatitude, field.TypeFloat64)
+	if value, ok := _u.mutation.AddedCheckInLongitude(); ok {
+		_spec.AddField(attendancerecord.FieldCheckInLongitude, field.TypeFloat64, value)
 	}
-	if value, ok := _u.mutation.Bssid(); ok {
-		_spec.SetField(attendancerecord.FieldBssid, field.TypeString, value)
+	if _u.mutation.CheckInLongitudeCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckInLongitude, field.TypeFloat64)
 	}
-	if _u.mutation.BssidCleared() {
-		_spec.ClearField(attendancerecord.FieldBssid, field.TypeString)
+	if value, ok := _u.mutation.CheckInWifiBssid(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInWifiBssid, field.TypeString, value)
+	}
+	if _u.mutation.CheckInWifiBssidCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckInWifiBssid, field.TypeString)
+	}
+	if value, ok := _u.mutation.CheckOutAt(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutAt, field.TypeTime, value)
+	}
+	if _u.mutation.CheckOutAtCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckOutAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.CheckOutLatitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutLatitude, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedCheckOutLatitude(); ok {
+		_spec.AddField(attendancerecord.FieldCheckOutLatitude, field.TypeFloat64, value)
+	}
+	if _u.mutation.CheckOutLatitudeCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckOutLatitude, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.CheckOutLongitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutLongitude, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedCheckOutLongitude(); ok {
+		_spec.AddField(attendancerecord.FieldCheckOutLongitude, field.TypeFloat64, value)
+	}
+	if _u.mutation.CheckOutLongitudeCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckOutLongitude, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.CheckOutWifiBssid(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutWifiBssid, field.TypeString, value)
+	}
+	if _u.mutation.CheckOutWifiBssidCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckOutWifiBssid, field.TypeString)
+	}
+	if value, ok := _u.mutation.DayResult(); ok {
+		_spec.SetField(attendancerecord.FieldDayResult, field.TypeEnum, value)
+	}
+	if _u.mutation.DayResultCleared() {
+		_spec.ClearField(attendancerecord.FieldDayResult, field.TypeEnum)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -548,117 +726,246 @@ func (_u *AttendanceRecordUpdateOne) ClearDeletedBy() *AttendanceRecordUpdateOne
 	return _u
 }
 
-// SetRemark sets the "remark" field.
-func (_u *AttendanceRecordUpdateOne) SetRemark(v string) *AttendanceRecordUpdateOne {
-	_u.mutation.SetRemark(v)
+// SetUserID sets the "user_id" field.
+func (_u *AttendanceRecordUpdateOne) SetUserID(v uint32) *AttendanceRecordUpdateOne {
+	_u.mutation.ResetUserID()
+	_u.mutation.SetUserID(v)
 	return _u
 }
 
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_u *AttendanceRecordUpdateOne) SetNillableRemark(v *string) *AttendanceRecordUpdateOne {
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableUserID(v *uint32) *AttendanceRecordUpdateOne {
 	if v != nil {
-		_u.SetRemark(*v)
+		_u.SetUserID(*v)
 	}
 	return _u
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (_u *AttendanceRecordUpdateOne) ClearRemark() *AttendanceRecordUpdateOne {
-	_u.mutation.ClearRemark()
+// AddUserID adds value to the "user_id" field.
+func (_u *AttendanceRecordUpdateOne) AddUserID(v int32) *AttendanceRecordUpdateOne {
+	_u.mutation.AddUserID(v)
 	return _u
 }
 
-// SetCheckResult sets the "check_result" field.
-func (_u *AttendanceRecordUpdateOne) SetCheckResult(v attendancerecord.CheckResult) *AttendanceRecordUpdateOne {
-	_u.mutation.SetCheckResult(v)
+// SetWorkDate sets the "work_date" field.
+func (_u *AttendanceRecordUpdateOne) SetWorkDate(v time.Time) *AttendanceRecordUpdateOne {
+	_u.mutation.SetWorkDate(v)
 	return _u
 }
 
-// SetNillableCheckResult sets the "check_result" field if the given value is not nil.
-func (_u *AttendanceRecordUpdateOne) SetNillableCheckResult(v *attendancerecord.CheckResult) *AttendanceRecordUpdateOne {
+// SetNillableWorkDate sets the "work_date" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableWorkDate(v *time.Time) *AttendanceRecordUpdateOne {
 	if v != nil {
-		_u.SetCheckResult(*v)
+		_u.SetWorkDate(*v)
 	}
 	return _u
 }
 
-// ClearCheckResult clears the value of the "check_result" field.
-func (_u *AttendanceRecordUpdateOne) ClearCheckResult() *AttendanceRecordUpdateOne {
-	_u.mutation.ClearCheckResult()
+// SetCheckInAt sets the "check_in_at" field.
+func (_u *AttendanceRecordUpdateOne) SetCheckInAt(v time.Time) *AttendanceRecordUpdateOne {
+	_u.mutation.SetCheckInAt(v)
 	return _u
 }
 
-// SetLongitude sets the "longitude" field.
-func (_u *AttendanceRecordUpdateOne) SetLongitude(v float64) *AttendanceRecordUpdateOne {
-	_u.mutation.ResetLongitude()
-	_u.mutation.SetLongitude(v)
-	return _u
-}
-
-// SetNillableLongitude sets the "longitude" field if the given value is not nil.
-func (_u *AttendanceRecordUpdateOne) SetNillableLongitude(v *float64) *AttendanceRecordUpdateOne {
+// SetNillableCheckInAt sets the "check_in_at" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableCheckInAt(v *time.Time) *AttendanceRecordUpdateOne {
 	if v != nil {
-		_u.SetLongitude(*v)
+		_u.SetCheckInAt(*v)
 	}
 	return _u
 }
 
-// AddLongitude adds value to the "longitude" field.
-func (_u *AttendanceRecordUpdateOne) AddLongitude(v float64) *AttendanceRecordUpdateOne {
-	_u.mutation.AddLongitude(v)
+// ClearCheckInAt clears the value of the "check_in_at" field.
+func (_u *AttendanceRecordUpdateOne) ClearCheckInAt() *AttendanceRecordUpdateOne {
+	_u.mutation.ClearCheckInAt()
 	return _u
 }
 
-// ClearLongitude clears the value of the "longitude" field.
-func (_u *AttendanceRecordUpdateOne) ClearLongitude() *AttendanceRecordUpdateOne {
-	_u.mutation.ClearLongitude()
+// SetCheckInLatitude sets the "check_in_latitude" field.
+func (_u *AttendanceRecordUpdateOne) SetCheckInLatitude(v float64) *AttendanceRecordUpdateOne {
+	_u.mutation.ResetCheckInLatitude()
+	_u.mutation.SetCheckInLatitude(v)
 	return _u
 }
 
-// SetLatitude sets the "latitude" field.
-func (_u *AttendanceRecordUpdateOne) SetLatitude(v float64) *AttendanceRecordUpdateOne {
-	_u.mutation.ResetLatitude()
-	_u.mutation.SetLatitude(v)
-	return _u
-}
-
-// SetNillableLatitude sets the "latitude" field if the given value is not nil.
-func (_u *AttendanceRecordUpdateOne) SetNillableLatitude(v *float64) *AttendanceRecordUpdateOne {
+// SetNillableCheckInLatitude sets the "check_in_latitude" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableCheckInLatitude(v *float64) *AttendanceRecordUpdateOne {
 	if v != nil {
-		_u.SetLatitude(*v)
+		_u.SetCheckInLatitude(*v)
 	}
 	return _u
 }
 
-// AddLatitude adds value to the "latitude" field.
-func (_u *AttendanceRecordUpdateOne) AddLatitude(v float64) *AttendanceRecordUpdateOne {
-	_u.mutation.AddLatitude(v)
+// AddCheckInLatitude adds value to the "check_in_latitude" field.
+func (_u *AttendanceRecordUpdateOne) AddCheckInLatitude(v float64) *AttendanceRecordUpdateOne {
+	_u.mutation.AddCheckInLatitude(v)
 	return _u
 }
 
-// ClearLatitude clears the value of the "latitude" field.
-func (_u *AttendanceRecordUpdateOne) ClearLatitude() *AttendanceRecordUpdateOne {
-	_u.mutation.ClearLatitude()
+// ClearCheckInLatitude clears the value of the "check_in_latitude" field.
+func (_u *AttendanceRecordUpdateOne) ClearCheckInLatitude() *AttendanceRecordUpdateOne {
+	_u.mutation.ClearCheckInLatitude()
 	return _u
 }
 
-// SetBssid sets the "bssid" field.
-func (_u *AttendanceRecordUpdateOne) SetBssid(v string) *AttendanceRecordUpdateOne {
-	_u.mutation.SetBssid(v)
+// SetCheckInLongitude sets the "check_in_longitude" field.
+func (_u *AttendanceRecordUpdateOne) SetCheckInLongitude(v float64) *AttendanceRecordUpdateOne {
+	_u.mutation.ResetCheckInLongitude()
+	_u.mutation.SetCheckInLongitude(v)
 	return _u
 }
 
-// SetNillableBssid sets the "bssid" field if the given value is not nil.
-func (_u *AttendanceRecordUpdateOne) SetNillableBssid(v *string) *AttendanceRecordUpdateOne {
+// SetNillableCheckInLongitude sets the "check_in_longitude" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableCheckInLongitude(v *float64) *AttendanceRecordUpdateOne {
 	if v != nil {
-		_u.SetBssid(*v)
+		_u.SetCheckInLongitude(*v)
 	}
 	return _u
 }
 
-// ClearBssid clears the value of the "bssid" field.
-func (_u *AttendanceRecordUpdateOne) ClearBssid() *AttendanceRecordUpdateOne {
-	_u.mutation.ClearBssid()
+// AddCheckInLongitude adds value to the "check_in_longitude" field.
+func (_u *AttendanceRecordUpdateOne) AddCheckInLongitude(v float64) *AttendanceRecordUpdateOne {
+	_u.mutation.AddCheckInLongitude(v)
+	return _u
+}
+
+// ClearCheckInLongitude clears the value of the "check_in_longitude" field.
+func (_u *AttendanceRecordUpdateOne) ClearCheckInLongitude() *AttendanceRecordUpdateOne {
+	_u.mutation.ClearCheckInLongitude()
+	return _u
+}
+
+// SetCheckInWifiBssid sets the "check_in_wifi_bssid" field.
+func (_u *AttendanceRecordUpdateOne) SetCheckInWifiBssid(v string) *AttendanceRecordUpdateOne {
+	_u.mutation.SetCheckInWifiBssid(v)
+	return _u
+}
+
+// SetNillableCheckInWifiBssid sets the "check_in_wifi_bssid" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableCheckInWifiBssid(v *string) *AttendanceRecordUpdateOne {
+	if v != nil {
+		_u.SetCheckInWifiBssid(*v)
+	}
+	return _u
+}
+
+// ClearCheckInWifiBssid clears the value of the "check_in_wifi_bssid" field.
+func (_u *AttendanceRecordUpdateOne) ClearCheckInWifiBssid() *AttendanceRecordUpdateOne {
+	_u.mutation.ClearCheckInWifiBssid()
+	return _u
+}
+
+// SetCheckOutAt sets the "check_out_at" field.
+func (_u *AttendanceRecordUpdateOne) SetCheckOutAt(v time.Time) *AttendanceRecordUpdateOne {
+	_u.mutation.SetCheckOutAt(v)
+	return _u
+}
+
+// SetNillableCheckOutAt sets the "check_out_at" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableCheckOutAt(v *time.Time) *AttendanceRecordUpdateOne {
+	if v != nil {
+		_u.SetCheckOutAt(*v)
+	}
+	return _u
+}
+
+// ClearCheckOutAt clears the value of the "check_out_at" field.
+func (_u *AttendanceRecordUpdateOne) ClearCheckOutAt() *AttendanceRecordUpdateOne {
+	_u.mutation.ClearCheckOutAt()
+	return _u
+}
+
+// SetCheckOutLatitude sets the "check_out_latitude" field.
+func (_u *AttendanceRecordUpdateOne) SetCheckOutLatitude(v float64) *AttendanceRecordUpdateOne {
+	_u.mutation.ResetCheckOutLatitude()
+	_u.mutation.SetCheckOutLatitude(v)
+	return _u
+}
+
+// SetNillableCheckOutLatitude sets the "check_out_latitude" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableCheckOutLatitude(v *float64) *AttendanceRecordUpdateOne {
+	if v != nil {
+		_u.SetCheckOutLatitude(*v)
+	}
+	return _u
+}
+
+// AddCheckOutLatitude adds value to the "check_out_latitude" field.
+func (_u *AttendanceRecordUpdateOne) AddCheckOutLatitude(v float64) *AttendanceRecordUpdateOne {
+	_u.mutation.AddCheckOutLatitude(v)
+	return _u
+}
+
+// ClearCheckOutLatitude clears the value of the "check_out_latitude" field.
+func (_u *AttendanceRecordUpdateOne) ClearCheckOutLatitude() *AttendanceRecordUpdateOne {
+	_u.mutation.ClearCheckOutLatitude()
+	return _u
+}
+
+// SetCheckOutLongitude sets the "check_out_longitude" field.
+func (_u *AttendanceRecordUpdateOne) SetCheckOutLongitude(v float64) *AttendanceRecordUpdateOne {
+	_u.mutation.ResetCheckOutLongitude()
+	_u.mutation.SetCheckOutLongitude(v)
+	return _u
+}
+
+// SetNillableCheckOutLongitude sets the "check_out_longitude" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableCheckOutLongitude(v *float64) *AttendanceRecordUpdateOne {
+	if v != nil {
+		_u.SetCheckOutLongitude(*v)
+	}
+	return _u
+}
+
+// AddCheckOutLongitude adds value to the "check_out_longitude" field.
+func (_u *AttendanceRecordUpdateOne) AddCheckOutLongitude(v float64) *AttendanceRecordUpdateOne {
+	_u.mutation.AddCheckOutLongitude(v)
+	return _u
+}
+
+// ClearCheckOutLongitude clears the value of the "check_out_longitude" field.
+func (_u *AttendanceRecordUpdateOne) ClearCheckOutLongitude() *AttendanceRecordUpdateOne {
+	_u.mutation.ClearCheckOutLongitude()
+	return _u
+}
+
+// SetCheckOutWifiBssid sets the "check_out_wifi_bssid" field.
+func (_u *AttendanceRecordUpdateOne) SetCheckOutWifiBssid(v string) *AttendanceRecordUpdateOne {
+	_u.mutation.SetCheckOutWifiBssid(v)
+	return _u
+}
+
+// SetNillableCheckOutWifiBssid sets the "check_out_wifi_bssid" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableCheckOutWifiBssid(v *string) *AttendanceRecordUpdateOne {
+	if v != nil {
+		_u.SetCheckOutWifiBssid(*v)
+	}
+	return _u
+}
+
+// ClearCheckOutWifiBssid clears the value of the "check_out_wifi_bssid" field.
+func (_u *AttendanceRecordUpdateOne) ClearCheckOutWifiBssid() *AttendanceRecordUpdateOne {
+	_u.mutation.ClearCheckOutWifiBssid()
+	return _u
+}
+
+// SetDayResult sets the "day_result" field.
+func (_u *AttendanceRecordUpdateOne) SetDayResult(v attendancerecord.DayResult) *AttendanceRecordUpdateOne {
+	_u.mutation.SetDayResult(v)
+	return _u
+}
+
+// SetNillableDayResult sets the "day_result" field if the given value is not nil.
+func (_u *AttendanceRecordUpdateOne) SetNillableDayResult(v *attendancerecord.DayResult) *AttendanceRecordUpdateOne {
+	if v != nil {
+		_u.SetDayResult(*v)
+	}
+	return _u
+}
+
+// ClearDayResult clears the value of the "day_result" field.
+func (_u *AttendanceRecordUpdateOne) ClearDayResult() *AttendanceRecordUpdateOne {
+	_u.mutation.ClearDayResult()
 	return _u
 }
 
@@ -709,9 +1016,19 @@ func (_u *AttendanceRecordUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *AttendanceRecordUpdateOne) check() error {
-	if v, ok := _u.mutation.CheckResult(); ok {
-		if err := attendancerecord.CheckResultValidator(v); err != nil {
-			return &ValidationError{Name: "check_result", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.check_result": %w`, err)}
+	if v, ok := _u.mutation.CheckInWifiBssid(); ok {
+		if err := attendancerecord.CheckInWifiBssidValidator(v); err != nil {
+			return &ValidationError{Name: "check_in_wifi_bssid", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.check_in_wifi_bssid": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.CheckOutWifiBssid(); ok {
+		if err := attendancerecord.CheckOutWifiBssidValidator(v); err != nil {
+			return &ValidationError{Name: "check_out_wifi_bssid", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.check_out_wifi_bssid": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.DayResult(); ok {
+		if err := attendancerecord.DayResultValidator(v); err != nil {
+			return &ValidationError{Name: "day_result", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.day_result": %w`, err)}
 		}
 	}
 	return nil
@@ -797,41 +1114,80 @@ func (_u *AttendanceRecordUpdateOne) sqlSave(ctx context.Context) (_node *Attend
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(attendancerecord.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Remark(); ok {
-		_spec.SetField(attendancerecord.FieldRemark, field.TypeString, value)
+	if value, ok := _u.mutation.UserID(); ok {
+		_spec.SetField(attendancerecord.FieldUserID, field.TypeUint32, value)
 	}
-	if _u.mutation.RemarkCleared() {
-		_spec.ClearField(attendancerecord.FieldRemark, field.TypeString)
+	if value, ok := _u.mutation.AddedUserID(); ok {
+		_spec.AddField(attendancerecord.FieldUserID, field.TypeUint32, value)
 	}
-	if value, ok := _u.mutation.CheckResult(); ok {
-		_spec.SetField(attendancerecord.FieldCheckResult, field.TypeEnum, value)
+	if value, ok := _u.mutation.WorkDate(); ok {
+		_spec.SetField(attendancerecord.FieldWorkDate, field.TypeTime, value)
 	}
-	if _u.mutation.CheckResultCleared() {
-		_spec.ClearField(attendancerecord.FieldCheckResult, field.TypeEnum)
+	if value, ok := _u.mutation.CheckInAt(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.Longitude(); ok {
-		_spec.SetField(attendancerecord.FieldLongitude, field.TypeFloat64, value)
+	if _u.mutation.CheckInAtCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckInAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.AddedLongitude(); ok {
-		_spec.AddField(attendancerecord.FieldLongitude, field.TypeFloat64, value)
+	if value, ok := _u.mutation.CheckInLatitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInLatitude, field.TypeFloat64, value)
 	}
-	if _u.mutation.LongitudeCleared() {
-		_spec.ClearField(attendancerecord.FieldLongitude, field.TypeFloat64)
+	if value, ok := _u.mutation.AddedCheckInLatitude(); ok {
+		_spec.AddField(attendancerecord.FieldCheckInLatitude, field.TypeFloat64, value)
 	}
-	if value, ok := _u.mutation.Latitude(); ok {
-		_spec.SetField(attendancerecord.FieldLatitude, field.TypeFloat64, value)
+	if _u.mutation.CheckInLatitudeCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckInLatitude, field.TypeFloat64)
 	}
-	if value, ok := _u.mutation.AddedLatitude(); ok {
-		_spec.AddField(attendancerecord.FieldLatitude, field.TypeFloat64, value)
+	if value, ok := _u.mutation.CheckInLongitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInLongitude, field.TypeFloat64, value)
 	}
-	if _u.mutation.LatitudeCleared() {
-		_spec.ClearField(attendancerecord.FieldLatitude, field.TypeFloat64)
+	if value, ok := _u.mutation.AddedCheckInLongitude(); ok {
+		_spec.AddField(attendancerecord.FieldCheckInLongitude, field.TypeFloat64, value)
 	}
-	if value, ok := _u.mutation.Bssid(); ok {
-		_spec.SetField(attendancerecord.FieldBssid, field.TypeString, value)
+	if _u.mutation.CheckInLongitudeCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckInLongitude, field.TypeFloat64)
 	}
-	if _u.mutation.BssidCleared() {
-		_spec.ClearField(attendancerecord.FieldBssid, field.TypeString)
+	if value, ok := _u.mutation.CheckInWifiBssid(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInWifiBssid, field.TypeString, value)
+	}
+	if _u.mutation.CheckInWifiBssidCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckInWifiBssid, field.TypeString)
+	}
+	if value, ok := _u.mutation.CheckOutAt(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutAt, field.TypeTime, value)
+	}
+	if _u.mutation.CheckOutAtCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckOutAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.CheckOutLatitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutLatitude, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedCheckOutLatitude(); ok {
+		_spec.AddField(attendancerecord.FieldCheckOutLatitude, field.TypeFloat64, value)
+	}
+	if _u.mutation.CheckOutLatitudeCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckOutLatitude, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.CheckOutLongitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutLongitude, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedCheckOutLongitude(); ok {
+		_spec.AddField(attendancerecord.FieldCheckOutLongitude, field.TypeFloat64, value)
+	}
+	if _u.mutation.CheckOutLongitudeCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckOutLongitude, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.CheckOutWifiBssid(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutWifiBssid, field.TypeString, value)
+	}
+	if _u.mutation.CheckOutWifiBssidCleared() {
+		_spec.ClearField(attendancerecord.FieldCheckOutWifiBssid, field.TypeString)
+	}
+	if value, ok := _u.mutation.DayResult(); ok {
+		_spec.SetField(attendancerecord.FieldDayResult, field.TypeEnum, value)
+	}
+	if _u.mutation.DayResultCleared() {
+		_spec.ClearField(attendancerecord.FieldDayResult, field.TypeEnum)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &AttendanceRecord{config: _u.config}

@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: app/service/v1/i_workflow.proto
 
-package apppb
+package servicev1
 
 import (
 	context "context"
@@ -21,31 +21,28 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WorkflowService_SubmitApply_FullMethodName = "/app.service.v1.WorkflowService/SubmitApply"
-	WorkflowService_AuditTask_FullMethodName   = "/app.service.v1.WorkflowService/AuditTask"
-	WorkflowService_GetMyTasks_FullMethodName  = "/app.service.v1.WorkflowService/GetMyTasks"
-	WorkflowService_GetTask_FullMethodName     = "/app.service.v1.WorkflowService/GetTask"
+	WorkflowService_SubmitApply_FullMethodName   = "/app.service.v1.WorkflowService/SubmitApply"
+	WorkflowService_AuditTask_FullMethodName     = "/app.service.v1.WorkflowService/AuditTask"
+	WorkflowService_WithdrawApply_FullMethodName = "/app.service.v1.WorkflowService/WithdrawApply"
+	WorkflowService_GetMyTasks_FullMethodName    = "/app.service.v1.WorkflowService/GetMyTasks"
+	WorkflowService_GetTask_FullMethodName       = "/app.service.v1.WorkflowService/GetTask"
 )
 
 // WorkflowServiceClient is the client API for WorkflowService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// OA 工作流服务（app HTTP 边端，供移动端调用）。
-//
-// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
-// appV1.WorkflowServiceHTTPServer，app-service 注册并转发到 core gRPC。
-//
-// 路径前缀 /app/v1/oa/workflow/，与 cms app 的 /app/v1/ 同构。
+// OA 工作流参与服务（app 边端，移动端）
 type WorkflowServiceClient interface {
-	// 提交申请：发起一个工作流实例。
+	// 提交申请
 	SubmitApply(ctx context.Context, in *v1.SubmitApplyRequest, opts ...grpc.CallOption) (*v1.SubmitApplyResponse, error)
-	// 审批/驳回/转办当前待办任务。
+	// 审批任务
 	AuditTask(ctx context.Context, in *v1.AuditTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 获取当前用户的待办 / 已办 / 我的申请列表。
+	// 撤回申请（仅申请人本人，仅进行中的实例）
+	WithdrawApply(ctx context.Context, in *v1.WithdrawApplyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(ctx context.Context, in *v1.GetMyTasksRequest, opts ...grpc.CallOption) (*v1.GetMyTasksResponse, error)
-	// 获取单个待办任务详情。
+	// 查询任务详情
 	GetTask(ctx context.Context, in *v1.GetTaskRequest, opts ...grpc.CallOption) (*v1.GetTaskResponse, error)
 }
 
@@ -77,6 +74,16 @@ func (c *workflowServiceClient) AuditTask(ctx context.Context, in *v1.AuditTaskR
 	return out, nil
 }
 
+func (c *workflowServiceClient) WithdrawApply(ctx context.Context, in *v1.WithdrawApplyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, WorkflowService_WithdrawApply_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *workflowServiceClient) GetMyTasks(ctx context.Context, in *v1.GetMyTasksRequest, opts ...grpc.CallOption) (*v1.GetMyTasksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(v1.GetMyTasksResponse)
@@ -101,21 +108,17 @@ func (c *workflowServiceClient) GetTask(ctx context.Context, in *v1.GetTaskReque
 // All implementations must embed UnimplementedWorkflowServiceServer
 // for forward compatibility.
 //
-// OA 工作流服务（app HTTP 边端，供移动端调用）。
-//
-// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。由 buf 生成
-// appV1.WorkflowServiceHTTPServer，app-service 注册并转发到 core gRPC。
-//
-// 路径前缀 /app/v1/oa/workflow/，与 cms app 的 /app/v1/ 同构。
+// OA 工作流参与服务（app 边端，移动端）
 type WorkflowServiceServer interface {
-	// 提交申请：发起一个工作流实例。
+	// 提交申请
 	SubmitApply(context.Context, *v1.SubmitApplyRequest) (*v1.SubmitApplyResponse, error)
-	// 审批/驳回/转办当前待办任务。
+	// 审批任务
 	AuditTask(context.Context, *v1.AuditTaskRequest) (*emptypb.Empty, error)
-	// 获取当前用户的待办 / 已办 / 我的申请列表。
+	// 撤回申请（仅申请人本人，仅进行中的实例）
+	WithdrawApply(context.Context, *v1.WithdrawApplyRequest) (*emptypb.Empty, error)
+	// 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(context.Context, *v1.GetMyTasksRequest) (*v1.GetMyTasksResponse, error)
-	// 获取单个待办任务详情。
+	// 查询任务详情
 	GetTask(context.Context, *v1.GetTaskRequest) (*v1.GetTaskResponse, error)
 	mustEmbedUnimplementedWorkflowServiceServer()
 }
@@ -132,6 +135,9 @@ func (UnimplementedWorkflowServiceServer) SubmitApply(context.Context, *v1.Submi
 }
 func (UnimplementedWorkflowServiceServer) AuditTask(context.Context, *v1.AuditTaskRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method AuditTask not implemented")
+}
+func (UnimplementedWorkflowServiceServer) WithdrawApply(context.Context, *v1.WithdrawApplyRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method WithdrawApply not implemented")
 }
 func (UnimplementedWorkflowServiceServer) GetMyTasks(context.Context, *v1.GetMyTasksRequest) (*v1.GetMyTasksResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMyTasks not implemented")
@@ -196,6 +202,24 @@ func _WorkflowService_AuditTask_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkflowService_WithdrawApply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.WithdrawApplyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).WithdrawApply(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_WithdrawApply_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).WithdrawApply(ctx, req.(*v1.WithdrawApplyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _WorkflowService_GetMyTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(v1.GetMyTasksRequest)
 	if err := dec(in); err != nil {
@@ -246,6 +270,10 @@ var WorkflowService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuditTask",
 			Handler:    _WorkflowService_AuditTask_Handler,
+		},
+		{
+			MethodName: "WithdrawApply",
+			Handler:    _WorkflowService_WithdrawApply_Handler,
 		},
 		{
 			MethodName: "GetMyTasks",

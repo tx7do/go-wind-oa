@@ -166,3 +166,16 @@ func (s *AuthenticationService) RefreshToken(ctx context.Context, req *authentic
 
 	return s.authenticationServiceClient.RefreshToken(ctx, req)
 }
+
+func (s *AuthenticationService) WhoAmI(ctx context.Context, _ *emptypb.Empty) (*authenticationV1.WhoAmIResponse, error) {
+	// 获取操作人信息
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &authenticationV1.WhoAmIResponse{
+		UserId:   operator.GetUserId(),
+		Username: operator.GetUsername(),
+	}, nil
+}

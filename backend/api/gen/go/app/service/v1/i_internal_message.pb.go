@@ -4,11 +4,10 @@
 // 	protoc        (unknown)
 // source: app/service/v1/i_internal_message.proto
 
-package apppb
+package servicev1
 
 import (
-	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	v11 "go-wind-oa/api/gen/go/internal_message/service/v1"
+	v1 "go-wind-oa/api/gen/go/internal_message/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -27,26 +26,20 @@ var File_app_service_v1_i_internal_message_proto protoreflect.FileDescriptor
 
 const file_app_service_v1_i_internal_message_proto_rawDesc = "" +
 	"\n" +
-	"'app/service/v1/i_internal_message.proto\x12\x0eapp.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1epagination/v1/pagination.proto\x1a2internal_message/service/v1/internal_message.proto2\xcd\x02\n" +
-	"\x16InternalMessageService\x12\x8d\x01\n" +
-	"\vListMessage\x12\x19.pagination.PagingRequest\x1a8.internal_message.service.v1.ListInternalMessageResponse\")\x82\xd3\xe4\x93\x02#\x12!/app/v1/internal-message/messages\x12\xa2\x01\n" +
-	"\n" +
-	"GetMessage\x126.internal_message.service.v1.GetInternalMessageRequest\x1a,.internal_message.service.v1.InternalMessage\".\x82\xd3\xe4\x93\x02(\x12&/app/v1/internal-message/messages/{id}B\xb1\x01\n" +
-	"\x12com.app.service.v1B\x15IInternalMessageProtoP\x01Z*go-wind-oa/api/gen/go/app/service/v1;apppb\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
+	"'app/service/v1/i_internal_message.proto\x12\x0eapp.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a2internal_message/service/v1/internal_message.proto2\xc7\x01\n" +
+	"\x16InternalMessageService\x12\xac\x01\n" +
+	"\x0eListMyMessages\x122.internal_message.service.v1.ListMyMessagesRequest\x1a8.internal_message.service.v1.ListInternalMessageResponse\",\x82\xd3\xe4\x93\x02&\x12$/app/v1/internal-message/my-messagesB\xb5\x01\n" +
+	"\x12com.app.service.v1B\x15IInternalMessageProtoP\x01Z.go-wind-oa/api/gen/go/app/service/v1;servicev1\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
 
 var file_app_service_v1_i_internal_message_proto_goTypes = []any{
-	(*v1.PagingRequest)(nil),                // 0: pagination.PagingRequest
-	(*v11.GetInternalMessageRequest)(nil),   // 1: internal_message.service.v1.GetInternalMessageRequest
-	(*v11.ListInternalMessageResponse)(nil), // 2: internal_message.service.v1.ListInternalMessageResponse
-	(*v11.InternalMessage)(nil),             // 3: internal_message.service.v1.InternalMessage
+	(*v1.ListMyMessagesRequest)(nil),       // 0: internal_message.service.v1.ListMyMessagesRequest
+	(*v1.ListInternalMessageResponse)(nil), // 1: internal_message.service.v1.ListInternalMessageResponse
 }
 var file_app_service_v1_i_internal_message_proto_depIdxs = []int32{
-	0, // 0: app.service.v1.InternalMessageService.ListMessage:input_type -> pagination.PagingRequest
-	1, // 1: app.service.v1.InternalMessageService.GetMessage:input_type -> internal_message.service.v1.GetInternalMessageRequest
-	2, // 2: app.service.v1.InternalMessageService.ListMessage:output_type -> internal_message.service.v1.ListInternalMessageResponse
-	3, // 3: app.service.v1.InternalMessageService.GetMessage:output_type -> internal_message.service.v1.InternalMessage
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	0, // 0: app.service.v1.InternalMessageService.ListMyMessages:input_type -> internal_message.service.v1.ListMyMessagesRequest
+	1, // 1: app.service.v1.InternalMessageService.ListMyMessages:output_type -> internal_message.service.v1.ListInternalMessageResponse
+	1, // [1:2] is the sub-list for method output_type
+	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

@@ -1,69 +1,69 @@
-# go-wind-oa Backend
+# GoWind Content Hub Backend
 
-go-wind-oa 后端 — OA 工作流审批系统，基于 [go-kratos](https://go-kratos.dev/) 微服务框架，采用 core/admin/app 三 service 分離架構。
+GoWind（风行内容中台）— 企业级无头内容中枢（Headless Content Hub），基于 Go + Vue3 + TypeScript 构建，采用 API
+优先、前后端分离架构，提供多语言原生支持、多端内容分发、精细化权限管控，为出海企业、多终端项目提供高可用、可扩展的解决方案。
 
-- **core-service**：纯 gRPC，持有工作流引擎与站內信实现（无 HTTP 端点）。
-- **admin-service** / **app-service**：HTTP 边端转发层，分别为 admin 前端与移动端暴露 HTTP 端点，经 gRPC 客户端转发至 core-service。
-
-后端架构详见根目录 [`../README.md`](../README.md) 与 [`../docs/oa-workflow-design.md`](../docs/oa-workflow-design.md)。
+- 后端基于 [golang](https://go.dev/) + [微服务框架 go-kratos](https://go-kratos.dev/)
+- 前端基于 [Vue.js 3](https://vuejs.org/) + [TypeScript](https://www.typescriptlang.org/)
 
 ## 技术栈
 
-- [Kratos](https://go-kratos.dev/) -- 微服务框架
+- [Kratos](https://go-kratos.dev/) -- B站微服务框架
 - [Consul](https://www.consul.io/) / [Etcd](https://etcd.io/) -- 服务发现和配置管理
 - [OpenTelemetry](https://opentelemetry.io/) -- 分布式可观察系统
 - [Wire](https://github.com/google/wire) -- 依赖注入框架
 - [OpenAPI](https://www.openapis.org/) -- RESTful API 文档
+- [MinIO](https://min.io/) -- 对象存储服务器
 - [Redis](https://redis.io/) -- 非关系型数据库
 - [PostgreSQL](https://www.postgresql.org/) / [MySQL](https://www.mysql.com/) -- 关系型数据库
-- [Ent](https://entgo.io/) -- Golang ORM 框架
+- [Ent](https://entgo.io/) / [GORM](https://gorm.io/index.html) -- Golang ORM框架
+- [ElasticSearch](https://www.elastic.co/cn/elasticsearch) -- 搜索引擎
 
 ## API文档
 
 ### Swagger UI
 
-- [Admin Swagger UI](http://localhost:9700/docs/)
-- [App Swagger UI](http://localhost:9800/docs/)
-
-> core-service 无 HTTP 端点，无 Swagger UI。
+- [Admin Swagger UI](http://localhost:6600/docs/)
+- [App Swagger UI](http://localhost:6700/docs/)
 
 ### openapi.yaml
 
-- [Admin openapi.yaml](http://localhost:9700/docs/openapi.yaml)
-- [App openapi.yaml](http://localhost:9800/docs/openapi.yaml)
+- [Admin openapi.yaml](http://localhost:6600/docs/openapi.yaml)
+- [Front openapi.yaml](http://localhost:6700/docs/openapi.yaml)
 
 ## 生成Protobuf API
 
-本项目使用 [buf.build](https://buf.build/) 进行 Protobuf API 构建。
+本项目使用[buf.build](https://buf.build/)进行Protobuf API构建。
+
+相关命令行工具和插件的具体安装方法请参见：[Kratos微服务框架API工程化指南](https://juejin.cn/post/7191095845096259641)
+
+本项目提供了两种生成API代码的方式：`Makefile`和`gow cli`。
+
+一键生成API的所有代码，该命令可以在后端项目的任何位置执行：
+
+```bash
+gow api
+```
 
 ### 生成GO代码
 
 ```bash
-cd `{项目根目录}/backend/app/{服务名}/service`
+cd `{项目根目录}/backend`
 make api
+```
+
+### 生成TypeScript代码
+
+```bash
+cd `{项目根目录}/backend`
+make ts
 ```
 
 ### 生成OpenAPI v3文档
 
 ```bash
-cd `{项目根目录}/backend/app/{服务名}/service`
+cd `{项目根目录}/backend`
 make openapi
-```
-
-> core-service 无 HTTP 端点，`make openapi` 跳过。
-
-### 生成 Admin TypeScript 客户端
-
-```bash
-cd `{项目根目录}/backend/api`
-buf generate --template buf.admin.typescript.gen.yaml
-```
-
-### 生成 Mobile Dart 客户端
-
-```bash
-cd `{项目根目录}/backend/api`
-buf generate --template buf.flutter.oa.dart.gen.yaml
 ```
 
 ## 其他代码生成
@@ -82,6 +82,12 @@ cd `{项目根目录}/backend/app/{服务名}/service`
 make wire
 ```
 
+### 构建Docker镜像
+
+```bash
+make docker
+```
+
 ## 构建程序
 
 ```bash
@@ -97,10 +103,3 @@ make run
 ```
 
 ## Docker部署
-
-### 构建Docker镜像
-
-```bash
-cd `{项目根目录}/backend/app/{服务名}/service`
-make docker
-```

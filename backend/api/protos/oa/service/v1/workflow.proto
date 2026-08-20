@@ -2,276 +2,439 @@ syntax = "proto3";
 
 package oa.service.v1;
 
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
+
 import "pagination/v1/pagination.proto";
 
-// OA 工作流审批服务（core-service gRPC 實現）。
-//
-// 純 gRPC 服務——HTTP 注解由 admin/service/v1/i_workflow.proto 與
-// app/service/v1/i_workflow.proto 分別以 /admin/v1/ 與 /app/v1/ 路徑包裝，
-// 對齊 cms core/admin/app 三層分離模式。所有 RPC 均需鑑權，租戶/操作人
-// 上下文由 auth 中間件注入、由 ent viewer 中間件翻譯，供 TenantPrivacy
-// 策略做行級租戶隔離。
+// OA 工作流审批引擎服务
 service WorkflowService {
-  // 创建工作流定义（管理端）。
-  rpc CreateWorkflowDefinition(CreateWorkflowDefinitionRequest) returns (WorkflowDefinition) {
-  }
+  // 创建流程定义
+  rpc CreateWorkflowDefinition(CreateWorkflowDefinitionRequest) returns (WorkflowDefinition) {}
 
-  // 查询工作流定义列表（管理端）。
-  rpc ListWorkflowDefinition(ListWorkflowDefinitionRequest) returns (ListWorkflowDefinitionResponse) {
-  }
+  // 查询流程定义列表
+  rpc ListWorkflowDefinition(pagination.PagingRequest) returns (ListWorkflowDefinitionResponse) {}
 
-  // 更新工作流定义（管理端）。当前仅允许切换 definition_status（启用/禁用），
-  // 由 update_mask 限定字段；其余字段忽略。状态机对 ENABLED 定义才允许提交申请。
-  rpc UpdateWorkflowDefinition(UpdateWorkflowDefinitionRequest) returns (WorkflowDefinition) {
-  }
+  // 更新流程定义（仅允许切换 definition_status）
+  rpc UpdateWorkflowDefinition(UpdateWorkflowDefinitionRequest) returns (google.protobuf.Empty) {}
 
-  // 获取单个工作流定义详情（管理端）。含 node_config / form_schema 原始 JSON 文本，
-  // 供管理端查看节点配置与表单 schema。仅本租户定义可达（TenantPrivacy 隔离）。
-  rpc GetWorkflowDefinition(GetWorkflowDefinitionRequest) returns (WorkflowDefinition) {
-  }
+  // 查询流程定义详情
+  rpc GetWorkflowDefinition(GetWorkflowDefinitionRequest) returns (WorkflowDefinition) {}
 
-  // 提交申请：发起一个工作流实例，按定义的首节点生成首条待办任务并通知该审批人。
-  rpc SubmitApply(SubmitApplyRequest) returns (SubmitApplyResponse) {
-  }
+  // 提交申请
+  rpc SubmitApply(SubmitApplyRequest) returns (SubmitApplyResponse) {}
 
-  // 审批/驳回/转办当前待办任务。状态机在此推进实例状态、生成下一节点任务或终结实例。
-  rpc AuditTask(AuditTaskRequest) returns (google.protobuf.Empty) {
-  }
+  // 审批任务
+  rpc AuditTask(AuditTaskRequest) returns (google.protobuf.Empty) {}
 
-  // 获取当前用户的待办 / 已办 / 我的申请列表。
-  rpc GetMyTasks(GetMyTasksRequest) returns (GetMyTasksResponse) {
-  }
+  // 撤回申请（仅申请人本人，仅进行中的实例）
+  rpc WithdrawApply(WithdrawApplyRequest) returns (google.protobuf.Empty) {}
 
-  // 获取单个待办任务详情：申请标题、申请表单数据、该实例的审批日志轨迹。
-  //
-  // 鉴权：仅当前指派审批人可查其处于 PENDING 的任务（与 AuditTask 同款授权，
-  // IDEQ + AssigneeUserIDEQ(caller) + TaskStatusEQ(PENDING)，见
-  // WorkflowTaskRepo.GetDetailByAssignee）。其余字段（definition_id /
-  // current_node_index / tenant_id 等）不投影，对齐 MyTaskItem 的最小披露原则。
-  rpc GetTask(GetTaskRequest) returns (GetTaskResponse) {
-  }
+  // 查询我的任务（待办/已办/我的申请）
+  rpc GetMyTasks(GetMyTasksRequest) returns (GetMyTasksResponse) {}
+
+  // 查询任务详情
+  rpc GetTask(GetTaskRequest) returns (GetTaskResponse) {}
 }
 
-// ---- 工作流定义 ----
-
+// 流程定义
 message WorkflowDefinition {
+  // 定义状态
   enum DefinitionStatus {
-    DRAFT = 0;
-    ENABLED = 1;
-    DISABLED = 2;
+    DRAFT = 0;     // 草稿
+    ENABLED = 1;   // 已启用
+    DISABLED = 2;  // 已禁用
   }
 
-  optional uint32 id = 1;
-  optional string name = 2;
-  optional string code = 3;
-  optional uint32 version = 4;
-  optional string description = 5;
-  // 节点配置，原始 JSON 文本。结构由引擎 internal/workflow 包解析。
-  optional string node_config = 6;
-  // 动态表单 schema，原始 JSON 文本，供前端按定义渲染。
-  optional string form_schema = 7;
-  optional DefinitionStatus definition_status = 8;
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "定义ID" }
+  ]; // 定义ID
 
-  // ---- 租户 / 审计字段（固定字段号约定） ----
-  optional uint32 tenant_id = 40;
-  optional string tenant_name = 41;
-  optional uint32 created_by = 100;
-  optional uint32 updated_by = 101;
-  optional uint32 deleted_by = 102;
-  optional google.protobuf.Timestamp created_at = 200;
-  optional google.protobuf.Timestamp updated_at = 201;
-  optional google.protobuf.Timestamp deleted_at = 202;
+  optional string code = 2 [
+    json_name = "code",
+    (gnostic.openapi.v3.property) = { description: "流程代码" }
+  ]; // 流程代码
+
+  optional int32 version = 3 [
+    json_name = "version",
+    (gnostic.openapi.v3.property) = { description: "版本号" }
+  ]; // 版本号
+
+  optional string node_config = 4 [
+    json_name = "nodeConfig",
+    (gnostic.openapi.v3.property) = { description: "节点配置（JSON）。每节点格式：{\"approvers\":[{\"type\":\"USER\"|\"LEADER\"|\"POSITION\",\"id\":用户或职位ID}],\"strategy\":\"ALL\"|\"ANY\"}。type=LEADER 无需 id（提交人主管）。strategy=ALL 会签（默认），ANY 或签。兼容旧格式 {\"approver_type\":\"USER\",\"approver\":id}" }
+  ]; // 节点配置（JSON）
+
+  optional string form_schema = 5 [
+    json_name = "formSchema",
+    (gnostic.openapi.v3.property) = { description: "表单 schema（JSON）" }
+  ]; // 表单 schema（JSON）
+
+  optional DefinitionStatus definition_status = 6 [
+    json_name = "definitionStatus",
+    (gnostic.openapi.v3.property) = { description: "定义状态" }
+  ]; // 定义状态
+
+  optional string remark = 7 [
+    json_name = "remark",
+    (gnostic.openapi.v3.property) = { description: "备注" }
+  ]; // 备注
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
+  ];  // 租户ID，0代表系统全局角色
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
 }
 
-message CreateWorkflowDefinitionRequest {
-  WorkflowDefinition data = 1;
+// 流程实例
+message WorkflowInstance {
+  // 实例状态
+  enum InstanceStatus {
+    PENDING = 0;     // 进行中
+    APPROVED = 1;    // 已通过
+    REJECTED = 2;    // 已驳回
+    WITHDRAWN = 3;   // 已撤回
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "实例ID" }
+  ]; // 实例ID
+
+  optional InstanceStatus instance_status = 2 [
+    json_name = "instanceStatus",
+    (gnostic.openapi.v3.property) = { description: "实例状态" }
+  ]; // 实例状态
+
+  optional int32 current_node_index = 3 [
+    json_name = "currentNodeIndex",
+    (gnostic.openapi.v3.property) = { description: "当前节点索引" }
+  ]; // 当前节点索引
+
+  optional string form_data = 4 [
+    json_name = "formData",
+    (gnostic.openapi.v3.property) = { description: "申请表单数据（JSON）" }
+  ]; // 申请表单数据（JSON）
+
+  optional string business_type = 5 [
+    json_name = "businessType",
+    (gnostic.openapi.v3.property) = { description: "业务单据类型（如 LEAVE/EXPENSE，审批终结时回调对应业务模块）" }
+  ]; // 业务单据类型
+
+  optional uint32 business_id = 6 [
+    json_name = "businessId",
+    (gnostic.openapi.v3.property) = { description: "业务单据ID" }
+  ]; // 业务单据ID
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
+  ];  // 租户ID，0代表系统全局角色
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
 }
 
-message ListWorkflowDefinitionRequest {
-  pagination.PagingRequest paging = 1;
+// 审批任务
+message WorkflowTask {
+  // 任务状态
+  enum TaskStatus {
+    PENDING = 0;     // 待处理
+    APPROVED = 1;    // 已通过
+    REJECTED = 2;    // 已驳回
+    CANCELLED = 3;   // 已取消（会签/或签推进或实例终结时被取消）
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "任务ID" }
+  ]; // 任务ID
+
+  optional int32 node_index = 2 [
+    json_name = "nodeIndex",
+    (gnostic.openapi.v3.property) = { description: "节点索引" }
+  ]; // 节点索引
+
+  optional uint32 assignee_user_id = 3 [
+    json_name = "assigneeUserId",
+    (gnostic.openapi.v3.property) = { description: "指派审批人ID" }
+  ]; // 指派审批人ID
+
+  optional TaskStatus task_status = 4 [
+    json_name = "taskStatus",
+    (gnostic.openapi.v3.property) = { description: "任务状态" }
+  ]; // 任务状态
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
+  ];  // 租户ID，0代表系统全局角色
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
 }
 
+// 审批日志
+message WorkflowLog {
+  // 日志动作
+  enum LogAction {
+    SUBMIT = 0;    // 提交申请
+    APPROVE = 1;   // 通过
+    REJECT = 2;    // 驳回
+    FORWARD = 3;   // 转办
+    WITHDRAW = 4;  // 撤回
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "日志ID" }
+  ]; // 日志ID
+
+  optional int32 node_index = 2 [
+    json_name = "nodeIndex",
+    (gnostic.openapi.v3.property) = { description: "节点索引" }
+  ]; // 节点索引
+
+  optional LogAction log_action = 3 [
+    json_name = "logAction",
+    (gnostic.openapi.v3.property) = { description: "日志动作" }
+  ]; // 日志动作
+
+  optional string comment = 4 [
+    json_name = "comment",
+    (gnostic.openapi.v3.property) = { description: "审批意见" }
+  ]; // 审批意见
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
+  ];  // 租户ID，0代表系统全局角色
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
+}
+
+// 我的任务列表项
+message MyTaskItem {
+  optional uint32 task_id = 4 [
+    json_name = "taskId",
+    (gnostic.openapi.v3.property) = { description: "任务ID（待办列表填充，供进入详情）" }
+  ]; // 任务ID
+
+  optional uint32 instance_id = 1 [
+    json_name = "instanceId",
+    (gnostic.openapi.v3.property) = { description: "实例ID" }
+  ]; // 实例ID
+
+  optional google.protobuf.Timestamp created_at = 2 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+
+  optional string status_label = 3 [
+    json_name = "statusLabel",
+    (gnostic.openapi.v3.property) = { description: "状态标签" }
+  ]; // 状态标签
+}
+
+// 查询流程定义列表 - 回应
 message ListWorkflowDefinitionResponse {
   repeated WorkflowDefinition items = 1;
   uint64 total = 2;
 }
 
+// 查询流程定义详情 - 请求
+message GetWorkflowDefinitionRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建流程定义 - 请求
+message CreateWorkflowDefinitionRequest {
+  WorkflowDefinition data = 1;
+}
+
+// 更新流程定义 - 请求
 message UpdateWorkflowDefinitionRequest {
   uint32 id = 1;
 
   WorkflowDefinition data = 2;
 
-  google.protobuf.FieldMask update_mask = 3;
+  google.protobuf.FieldMask update_mask = 3 [
+    (gnostic.openapi.v3.property) = {
+      description: "要更新的字段列表",
+      example: {yaml : "id,realname,username"}
+    },
+    json_name = "updateMask"
+  ]; // 要更新的字段列表
+
+  optional bool allow_missing = 4 [
+    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"},
+    json_name = "allowMissing"
+  ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
 }
 
-message GetWorkflowDefinitionRequest {
-  uint32 id = 1;
-}
-
-// ---- 工作流实例 ----
-
-message WorkflowInstance {
-  enum InstanceStatus {
-    PENDING = 0;
-    APPROVED = 1;
-    REJECTED = 2;
-    CANCELED = 3;
-  }
-
-  optional uint32 id = 1;
-  optional uint32 definition_id = 2;
-  optional string title = 3;
-  // 申请表单数据，原始 JSON 文本。引擎不解释其字段语义。
-  optional string form_data = 4;
-  optional InstanceStatus instance_status = 5;
-  optional int32 current_node_index = 6;
-
-  // ---- 租户 / 审计字段 ----
-  optional uint32 tenant_id = 40;
-  optional string tenant_name = 41;
-  optional uint32 created_by = 100;
-  optional uint32 updated_by = 101;
-  optional uint32 deleted_by = 102;
-  optional google.protobuf.Timestamp created_at = 200;
-  optional google.protobuf.Timestamp updated_at = 201;
-  optional google.protobuf.Timestamp deleted_at = 202;
-}
-
+// 提交申请 - 请求
 message SubmitApplyRequest {
-  string definition_code = 1;
-  uint32 definition_version = 2;
-  string title = 3;
-  // 申请表单数据，原始 JSON 文本。
-  string form_data = 4;
+  string code = 1 [
+    json_name = "code",
+    (gnostic.openapi.v3.property) = { description: "流程代码" }
+  ]; // 流程代码
+
+  int32 version = 2 [
+    json_name = "version",
+    (gnostic.openapi.v3.property) = { description: "版本号" }
+  ]; // 版本号
+
+  string form_data = 3 [
+    json_name = "formData",
+    (gnostic.openapi.v3.property) = { description: "申请表单数据（JSON）" }
+  ]; // 申请表单数据（JSON）
+
+  optional string business_type = 4 [
+    json_name = "businessType",
+    (gnostic.openapi.v3.property) = { description: "业务单据类型（如 LEAVE/EXPENSE），由业务模块在服务端提交时填充" }
+  ]; // 业务单据类型
+
+  optional uint32 business_id = 5 [
+    json_name = "businessId",
+    (gnostic.openapi.v3.property) = { description: "业务单据ID" }
+  ]; // 业务单据ID
 }
 
+// 提交申请 - 回应
 message SubmitApplyResponse {
-  uint32 instance_id = 1;
+  uint32 instance_id = 1 [
+    json_name = "instanceId",
+    (gnostic.openapi.v3.property) = { description: "实例ID" }
+  ]; // 实例ID
 }
 
-// ---- 工作流任务 ----
-
-message WorkflowTask {
-  enum TaskStatus {
-    PENDING = 0;
-    APPROVED = 1;
-    REJECTED = 2;
-    FORWARDED = 3;
-  }
-
-  optional uint32 id = 1;
-  optional uint32 instance_id = 2;
-  optional int32 node_index = 3;
-  optional uint32 assignee_user_id = 4;
-  optional TaskStatus task_status = 5;
-
-  // ---- 租户 / 审计字段 ----
-  optional uint32 tenant_id = 40;
-  optional string tenant_name = 41;
-  optional uint32 created_by = 100;
-  optional uint32 updated_by = 101;
-  optional uint32 deleted_by = 102;
-  optional google.protobuf.Timestamp created_at = 200;
-  optional google.protobuf.Timestamp updated_at = 201;
-  optional google.protobuf.Timestamp deleted_at = 202;
+// 撤回申请 - 请求
+message WithdrawApplyRequest {
+  uint32 instance_id = 1 [
+    json_name = "instanceId",
+    (gnostic.openapi.v3.property) = { description: "实例ID" }
+  ]; // 实例ID
 }
 
+// 审批动作
+enum AuditAction {
+  APPROVE = 0;  // 通过
+  REJECT = 1;   // 驳回
+  FORWARD = 2;  // 转办
+}
+
+// 审批任务 - 请求
 message AuditTaskRequest {
-  enum AuditAction {
-    APPROVE = 0;
-    REJECT = 1;
-    FORWARD = 2;
-  }
+  uint32 task_id = 1 [
+    json_name = "taskId",
+    (gnostic.openapi.v3.property) = { description: "任务ID" }
+  ]; // 任务ID
 
-  // 绑定路径参数 {task_id}。
-  uint32 task_id = 1;
-  AuditAction action = 2;
-  optional string comment = 3;
-  // 仅 action == FORWARD 时有效：被转办人 ID。
-  optional uint32 forward_to_user_id = 4;
+  AuditAction action = 2 [
+    json_name = "action",
+    (gnostic.openapi.v3.property) = { description: "审批动作" }
+  ]; // 审批动作
+
+  uint32 forward_to = 3 [
+    json_name = "forwardTo",
+    (gnostic.openapi.v3.property) = { description: "转办目标用户ID" }
+  ]; // 转办目标用户ID
+
+  string comment = 4 [
+    json_name = "comment",
+    (gnostic.openapi.v3.property) = { description: "审批意见" }
+  ]; // 审批意见
 }
 
-// ---- 工作流审计日志 ----
-
-message WorkflowLog {
-  enum LogAction {
-    SUBMIT = 0;
-    APPROVE = 1;
-    REJECT = 2;
-    FORWARD = 3;
-    CANCEL = 4;
-  }
-
-  optional uint32 id = 1;
-  optional uint32 instance_id = 2;
-  optional int32 node_index = 3;
-  optional LogAction log_action = 4;
-  optional string comment = 5;
-
-  // ---- 租户 / 审计字段 ----
-  optional uint32 tenant_id = 40;
-  optional string tenant_name = 41;
-  optional uint32 created_by = 100;
-  optional uint32 updated_by = 101;
-  optional uint32 deleted_by = 102;
-  optional google.protobuf.Timestamp created_at = 200;
-  optional google.protobuf.Timestamp updated_at = 201;
-  optional google.protobuf.Timestamp deleted_at = 202;
+// 任务列表类型
+enum ListType {
+  PENDING = 0;    // 待办
+  DONE = 1;       // 已办
+  SUBMITTED = 2;  // 我的申请
 }
 
-// ---- 我的任务视图 ----
-
+// 查询我的任务 - 请求
 message GetMyTasksRequest {
-  enum ListType {
-    PENDING = 0;
-    DONE = 1;
-    SUBMITTED = 2;
-  }
-
-  ListType list_type = 1;
-  pagination.PagingRequest paging = 2;
+  ListType list_type = 1 [
+    json_name = "listType",
+    (gnostic.openapi.v3.property) = { description: "列表类型" }
+  ]; // 列表类型
 }
 
-message MyTaskItem {
-  // 各字段按 list_type 选择性填充。
-  optional uint32 task_id = 1;
-  optional uint32 log_id = 2;
-  optional uint32 instance_id = 3;
-  optional string title = 4;
-  optional string status_label = 5;
-  optional string action_label = 6;
-  optional string comment = 7;
-  optional google.protobuf.Timestamp occurred_at = 8;
-}
-
+// 查询我的任务 - 回应
 message GetMyTasksResponse {
   repeated MyTaskItem items = 1;
   uint64 total = 2;
 }
 
-// ---- 单任务详情 ----
-
+// 查询任务详情 - 请求
 message GetTaskRequest {
-  uint32 task_id = 1;
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
 }
 
-// GetTaskResponse 投影待办任务详情。字段对齐详情页渲染所需，最小披露：
-// 申请标题、申请表单数据（原始 JSON 文本，引擎不解释）、该实例的审批日志轨迹。
+// 查询任务详情 - 回应
 message GetTaskResponse {
-  optional uint32 task_id = 1;
-  optional uint32 instance_id = 2;
-  optional string title = 3;            // 申请标题（来自实例）
-  optional string form_data = 4;        // 申请表单数据，原始 JSON 文本
-  repeated AuditLogEntry history = 5;   // 该实例的审批日志轨迹
-}
+  optional WorkflowTask task = 1 [
+    json_name = "task",
+    (gnostic.openapi.v3.property) = { description: "任务详情" }
+  ]; // 任务详情
 
-// AuditLogEntry 审批日志轨迹条目。投影自 WorkflowLog，仅含审批类动作
-// （APPROVE / REJECT / FORWARD），与 ListByActor 的过滤口径一致。
-message AuditLogEntry {
-  optional string action_label = 1;     // 日志动作的文本标签
-  optional string comment = 2;          // 审批人附注
-  optional google.protobuf.Timestamp occurred_at = 3;
+  repeated WorkflowLog logs = 2 [
+    json_name = "logs",
+    (gnostic.openapi.v3.property) = { description: "审批历史" }
+  ]; // 审批历史
+
+  optional string form_data = 3 [
+    json_name = "formData",
+    (gnostic.openapi.v3.property) = { description: "申请表单数据（JSON，供审批人查看申请内容）" }
+  ]; // 申请表单数据
 }

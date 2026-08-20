@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: app/service/v1/i_attendance.proto
 
-package apppb
+package servicev1
 
 import (
 	context "context"
@@ -20,21 +20,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AttendanceService_CheckIn_FullMethodName = "/app.service.v1.AttendanceService/CheckIn"
+	AttendanceService_CheckIn_FullMethodName                = "/app.service.v1.AttendanceService/CheckIn"
+	AttendanceService_GetMyAttendanceRecords_FullMethodName = "/app.service.v1.AttendanceService/GetMyAttendanceRecords"
 )
 
 // AttendanceServiceClient is the client API for AttendanceService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// OA 考勤打卡服务（app HTTP 边端，移动端）。
-//
-// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。仅暴露 CheckIn
-// 端点供移动端打卡，围栏库 CRUD 不经 app 边端。
+// OA 考勤参与服务（app 边端，移动端）
 type AttendanceServiceClient interface {
-	// 打卡
-	CheckIn(ctx context.Context, in *v1.CheckInRequest, opts ...grpc.CallOption) (*v1.CheckInResponse, error)
+	// 打卡（当日首次=签到，第二次=签退并结算）
+	CheckIn(ctx context.Context, in *v1.CheckInRequest, opts ...grpc.CallOption) (*v1.AttendanceRecord, error)
+	// 查询本人打卡记录
+	GetMyAttendanceRecords(ctx context.Context, in *v1.GetMyAttendanceRecordsRequest, opts ...grpc.CallOption) (*v1.ListAttendanceRecordsResponse, error)
 }
 
 type attendanceServiceClient struct {
@@ -45,10 +44,20 @@ func NewAttendanceServiceClient(cc grpc.ClientConnInterface) AttendanceServiceCl
 	return &attendanceServiceClient{cc}
 }
 
-func (c *attendanceServiceClient) CheckIn(ctx context.Context, in *v1.CheckInRequest, opts ...grpc.CallOption) (*v1.CheckInResponse, error) {
+func (c *attendanceServiceClient) CheckIn(ctx context.Context, in *v1.CheckInRequest, opts ...grpc.CallOption) (*v1.AttendanceRecord, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.CheckInResponse)
+	out := new(v1.AttendanceRecord)
 	err := c.cc.Invoke(ctx, AttendanceService_CheckIn_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *attendanceServiceClient) GetMyAttendanceRecords(ctx context.Context, in *v1.GetMyAttendanceRecordsRequest, opts ...grpc.CallOption) (*v1.ListAttendanceRecordsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.ListAttendanceRecordsResponse)
+	err := c.cc.Invoke(ctx, AttendanceService_GetMyAttendanceRecords_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -59,14 +68,12 @@ func (c *attendanceServiceClient) CheckIn(ctx context.Context, in *v1.CheckInReq
 // All implementations must embed UnimplementedAttendanceServiceServer
 // for forward compatibility.
 //
-// OA 考勤打卡服务（app HTTP 边端，移动端）。
-//
-// 对齐 cms app/service/v1 的 i_*.proto 模式：本 proto 只声明 HTTP 路由注解，
-// 消息类型引用自 oa.service.v1（core-service 的 gRPC 实现）。仅暴露 CheckIn
-// 端点供移动端打卡，围栏库 CRUD 不经 app 边端。
+// OA 考勤参与服务（app 边端，移动端）
 type AttendanceServiceServer interface {
-	// 打卡
-	CheckIn(context.Context, *v1.CheckInRequest) (*v1.CheckInResponse, error)
+	// 打卡（当日首次=签到，第二次=签退并结算）
+	CheckIn(context.Context, *v1.CheckInRequest) (*v1.AttendanceRecord, error)
+	// 查询本人打卡记录
+	GetMyAttendanceRecords(context.Context, *v1.GetMyAttendanceRecordsRequest) (*v1.ListAttendanceRecordsResponse, error)
 	mustEmbedUnimplementedAttendanceServiceServer()
 }
 
@@ -77,8 +84,11 @@ type AttendanceServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAttendanceServiceServer struct{}
 
-func (UnimplementedAttendanceServiceServer) CheckIn(context.Context, *v1.CheckInRequest) (*v1.CheckInResponse, error) {
+func (UnimplementedAttendanceServiceServer) CheckIn(context.Context, *v1.CheckInRequest) (*v1.AttendanceRecord, error) {
 	return nil, status.Error(codes.Unimplemented, "method CheckIn not implemented")
+}
+func (UnimplementedAttendanceServiceServer) GetMyAttendanceRecords(context.Context, *v1.GetMyAttendanceRecordsRequest) (*v1.ListAttendanceRecordsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMyAttendanceRecords not implemented")
 }
 func (UnimplementedAttendanceServiceServer) mustEmbedUnimplementedAttendanceServiceServer() {}
 func (UnimplementedAttendanceServiceServer) testEmbeddedByValue()                           {}
@@ -119,6 +129,24 @@ func _AttendanceService_CheckIn_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AttendanceService_GetMyAttendanceRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.GetMyAttendanceRecordsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttendanceServiceServer).GetMyAttendanceRecords(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttendanceService_GetMyAttendanceRecords_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttendanceServiceServer).GetMyAttendanceRecords(ctx, req.(*v1.GetMyAttendanceRecordsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AttendanceService_ServiceDesc is the grpc.ServiceDesc for AttendanceService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -129,6 +157,10 @@ var AttendanceService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckIn",
 			Handler:    _AttendanceService_CheckIn_Handler,
+		},
+		{
+			MethodName: "GetMyAttendanceRecords",
+			Handler:    _AttendanceService_GetMyAttendanceRecords_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

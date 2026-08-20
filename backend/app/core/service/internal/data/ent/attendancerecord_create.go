@@ -120,72 +120,140 @@ func (_c *AttendanceRecordCreate) SetNillableTenantID(v *uint32) *AttendanceReco
 	return _c
 }
 
-// SetRemark sets the "remark" field.
-func (_c *AttendanceRecordCreate) SetRemark(v string) *AttendanceRecordCreate {
-	_c.mutation.SetRemark(v)
+// SetUserID sets the "user_id" field.
+func (_c *AttendanceRecordCreate) SetUserID(v uint32) *AttendanceRecordCreate {
+	_c.mutation.SetUserID(v)
 	return _c
 }
 
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_c *AttendanceRecordCreate) SetNillableRemark(v *string) *AttendanceRecordCreate {
+// SetWorkDate sets the "work_date" field.
+func (_c *AttendanceRecordCreate) SetWorkDate(v time.Time) *AttendanceRecordCreate {
+	_c.mutation.SetWorkDate(v)
+	return _c
+}
+
+// SetCheckInAt sets the "check_in_at" field.
+func (_c *AttendanceRecordCreate) SetCheckInAt(v time.Time) *AttendanceRecordCreate {
+	_c.mutation.SetCheckInAt(v)
+	return _c
+}
+
+// SetNillableCheckInAt sets the "check_in_at" field if the given value is not nil.
+func (_c *AttendanceRecordCreate) SetNillableCheckInAt(v *time.Time) *AttendanceRecordCreate {
 	if v != nil {
-		_c.SetRemark(*v)
+		_c.SetCheckInAt(*v)
 	}
 	return _c
 }
 
-// SetCheckResult sets the "check_result" field.
-func (_c *AttendanceRecordCreate) SetCheckResult(v attendancerecord.CheckResult) *AttendanceRecordCreate {
-	_c.mutation.SetCheckResult(v)
+// SetCheckInLatitude sets the "check_in_latitude" field.
+func (_c *AttendanceRecordCreate) SetCheckInLatitude(v float64) *AttendanceRecordCreate {
+	_c.mutation.SetCheckInLatitude(v)
 	return _c
 }
 
-// SetNillableCheckResult sets the "check_result" field if the given value is not nil.
-func (_c *AttendanceRecordCreate) SetNillableCheckResult(v *attendancerecord.CheckResult) *AttendanceRecordCreate {
+// SetNillableCheckInLatitude sets the "check_in_latitude" field if the given value is not nil.
+func (_c *AttendanceRecordCreate) SetNillableCheckInLatitude(v *float64) *AttendanceRecordCreate {
 	if v != nil {
-		_c.SetCheckResult(*v)
+		_c.SetCheckInLatitude(*v)
 	}
 	return _c
 }
 
-// SetLongitude sets the "longitude" field.
-func (_c *AttendanceRecordCreate) SetLongitude(v float64) *AttendanceRecordCreate {
-	_c.mutation.SetLongitude(v)
+// SetCheckInLongitude sets the "check_in_longitude" field.
+func (_c *AttendanceRecordCreate) SetCheckInLongitude(v float64) *AttendanceRecordCreate {
+	_c.mutation.SetCheckInLongitude(v)
 	return _c
 }
 
-// SetNillableLongitude sets the "longitude" field if the given value is not nil.
-func (_c *AttendanceRecordCreate) SetNillableLongitude(v *float64) *AttendanceRecordCreate {
+// SetNillableCheckInLongitude sets the "check_in_longitude" field if the given value is not nil.
+func (_c *AttendanceRecordCreate) SetNillableCheckInLongitude(v *float64) *AttendanceRecordCreate {
 	if v != nil {
-		_c.SetLongitude(*v)
+		_c.SetCheckInLongitude(*v)
 	}
 	return _c
 }
 
-// SetLatitude sets the "latitude" field.
-func (_c *AttendanceRecordCreate) SetLatitude(v float64) *AttendanceRecordCreate {
-	_c.mutation.SetLatitude(v)
+// SetCheckInWifiBssid sets the "check_in_wifi_bssid" field.
+func (_c *AttendanceRecordCreate) SetCheckInWifiBssid(v string) *AttendanceRecordCreate {
+	_c.mutation.SetCheckInWifiBssid(v)
 	return _c
 }
 
-// SetNillableLatitude sets the "latitude" field if the given value is not nil.
-func (_c *AttendanceRecordCreate) SetNillableLatitude(v *float64) *AttendanceRecordCreate {
+// SetNillableCheckInWifiBssid sets the "check_in_wifi_bssid" field if the given value is not nil.
+func (_c *AttendanceRecordCreate) SetNillableCheckInWifiBssid(v *string) *AttendanceRecordCreate {
 	if v != nil {
-		_c.SetLatitude(*v)
+		_c.SetCheckInWifiBssid(*v)
 	}
 	return _c
 }
 
-// SetBssid sets the "bssid" field.
-func (_c *AttendanceRecordCreate) SetBssid(v string) *AttendanceRecordCreate {
-	_c.mutation.SetBssid(v)
+// SetCheckOutAt sets the "check_out_at" field.
+func (_c *AttendanceRecordCreate) SetCheckOutAt(v time.Time) *AttendanceRecordCreate {
+	_c.mutation.SetCheckOutAt(v)
 	return _c
 }
 
-// SetNillableBssid sets the "bssid" field if the given value is not nil.
-func (_c *AttendanceRecordCreate) SetNillableBssid(v *string) *AttendanceRecordCreate {
+// SetNillableCheckOutAt sets the "check_out_at" field if the given value is not nil.
+func (_c *AttendanceRecordCreate) SetNillableCheckOutAt(v *time.Time) *AttendanceRecordCreate {
 	if v != nil {
-		_c.SetBssid(*v)
+		_c.SetCheckOutAt(*v)
+	}
+	return _c
+}
+
+// SetCheckOutLatitude sets the "check_out_latitude" field.
+func (_c *AttendanceRecordCreate) SetCheckOutLatitude(v float64) *AttendanceRecordCreate {
+	_c.mutation.SetCheckOutLatitude(v)
+	return _c
+}
+
+// SetNillableCheckOutLatitude sets the "check_out_latitude" field if the given value is not nil.
+func (_c *AttendanceRecordCreate) SetNillableCheckOutLatitude(v *float64) *AttendanceRecordCreate {
+	if v != nil {
+		_c.SetCheckOutLatitude(*v)
+	}
+	return _c
+}
+
+// SetCheckOutLongitude sets the "check_out_longitude" field.
+func (_c *AttendanceRecordCreate) SetCheckOutLongitude(v float64) *AttendanceRecordCreate {
+	_c.mutation.SetCheckOutLongitude(v)
+	return _c
+}
+
+// SetNillableCheckOutLongitude sets the "check_out_longitude" field if the given value is not nil.
+func (_c *AttendanceRecordCreate) SetNillableCheckOutLongitude(v *float64) *AttendanceRecordCreate {
+	if v != nil {
+		_c.SetCheckOutLongitude(*v)
+	}
+	return _c
+}
+
+// SetCheckOutWifiBssid sets the "check_out_wifi_bssid" field.
+func (_c *AttendanceRecordCreate) SetCheckOutWifiBssid(v string) *AttendanceRecordCreate {
+	_c.mutation.SetCheckOutWifiBssid(v)
+	return _c
+}
+
+// SetNillableCheckOutWifiBssid sets the "check_out_wifi_bssid" field if the given value is not nil.
+func (_c *AttendanceRecordCreate) SetNillableCheckOutWifiBssid(v *string) *AttendanceRecordCreate {
+	if v != nil {
+		_c.SetCheckOutWifiBssid(*v)
+	}
+	return _c
+}
+
+// SetDayResult sets the "day_result" field.
+func (_c *AttendanceRecordCreate) SetDayResult(v attendancerecord.DayResult) *AttendanceRecordCreate {
+	_c.mutation.SetDayResult(v)
+	return _c
+}
+
+// SetNillableDayResult sets the "day_result" field if the given value is not nil.
+func (_c *AttendanceRecordCreate) SetNillableDayResult(v *attendancerecord.DayResult) *AttendanceRecordCreate {
+	if v != nil {
+		_c.SetDayResult(*v)
 	}
 	return _c
 }
@@ -237,18 +305,34 @@ func (_c *AttendanceRecordCreate) defaults() error {
 		v := attendancerecord.DefaultTenantID
 		_c.mutation.SetTenantID(v)
 	}
-	if _, ok := _c.mutation.CheckResult(); !ok {
-		v := attendancerecord.DefaultCheckResult
-		_c.mutation.SetCheckResult(v)
+	if _, ok := _c.mutation.DayResult(); !ok {
+		v := attendancerecord.DefaultDayResult
+		_c.mutation.SetDayResult(v)
 	}
 	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *AttendanceRecordCreate) check() error {
-	if v, ok := _c.mutation.CheckResult(); ok {
-		if err := attendancerecord.CheckResultValidator(v); err != nil {
-			return &ValidationError{Name: "check_result", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.check_result": %w`, err)}
+	if _, ok := _c.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AttendanceRecord.user_id"`)}
+	}
+	if _, ok := _c.mutation.WorkDate(); !ok {
+		return &ValidationError{Name: "work_date", err: errors.New(`ent: missing required field "AttendanceRecord.work_date"`)}
+	}
+	if v, ok := _c.mutation.CheckInWifiBssid(); ok {
+		if err := attendancerecord.CheckInWifiBssidValidator(v); err != nil {
+			return &ValidationError{Name: "check_in_wifi_bssid", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.check_in_wifi_bssid": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.CheckOutWifiBssid(); ok {
+		if err := attendancerecord.CheckOutWifiBssidValidator(v); err != nil {
+			return &ValidationError{Name: "check_out_wifi_bssid", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.check_out_wifi_bssid": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.DayResult(); ok {
+		if err := attendancerecord.DayResultValidator(v); err != nil {
+			return &ValidationError{Name: "day_result", err: fmt.Errorf(`ent: validator failed for field "AttendanceRecord.day_result": %w`, err)}
 		}
 	}
 	if v, ok := _c.mutation.ID(); ok {
@@ -317,25 +401,49 @@ func (_c *AttendanceRecordCreate) createSpec() (*AttendanceRecord, *sqlgraph.Cre
 		_spec.SetField(attendancerecord.FieldTenantID, field.TypeUint32, value)
 		_node.TenantID = &value
 	}
-	if value, ok := _c.mutation.Remark(); ok {
-		_spec.SetField(attendancerecord.FieldRemark, field.TypeString, value)
-		_node.Remark = &value
+	if value, ok := _c.mutation.UserID(); ok {
+		_spec.SetField(attendancerecord.FieldUserID, field.TypeUint32, value)
+		_node.UserID = value
 	}
-	if value, ok := _c.mutation.CheckResult(); ok {
-		_spec.SetField(attendancerecord.FieldCheckResult, field.TypeEnum, value)
-		_node.CheckResult = value
+	if value, ok := _c.mutation.WorkDate(); ok {
+		_spec.SetField(attendancerecord.FieldWorkDate, field.TypeTime, value)
+		_node.WorkDate = value
 	}
-	if value, ok := _c.mutation.Longitude(); ok {
-		_spec.SetField(attendancerecord.FieldLongitude, field.TypeFloat64, value)
-		_node.Longitude = &value
+	if value, ok := _c.mutation.CheckInAt(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInAt, field.TypeTime, value)
+		_node.CheckInAt = &value
 	}
-	if value, ok := _c.mutation.Latitude(); ok {
-		_spec.SetField(attendancerecord.FieldLatitude, field.TypeFloat64, value)
-		_node.Latitude = &value
+	if value, ok := _c.mutation.CheckInLatitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInLatitude, field.TypeFloat64, value)
+		_node.CheckInLatitude = &value
 	}
-	if value, ok := _c.mutation.Bssid(); ok {
-		_spec.SetField(attendancerecord.FieldBssid, field.TypeString, value)
-		_node.Bssid = &value
+	if value, ok := _c.mutation.CheckInLongitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInLongitude, field.TypeFloat64, value)
+		_node.CheckInLongitude = &value
+	}
+	if value, ok := _c.mutation.CheckInWifiBssid(); ok {
+		_spec.SetField(attendancerecord.FieldCheckInWifiBssid, field.TypeString, value)
+		_node.CheckInWifiBssid = &value
+	}
+	if value, ok := _c.mutation.CheckOutAt(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutAt, field.TypeTime, value)
+		_node.CheckOutAt = &value
+	}
+	if value, ok := _c.mutation.CheckOutLatitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutLatitude, field.TypeFloat64, value)
+		_node.CheckOutLatitude = &value
+	}
+	if value, ok := _c.mutation.CheckOutLongitude(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutLongitude, field.TypeFloat64, value)
+		_node.CheckOutLongitude = &value
+	}
+	if value, ok := _c.mutation.CheckOutWifiBssid(); ok {
+		_spec.SetField(attendancerecord.FieldCheckOutWifiBssid, field.TypeString, value)
+		_node.CheckOutWifiBssid = &value
+	}
+	if value, ok := _c.mutation.DayResult(); ok {
+		_spec.SetField(attendancerecord.FieldDayResult, field.TypeEnum, value)
+		_node.DayResult = &value
 	}
 	return _node, _spec
 }
@@ -497,105 +605,219 @@ func (u *AttendanceRecordUpsert) ClearDeletedBy() *AttendanceRecordUpsert {
 	return u
 }
 
-// SetRemark sets the "remark" field.
-func (u *AttendanceRecordUpsert) SetRemark(v string) *AttendanceRecordUpsert {
-	u.Set(attendancerecord.FieldRemark, v)
+// SetUserID sets the "user_id" field.
+func (u *AttendanceRecordUpsert) SetUserID(v uint32) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldUserID, v)
 	return u
 }
 
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *AttendanceRecordUpsert) UpdateRemark() *AttendanceRecordUpsert {
-	u.SetExcluded(attendancerecord.FieldRemark)
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateUserID() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldUserID)
 	return u
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (u *AttendanceRecordUpsert) ClearRemark() *AttendanceRecordUpsert {
-	u.SetNull(attendancerecord.FieldRemark)
+// AddUserID adds v to the "user_id" field.
+func (u *AttendanceRecordUpsert) AddUserID(v uint32) *AttendanceRecordUpsert {
+	u.Add(attendancerecord.FieldUserID, v)
 	return u
 }
 
-// SetCheckResult sets the "check_result" field.
-func (u *AttendanceRecordUpsert) SetCheckResult(v attendancerecord.CheckResult) *AttendanceRecordUpsert {
-	u.Set(attendancerecord.FieldCheckResult, v)
+// SetWorkDate sets the "work_date" field.
+func (u *AttendanceRecordUpsert) SetWorkDate(v time.Time) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldWorkDate, v)
 	return u
 }
 
-// UpdateCheckResult sets the "check_result" field to the value that was provided on create.
-func (u *AttendanceRecordUpsert) UpdateCheckResult() *AttendanceRecordUpsert {
-	u.SetExcluded(attendancerecord.FieldCheckResult)
+// UpdateWorkDate sets the "work_date" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateWorkDate() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldWorkDate)
 	return u
 }
 
-// ClearCheckResult clears the value of the "check_result" field.
-func (u *AttendanceRecordUpsert) ClearCheckResult() *AttendanceRecordUpsert {
-	u.SetNull(attendancerecord.FieldCheckResult)
+// SetCheckInAt sets the "check_in_at" field.
+func (u *AttendanceRecordUpsert) SetCheckInAt(v time.Time) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldCheckInAt, v)
 	return u
 }
 
-// SetLongitude sets the "longitude" field.
-func (u *AttendanceRecordUpsert) SetLongitude(v float64) *AttendanceRecordUpsert {
-	u.Set(attendancerecord.FieldLongitude, v)
+// UpdateCheckInAt sets the "check_in_at" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateCheckInAt() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldCheckInAt)
 	return u
 }
 
-// UpdateLongitude sets the "longitude" field to the value that was provided on create.
-func (u *AttendanceRecordUpsert) UpdateLongitude() *AttendanceRecordUpsert {
-	u.SetExcluded(attendancerecord.FieldLongitude)
+// ClearCheckInAt clears the value of the "check_in_at" field.
+func (u *AttendanceRecordUpsert) ClearCheckInAt() *AttendanceRecordUpsert {
+	u.SetNull(attendancerecord.FieldCheckInAt)
 	return u
 }
 
-// AddLongitude adds v to the "longitude" field.
-func (u *AttendanceRecordUpsert) AddLongitude(v float64) *AttendanceRecordUpsert {
-	u.Add(attendancerecord.FieldLongitude, v)
+// SetCheckInLatitude sets the "check_in_latitude" field.
+func (u *AttendanceRecordUpsert) SetCheckInLatitude(v float64) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldCheckInLatitude, v)
 	return u
 }
 
-// ClearLongitude clears the value of the "longitude" field.
-func (u *AttendanceRecordUpsert) ClearLongitude() *AttendanceRecordUpsert {
-	u.SetNull(attendancerecord.FieldLongitude)
+// UpdateCheckInLatitude sets the "check_in_latitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateCheckInLatitude() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldCheckInLatitude)
 	return u
 }
 
-// SetLatitude sets the "latitude" field.
-func (u *AttendanceRecordUpsert) SetLatitude(v float64) *AttendanceRecordUpsert {
-	u.Set(attendancerecord.FieldLatitude, v)
+// AddCheckInLatitude adds v to the "check_in_latitude" field.
+func (u *AttendanceRecordUpsert) AddCheckInLatitude(v float64) *AttendanceRecordUpsert {
+	u.Add(attendancerecord.FieldCheckInLatitude, v)
 	return u
 }
 
-// UpdateLatitude sets the "latitude" field to the value that was provided on create.
-func (u *AttendanceRecordUpsert) UpdateLatitude() *AttendanceRecordUpsert {
-	u.SetExcluded(attendancerecord.FieldLatitude)
+// ClearCheckInLatitude clears the value of the "check_in_latitude" field.
+func (u *AttendanceRecordUpsert) ClearCheckInLatitude() *AttendanceRecordUpsert {
+	u.SetNull(attendancerecord.FieldCheckInLatitude)
 	return u
 }
 
-// AddLatitude adds v to the "latitude" field.
-func (u *AttendanceRecordUpsert) AddLatitude(v float64) *AttendanceRecordUpsert {
-	u.Add(attendancerecord.FieldLatitude, v)
+// SetCheckInLongitude sets the "check_in_longitude" field.
+func (u *AttendanceRecordUpsert) SetCheckInLongitude(v float64) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldCheckInLongitude, v)
 	return u
 }
 
-// ClearLatitude clears the value of the "latitude" field.
-func (u *AttendanceRecordUpsert) ClearLatitude() *AttendanceRecordUpsert {
-	u.SetNull(attendancerecord.FieldLatitude)
+// UpdateCheckInLongitude sets the "check_in_longitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateCheckInLongitude() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldCheckInLongitude)
 	return u
 }
 
-// SetBssid sets the "bssid" field.
-func (u *AttendanceRecordUpsert) SetBssid(v string) *AttendanceRecordUpsert {
-	u.Set(attendancerecord.FieldBssid, v)
+// AddCheckInLongitude adds v to the "check_in_longitude" field.
+func (u *AttendanceRecordUpsert) AddCheckInLongitude(v float64) *AttendanceRecordUpsert {
+	u.Add(attendancerecord.FieldCheckInLongitude, v)
 	return u
 }
 
-// UpdateBssid sets the "bssid" field to the value that was provided on create.
-func (u *AttendanceRecordUpsert) UpdateBssid() *AttendanceRecordUpsert {
-	u.SetExcluded(attendancerecord.FieldBssid)
+// ClearCheckInLongitude clears the value of the "check_in_longitude" field.
+func (u *AttendanceRecordUpsert) ClearCheckInLongitude() *AttendanceRecordUpsert {
+	u.SetNull(attendancerecord.FieldCheckInLongitude)
 	return u
 }
 
-// ClearBssid clears the value of the "bssid" field.
-func (u *AttendanceRecordUpsert) ClearBssid() *AttendanceRecordUpsert {
-	u.SetNull(attendancerecord.FieldBssid)
+// SetCheckInWifiBssid sets the "check_in_wifi_bssid" field.
+func (u *AttendanceRecordUpsert) SetCheckInWifiBssid(v string) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldCheckInWifiBssid, v)
+	return u
+}
+
+// UpdateCheckInWifiBssid sets the "check_in_wifi_bssid" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateCheckInWifiBssid() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldCheckInWifiBssid)
+	return u
+}
+
+// ClearCheckInWifiBssid clears the value of the "check_in_wifi_bssid" field.
+func (u *AttendanceRecordUpsert) ClearCheckInWifiBssid() *AttendanceRecordUpsert {
+	u.SetNull(attendancerecord.FieldCheckInWifiBssid)
+	return u
+}
+
+// SetCheckOutAt sets the "check_out_at" field.
+func (u *AttendanceRecordUpsert) SetCheckOutAt(v time.Time) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldCheckOutAt, v)
+	return u
+}
+
+// UpdateCheckOutAt sets the "check_out_at" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateCheckOutAt() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldCheckOutAt)
+	return u
+}
+
+// ClearCheckOutAt clears the value of the "check_out_at" field.
+func (u *AttendanceRecordUpsert) ClearCheckOutAt() *AttendanceRecordUpsert {
+	u.SetNull(attendancerecord.FieldCheckOutAt)
+	return u
+}
+
+// SetCheckOutLatitude sets the "check_out_latitude" field.
+func (u *AttendanceRecordUpsert) SetCheckOutLatitude(v float64) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldCheckOutLatitude, v)
+	return u
+}
+
+// UpdateCheckOutLatitude sets the "check_out_latitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateCheckOutLatitude() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldCheckOutLatitude)
+	return u
+}
+
+// AddCheckOutLatitude adds v to the "check_out_latitude" field.
+func (u *AttendanceRecordUpsert) AddCheckOutLatitude(v float64) *AttendanceRecordUpsert {
+	u.Add(attendancerecord.FieldCheckOutLatitude, v)
+	return u
+}
+
+// ClearCheckOutLatitude clears the value of the "check_out_latitude" field.
+func (u *AttendanceRecordUpsert) ClearCheckOutLatitude() *AttendanceRecordUpsert {
+	u.SetNull(attendancerecord.FieldCheckOutLatitude)
+	return u
+}
+
+// SetCheckOutLongitude sets the "check_out_longitude" field.
+func (u *AttendanceRecordUpsert) SetCheckOutLongitude(v float64) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldCheckOutLongitude, v)
+	return u
+}
+
+// UpdateCheckOutLongitude sets the "check_out_longitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateCheckOutLongitude() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldCheckOutLongitude)
+	return u
+}
+
+// AddCheckOutLongitude adds v to the "check_out_longitude" field.
+func (u *AttendanceRecordUpsert) AddCheckOutLongitude(v float64) *AttendanceRecordUpsert {
+	u.Add(attendancerecord.FieldCheckOutLongitude, v)
+	return u
+}
+
+// ClearCheckOutLongitude clears the value of the "check_out_longitude" field.
+func (u *AttendanceRecordUpsert) ClearCheckOutLongitude() *AttendanceRecordUpsert {
+	u.SetNull(attendancerecord.FieldCheckOutLongitude)
+	return u
+}
+
+// SetCheckOutWifiBssid sets the "check_out_wifi_bssid" field.
+func (u *AttendanceRecordUpsert) SetCheckOutWifiBssid(v string) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldCheckOutWifiBssid, v)
+	return u
+}
+
+// UpdateCheckOutWifiBssid sets the "check_out_wifi_bssid" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateCheckOutWifiBssid() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldCheckOutWifiBssid)
+	return u
+}
+
+// ClearCheckOutWifiBssid clears the value of the "check_out_wifi_bssid" field.
+func (u *AttendanceRecordUpsert) ClearCheckOutWifiBssid() *AttendanceRecordUpsert {
+	u.SetNull(attendancerecord.FieldCheckOutWifiBssid)
+	return u
+}
+
+// SetDayResult sets the "day_result" field.
+func (u *AttendanceRecordUpsert) SetDayResult(v attendancerecord.DayResult) *AttendanceRecordUpsert {
+	u.Set(attendancerecord.FieldDayResult, v)
+	return u
+}
+
+// UpdateDayResult sets the "day_result" field to the value that was provided on create.
+func (u *AttendanceRecordUpsert) UpdateDayResult() *AttendanceRecordUpsert {
+	u.SetExcluded(attendancerecord.FieldDayResult)
+	return u
+}
+
+// ClearDayResult clears the value of the "day_result" field.
+func (u *AttendanceRecordUpsert) ClearDayResult() *AttendanceRecordUpsert {
+	u.SetNull(attendancerecord.FieldDayResult)
 	return u
 }
 
@@ -779,122 +1001,255 @@ func (u *AttendanceRecordUpsertOne) ClearDeletedBy() *AttendanceRecordUpsertOne 
 	})
 }
 
-// SetRemark sets the "remark" field.
-func (u *AttendanceRecordUpsertOne) SetRemark(v string) *AttendanceRecordUpsertOne {
+// SetUserID sets the "user_id" field.
+func (u *AttendanceRecordUpsertOne) SetUserID(v uint32) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.SetRemark(v)
+		s.SetUserID(v)
 	})
 }
 
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *AttendanceRecordUpsertOne) UpdateRemark() *AttendanceRecordUpsertOne {
+// AddUserID adds v to the "user_id" field.
+func (u *AttendanceRecordUpsertOne) AddUserID(v uint32) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.UpdateRemark()
+		s.AddUserID(v)
 	})
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (u *AttendanceRecordUpsertOne) ClearRemark() *AttendanceRecordUpsertOne {
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateUserID() *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.ClearRemark()
+		s.UpdateUserID()
 	})
 }
 
-// SetCheckResult sets the "check_result" field.
-func (u *AttendanceRecordUpsertOne) SetCheckResult(v attendancerecord.CheckResult) *AttendanceRecordUpsertOne {
+// SetWorkDate sets the "work_date" field.
+func (u *AttendanceRecordUpsertOne) SetWorkDate(v time.Time) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.SetCheckResult(v)
+		s.SetWorkDate(v)
 	})
 }
 
-// UpdateCheckResult sets the "check_result" field to the value that was provided on create.
-func (u *AttendanceRecordUpsertOne) UpdateCheckResult() *AttendanceRecordUpsertOne {
+// UpdateWorkDate sets the "work_date" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateWorkDate() *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.UpdateCheckResult()
+		s.UpdateWorkDate()
 	})
 }
 
-// ClearCheckResult clears the value of the "check_result" field.
-func (u *AttendanceRecordUpsertOne) ClearCheckResult() *AttendanceRecordUpsertOne {
+// SetCheckInAt sets the "check_in_at" field.
+func (u *AttendanceRecordUpsertOne) SetCheckInAt(v time.Time) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.ClearCheckResult()
+		s.SetCheckInAt(v)
 	})
 }
 
-// SetLongitude sets the "longitude" field.
-func (u *AttendanceRecordUpsertOne) SetLongitude(v float64) *AttendanceRecordUpsertOne {
+// UpdateCheckInAt sets the "check_in_at" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateCheckInAt() *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.SetLongitude(v)
+		s.UpdateCheckInAt()
 	})
 }
 
-// AddLongitude adds v to the "longitude" field.
-func (u *AttendanceRecordUpsertOne) AddLongitude(v float64) *AttendanceRecordUpsertOne {
+// ClearCheckInAt clears the value of the "check_in_at" field.
+func (u *AttendanceRecordUpsertOne) ClearCheckInAt() *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.AddLongitude(v)
+		s.ClearCheckInAt()
 	})
 }
 
-// UpdateLongitude sets the "longitude" field to the value that was provided on create.
-func (u *AttendanceRecordUpsertOne) UpdateLongitude() *AttendanceRecordUpsertOne {
+// SetCheckInLatitude sets the "check_in_latitude" field.
+func (u *AttendanceRecordUpsertOne) SetCheckInLatitude(v float64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.UpdateLongitude()
+		s.SetCheckInLatitude(v)
 	})
 }
 
-// ClearLongitude clears the value of the "longitude" field.
-func (u *AttendanceRecordUpsertOne) ClearLongitude() *AttendanceRecordUpsertOne {
+// AddCheckInLatitude adds v to the "check_in_latitude" field.
+func (u *AttendanceRecordUpsertOne) AddCheckInLatitude(v float64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.ClearLongitude()
+		s.AddCheckInLatitude(v)
 	})
 }
 
-// SetLatitude sets the "latitude" field.
-func (u *AttendanceRecordUpsertOne) SetLatitude(v float64) *AttendanceRecordUpsertOne {
+// UpdateCheckInLatitude sets the "check_in_latitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateCheckInLatitude() *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.SetLatitude(v)
+		s.UpdateCheckInLatitude()
 	})
 }
 
-// AddLatitude adds v to the "latitude" field.
-func (u *AttendanceRecordUpsertOne) AddLatitude(v float64) *AttendanceRecordUpsertOne {
+// ClearCheckInLatitude clears the value of the "check_in_latitude" field.
+func (u *AttendanceRecordUpsertOne) ClearCheckInLatitude() *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.AddLatitude(v)
+		s.ClearCheckInLatitude()
 	})
 }
 
-// UpdateLatitude sets the "latitude" field to the value that was provided on create.
-func (u *AttendanceRecordUpsertOne) UpdateLatitude() *AttendanceRecordUpsertOne {
+// SetCheckInLongitude sets the "check_in_longitude" field.
+func (u *AttendanceRecordUpsertOne) SetCheckInLongitude(v float64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.UpdateLatitude()
+		s.SetCheckInLongitude(v)
 	})
 }
 
-// ClearLatitude clears the value of the "latitude" field.
-func (u *AttendanceRecordUpsertOne) ClearLatitude() *AttendanceRecordUpsertOne {
+// AddCheckInLongitude adds v to the "check_in_longitude" field.
+func (u *AttendanceRecordUpsertOne) AddCheckInLongitude(v float64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.ClearLatitude()
+		s.AddCheckInLongitude(v)
 	})
 }
 
-// SetBssid sets the "bssid" field.
-func (u *AttendanceRecordUpsertOne) SetBssid(v string) *AttendanceRecordUpsertOne {
+// UpdateCheckInLongitude sets the "check_in_longitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateCheckInLongitude() *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.SetBssid(v)
+		s.UpdateCheckInLongitude()
 	})
 }
 
-// UpdateBssid sets the "bssid" field to the value that was provided on create.
-func (u *AttendanceRecordUpsertOne) UpdateBssid() *AttendanceRecordUpsertOne {
+// ClearCheckInLongitude clears the value of the "check_in_longitude" field.
+func (u *AttendanceRecordUpsertOne) ClearCheckInLongitude() *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.UpdateBssid()
+		s.ClearCheckInLongitude()
 	})
 }
 
-// ClearBssid clears the value of the "bssid" field.
-func (u *AttendanceRecordUpsertOne) ClearBssid() *AttendanceRecordUpsertOne {
+// SetCheckInWifiBssid sets the "check_in_wifi_bssid" field.
+func (u *AttendanceRecordUpsertOne) SetCheckInWifiBssid(v string) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.ClearBssid()
+		s.SetCheckInWifiBssid(v)
+	})
+}
+
+// UpdateCheckInWifiBssid sets the "check_in_wifi_bssid" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateCheckInWifiBssid() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateCheckInWifiBssid()
+	})
+}
+
+// ClearCheckInWifiBssid clears the value of the "check_in_wifi_bssid" field.
+func (u *AttendanceRecordUpsertOne) ClearCheckInWifiBssid() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearCheckInWifiBssid()
+	})
+}
+
+// SetCheckOutAt sets the "check_out_at" field.
+func (u *AttendanceRecordUpsertOne) SetCheckOutAt(v time.Time) *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.SetCheckOutAt(v)
+	})
+}
+
+// UpdateCheckOutAt sets the "check_out_at" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateCheckOutAt() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateCheckOutAt()
+	})
+}
+
+// ClearCheckOutAt clears the value of the "check_out_at" field.
+func (u *AttendanceRecordUpsertOne) ClearCheckOutAt() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearCheckOutAt()
+	})
+}
+
+// SetCheckOutLatitude sets the "check_out_latitude" field.
+func (u *AttendanceRecordUpsertOne) SetCheckOutLatitude(v float64) *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.SetCheckOutLatitude(v)
+	})
+}
+
+// AddCheckOutLatitude adds v to the "check_out_latitude" field.
+func (u *AttendanceRecordUpsertOne) AddCheckOutLatitude(v float64) *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.AddCheckOutLatitude(v)
+	})
+}
+
+// UpdateCheckOutLatitude sets the "check_out_latitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateCheckOutLatitude() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateCheckOutLatitude()
+	})
+}
+
+// ClearCheckOutLatitude clears the value of the "check_out_latitude" field.
+func (u *AttendanceRecordUpsertOne) ClearCheckOutLatitude() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearCheckOutLatitude()
+	})
+}
+
+// SetCheckOutLongitude sets the "check_out_longitude" field.
+func (u *AttendanceRecordUpsertOne) SetCheckOutLongitude(v float64) *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.SetCheckOutLongitude(v)
+	})
+}
+
+// AddCheckOutLongitude adds v to the "check_out_longitude" field.
+func (u *AttendanceRecordUpsertOne) AddCheckOutLongitude(v float64) *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.AddCheckOutLongitude(v)
+	})
+}
+
+// UpdateCheckOutLongitude sets the "check_out_longitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateCheckOutLongitude() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateCheckOutLongitude()
+	})
+}
+
+// ClearCheckOutLongitude clears the value of the "check_out_longitude" field.
+func (u *AttendanceRecordUpsertOne) ClearCheckOutLongitude() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearCheckOutLongitude()
+	})
+}
+
+// SetCheckOutWifiBssid sets the "check_out_wifi_bssid" field.
+func (u *AttendanceRecordUpsertOne) SetCheckOutWifiBssid(v string) *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.SetCheckOutWifiBssid(v)
+	})
+}
+
+// UpdateCheckOutWifiBssid sets the "check_out_wifi_bssid" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateCheckOutWifiBssid() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateCheckOutWifiBssid()
+	})
+}
+
+// ClearCheckOutWifiBssid clears the value of the "check_out_wifi_bssid" field.
+func (u *AttendanceRecordUpsertOne) ClearCheckOutWifiBssid() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearCheckOutWifiBssid()
+	})
+}
+
+// SetDayResult sets the "day_result" field.
+func (u *AttendanceRecordUpsertOne) SetDayResult(v attendancerecord.DayResult) *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.SetDayResult(v)
+	})
+}
+
+// UpdateDayResult sets the "day_result" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertOne) UpdateDayResult() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateDayResult()
+	})
+}
+
+// ClearDayResult clears the value of the "day_result" field.
+func (u *AttendanceRecordUpsertOne) ClearDayResult() *AttendanceRecordUpsertOne {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearDayResult()
 	})
 }
 
@@ -1244,122 +1599,255 @@ func (u *AttendanceRecordUpsertBulk) ClearDeletedBy() *AttendanceRecordUpsertBul
 	})
 }
 
-// SetRemark sets the "remark" field.
-func (u *AttendanceRecordUpsertBulk) SetRemark(v string) *AttendanceRecordUpsertBulk {
+// SetUserID sets the "user_id" field.
+func (u *AttendanceRecordUpsertBulk) SetUserID(v uint32) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.SetRemark(v)
+		s.SetUserID(v)
 	})
 }
 
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *AttendanceRecordUpsertBulk) UpdateRemark() *AttendanceRecordUpsertBulk {
+// AddUserID adds v to the "user_id" field.
+func (u *AttendanceRecordUpsertBulk) AddUserID(v uint32) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.UpdateRemark()
+		s.AddUserID(v)
 	})
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (u *AttendanceRecordUpsertBulk) ClearRemark() *AttendanceRecordUpsertBulk {
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateUserID() *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.ClearRemark()
+		s.UpdateUserID()
 	})
 }
 
-// SetCheckResult sets the "check_result" field.
-func (u *AttendanceRecordUpsertBulk) SetCheckResult(v attendancerecord.CheckResult) *AttendanceRecordUpsertBulk {
+// SetWorkDate sets the "work_date" field.
+func (u *AttendanceRecordUpsertBulk) SetWorkDate(v time.Time) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.SetCheckResult(v)
+		s.SetWorkDate(v)
 	})
 }
 
-// UpdateCheckResult sets the "check_result" field to the value that was provided on create.
-func (u *AttendanceRecordUpsertBulk) UpdateCheckResult() *AttendanceRecordUpsertBulk {
+// UpdateWorkDate sets the "work_date" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateWorkDate() *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.UpdateCheckResult()
+		s.UpdateWorkDate()
 	})
 }
 
-// ClearCheckResult clears the value of the "check_result" field.
-func (u *AttendanceRecordUpsertBulk) ClearCheckResult() *AttendanceRecordUpsertBulk {
+// SetCheckInAt sets the "check_in_at" field.
+func (u *AttendanceRecordUpsertBulk) SetCheckInAt(v time.Time) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.ClearCheckResult()
+		s.SetCheckInAt(v)
 	})
 }
 
-// SetLongitude sets the "longitude" field.
-func (u *AttendanceRecordUpsertBulk) SetLongitude(v float64) *AttendanceRecordUpsertBulk {
+// UpdateCheckInAt sets the "check_in_at" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateCheckInAt() *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.SetLongitude(v)
+		s.UpdateCheckInAt()
 	})
 }
 
-// AddLongitude adds v to the "longitude" field.
-func (u *AttendanceRecordUpsertBulk) AddLongitude(v float64) *AttendanceRecordUpsertBulk {
+// ClearCheckInAt clears the value of the "check_in_at" field.
+func (u *AttendanceRecordUpsertBulk) ClearCheckInAt() *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.AddLongitude(v)
+		s.ClearCheckInAt()
 	})
 }
 
-// UpdateLongitude sets the "longitude" field to the value that was provided on create.
-func (u *AttendanceRecordUpsertBulk) UpdateLongitude() *AttendanceRecordUpsertBulk {
+// SetCheckInLatitude sets the "check_in_latitude" field.
+func (u *AttendanceRecordUpsertBulk) SetCheckInLatitude(v float64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.UpdateLongitude()
+		s.SetCheckInLatitude(v)
 	})
 }
 
-// ClearLongitude clears the value of the "longitude" field.
-func (u *AttendanceRecordUpsertBulk) ClearLongitude() *AttendanceRecordUpsertBulk {
+// AddCheckInLatitude adds v to the "check_in_latitude" field.
+func (u *AttendanceRecordUpsertBulk) AddCheckInLatitude(v float64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.ClearLongitude()
+		s.AddCheckInLatitude(v)
 	})
 }
 
-// SetLatitude sets the "latitude" field.
-func (u *AttendanceRecordUpsertBulk) SetLatitude(v float64) *AttendanceRecordUpsertBulk {
+// UpdateCheckInLatitude sets the "check_in_latitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateCheckInLatitude() *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.SetLatitude(v)
+		s.UpdateCheckInLatitude()
 	})
 }
 
-// AddLatitude adds v to the "latitude" field.
-func (u *AttendanceRecordUpsertBulk) AddLatitude(v float64) *AttendanceRecordUpsertBulk {
+// ClearCheckInLatitude clears the value of the "check_in_latitude" field.
+func (u *AttendanceRecordUpsertBulk) ClearCheckInLatitude() *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.AddLatitude(v)
+		s.ClearCheckInLatitude()
 	})
 }
 
-// UpdateLatitude sets the "latitude" field to the value that was provided on create.
-func (u *AttendanceRecordUpsertBulk) UpdateLatitude() *AttendanceRecordUpsertBulk {
+// SetCheckInLongitude sets the "check_in_longitude" field.
+func (u *AttendanceRecordUpsertBulk) SetCheckInLongitude(v float64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.UpdateLatitude()
+		s.SetCheckInLongitude(v)
 	})
 }
 
-// ClearLatitude clears the value of the "latitude" field.
-func (u *AttendanceRecordUpsertBulk) ClearLatitude() *AttendanceRecordUpsertBulk {
+// AddCheckInLongitude adds v to the "check_in_longitude" field.
+func (u *AttendanceRecordUpsertBulk) AddCheckInLongitude(v float64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.ClearLatitude()
+		s.AddCheckInLongitude(v)
 	})
 }
 
-// SetBssid sets the "bssid" field.
-func (u *AttendanceRecordUpsertBulk) SetBssid(v string) *AttendanceRecordUpsertBulk {
+// UpdateCheckInLongitude sets the "check_in_longitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateCheckInLongitude() *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.SetBssid(v)
+		s.UpdateCheckInLongitude()
 	})
 }
 
-// UpdateBssid sets the "bssid" field to the value that was provided on create.
-func (u *AttendanceRecordUpsertBulk) UpdateBssid() *AttendanceRecordUpsertBulk {
+// ClearCheckInLongitude clears the value of the "check_in_longitude" field.
+func (u *AttendanceRecordUpsertBulk) ClearCheckInLongitude() *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.UpdateBssid()
+		s.ClearCheckInLongitude()
 	})
 }
 
-// ClearBssid clears the value of the "bssid" field.
-func (u *AttendanceRecordUpsertBulk) ClearBssid() *AttendanceRecordUpsertBulk {
+// SetCheckInWifiBssid sets the "check_in_wifi_bssid" field.
+func (u *AttendanceRecordUpsertBulk) SetCheckInWifiBssid(v string) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
-		s.ClearBssid()
+		s.SetCheckInWifiBssid(v)
+	})
+}
+
+// UpdateCheckInWifiBssid sets the "check_in_wifi_bssid" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateCheckInWifiBssid() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateCheckInWifiBssid()
+	})
+}
+
+// ClearCheckInWifiBssid clears the value of the "check_in_wifi_bssid" field.
+func (u *AttendanceRecordUpsertBulk) ClearCheckInWifiBssid() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearCheckInWifiBssid()
+	})
+}
+
+// SetCheckOutAt sets the "check_out_at" field.
+func (u *AttendanceRecordUpsertBulk) SetCheckOutAt(v time.Time) *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.SetCheckOutAt(v)
+	})
+}
+
+// UpdateCheckOutAt sets the "check_out_at" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateCheckOutAt() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateCheckOutAt()
+	})
+}
+
+// ClearCheckOutAt clears the value of the "check_out_at" field.
+func (u *AttendanceRecordUpsertBulk) ClearCheckOutAt() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearCheckOutAt()
+	})
+}
+
+// SetCheckOutLatitude sets the "check_out_latitude" field.
+func (u *AttendanceRecordUpsertBulk) SetCheckOutLatitude(v float64) *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.SetCheckOutLatitude(v)
+	})
+}
+
+// AddCheckOutLatitude adds v to the "check_out_latitude" field.
+func (u *AttendanceRecordUpsertBulk) AddCheckOutLatitude(v float64) *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.AddCheckOutLatitude(v)
+	})
+}
+
+// UpdateCheckOutLatitude sets the "check_out_latitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateCheckOutLatitude() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateCheckOutLatitude()
+	})
+}
+
+// ClearCheckOutLatitude clears the value of the "check_out_latitude" field.
+func (u *AttendanceRecordUpsertBulk) ClearCheckOutLatitude() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearCheckOutLatitude()
+	})
+}
+
+// SetCheckOutLongitude sets the "check_out_longitude" field.
+func (u *AttendanceRecordUpsertBulk) SetCheckOutLongitude(v float64) *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.SetCheckOutLongitude(v)
+	})
+}
+
+// AddCheckOutLongitude adds v to the "check_out_longitude" field.
+func (u *AttendanceRecordUpsertBulk) AddCheckOutLongitude(v float64) *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.AddCheckOutLongitude(v)
+	})
+}
+
+// UpdateCheckOutLongitude sets the "check_out_longitude" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateCheckOutLongitude() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateCheckOutLongitude()
+	})
+}
+
+// ClearCheckOutLongitude clears the value of the "check_out_longitude" field.
+func (u *AttendanceRecordUpsertBulk) ClearCheckOutLongitude() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearCheckOutLongitude()
+	})
+}
+
+// SetCheckOutWifiBssid sets the "check_out_wifi_bssid" field.
+func (u *AttendanceRecordUpsertBulk) SetCheckOutWifiBssid(v string) *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.SetCheckOutWifiBssid(v)
+	})
+}
+
+// UpdateCheckOutWifiBssid sets the "check_out_wifi_bssid" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateCheckOutWifiBssid() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateCheckOutWifiBssid()
+	})
+}
+
+// ClearCheckOutWifiBssid clears the value of the "check_out_wifi_bssid" field.
+func (u *AttendanceRecordUpsertBulk) ClearCheckOutWifiBssid() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearCheckOutWifiBssid()
+	})
+}
+
+// SetDayResult sets the "day_result" field.
+func (u *AttendanceRecordUpsertBulk) SetDayResult(v attendancerecord.DayResult) *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.SetDayResult(v)
+	})
+}
+
+// UpdateDayResult sets the "day_result" field to the value that was provided on create.
+func (u *AttendanceRecordUpsertBulk) UpdateDayResult() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.UpdateDayResult()
+	})
+}
+
+// ClearDayResult clears the value of the "day_result" field.
+func (u *AttendanceRecordUpsertBulk) ClearDayResult() *AttendanceRecordUpsertBulk {
+	return u.Update(func(s *AttendanceRecordUpsert) {
+		s.ClearDayResult()
 	})
 }
 

@@ -10,8 +10,20 @@ import (
 
 	"go-wind-oa/app/core/service/internal/service"
 
+	auditV1 "go-wind-oa/api/gen/go/audit/service/v1"
+	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
+	commentV1 "go-wind-oa/api/gen/go/comment/service/v1"
+	contentV1 "go-wind-oa/api/gen/go/content/service/v1"
+	dictV1 "go-wind-oa/api/gen/go/dict/service/v1"
+	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
+	interactionV1 "go-wind-oa/api/gen/go/interaction/service/v1"
 	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
+	mediaV1 "go-wind-oa/api/gen/go/media/service/v1"
 	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
+	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
+	siteV1 "go-wind-oa/api/gen/go/site/service/v1"
+	storageV1 "go-wind-oa/api/gen/go/storage/service/v1"
+	taskV1 "go-wind-oa/api/gen/go/task/service/v1"
 
 	"go-wind-oa/pkg/middleware/ent"
 )
@@ -24,26 +36,66 @@ func NewGrpcMiddleware(ctx *bootstrap.Context) []middleware.Middleware {
 }
 
 // NewGrpcServer new a gRPC server.
-//
-// OA core-service 為 gRPC-only，僅註冊三類服務：
-//   - internal_message（站內信，工作流通知落庫用）
-//   - workflow（工作流引擎狀態機）
-//   - attendance（移動打卡判定 + 圍欄/Wi-Fi 指紋庫 CRUD）
-//
-// 中間件鏈為 logging + ent：前者記錄調用，後者按 auth 中間件注入的
-// viewer context 做租戶/操作人隔離（core 本身不驗 token，由上游 admin
-// 轉發時帶身份）。
 func NewGrpcServer(
 	ctx *bootstrap.Context,
 	middlewares []middleware.Middleware,
+
+	authenticationService *service.AuthenticationService,
+	loginPolicyService *service.LoginPolicyService,
+	userCredentialService *service.UserCredentialService,
+
+	taskService *service.TaskService,
+
+	fileService *service.FileService,
+
+	dictTypeService *service.DictTypeService,
+	dictEntryService *service.DictEntryService,
+	languageService *service.LanguageService,
+
+	tenantService *service.TenantService,
+	userService *service.UserService,
+	roleService *service.RoleService,
+	positionService *service.PositionService,
+	orgUnitService *service.OrgUnitService,
+
+	menuService *service.MenuService,
+	apiService *service.ApiService,
+	permissionService *service.PermissionService,
+	permissionGroupService *service.PermissionGroupService,
+	permissionAuditLogService *service.PermissionAuditLogService,
+	policyEvaluationLogService *service.PolicyEvaluationLogService,
+
+	loginAuditLogService *service.LoginAuditLogService,
+	apiAuditLogService *service.ApiAuditLogService,
+	operationAuditLogService *service.OperationAuditLogService,
+	dataAccessAuditLogService *service.DataAccessAuditLogService,
 
 	internalMessageService *service.InternalMessageService,
 	internalMessageCategoryService *service.InternalMessageCategoryService,
 	internalMessageRecipientService *service.InternalMessageRecipientService,
 
 	workflowService *service.WorkflowService,
-
+	leaveService *service.LeaveService,
+	expenseService *service.ExpenseService,
 	attendanceService *service.AttendanceService,
+
+	commentService *service.CommentService,
+
+	interactionService *service.InteractionService,
+	interactionAdminService *service.InteractionAdminService,
+
+	postService *service.PostService,
+	categoryService *service.CategoryService,
+	tagService *service.TagService,
+	pageService *service.PageService,
+	sectionService *service.SectionService,
+
+	siteService *service.SiteService,
+	siteSettingService *service.SiteSettingService,
+	navigationService *service.NavigationService,
+	navigationItemService *service.NavigationItemService,
+
+	mediaAssetService *service.MediaAssetService,
 ) (*grpc.Server, error) {
 	cfg := ctx.GetConfig()
 
@@ -56,13 +108,63 @@ func NewGrpcServer(
 		return nil, err
 	}
 
+	taskV1.RegisterTaskServiceServer(srv, taskService)
+
+	authenticationV1.RegisterLoginPolicyServiceServer(srv, loginPolicyService)
+	authenticationV1.RegisterAuthenticationServiceServer(srv, authenticationService)
+	authenticationV1.RegisterUserCredentialServiceServer(srv, userCredentialService)
+
+	dictV1.RegisterDictTypeServiceServer(srv, dictTypeService)
+	dictV1.RegisterDictEntryServiceServer(srv, dictEntryService)
+	dictV1.RegisterLanguageServiceServer(srv, languageService)
+
+	permissionV1.RegisterApiServiceServer(srv, apiService)
+	permissionV1.RegisterMenuServiceServer(srv, menuService)
+
+	permissionV1.RegisterPermissionServiceServer(srv, permissionService)
+	permissionV1.RegisterPermissionGroupServiceServer(srv, permissionGroupService)
+	permissionV1.RegisterPolicyEvaluationLogServiceServer(srv, policyEvaluationLogService)
+	permissionV1.RegisterRoleServiceServer(srv, roleService)
+
+	identityV1.RegisterUserServiceServer(srv, userService)
+	identityV1.RegisterOrgUnitServiceServer(srv, orgUnitService)
+	identityV1.RegisterPositionServiceServer(srv, positionService)
+	identityV1.RegisterTenantServiceServer(srv, tenantService)
+
+	auditV1.RegisterLoginAuditLogServiceServer(srv, loginAuditLogService)
+	auditV1.RegisterApiAuditLogServiceServer(srv, apiAuditLogService)
+	auditV1.RegisterOperationAuditLogServiceServer(srv, operationAuditLogService)
+	auditV1.RegisterDataAccessAuditLogServiceServer(srv, dataAccessAuditLogService)
+	auditV1.RegisterPermissionAuditLogServiceServer(srv, permissionAuditLogService)
+
+	storageV1.RegisterFileServiceServer(srv, fileService)
+
 	internalMessageV1.RegisterInternalMessageServiceServer(srv, internalMessageService)
 	internalMessageV1.RegisterInternalMessageCategoryServiceServer(srv, internalMessageCategoryService)
 	internalMessageV1.RegisterInternalMessageRecipientServiceServer(srv, internalMessageRecipientService)
 
 	oaV1.RegisterWorkflowServiceServer(srv, workflowService)
-
+	oaV1.RegisterLeaveServiceServer(srv, leaveService)
+	oaV1.RegisterExpenseServiceServer(srv, expenseService)
 	oaV1.RegisterAttendanceServiceServer(srv, attendanceService)
+
+	commentV1.RegisterCommentServiceServer(srv, commentService)
+
+	interactionV1.RegisterInteractionServiceServer(srv, interactionService)
+	interactionV1.RegisterInteractionAdminServiceServer(srv, interactionAdminService)
+
+	contentV1.RegisterPostServiceServer(srv, postService)
+	contentV1.RegisterCategoryServiceServer(srv, categoryService)
+	contentV1.RegisterTagServiceServer(srv, tagService)
+	contentV1.RegisterPageServiceServer(srv, pageService)
+	contentV1.RegisterSectionServiceServer(srv, sectionService)
+
+	siteV1.RegisterSiteSettingServiceServer(srv, siteSettingService)
+	siteV1.RegisterSiteServiceServer(srv, siteService)
+	siteV1.RegisterNavigationServiceServer(srv, navigationService)
+	siteV1.RegisterNavigationItemServiceServer(srv, navigationItemService)
+
+	mediaV1.RegisterMediaAssetServiceServer(srv, mediaAssetService)
 
 	return srv, nil
 }

@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package content.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+// 编辑器类型
+enum EditorType {
+  EDITOR_TYPE_UNSPECIFIED = 0;
+
+  EDITOR_TYPE_MARKDOWN = 1;   // Markdown 编辑器
+  EDITOR_TYPE_RICH_TEXT = 2;  // 富文本编辑器（含HTML源码编辑）
+  EDITOR_TYPE_PLAIN_TEXT = 3; // 纯文本编辑器
+  EDITOR_TYPE_CODE = 4;       // 代码编辑器（支持多语言语法高亮）
+
+  // 扩展类型（预留，默认不展示，供高级功能扩展）
+  EDITOR_TYPE_JSON_BLOCK = 10; // JSON 块编辑器（Notion风格）
+  EDITOR_TYPE_VISUAL_BUILDER = 11;  // 可视化构建器
+}
+
+// 区块类型
+enum SectionType {
+  SECTION_TYPE_UNSPECIFIED = 0;
+
+  SECTION_TYPE_RICH_TEXT = 1;   // 富文本区块
+  SECTION_TYPE_MARKDOWN = 2;    // Markdown 区块
+  SECTION_TYPE_TITLE = 3;       // 标题区块
+  SECTION_TYPE_IMAGE = 4;       // 图片区块
+  SECTION_TYPE_GALLERY = 5;     // 图集区块
+  SECTION_TYPE_VIDEO = 6;       // 视频区块
+  SECTION_TYPE_BUTTON = 7;      // 按钮区块
+  SECTION_TYPE_DIVIDER = 8;     // 分割线区块
+  SECTION_TYPE_SPACER = 9;      // 间距区块
+  SECTION_TYPE_CODE = 10;       // 代码区块
+  SECTION_TYPE_HTML = 11;       // 自定义HTML区块
+  SECTION_TYPE_FORM = 12;       // 表单区块
+  SECTION_TYPE_CAROUSEL = 13;   // 轮播图区块
+  SECTION_TYPE_CUSTOM = 99;     // 自定义区块
+}
+
+// SEO 元信息结构设计
+message SeoMeta {
+  optional string seo_title = 1 [
+    json_name = "seoTitle",
+    (gnostic.openapi.v3.property) = {description: "SEO 标题（覆盖页面默认标题）"}
+  ]; // SEO 标题，覆盖页面默认标题
+  optional string meta_keywords = 2 [
+    json_name = "metaKeywords",
+    (gnostic.openapi.v3.property) = {description: "SEO 关键词"}
+  ]; // SEO 关键词，覆盖页面默认关键词
+  optional string meta_description = 3 [
+    json_name = "metaDescription",
+    (gnostic.openapi.v3.property) = {description: "SEO 描述"}
+  ]; // SEO 描述，覆盖页面默认描述
+
+  optional string og_title = 4 [
+    json_name = "ogTitle",
+    (gnostic.openapi.v3.property) = {description: "OG 标题（覆盖页面默认标题）"}
+  ]; // OG（Open Graph）标题，覆盖页面默认标题
+  optional string og_description = 5 [
+    json_name = "ogDescription",
+    (gnostic.openapi.v3.property) = {description: "OG 描述"}
+  ]; // OG（Open Graph）描述，覆盖页面默认描述
+  optional string og_image = 6 [
+    json_name = "ogImage",
+    (gnostic.openapi.v3.property) = {description: "OG 图片 URL"}
+  ]; // OG（Open Graph）图片 URL，用于社交媒体分享时的预览图
+
+  optional string canonical_url = 33 [
+    json_name = "canonicalUrl",
+    (gnostic.openapi.v3.property) = {description: "规范 URL（SEO 用，格式：/{locale}/tag/{slug}，如 /zh-CN/tag/golang，允许自定义以覆盖默认生成的 URL）"}
+  ]; // 规范 URL（SEO 用，格式：/{locale}/tag/{slug}，如 /zh-CN/tag/golang，允许自定义以覆盖默认生成的 URL）
+}

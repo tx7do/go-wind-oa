@@ -83,7 +83,7 @@ func (x InternalMessage_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use InternalMessage_Status.Descriptor instead.
 func (InternalMessage_Status) EnumDescriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{0, 0}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{1, 0}
 }
 
 // 消息类型
@@ -133,7 +133,53 @@ func (x InternalMessage_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use InternalMessage_Type.Descriptor instead.
 func (InternalMessage_Type) EnumDescriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{0, 1}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{1, 1}
+}
+
+// 查询我的收件箱 - 请求
+type ListMyMessagesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 最大返回条数（默认 50）
+	Limit         *int32 `protobuf:"varint,1,opt,name=limit,proto3,oneof" json:"limit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMyMessagesRequest) Reset() {
+	*x = ListMyMessagesRequest{}
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMyMessagesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMyMessagesRequest) ProtoMessage() {}
+
+func (x *ListMyMessagesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMyMessagesRequest.ProtoReflect.Descriptor instead.
+func (*ListMyMessagesRequest) Descriptor() ([]byte, []int) {
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *ListMyMessagesRequest) GetLimit() int32 {
+	if x != nil && x.Limit != nil {
+		return *x.Limit
+	}
+	return 0
 }
 
 // 站内信消息
@@ -162,7 +208,7 @@ type InternalMessage struct {
 
 func (x *InternalMessage) Reset() {
 	*x = InternalMessage{}
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[0]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -174,7 +220,7 @@ func (x *InternalMessage) String() string {
 func (*InternalMessage) ProtoMessage() {}
 
 func (x *InternalMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[0]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -187,7 +233,7 @@ func (x *InternalMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InternalMessage.ProtoReflect.Descriptor instead.
 func (*InternalMessage) Descriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{0}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *InternalMessage) GetId() uint32 {
@@ -320,7 +366,7 @@ type ListInternalMessageResponse struct {
 
 func (x *ListInternalMessageResponse) Reset() {
 	*x = ListInternalMessageResponse{}
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[1]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -332,7 +378,7 @@ func (x *ListInternalMessageResponse) String() string {
 func (*ListInternalMessageResponse) ProtoMessage() {}
 
 func (x *ListInternalMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[1]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -345,7 +391,7 @@ func (x *ListInternalMessageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInternalMessageResponse.ProtoReflect.Descriptor instead.
 func (*ListInternalMessageResponse) Descriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{1}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ListInternalMessageResponse) GetItems() []*InternalMessage {
@@ -376,7 +422,7 @@ type GetInternalMessageRequest struct {
 
 func (x *GetInternalMessageRequest) Reset() {
 	*x = GetInternalMessageRequest{}
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[2]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -388,7 +434,7 @@ func (x *GetInternalMessageRequest) String() string {
 func (*GetInternalMessageRequest) ProtoMessage() {}
 
 func (x *GetInternalMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[2]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -401,7 +447,7 @@ func (x *GetInternalMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInternalMessageRequest.ProtoReflect.Descriptor instead.
 func (*GetInternalMessageRequest) Descriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{2}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetInternalMessageRequest) GetQueryBy() isGetInternalMessageRequest_QueryBy {
@@ -447,7 +493,7 @@ type CreateInternalMessageRequest struct {
 
 func (x *CreateInternalMessageRequest) Reset() {
 	*x = CreateInternalMessageRequest{}
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[3]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -459,7 +505,7 @@ func (x *CreateInternalMessageRequest) String() string {
 func (*CreateInternalMessageRequest) ProtoMessage() {}
 
 func (x *CreateInternalMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[3]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -472,7 +518,7 @@ func (x *CreateInternalMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateInternalMessageRequest.ProtoReflect.Descriptor instead.
 func (*CreateInternalMessageRequest) Descriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{3}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateInternalMessageRequest) GetData() *InternalMessage {
@@ -495,7 +541,7 @@ type UpdateInternalMessageRequest struct {
 
 func (x *UpdateInternalMessageRequest) Reset() {
 	*x = UpdateInternalMessageRequest{}
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[4]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -507,7 +553,7 @@ func (x *UpdateInternalMessageRequest) String() string {
 func (*UpdateInternalMessageRequest) ProtoMessage() {}
 
 func (x *UpdateInternalMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[4]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -520,7 +566,7 @@ func (x *UpdateInternalMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateInternalMessageRequest.ProtoReflect.Descriptor instead.
 func (*UpdateInternalMessageRequest) Descriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{4}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *UpdateInternalMessageRequest) GetId() uint32 {
@@ -564,7 +610,7 @@ type DeleteInternalMessageRequest struct {
 
 func (x *DeleteInternalMessageRequest) Reset() {
 	*x = DeleteInternalMessageRequest{}
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[5]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -576,7 +622,7 @@ func (x *DeleteInternalMessageRequest) String() string {
 func (*DeleteInternalMessageRequest) ProtoMessage() {}
 
 func (x *DeleteInternalMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[5]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -589,7 +635,7 @@ func (x *DeleteInternalMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteInternalMessageRequest.ProtoReflect.Descriptor instead.
 func (*DeleteInternalMessageRequest) Descriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{5}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DeleteInternalMessageRequest) GetQueryBy() isDeleteInternalMessageRequest_QueryBy {
@@ -635,7 +681,7 @@ type SendMessageRequest struct {
 
 func (x *SendMessageRequest) Reset() {
 	*x = SendMessageRequest{}
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[6]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -647,7 +693,7 @@ func (x *SendMessageRequest) String() string {
 func (*SendMessageRequest) ProtoMessage() {}
 
 func (x *SendMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[6]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -660,7 +706,7 @@ func (x *SendMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendMessageRequest.ProtoReflect.Descriptor instead.
 func (*SendMessageRequest) Descriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{6}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SendMessageRequest) GetType() InternalMessage_Type {
@@ -735,7 +781,7 @@ type SendMessageResponse struct {
 
 func (x *SendMessageResponse) Reset() {
 	*x = SendMessageResponse{}
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[7]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -747,7 +793,7 @@ func (x *SendMessageResponse) String() string {
 func (*SendMessageResponse) ProtoMessage() {}
 
 func (x *SendMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[7]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -760,7 +806,7 @@ func (x *SendMessageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendMessageResponse.ProtoReflect.Descriptor instead.
 func (*SendMessageResponse) Descriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{7}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SendMessageResponse) GetMessageId() uint32 {
@@ -780,7 +826,7 @@ type RevokeMessageRequest struct {
 
 func (x *RevokeMessageRequest) Reset() {
 	*x = RevokeMessageRequest{}
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[8]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -792,7 +838,7 @@ func (x *RevokeMessageRequest) String() string {
 func (*RevokeMessageRequest) ProtoMessage() {}
 
 func (x *RevokeMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[8]
+	mi := &file_internal_message_service_v1_internal_message_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -805,7 +851,7 @@ func (x *RevokeMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeMessageRequest.ProtoReflect.Descriptor instead.
 func (*RevokeMessageRequest) Descriptor() ([]byte, []int) {
-	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{8}
+	return file_internal_message_service_v1_internal_message_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *RevokeMessageRequest) GetMessageId() uint32 {
@@ -826,7 +872,10 @@ var File_internal_message_service_v1_internal_message_proto protoreflect.FileDes
 
 const file_internal_message_service_v1_internal_message_proto_rawDesc = "" +
 	"\n" +
-	"2internal_message/service/v1/internal_message.proto\x12\x1binternal_message.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x9e\f\n" +
+	"2internal_message/service/v1/internal_message.proto\x12\x1binternal_message.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"<\n" +
+	"\x15ListMyMessagesRequest\x12\x19\n" +
+	"\x05limit\x18\x01 \x01(\x05H\x00R\x05limit\x88\x01\x01B\b\n" +
+	"\x06_limit\"\x9e\f\n" +
 	"\x0fInternalMessage\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b消息IDH\x00R\x02id\x88\x01\x01\x12-\n" +
 	"\x05title\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f消息标题H\x01R\x05title\x88\x01\x01\x121\n" +
@@ -937,7 +986,7 @@ const file_internal_message_service_v1_internal_message_proto_rawDesc = "" +
 	"\x14RevokeMessageRequest\x12-\n" +
 	"\n" +
 	"message_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b消息IDR\tmessageId\x12'\n" +
-	"\auser_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId2\x8a\x06\n" +
+	"\auser_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId2\x8d\a\n" +
 	"\x16InternalMessageService\x12d\n" +
 	"\vListMessage\x12\x19.pagination.PagingRequest\x1a8.internal_message.service.v1.ListInternalMessageResponse\"\x00\x12t\n" +
 	"\n" +
@@ -946,7 +995,8 @@ const file_internal_message_service_v1_internal_message_proto_rawDesc = "" +
 	"\rUpdateMessage\x129.internal_message.service.v1.UpdateInternalMessageRequest\x1a\x16.google.protobuf.Empty\"\x00\x12d\n" +
 	"\rDeleteMessage\x129.internal_message.service.v1.DeleteInternalMessageRequest\x1a\x16.google.protobuf.Empty\"\x00\x12p\n" +
 	"\vSendMessage\x12/.internal_message.service.v1.SendMessageRequest\x1a0.internal_message.service.v1.SendMessageResponse\x12Z\n" +
-	"\rRevokeMessage\x121.internal_message.service.v1.RevokeMessageRequest\x1a\x16.google.protobuf.EmptyB\x86\x02\n" +
+	"\rRevokeMessage\x121.internal_message.service.v1.RevokeMessageRequest\x1a\x16.google.protobuf.Empty\x12\x80\x01\n" +
+	"\x0eListMyMessages\x122.internal_message.service.v1.ListMyMessagesRequest\x1a8.internal_message.service.v1.ListInternalMessageResponse\"\x00B\x86\x02\n" +
 	"\x1fcom.internal_message.service.v1B\x14InternalMessageProtoP\x01ZCgo-wind-oa/api/gen/go/internal_message/service/v1;internalmessagepb\xa2\x02\x03ISX\xaa\x02\x1aInternalMessage.Service.V1\xca\x02\x1aInternalMessage\\Service\\V1\xe2\x02&InternalMessage\\Service\\V1\\GPBMetadata\xea\x02\x1cInternalMessage::Service::V1b\x06proto3"
 
 var (
@@ -962,52 +1012,55 @@ func file_internal_message_service_v1_internal_message_proto_rawDescGZIP() []byt
 }
 
 var file_internal_message_service_v1_internal_message_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_internal_message_service_v1_internal_message_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_internal_message_service_v1_internal_message_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_internal_message_service_v1_internal_message_proto_goTypes = []any{
 	(InternalMessage_Status)(0),          // 0: internal_message.service.v1.InternalMessage.Status
 	(InternalMessage_Type)(0),            // 1: internal_message.service.v1.InternalMessage.Type
-	(*InternalMessage)(nil),              // 2: internal_message.service.v1.InternalMessage
-	(*ListInternalMessageResponse)(nil),  // 3: internal_message.service.v1.ListInternalMessageResponse
-	(*GetInternalMessageRequest)(nil),    // 4: internal_message.service.v1.GetInternalMessageRequest
-	(*CreateInternalMessageRequest)(nil), // 5: internal_message.service.v1.CreateInternalMessageRequest
-	(*UpdateInternalMessageRequest)(nil), // 6: internal_message.service.v1.UpdateInternalMessageRequest
-	(*DeleteInternalMessageRequest)(nil), // 7: internal_message.service.v1.DeleteInternalMessageRequest
-	(*SendMessageRequest)(nil),           // 8: internal_message.service.v1.SendMessageRequest
-	(*SendMessageResponse)(nil),          // 9: internal_message.service.v1.SendMessageResponse
-	(*RevokeMessageRequest)(nil),         // 10: internal_message.service.v1.RevokeMessageRequest
-	(*timestamppb.Timestamp)(nil),        // 11: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),        // 12: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),             // 13: pagination.PagingRequest
-	(*emptypb.Empty)(nil),                // 14: google.protobuf.Empty
+	(*ListMyMessagesRequest)(nil),        // 2: internal_message.service.v1.ListMyMessagesRequest
+	(*InternalMessage)(nil),              // 3: internal_message.service.v1.InternalMessage
+	(*ListInternalMessageResponse)(nil),  // 4: internal_message.service.v1.ListInternalMessageResponse
+	(*GetInternalMessageRequest)(nil),    // 5: internal_message.service.v1.GetInternalMessageRequest
+	(*CreateInternalMessageRequest)(nil), // 6: internal_message.service.v1.CreateInternalMessageRequest
+	(*UpdateInternalMessageRequest)(nil), // 7: internal_message.service.v1.UpdateInternalMessageRequest
+	(*DeleteInternalMessageRequest)(nil), // 8: internal_message.service.v1.DeleteInternalMessageRequest
+	(*SendMessageRequest)(nil),           // 9: internal_message.service.v1.SendMessageRequest
+	(*SendMessageResponse)(nil),          // 10: internal_message.service.v1.SendMessageResponse
+	(*RevokeMessageRequest)(nil),         // 11: internal_message.service.v1.RevokeMessageRequest
+	(*timestamppb.Timestamp)(nil),        // 12: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),        // 13: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),             // 14: pagination.PagingRequest
+	(*emptypb.Empty)(nil),                // 15: google.protobuf.Empty
 }
 var file_internal_message_service_v1_internal_message_proto_depIdxs = []int32{
 	0,  // 0: internal_message.service.v1.InternalMessage.status:type_name -> internal_message.service.v1.InternalMessage.Status
 	1,  // 1: internal_message.service.v1.InternalMessage.type:type_name -> internal_message.service.v1.InternalMessage.Type
-	11, // 2: internal_message.service.v1.InternalMessage.created_at:type_name -> google.protobuf.Timestamp
-	11, // 3: internal_message.service.v1.InternalMessage.updated_at:type_name -> google.protobuf.Timestamp
-	11, // 4: internal_message.service.v1.InternalMessage.deleted_at:type_name -> google.protobuf.Timestamp
-	2,  // 5: internal_message.service.v1.ListInternalMessageResponse.items:type_name -> internal_message.service.v1.InternalMessage
-	12, // 6: internal_message.service.v1.GetInternalMessageRequest.view_mask:type_name -> google.protobuf.FieldMask
-	2,  // 7: internal_message.service.v1.CreateInternalMessageRequest.data:type_name -> internal_message.service.v1.InternalMessage
-	2,  // 8: internal_message.service.v1.UpdateInternalMessageRequest.data:type_name -> internal_message.service.v1.InternalMessage
-	12, // 9: internal_message.service.v1.UpdateInternalMessageRequest.update_mask:type_name -> google.protobuf.FieldMask
+	12, // 2: internal_message.service.v1.InternalMessage.created_at:type_name -> google.protobuf.Timestamp
+	12, // 3: internal_message.service.v1.InternalMessage.updated_at:type_name -> google.protobuf.Timestamp
+	12, // 4: internal_message.service.v1.InternalMessage.deleted_at:type_name -> google.protobuf.Timestamp
+	3,  // 5: internal_message.service.v1.ListInternalMessageResponse.items:type_name -> internal_message.service.v1.InternalMessage
+	13, // 6: internal_message.service.v1.GetInternalMessageRequest.view_mask:type_name -> google.protobuf.FieldMask
+	3,  // 7: internal_message.service.v1.CreateInternalMessageRequest.data:type_name -> internal_message.service.v1.InternalMessage
+	3,  // 8: internal_message.service.v1.UpdateInternalMessageRequest.data:type_name -> internal_message.service.v1.InternalMessage
+	13, // 9: internal_message.service.v1.UpdateInternalMessageRequest.update_mask:type_name -> google.protobuf.FieldMask
 	1,  // 10: internal_message.service.v1.SendMessageRequest.type:type_name -> internal_message.service.v1.InternalMessage.Type
-	13, // 11: internal_message.service.v1.InternalMessageService.ListMessage:input_type -> pagination.PagingRequest
-	4,  // 12: internal_message.service.v1.InternalMessageService.GetMessage:input_type -> internal_message.service.v1.GetInternalMessageRequest
-	5,  // 13: internal_message.service.v1.InternalMessageService.CreateMessage:input_type -> internal_message.service.v1.CreateInternalMessageRequest
-	6,  // 14: internal_message.service.v1.InternalMessageService.UpdateMessage:input_type -> internal_message.service.v1.UpdateInternalMessageRequest
-	7,  // 15: internal_message.service.v1.InternalMessageService.DeleteMessage:input_type -> internal_message.service.v1.DeleteInternalMessageRequest
-	8,  // 16: internal_message.service.v1.InternalMessageService.SendMessage:input_type -> internal_message.service.v1.SendMessageRequest
-	10, // 17: internal_message.service.v1.InternalMessageService.RevokeMessage:input_type -> internal_message.service.v1.RevokeMessageRequest
-	3,  // 18: internal_message.service.v1.InternalMessageService.ListMessage:output_type -> internal_message.service.v1.ListInternalMessageResponse
-	2,  // 19: internal_message.service.v1.InternalMessageService.GetMessage:output_type -> internal_message.service.v1.InternalMessage
-	2,  // 20: internal_message.service.v1.InternalMessageService.CreateMessage:output_type -> internal_message.service.v1.InternalMessage
-	14, // 21: internal_message.service.v1.InternalMessageService.UpdateMessage:output_type -> google.protobuf.Empty
-	14, // 22: internal_message.service.v1.InternalMessageService.DeleteMessage:output_type -> google.protobuf.Empty
-	9,  // 23: internal_message.service.v1.InternalMessageService.SendMessage:output_type -> internal_message.service.v1.SendMessageResponse
-	14, // 24: internal_message.service.v1.InternalMessageService.RevokeMessage:output_type -> google.protobuf.Empty
-	18, // [18:25] is the sub-list for method output_type
-	11, // [11:18] is the sub-list for method input_type
+	14, // 11: internal_message.service.v1.InternalMessageService.ListMessage:input_type -> pagination.PagingRequest
+	5,  // 12: internal_message.service.v1.InternalMessageService.GetMessage:input_type -> internal_message.service.v1.GetInternalMessageRequest
+	6,  // 13: internal_message.service.v1.InternalMessageService.CreateMessage:input_type -> internal_message.service.v1.CreateInternalMessageRequest
+	7,  // 14: internal_message.service.v1.InternalMessageService.UpdateMessage:input_type -> internal_message.service.v1.UpdateInternalMessageRequest
+	8,  // 15: internal_message.service.v1.InternalMessageService.DeleteMessage:input_type -> internal_message.service.v1.DeleteInternalMessageRequest
+	9,  // 16: internal_message.service.v1.InternalMessageService.SendMessage:input_type -> internal_message.service.v1.SendMessageRequest
+	11, // 17: internal_message.service.v1.InternalMessageService.RevokeMessage:input_type -> internal_message.service.v1.RevokeMessageRequest
+	2,  // 18: internal_message.service.v1.InternalMessageService.ListMyMessages:input_type -> internal_message.service.v1.ListMyMessagesRequest
+	4,  // 19: internal_message.service.v1.InternalMessageService.ListMessage:output_type -> internal_message.service.v1.ListInternalMessageResponse
+	3,  // 20: internal_message.service.v1.InternalMessageService.GetMessage:output_type -> internal_message.service.v1.InternalMessage
+	3,  // 21: internal_message.service.v1.InternalMessageService.CreateMessage:output_type -> internal_message.service.v1.InternalMessage
+	15, // 22: internal_message.service.v1.InternalMessageService.UpdateMessage:output_type -> google.protobuf.Empty
+	15, // 23: internal_message.service.v1.InternalMessageService.DeleteMessage:output_type -> google.protobuf.Empty
+	10, // 24: internal_message.service.v1.InternalMessageService.SendMessage:output_type -> internal_message.service.v1.SendMessageResponse
+	15, // 25: internal_message.service.v1.InternalMessageService.RevokeMessage:output_type -> google.protobuf.Empty
+	4,  // 26: internal_message.service.v1.InternalMessageService.ListMyMessages:output_type -> internal_message.service.v1.ListInternalMessageResponse
+	19, // [19:27] is the sub-list for method output_type
+	11, // [11:19] is the sub-list for method input_type
 	11, // [11:11] is the sub-list for extension type_name
 	11, // [11:11] is the sub-list for extension extendee
 	0,  // [0:11] is the sub-list for field type_name
@@ -1019,21 +1072,22 @@ func file_internal_message_service_v1_internal_message_proto_init() {
 		return
 	}
 	file_internal_message_service_v1_internal_message_proto_msgTypes[0].OneofWrappers = []any{}
-	file_internal_message_service_v1_internal_message_proto_msgTypes[2].OneofWrappers = []any{
+	file_internal_message_service_v1_internal_message_proto_msgTypes[1].OneofWrappers = []any{}
+	file_internal_message_service_v1_internal_message_proto_msgTypes[3].OneofWrappers = []any{
 		(*GetInternalMessageRequest_Id)(nil),
 	}
-	file_internal_message_service_v1_internal_message_proto_msgTypes[4].OneofWrappers = []any{}
-	file_internal_message_service_v1_internal_message_proto_msgTypes[5].OneofWrappers = []any{
+	file_internal_message_service_v1_internal_message_proto_msgTypes[5].OneofWrappers = []any{}
+	file_internal_message_service_v1_internal_message_proto_msgTypes[6].OneofWrappers = []any{
 		(*DeleteInternalMessageRequest_Id)(nil),
 	}
-	file_internal_message_service_v1_internal_message_proto_msgTypes[6].OneofWrappers = []any{}
+	file_internal_message_service_v1_internal_message_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_internal_message_service_v1_internal_message_proto_rawDesc), len(file_internal_message_service_v1_internal_message_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   9,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

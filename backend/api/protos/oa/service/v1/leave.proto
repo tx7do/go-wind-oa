@@ -1,0 +1,332 @@
+syntax = "proto3";
+
+package oa.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/field_behavior.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "pagination/v1/pagination.proto";
+
+// OA 请假业务服务（请假类型/额度/申请单，申请挂工作流审批，通过后扣减额度）
+service LeaveService {
+  // 创建请假类型（admin）
+  rpc CreateLeaveType(CreateLeaveTypeRequest) returns (LeaveType) {}
+
+  // 查询请假类型列表
+  rpc ListLeaveTypes(pagination.PagingRequest) returns (ListLeaveTypesResponse) {}
+
+  // 授予/调整用户假期额度（admin，存在则覆盖 total_days）
+  rpc GrantLeaveBalance(GrantLeaveBalanceRequest) returns (google.protobuf.Empty) {}
+
+  // 查询假期额度（admin 可按用户查；user_id==0 时查全部）
+  rpc ListLeaveBalances(ListLeaveBalancesRequest) returns (ListLeaveBalancesResponse) {}
+
+  // 提交请假申请（自动创建 LEAVE 工作流实例）
+  rpc SubmitLeaveApplication(SubmitLeaveApplicationRequest) returns (SubmitLeaveApplicationResponse) {}
+
+  // 查询请假申请列表（user_id==0 时查全部，admin 用）
+  rpc ListLeaveApplications(ListLeaveApplicationsRequest) returns (ListLeaveApplicationsResponse) {}
+
+  // 查询请假申请详情（申请人本人或 admin）
+  rpc GetLeaveApplication(GetLeaveApplicationRequest) returns (LeaveApplication) {}
+}
+
+// 请假类型（年假/病假/事假等，租户内 code 唯一）
+message LeaveType {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "类型ID" }
+  ]; // 类型ID
+
+  optional string code = 2 [
+    json_name = "code",
+    (gnostic.openapi.v3.property) = { description: "类型代码（如 ANNUAL/SICK/PERSONAL）" }
+  ]; // 类型代码
+
+  optional string name = 3 [
+    json_name = "name",
+    (gnostic.openapi.v3.property) = { description: "类型名称（如 年假/病假/事假）" }
+  ]; // 类型名称
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
+  ];  // 租户ID
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}];
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}];
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}];
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];
+}
+
+// 假期额度（用户 x 类型 x 年度）
+message LeaveBalance {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "额度ID" }
+  ]; // 额度ID
+
+  optional uint32 user_id = 2 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = { description: "用户ID" }
+  ]; // 用户ID
+
+  optional uint32 leave_type_id = 3 [
+    json_name = "leaveTypeId",
+    (gnostic.openapi.v3.property) = { description: "请假类型ID" }
+  ]; // 请假类型ID
+
+  optional int32 year = 4 [
+    json_name = "year",
+    (gnostic.openapi.v3.property) = { description: "年度" }
+  ]; // 年度
+
+  optional double total_days = 5 [
+    json_name = "totalDays",
+    (gnostic.openapi.v3.property) = { description: "总额度（天）" }
+  ]; // 总额度
+
+  optional double used_days = 6 [
+    json_name = "usedDays",
+    (gnostic.openapi.v3.property) = { description: "已用（天）" }
+  ]; // 已用
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}];
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}];
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}];
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];
+}
+
+// 请假申请单
+message LeaveApplication {
+  // 申请单状态（与工作流实例终态同步）
+  enum LeaveStatus {
+    PENDING = 0;    // 审批中
+    APPROVED = 1;   // 已通过
+    REJECTED = 2;   // 已驳回
+    WITHDRAWN = 3;  // 已撤回
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "申请单ID" }
+  ]; // 申请单ID
+
+  optional uint32 leave_type_id = 2 [
+    json_name = "leaveTypeId",
+    (gnostic.openapi.v3.property) = { description: "请假类型ID" }
+  ]; // 请假类型ID
+
+  optional string leave_type_name = 3 [
+    json_name = "leaveTypeName",
+    (gnostic.openapi.v3.property) = { description: "请假类型名称" }
+  ]; // 请假类型名称
+
+  optional google.protobuf.Timestamp start_date = 4 [
+    json_name = "startDate",
+    (gnostic.openapi.v3.property) = { description: "开始日期" }
+  ]; // 开始日期
+
+  optional google.protobuf.Timestamp end_date = 5 [
+    json_name = "endDate",
+    (gnostic.openapi.v3.property) = { description: "结束日期（含）" }
+  ]; // 结束日期
+
+  optional double days = 6 [
+    json_name = "days",
+    (gnostic.openapi.v3.property) = { description: "请假天数（含首尾）" }
+  ]; // 请假天数
+
+  optional string reason = 7 [
+    json_name = "reason",
+    (gnostic.openapi.v3.property) = { description: "请假事由" }
+  ]; // 请假事由
+
+  optional string applicant_name = 10 [
+    json_name = "applicantName",
+    (gnostic.openapi.v3.property) = { description: "申请人姓名（服务端回填）" }
+  ]; // 申请人姓名
+
+  optional HalfOfDay start_half = 11 [
+    json_name = "startHalf",
+    (gnostic.openapi.v3.property) = { description: "开始半日（AM=上午起，PM=下午起）" }
+  ]; // 开始半日
+
+  optional HalfOfDay end_half = 12 [
+    json_name = "endHalf",
+    (gnostic.openapi.v3.property) = { description: "结束半日（AM=上午止，PM=下午止）" }
+  ]; // 结束半日
+
+  optional LeaveStatus leave_status = 8 [
+    json_name = "leaveStatus",
+    (gnostic.openapi.v3.property) = { description: "申请单状态" }
+  ]; // 申请单状态
+
+  optional uint32 instance_id = 9 [
+    json_name = "instanceId",
+    (gnostic.openapi.v3.property) = { description: "关联工作流实例ID" }
+  ]; // 关联工作流实例ID
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "申请人用户ID"}];
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}];
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}];
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];
+}
+
+// 半日粒度（请假起止）
+enum HalfOfDay {
+  AM = 0;  // 上午
+  PM = 1;  // 下午
+}
+
+// 查询请假类型列表 - 回应
+message ListLeaveTypesResponse {
+  repeated LeaveType items = 1;
+  uint64 total = 2;
+}
+
+// 创建请假类型 - 请求
+message CreateLeaveTypeRequest {
+  LeaveType data = 1;
+}
+
+// 授予额度 - 请求
+message GrantLeaveBalanceRequest {
+  uint32 user_id = 1 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = { description: "用户ID" }
+  ]; // 用户ID
+
+  uint32 leave_type_id = 2 [
+    json_name = "leaveTypeId",
+    (gnostic.openapi.v3.property) = { description: "请假类型ID" }
+  ]; // 请假类型ID
+
+  int32 year = 3 [
+    json_name = "year",
+    (gnostic.openapi.v3.property) = { description: "年度" }
+  ]; // 年度
+
+  double total_days = 4 [
+    json_name = "totalDays",
+    (gnostic.openapi.v3.property) = { description: "总额度（天）" }
+  ]; // 总额度
+}
+
+// 查询额度 - 请求
+message ListLeaveBalancesRequest {
+  uint32 user_id = 1 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = { description: "用户ID，0=全部（当前用户查本人传 0 亦按本人处理）" }
+  ]; // 用户ID
+
+  int32 year = 2 [
+    json_name = "year",
+    (gnostic.openapi.v3.property) = { description: "年度，0=当年" }
+  ]; // 年度
+}
+
+// 查询额度 - 回应
+message ListLeaveBalancesResponse {
+  repeated LeaveBalance items = 1;
+  uint64 total = 2;
+}
+
+// 提交请假申请 - 请求
+message SubmitLeaveApplicationRequest {
+  uint32 leave_type_id = 1 [
+    json_name = "leaveTypeId",
+    (gnostic.openapi.v3.property) = { description: "请假类型ID" }
+  ]; // 请假类型ID
+
+  google.protobuf.Timestamp start_date = 2 [
+    json_name = "startDate",
+    (gnostic.openapi.v3.property) = { description: "开始日期" }
+  ]; // 开始日期
+
+  google.protobuf.Timestamp end_date = 3 [
+    json_name = "endDate",
+    (gnostic.openapi.v3.property) = { description: "结束日期（含）" }
+  ]; // 结束日期
+
+  string reason = 4 [
+    json_name = "reason",
+    (gnostic.openapi.v3.property) = { description: "请假事由" }
+  ]; // 请假事由
+
+  optional HalfOfDay start_half = 5 [
+    json_name = "startHalf",
+    (gnostic.openapi.v3.property) = { description: "开始半日（不传默认 AM 上午起）" }
+  ]; // 开始半日
+
+  optional HalfOfDay end_half = 6 [
+    json_name = "endHalf",
+    (gnostic.openapi.v3.property) = { description: "结束半日（不传默认 PM 下午止）" }
+  ]; // 结束半日
+}
+
+// 提交请假申请 - 回应
+message SubmitLeaveApplicationResponse {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "申请单ID" }
+  ]; // 申请单ID
+
+  uint32 instance_id = 2 [
+    json_name = "instanceId",
+    (gnostic.openapi.v3.property) = { description: "工作流实例ID" }
+  ]; // 工作流实例ID
+}
+
+// 查询请假申请 - 请求
+message ListLeaveApplicationsRequest {
+  uint32 user_id = 1 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = { description: "申请人用户ID，0=全部（app 端忽略此字段按本人查）" }
+  ]; // 申请人用户ID
+
+  LeaveApplication.LeaveStatus status = 2 [
+    json_name = "status",
+    (gnostic.openapi.v3.property) = { description: "状态过滤，不传=全部" }
+  ]; // 状态过滤
+}
+
+// 查询请假申请 - 回应
+message ListLeaveApplicationsResponse {
+  repeated LeaveApplication items = 1;
+  uint64 total = 2;
+}
+
+// 查询请假申请详情 - 请求
+message GetLeaveApplicationRequest {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "申请单ID" }
+  ]; // 申请单ID
+}

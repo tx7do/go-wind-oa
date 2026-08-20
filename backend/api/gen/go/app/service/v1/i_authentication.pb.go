@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: app/service/v1/i_authentication.proto
 
-package apppb
+package servicev1
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -33,8 +33,8 @@ const file_app_service_v1_i_authentication_proto_rawDesc = "" +
 	"\x15AuthenticationService\x12y\n" +
 	"\x05Login\x12'.authentication.service.v1.LoginRequest\x1a(.authentication.service.v1.LoginResponse\"\x1d\xbaG\x02Z\x00\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/app/v1/login\x12S\n" +
 	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/app/v1/logout\x12\x83\x01\n" +
-	"\fRefreshToken\x12'.authentication.service.v1.LoginRequest\x1a(.authentication.service.v1.LoginResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/app/v1/refresh-tokenB\xb0\x01\n" +
-	"\x12com.app.service.v1B\x14IAuthenticationProtoP\x01Z*go-wind-oa/api/gen/go/app/service/v1;apppb\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
+	"\fRefreshToken\x12'.authentication.service.v1.LoginRequest\x1a(.authentication.service.v1.LoginResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/app/v1/refresh-tokenB\xb4\x01\n" +
+	"\x12com.app.service.v1B\x14IAuthenticationProtoP\x01Z.go-wind-oa/api/gen/go/app/service/v1;servicev1\xa2\x02\x03ASX\xaa\x02\x0eApp.Service.V1\xca\x02\x0eApp\\Service\\V1\xe2\x02\x1aApp\\Service\\V1\\GPBMetadata\xea\x02\x10App::Service::V1b\x06proto3"
 
 var file_app_service_v1_i_authentication_proto_goTypes = []any{
 	(*v1.LoginRequest)(nil),  // 0: authentication.service.v1.LoginRequest

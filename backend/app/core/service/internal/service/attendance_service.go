@@ -2,208 +2,295 @@ package service
 
 import (
 	"context"
-	"math"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go-wind-oa/app/core/service/internal/data"
-	oav1 "go-wind-oa/api/gen/go/oa/service/v1"
+	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
+
+	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
 )
 
-// AttendanceService 考勤服务。
-//
-// CheckIn：移动端打卡，上传 GPS 坐标与 BSSID，服务端按本租户围栏库与
-// Wi-Fi 指纹库判定，并落打卡记录。围栏判定走 Haversine 球面距离与围栏半径
-// 比较；Wi-Fi 判定走 BSSID 精确匹配。任一通过即记 IN_FENCE / IN_WIFI，
-// 否则 DENIED。无论结果均落记录，便于审计。
-//
-// 围栏库 / Wi-Fi 指纹库的 CRUD 供管理端维护，均经 TenantPrivacy 租户隔离。
 type AttendanceService struct {
-	oav1.AttendanceServiceServer
+	oaV1.UnimplementedAttendanceServiceServer
+
 	log *log.Helper
 
-	fenceRepo  *data.AttendanceFenceRepo
-	wifiRepo   *data.AttendanceWifiRepo
-	recordRepo *data.AttendanceRecordRepo
+	repo         *data.AttendanceRepo
+	leaveApp     *data.LeaveApplicationRepo
+	resolverRepo *data.WorkflowResolverRepo
 }
 
 func NewAttendanceService(
 	ctx *bootstrap.Context,
-	fenceRepo *data.AttendanceFenceRepo,
-	wifiRepo *data.AttendanceWifiRepo,
-	recordRepo *data.AttendanceRecordRepo,
+	repo *data.AttendanceRepo,
+	leaveApp *data.LeaveApplicationRepo,
+	resolverRepo *data.WorkflowResolverRepo,
 ) *AttendanceService {
 	return &AttendanceService{
-		log:        ctx.NewLoggerHelper("attendance/service/core-service"),
-		fenceRepo:  fenceRepo,
-		wifiRepo:   wifiRepo,
-		recordRepo: recordRepo,
+		log:          ctx.NewLoggerHelper("attendance/service/core-service"),
+		repo:         repo,
+		leaveApp:     leaveApp,
+		resolverRepo: resolverRepo,
 	}
 }
 
-// haversine 返回兩點間球面距離（米）。WGS84 椭球近似為球體，誤差可接受。
-func haversine(lon1, lat1, lon2, lat2 float64) float64 {
-	const r = 6371000.0 // 地球平均半徑（米）
-	la1 := lat1 * math.Pi / 180
-	la2 := lat2 * math.Pi / 180
-	dla := (lat2 - lat1) * math.Pi / 180
-	dlo := (lon2 - lon1) * math.Pi / 180
-	a := math.Sin(dla/2)*math.Sin(dla/2) +
-		math.Cos(la1)*math.Cos(la2)*math.Sin(dlo/2)*math.Sin(dlo/2)
-	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
-	return r * c
-}
-
-// CheckIn 打卡判定。
-func (s *AttendanceService) CheckIn(ctx context.Context, req *oav1.CheckInRequest) (*oav1.CheckInResponse, error) {
-	if req == nil {
-		return nil, oav1.ErrorBadRequest("invalid parameter")
-	}
-	tenantID, userID, ok := callerFromContext(ctx)
-	if !ok {
-		return nil, oav1.ErrorBadRequest("missing viewer context")
-	}
-
-	result := oav1.CheckInResponse_DENIED
-	msg := "denied: not in fence nor wifi whitelist"
-
-	// 围栏判定：遍历本租户围栏，Haversine 距离 ≤ 半径即 IN_FENCE。
-	lon := req.GetLongitude()
-	lat := req.GetLatitude()
-	if lon != 0 && lat != 0 {
-		fences, err := s.fenceRepo.ListAllForCheckIn(ctx)
-		if err == nil {
-			for _, f := range fences {
-				if f.Longitude == nil || f.Latitude == nil || f.Radius == nil {
-					continue
-				}
-				dist := haversine(lon, lat, *f.Longitude, *f.Latitude)
-				if dist <= *f.Radius {
-					result = oav1.CheckInResponse_IN_FENCE
-					msg = "in fence"
-					break
-				}
-			}
+// fillUserNames 批量回填用户姓名（失败仅缺姓名，不影响列表）。
+func (s *AttendanceService) fillUserNames(ctx context.Context, tid uint32, items []*oaV1.AttendanceRecord) {
+	ids := make([]uint32, 0, len(items))
+	for _, it := range items {
+		if it.GetUserId() != 0 {
+			ids = append(ids, it.GetUserId())
 		}
 	}
-
-	// Wi-Fi 判定：BSSID 精确匹配本租户白名单。
-	if result == oav1.CheckInResponse_DENIED && req.GetBssid() != "" {
-		wifis, err := s.wifiRepo.ListAllForCheckIn(ctx)
-		if err == nil {
-			for _, w := range wifis {
-				if w.Bssid != nil && *w.Bssid == req.GetBssid() {
-					result = oav1.CheckInResponse_IN_WIFI
-					msg = "in wifi whitelist"
-					break
-				}
-			}
+	names, err := s.resolverRepo.ResolveUsernames(ctx, tid, ids)
+	if err != nil {
+		return
+	}
+	for _, it := range items {
+		if name, ok := names[it.GetUserId()]; ok {
+			it.UserName = trans.Ptr(name)
 		}
 	}
-
-	// 落打卡记录（无论结果）。
-	var lonPtr, latPtr *float64
-	if lon != 0 && lat != 0 {
-		lonPtr = &lon
-		latPtr = &lat
-	}
-	var bssidPtr *string
-	if b := req.GetBssid(); b != "" {
-		bssidPtr = &b
-	}
-	_ = s.recordRepo.CreateCheckInRecord(ctx, tenantID, userID, lonPtr, latPtr, bssidPtr, result)
-
-	resultVal := result
-	return &oav1.CheckInResponse{
-		CheckResult: &resultVal,
-		Message:     &msg,
-	}, nil
 }
 
-// ---- 围栏库 CRUD ----
-
-func (s *AttendanceService) CreateAttendanceFence(ctx context.Context, req *oav1.CreateAttendanceFenceRequest) (*oav1.AttendanceFence, error) {
-	if req == nil || req.Data == nil {
-		return nil, oav1.ErrorBadRequest("invalid parameter")
+// isWeekend 周六/周日（节假日表为未来扩展，当前仅按周末判断）。
+func isWeekend(t time.Time) bool {
+	switch t.Weekday() {
+	case time.Saturday, time.Sunday:
+		return true
+	default:
+		return false
 	}
-	tenantID, userID, ok := callerFromContext(ctx)
+}
+
+// truncateDate 截断到当日零点（服务器本地时区）。
+func truncateDate(t time.Time) time.Time {
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+}
+
+// parseHHMM 解析 "HH:MM" 为 workDate 当日时刻。
+func parseHHMM(workDate time.Time, hhmm string) (time.Time, bool) {
+	layouts := []string{"15:04", "15:04:05"}
+	for _, layout := range layouts {
+		if parsed, err := time.ParseInLocation(layout, hhmm, workDate.Location()); err == nil {
+			return time.Date(workDate.Year(), workDate.Month(), workDate.Day(),
+				parsed.Hour(), parsed.Minute(), 0, 0, workDate.Location()), true
+		}
+	}
+	return time.Time{}, false
+}
+
+// computeDayResult 按考勤设置结算：请假覆盖优先，其次迟到、早退判定。
+func (s *AttendanceService) computeDayResult(
+	ctx context.Context, tid, userID uint32,
+	workDate, checkInAt, checkOutAt time.Time,
+) (oaV1.AttendanceRecord_DayResult, error) {
+	setting, err := s.repo.GetSetting(ctx, tid)
+	if err != nil {
+		return oaV1.AttendanceRecord_PENDING, err
+	}
+	workStart, ok1 := parseHHMM(workDate, setting.GetWorkStartTime())
+	workEnd, ok2 := parseHHMM(workDate, setting.GetWorkEndTime())
+	if !ok1 || !ok2 {
+		return oaV1.AttendanceRecord_PENDING, oaV1.ErrorConflict("invalid attendance setting time format")
+	}
+
+	if covered, err := s.leaveApp.HasApprovedLeaveCovering(ctx, tid, userID, workDate); err != nil {
+		return oaV1.AttendanceRecord_PENDING, err
+	} else if covered {
+		return oaV1.AttendanceRecord_ON_LEAVE, nil
+	}
+
+	late := checkInAt.After(workStart)
+	earlyLeave := checkOutAt.Before(workEnd)
+	if late {
+		return oaV1.AttendanceRecord_LATE, nil
+	}
+	if earlyLeave {
+		return oaV1.AttendanceRecord_EARLY_LEAVE, nil
+	}
+	return oaV1.AttendanceRecord_NORMAL, nil
+}
+
+// CheckIn 打卡：当日首次=签到；已签到未签退=签退并结算；已签退=409。
+func (s *AttendanceService) CheckIn(ctx context.Context, req *oaV1.CheckInRequest) (*oaV1.AttendanceRecord, error) {
+	tid, uid, ok := callerFromContext(ctx)
 	if !ok {
-		return nil, oav1.ErrorBadRequest("missing viewer context")
+		return nil, oaV1.ErrorForbidden("missing viewer context")
 	}
-	req.Data.TenantId = &tenantID
-	req.Data.CreatedBy = &userID
-	return s.fenceRepo.Create(ctx, req.Data)
+
+	now := time.Now()
+	workDate := truncateDate(now)
+
+	record, err := s.repo.GetByUserDate(ctx, tid, uid, workDate)
+	if err != nil {
+		return nil, err
+	}
+	if record == nil {
+		created, err := s.repo.CreateCheckIn(ctx, tid, uid, workDate, now, req.GetLatitude(), req.GetLongitude(), req.GetWifiBssid())
+		if err != nil {
+			return nil, err
+		}
+		return data.AttendanceRecordToDTO(created), nil
+	}
+	if record.CheckInAt != nil && record.CheckOutAt != nil {
+		return nil, oaV1.ErrorConflict("already checked out today")
+	}
+	if record.CheckInAt == nil {
+		// 理论不可达（结算物化的记录无签到时间），防御处理：补签到。
+		created, err := s.repo.CreateCheckIn(ctx, tid, uid, workDate, now, req.GetLatitude(), req.GetLongitude(), req.GetWifiBssid())
+		if err != nil {
+			return nil, err
+		}
+		return data.AttendanceRecordToDTO(created), nil
+	}
+
+	// 第二次打卡：签退并结算。
+	checkInAt := *record.CheckInAt
+	result, err := s.computeDayResult(ctx, tid, uid, workDate, checkInAt, now)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.repo.SetCheckOut(ctx, tid, record.ID, now, req.GetLatitude(), req.GetLongitude(), req.GetWifiBssid(), result); err != nil {
+		return nil, err
+	}
+	updated, err := s.repo.GetByUserDate(ctx, tid, uid, workDate)
+	if err != nil {
+		return nil, err
+	}
+	return data.AttendanceRecordToDTO(updated), nil
 }
 
-func (s *AttendanceService) ListAttendanceFence(ctx context.Context, req *oav1.ListAttendanceFenceRequest) (*oav1.ListAttendanceFenceResponse, error) {
-	if req == nil || req.Paging == nil {
-		return nil, oav1.ErrorBadRequest("invalid parameter")
+func (s *AttendanceService) GetMyAttendanceRecords(ctx context.Context, req *oaV1.GetMyAttendanceRecordsRequest) (*oaV1.ListAttendanceRecordsResponse, error) {
+	tid, uid, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
 	}
-	if _, _, ok := callerFromContext(ctx); !ok {
-		return nil, oav1.ErrorBadRequest("missing viewer context")
+	end := time.Now()
+	start := end.AddDate(0, 0, -30)
+	if req.GetStartDate() != nil {
+		start = truncateDate(req.GetStartDate().AsTime().In(time.Local))
 	}
-	return s.fenceRepo.List(ctx, req.Paging)
+	if req.GetEndDate() != nil {
+		end = truncateDate(req.GetEndDate().AsTime().In(time.Local))
+	}
+	items, err := s.repo.ListByUserRange(ctx, tid, uid, start, end)
+	if err != nil {
+		return nil, err
+	}
+	s.fillUserNames(ctx, tid, items)
+	return &oaV1.ListAttendanceRecordsResponse{Items: items, Total: uint64(len(items))}, nil
 }
 
-func (s *AttendanceService) UpdateAttendanceFence(ctx context.Context, req *oav1.UpdateAttendanceFenceRequest) (*oav1.AttendanceFence, error) {
-	if req == nil || req.Id == 0 {
-		return nil, oav1.ErrorBadRequest("invalid parameter")
+func (s *AttendanceService) ListAttendanceRecords(ctx context.Context, req *oaV1.ListAttendanceRecordsRequest) (*oaV1.ListAttendanceRecordsResponse, error) {
+	tid, _, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
 	}
-	if _, _, ok := callerFromContext(ctx); !ok {
-		return nil, oav1.ErrorBadRequest("missing viewer context")
+	if req.GetWorkDate() == nil {
+		return nil, oaV1.ErrorBadRequest("work date required")
 	}
-	return s.fenceRepo.Update(ctx, req)
+	items, err := s.repo.ListByDate(ctx, tid, req.GetUserId(), truncateDate(req.GetWorkDate().AsTime().In(time.Local)))
+	if err != nil {
+		return nil, err
+	}
+	s.fillUserNames(ctx, tid, items)
+	return &oaV1.ListAttendanceRecordsResponse{Items: items, Total: uint64(len(items))}, nil
 }
 
-func (s *AttendanceService) DeleteAttendanceFence(ctx context.Context, req *oav1.DeleteAttendanceFenceRequest) (*emptypb.Empty, error) {
-	if req == nil || req.Id == 0 {
-		return nil, oav1.ErrorBadRequest("invalid parameter")
+func (s *AttendanceService) GetAttendanceSetting(ctx context.Context, _ *emptypb.Empty) (*oaV1.AttendanceSetting, error) {
+	tid, _, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
 	}
-	if _, _, ok := callerFromContext(ctx); !ok {
-		return nil, oav1.ErrorBadRequest("missing viewer context")
+	return s.repo.GetSetting(ctx, tid)
+}
+
+func (s *AttendanceService) UpdateAttendanceSetting(ctx context.Context, req *oaV1.AttendanceSetting) (*emptypb.Empty, error) {
+	tid, uid, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
 	}
-	if err := s.fenceRepo.Delete(ctx, req.Id); err != nil {
+	if _, ok1 := parseHHMM(time.Now(), req.GetWorkStartTime()); !ok1 {
+		return nil, oaV1.ErrorBadRequest("invalid work start time")
+	}
+	if _, ok2 := parseHHMM(time.Now(), req.GetWorkEndTime()); !ok2 {
+		return nil, oaV1.ErrorBadRequest("invalid work end time")
+	}
+	if err := s.repo.UpdateSetting(ctx, tid, uid, req.GetWorkStartTime(), req.GetWorkEndTime()); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
 }
 
-// ---- Wi-Fi 指纹库 CRUD ----
-
-func (s *AttendanceService) CreateAttendanceWifi(ctx context.Context, req *oav1.CreateAttendanceWifiRequest) (*oav1.AttendanceWifi, error) {
-	if req == nil || req.Data == nil {
-		return nil, oav1.ErrorBadRequest("invalid parameter")
-	}
-	tenantID, userID, ok := callerFromContext(ctx)
+// RunDailySettlement 工作日结算（admin 手动触发，也可由外部定时任务调用）：
+// 无记录用户按请假覆盖与否物化 ON_LEAVE/ABSENT；已签退未结算的记录补结算。
+// 周末不物化旷工/请假记录（节假日表为未来扩展）。
+func (s *AttendanceService) RunDailySettlement(ctx context.Context, req *oaV1.RunDailySettlementRequest) (*oaV1.RunDailySettlementResponse, error) {
+	tid, uid, ok := callerFromContext(ctx)
 	if !ok {
-		return nil, oav1.ErrorBadRequest("missing viewer context")
+		return nil, oaV1.ErrorForbidden("missing viewer context")
 	}
-	req.Data.TenantId = &tenantID
-	req.Data.CreatedBy = &userID
-	return s.wifiRepo.Create(ctx, req.Data)
-}
-
-func (s *AttendanceService) ListAttendanceWifi(ctx context.Context, req *oav1.ListAttendanceWifiRequest) (*oav1.ListAttendanceWifiResponse, error) {
-	if req == nil || req.Paging == nil {
-		return nil, oav1.ErrorBadRequest("invalid parameter")
+	workDate := truncateDate(time.Now())
+	if req.GetWorkDate() != nil {
+		// 请求时间戳固定 UTC 位置（Timestamp.AsTime 语义），转本地后截断，
+		// 与打卡记录的本地日期轴对齐。
+		workDate = truncateDate(req.GetWorkDate().AsTime().In(time.Local))
 	}
-	if _, _, ok := callerFromContext(ctx); !ok {
-		return nil, oav1.ErrorBadRequest("missing viewer context")
+	if isWeekend(workDate) {
+		return &oaV1.RunDailySettlementResponse{SettledCount: 0}, nil
 	}
-	return s.wifiRepo.List(ctx, req.Paging)
-}
-
-func (s *AttendanceService) DeleteAttendanceWifi(ctx context.Context, req *oav1.DeleteAttendanceWifiRequest) (*emptypb.Empty, error) {
-	if req == nil || req.Id == 0 {
-		return nil, oav1.ErrorBadRequest("invalid parameter")
-	}
-	if _, _, ok := callerFromContext(ctx); !ok {
-		return nil, oav1.ErrorBadRequest("missing viewer context")
-	}
-	if err := s.wifiRepo.Delete(ctx, req.Id); err != nil {
+	settled, err := s.settleDateForTenant(ctx, tid, uid, workDate)
+	if err != nil {
 		return nil, err
 	}
-	return &emptypb.Empty{}, nil
+	return &oaV1.RunDailySettlementResponse{SettledCount: settled}, nil
+}
+
+// settleDateForTenant 单租户单日结算（定时任务与 RPC 共用）。operatorID 落
+// updated_by/created_by 审计字段。
+func (s *AttendanceService) settleDateForTenant(ctx context.Context, tid, operatorID uint32, workDate time.Time) (uint32, error) {
+	userIDs, err := s.repo.ListUserIDs(ctx, tid)
+	if err != nil {
+		return 0, err
+	}
+	settled := uint32(0)
+	for _, userID := range userIDs {
+		record, err := s.repo.GetByUserDate(ctx, tid, userID, workDate)
+		if err != nil {
+			return 0, err
+		}
+		if record == nil {
+			covered, err := s.leaveApp.HasApprovedLeaveCovering(ctx, tid, userID, workDate)
+			if err != nil {
+				return 0, err
+			}
+			result := oaV1.AttendanceRecord_ABSENT
+			if covered {
+				result = oaV1.AttendanceRecord_ON_LEAVE
+			}
+			if err := s.repo.SettleMaterialize(ctx, tid, userID, workDate, result, operatorID); err != nil {
+				return 0, err
+			}
+			settled++
+			continue
+		}
+		// 已签退但仍 PENDING 的补结算（签退时结算失败或旧数据）。
+		if record.CheckInAt != nil && record.CheckOutAt != nil && record.DayResult != nil && *record.DayResult == attendancerecord.DayResultPending {
+			result, err := s.computeDayResult(ctx, tid, userID, workDate, *record.CheckInAt, *record.CheckOutAt)
+			if err != nil {
+				return 0, err
+			}
+			if err := s.repo.SettlePending(ctx, tid, record.ID, result, operatorID); err != nil {
+				return 0, err
+			}
+			settled++
+		}
+	}
+	return settled, nil
 }

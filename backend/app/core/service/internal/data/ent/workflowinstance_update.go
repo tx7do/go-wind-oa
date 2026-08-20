@@ -153,58 +153,6 @@ func (_u *WorkflowInstanceUpdate) ClearDeletedBy() *WorkflowInstanceUpdate {
 	return _u
 }
 
-// SetRemark sets the "remark" field.
-func (_u *WorkflowInstanceUpdate) SetRemark(v string) *WorkflowInstanceUpdate {
-	_u.mutation.SetRemark(v)
-	return _u
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdate) SetNillableRemark(v *string) *WorkflowInstanceUpdate {
-	if v != nil {
-		_u.SetRemark(*v)
-	}
-	return _u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (_u *WorkflowInstanceUpdate) ClearRemark() *WorkflowInstanceUpdate {
-	_u.mutation.ClearRemark()
-	return _u
-}
-
-// SetTitle sets the "title" field.
-func (_u *WorkflowInstanceUpdate) SetTitle(v string) *WorkflowInstanceUpdate {
-	_u.mutation.SetTitle(v)
-	return _u
-}
-
-// SetNillableTitle sets the "title" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdate) SetNillableTitle(v *string) *WorkflowInstanceUpdate {
-	if v != nil {
-		_u.SetTitle(*v)
-	}
-	return _u
-}
-
-// ClearTitle clears the value of the "title" field.
-func (_u *WorkflowInstanceUpdate) ClearTitle() *WorkflowInstanceUpdate {
-	_u.mutation.ClearTitle()
-	return _u
-}
-
-// SetFormData sets the "form_data" field.
-func (_u *WorkflowInstanceUpdate) SetFormData(v any) *WorkflowInstanceUpdate {
-	_u.mutation.SetFormData(v)
-	return _u
-}
-
-// ClearFormData clears the value of the "form_data" field.
-func (_u *WorkflowInstanceUpdate) ClearFormData() *WorkflowInstanceUpdate {
-	_u.mutation.ClearFormData()
-	return _u
-}
-
 // SetInstanceStatus sets the "instance_status" field.
 func (_u *WorkflowInstanceUpdate) SetInstanceStatus(v workflowinstance.InstanceStatus) *WorkflowInstanceUpdate {
 	_u.mutation.SetInstanceStatus(v)
@@ -226,14 +174,14 @@ func (_u *WorkflowInstanceUpdate) ClearInstanceStatus() *WorkflowInstanceUpdate 
 }
 
 // SetCurrentNodeIndex sets the "current_node_index" field.
-func (_u *WorkflowInstanceUpdate) SetCurrentNodeIndex(v int32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetCurrentNodeIndex(v int) *WorkflowInstanceUpdate {
 	_u.mutation.ResetCurrentNodeIndex()
 	_u.mutation.SetCurrentNodeIndex(v)
 	return _u
 }
 
 // SetNillableCurrentNodeIndex sets the "current_node_index" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdate) SetNillableCurrentNodeIndex(v *int32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetNillableCurrentNodeIndex(v *int) *WorkflowInstanceUpdate {
 	if v != nil {
 		_u.SetCurrentNodeIndex(*v)
 	}
@@ -241,7 +189,7 @@ func (_u *WorkflowInstanceUpdate) SetNillableCurrentNodeIndex(v *int32) *Workflo
 }
 
 // AddCurrentNodeIndex adds value to the "current_node_index" field.
-func (_u *WorkflowInstanceUpdate) AddCurrentNodeIndex(v int32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) AddCurrentNodeIndex(v int) *WorkflowInstanceUpdate {
 	_u.mutation.AddCurrentNodeIndex(v)
 	return _u
 }
@@ -249,6 +197,73 @@ func (_u *WorkflowInstanceUpdate) AddCurrentNodeIndex(v int32) *WorkflowInstance
 // ClearCurrentNodeIndex clears the value of the "current_node_index" field.
 func (_u *WorkflowInstanceUpdate) ClearCurrentNodeIndex() *WorkflowInstanceUpdate {
 	_u.mutation.ClearCurrentNodeIndex()
+	return _u
+}
+
+// SetFormData sets the "form_data" field.
+func (_u *WorkflowInstanceUpdate) SetFormData(v string) *WorkflowInstanceUpdate {
+	_u.mutation.SetFormData(v)
+	return _u
+}
+
+// SetNillableFormData sets the "form_data" field if the given value is not nil.
+func (_u *WorkflowInstanceUpdate) SetNillableFormData(v *string) *WorkflowInstanceUpdate {
+	if v != nil {
+		_u.SetFormData(*v)
+	}
+	return _u
+}
+
+// ClearFormData clears the value of the "form_data" field.
+func (_u *WorkflowInstanceUpdate) ClearFormData() *WorkflowInstanceUpdate {
+	_u.mutation.ClearFormData()
+	return _u
+}
+
+// SetBusinessType sets the "business_type" field.
+func (_u *WorkflowInstanceUpdate) SetBusinessType(v string) *WorkflowInstanceUpdate {
+	_u.mutation.SetBusinessType(v)
+	return _u
+}
+
+// SetNillableBusinessType sets the "business_type" field if the given value is not nil.
+func (_u *WorkflowInstanceUpdate) SetNillableBusinessType(v *string) *WorkflowInstanceUpdate {
+	if v != nil {
+		_u.SetBusinessType(*v)
+	}
+	return _u
+}
+
+// ClearBusinessType clears the value of the "business_type" field.
+func (_u *WorkflowInstanceUpdate) ClearBusinessType() *WorkflowInstanceUpdate {
+	_u.mutation.ClearBusinessType()
+	return _u
+}
+
+// SetBusinessID sets the "business_id" field.
+func (_u *WorkflowInstanceUpdate) SetBusinessID(v uint32) *WorkflowInstanceUpdate {
+	_u.mutation.ResetBusinessID()
+	_u.mutation.SetBusinessID(v)
+	return _u
+}
+
+// SetNillableBusinessID sets the "business_id" field if the given value is not nil.
+func (_u *WorkflowInstanceUpdate) SetNillableBusinessID(v *uint32) *WorkflowInstanceUpdate {
+	if v != nil {
+		_u.SetBusinessID(*v)
+	}
+	return _u
+}
+
+// AddBusinessID adds value to the "business_id" field.
+func (_u *WorkflowInstanceUpdate) AddBusinessID(v int32) *WorkflowInstanceUpdate {
+	_u.mutation.AddBusinessID(v)
+	return _u
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (_u *WorkflowInstanceUpdate) ClearBusinessID() *WorkflowInstanceUpdate {
+	_u.mutation.ClearBusinessID()
 	return _u
 }
 
@@ -454,24 +469,6 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(workflowinstance.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Remark(); ok {
-		_spec.SetField(workflowinstance.FieldRemark, field.TypeString, value)
-	}
-	if _u.mutation.RemarkCleared() {
-		_spec.ClearField(workflowinstance.FieldRemark, field.TypeString)
-	}
-	if value, ok := _u.mutation.Title(); ok {
-		_spec.SetField(workflowinstance.FieldTitle, field.TypeString, value)
-	}
-	if _u.mutation.TitleCleared() {
-		_spec.ClearField(workflowinstance.FieldTitle, field.TypeString)
-	}
-	if value, ok := _u.mutation.FormData(); ok {
-		_spec.SetField(workflowinstance.FieldFormData, field.TypeJSON, value)
-	}
-	if _u.mutation.FormDataCleared() {
-		_spec.ClearField(workflowinstance.FieldFormData, field.TypeJSON)
-	}
 	if value, ok := _u.mutation.InstanceStatus(); ok {
 		_spec.SetField(workflowinstance.FieldInstanceStatus, field.TypeEnum, value)
 	}
@@ -479,13 +476,34 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 		_spec.ClearField(workflowinstance.FieldInstanceStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.CurrentNodeIndex(); ok {
-		_spec.SetField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt32, value)
+		_spec.SetField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.AddedCurrentNodeIndex(); ok {
-		_spec.AddField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt32, value)
+		_spec.AddField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt, value)
 	}
 	if _u.mutation.CurrentNodeIndexCleared() {
-		_spec.ClearField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt32)
+		_spec.ClearField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt)
+	}
+	if value, ok := _u.mutation.FormData(); ok {
+		_spec.SetField(workflowinstance.FieldFormData, field.TypeString, value)
+	}
+	if _u.mutation.FormDataCleared() {
+		_spec.ClearField(workflowinstance.FieldFormData, field.TypeString)
+	}
+	if value, ok := _u.mutation.BusinessType(); ok {
+		_spec.SetField(workflowinstance.FieldBusinessType, field.TypeString, value)
+	}
+	if _u.mutation.BusinessTypeCleared() {
+		_spec.ClearField(workflowinstance.FieldBusinessType, field.TypeString)
+	}
+	if value, ok := _u.mutation.BusinessID(); ok {
+		_spec.SetField(workflowinstance.FieldBusinessID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedBusinessID(); ok {
+		_spec.AddField(workflowinstance.FieldBusinessID, field.TypeUint32, value)
+	}
+	if _u.mutation.BusinessIDCleared() {
+		_spec.ClearField(workflowinstance.FieldBusinessID, field.TypeUint32)
 	}
 	if _u.mutation.DefinitionCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -749,58 +767,6 @@ func (_u *WorkflowInstanceUpdateOne) ClearDeletedBy() *WorkflowInstanceUpdateOne
 	return _u
 }
 
-// SetRemark sets the "remark" field.
-func (_u *WorkflowInstanceUpdateOne) SetRemark(v string) *WorkflowInstanceUpdateOne {
-	_u.mutation.SetRemark(v)
-	return _u
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdateOne) SetNillableRemark(v *string) *WorkflowInstanceUpdateOne {
-	if v != nil {
-		_u.SetRemark(*v)
-	}
-	return _u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (_u *WorkflowInstanceUpdateOne) ClearRemark() *WorkflowInstanceUpdateOne {
-	_u.mutation.ClearRemark()
-	return _u
-}
-
-// SetTitle sets the "title" field.
-func (_u *WorkflowInstanceUpdateOne) SetTitle(v string) *WorkflowInstanceUpdateOne {
-	_u.mutation.SetTitle(v)
-	return _u
-}
-
-// SetNillableTitle sets the "title" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdateOne) SetNillableTitle(v *string) *WorkflowInstanceUpdateOne {
-	if v != nil {
-		_u.SetTitle(*v)
-	}
-	return _u
-}
-
-// ClearTitle clears the value of the "title" field.
-func (_u *WorkflowInstanceUpdateOne) ClearTitle() *WorkflowInstanceUpdateOne {
-	_u.mutation.ClearTitle()
-	return _u
-}
-
-// SetFormData sets the "form_data" field.
-func (_u *WorkflowInstanceUpdateOne) SetFormData(v any) *WorkflowInstanceUpdateOne {
-	_u.mutation.SetFormData(v)
-	return _u
-}
-
-// ClearFormData clears the value of the "form_data" field.
-func (_u *WorkflowInstanceUpdateOne) ClearFormData() *WorkflowInstanceUpdateOne {
-	_u.mutation.ClearFormData()
-	return _u
-}
-
 // SetInstanceStatus sets the "instance_status" field.
 func (_u *WorkflowInstanceUpdateOne) SetInstanceStatus(v workflowinstance.InstanceStatus) *WorkflowInstanceUpdateOne {
 	_u.mutation.SetInstanceStatus(v)
@@ -822,14 +788,14 @@ func (_u *WorkflowInstanceUpdateOne) ClearInstanceStatus() *WorkflowInstanceUpda
 }
 
 // SetCurrentNodeIndex sets the "current_node_index" field.
-func (_u *WorkflowInstanceUpdateOne) SetCurrentNodeIndex(v int32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetCurrentNodeIndex(v int) *WorkflowInstanceUpdateOne {
 	_u.mutation.ResetCurrentNodeIndex()
 	_u.mutation.SetCurrentNodeIndex(v)
 	return _u
 }
 
 // SetNillableCurrentNodeIndex sets the "current_node_index" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdateOne) SetNillableCurrentNodeIndex(v *int32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetNillableCurrentNodeIndex(v *int) *WorkflowInstanceUpdateOne {
 	if v != nil {
 		_u.SetCurrentNodeIndex(*v)
 	}
@@ -837,7 +803,7 @@ func (_u *WorkflowInstanceUpdateOne) SetNillableCurrentNodeIndex(v *int32) *Work
 }
 
 // AddCurrentNodeIndex adds value to the "current_node_index" field.
-func (_u *WorkflowInstanceUpdateOne) AddCurrentNodeIndex(v int32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) AddCurrentNodeIndex(v int) *WorkflowInstanceUpdateOne {
 	_u.mutation.AddCurrentNodeIndex(v)
 	return _u
 }
@@ -845,6 +811,73 @@ func (_u *WorkflowInstanceUpdateOne) AddCurrentNodeIndex(v int32) *WorkflowInsta
 // ClearCurrentNodeIndex clears the value of the "current_node_index" field.
 func (_u *WorkflowInstanceUpdateOne) ClearCurrentNodeIndex() *WorkflowInstanceUpdateOne {
 	_u.mutation.ClearCurrentNodeIndex()
+	return _u
+}
+
+// SetFormData sets the "form_data" field.
+func (_u *WorkflowInstanceUpdateOne) SetFormData(v string) *WorkflowInstanceUpdateOne {
+	_u.mutation.SetFormData(v)
+	return _u
+}
+
+// SetNillableFormData sets the "form_data" field if the given value is not nil.
+func (_u *WorkflowInstanceUpdateOne) SetNillableFormData(v *string) *WorkflowInstanceUpdateOne {
+	if v != nil {
+		_u.SetFormData(*v)
+	}
+	return _u
+}
+
+// ClearFormData clears the value of the "form_data" field.
+func (_u *WorkflowInstanceUpdateOne) ClearFormData() *WorkflowInstanceUpdateOne {
+	_u.mutation.ClearFormData()
+	return _u
+}
+
+// SetBusinessType sets the "business_type" field.
+func (_u *WorkflowInstanceUpdateOne) SetBusinessType(v string) *WorkflowInstanceUpdateOne {
+	_u.mutation.SetBusinessType(v)
+	return _u
+}
+
+// SetNillableBusinessType sets the "business_type" field if the given value is not nil.
+func (_u *WorkflowInstanceUpdateOne) SetNillableBusinessType(v *string) *WorkflowInstanceUpdateOne {
+	if v != nil {
+		_u.SetBusinessType(*v)
+	}
+	return _u
+}
+
+// ClearBusinessType clears the value of the "business_type" field.
+func (_u *WorkflowInstanceUpdateOne) ClearBusinessType() *WorkflowInstanceUpdateOne {
+	_u.mutation.ClearBusinessType()
+	return _u
+}
+
+// SetBusinessID sets the "business_id" field.
+func (_u *WorkflowInstanceUpdateOne) SetBusinessID(v uint32) *WorkflowInstanceUpdateOne {
+	_u.mutation.ResetBusinessID()
+	_u.mutation.SetBusinessID(v)
+	return _u
+}
+
+// SetNillableBusinessID sets the "business_id" field if the given value is not nil.
+func (_u *WorkflowInstanceUpdateOne) SetNillableBusinessID(v *uint32) *WorkflowInstanceUpdateOne {
+	if v != nil {
+		_u.SetBusinessID(*v)
+	}
+	return _u
+}
+
+// AddBusinessID adds value to the "business_id" field.
+func (_u *WorkflowInstanceUpdateOne) AddBusinessID(v int32) *WorkflowInstanceUpdateOne {
+	_u.mutation.AddBusinessID(v)
+	return _u
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (_u *WorkflowInstanceUpdateOne) ClearBusinessID() *WorkflowInstanceUpdateOne {
+	_u.mutation.ClearBusinessID()
 	return _u
 }
 
@@ -1080,24 +1113,6 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(workflowinstance.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Remark(); ok {
-		_spec.SetField(workflowinstance.FieldRemark, field.TypeString, value)
-	}
-	if _u.mutation.RemarkCleared() {
-		_spec.ClearField(workflowinstance.FieldRemark, field.TypeString)
-	}
-	if value, ok := _u.mutation.Title(); ok {
-		_spec.SetField(workflowinstance.FieldTitle, field.TypeString, value)
-	}
-	if _u.mutation.TitleCleared() {
-		_spec.ClearField(workflowinstance.FieldTitle, field.TypeString)
-	}
-	if value, ok := _u.mutation.FormData(); ok {
-		_spec.SetField(workflowinstance.FieldFormData, field.TypeJSON, value)
-	}
-	if _u.mutation.FormDataCleared() {
-		_spec.ClearField(workflowinstance.FieldFormData, field.TypeJSON)
-	}
 	if value, ok := _u.mutation.InstanceStatus(); ok {
 		_spec.SetField(workflowinstance.FieldInstanceStatus, field.TypeEnum, value)
 	}
@@ -1105,13 +1120,34 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 		_spec.ClearField(workflowinstance.FieldInstanceStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.CurrentNodeIndex(); ok {
-		_spec.SetField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt32, value)
+		_spec.SetField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.AddedCurrentNodeIndex(); ok {
-		_spec.AddField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt32, value)
+		_spec.AddField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt, value)
 	}
 	if _u.mutation.CurrentNodeIndexCleared() {
-		_spec.ClearField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt32)
+		_spec.ClearField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt)
+	}
+	if value, ok := _u.mutation.FormData(); ok {
+		_spec.SetField(workflowinstance.FieldFormData, field.TypeString, value)
+	}
+	if _u.mutation.FormDataCleared() {
+		_spec.ClearField(workflowinstance.FieldFormData, field.TypeString)
+	}
+	if value, ok := _u.mutation.BusinessType(); ok {
+		_spec.SetField(workflowinstance.FieldBusinessType, field.TypeString, value)
+	}
+	if _u.mutation.BusinessTypeCleared() {
+		_spec.ClearField(workflowinstance.FieldBusinessType, field.TypeString)
+	}
+	if value, ok := _u.mutation.BusinessID(); ok {
+		_spec.SetField(workflowinstance.FieldBusinessID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedBusinessID(); ok {
+		_spec.AddField(workflowinstance.FieldBusinessID, field.TypeUint32, value)
+	}
+	if _u.mutation.BusinessIDCleared() {
+		_spec.ClearField(workflowinstance.FieldBusinessID, field.TypeUint32)
 	}
 	if _u.mutation.DefinitionCleared() {
 		edge := &sqlgraph.EdgeSpec{

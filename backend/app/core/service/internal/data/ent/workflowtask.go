@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// OA工作流任务表
+// OA 工作流任务表
 type WorkflowTask struct {
 	config `json:"-"`
 	// ID of the ent.
@@ -33,12 +33,12 @@ type WorkflowTask struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 节点序号
-	NodeIndex *int32 `json:"node_index,omitempty"`
-	// 指派审批人
+	// 节点索引
+	NodeIndex *int `json:"node_index,omitempty"`
+	// 指派审批人ID
 	AssigneeUserID *uint32 `json:"assignee_user_id,omitempty"`
 	// 任务状态
-	TaskStatus workflowtask.TaskStatus `json:"task_status,omitempty"`
+	TaskStatus *workflowtask.TaskStatus `json:"task_status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WorkflowTaskQuery when eager-loading is set.
 	Edges        WorkflowTaskEdges `json:"edges"`
@@ -153,8 +153,8 @@ func (_m *WorkflowTask) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field node_index", values[i])
 			} else if value.Valid {
-				_m.NodeIndex = new(int32)
-				*_m.NodeIndex = int32(value.Int64)
+				_m.NodeIndex = new(int)
+				*_m.NodeIndex = int(value.Int64)
 			}
 		case workflowtask.FieldAssigneeUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -167,7 +167,8 @@ func (_m *WorkflowTask) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field task_status", values[i])
 			} else if value.Valid {
-				_m.TaskStatus = workflowtask.TaskStatus(value.String)
+				_m.TaskStatus = new(workflowtask.TaskStatus)
+				*_m.TaskStatus = workflowtask.TaskStatus(value.String)
 			}
 		case workflowtask.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -262,8 +263,10 @@ func (_m *WorkflowTask) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("task_status=")
-	builder.WriteString(fmt.Sprintf("%v", _m.TaskStatus))
+	if v := _m.TaskStatus; v != nil {
+		builder.WriteString("task_status=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

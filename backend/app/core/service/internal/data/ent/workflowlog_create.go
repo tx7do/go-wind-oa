@@ -122,13 +122,13 @@ func (_c *WorkflowLogCreate) SetNillableTenantID(v *uint32) *WorkflowLogCreate {
 }
 
 // SetNodeIndex sets the "node_index" field.
-func (_c *WorkflowLogCreate) SetNodeIndex(v int32) *WorkflowLogCreate {
+func (_c *WorkflowLogCreate) SetNodeIndex(v int) *WorkflowLogCreate {
 	_c.mutation.SetNodeIndex(v)
 	return _c
 }
 
 // SetNillableNodeIndex sets the "node_index" field if the given value is not nil.
-func (_c *WorkflowLogCreate) SetNillableNodeIndex(v *int32) *WorkflowLogCreate {
+func (_c *WorkflowLogCreate) SetNillableNodeIndex(v *int) *WorkflowLogCreate {
 	if v != nil {
 		_c.SetNodeIndex(*v)
 	}
@@ -229,10 +229,6 @@ func (_c *WorkflowLogCreate) defaults() error {
 		v := workflowlog.DefaultTenantID
 		_c.mutation.SetTenantID(v)
 	}
-	if _, ok := _c.mutation.NodeIndex(); !ok {
-		v := workflowlog.DefaultNodeIndex
-		_c.mutation.SetNodeIndex(v)
-	}
 	if _, ok := _c.mutation.LogAction(); !ok {
 		v := workflowlog.DefaultLogAction
 		_c.mutation.SetLogAction(v)
@@ -314,12 +310,12 @@ func (_c *WorkflowLogCreate) createSpec() (*WorkflowLog, *sqlgraph.CreateSpec) {
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.NodeIndex(); ok {
-		_spec.SetField(workflowlog.FieldNodeIndex, field.TypeInt32, value)
+		_spec.SetField(workflowlog.FieldNodeIndex, field.TypeInt, value)
 		_node.NodeIndex = &value
 	}
 	if value, ok := _c.mutation.LogAction(); ok {
 		_spec.SetField(workflowlog.FieldLogAction, field.TypeEnum, value)
-		_node.LogAction = value
+		_node.LogAction = &value
 	}
 	if value, ok := _c.mutation.Comment(); ok {
 		_spec.SetField(workflowlog.FieldComment, field.TypeString, value)
@@ -503,7 +499,7 @@ func (u *WorkflowLogUpsert) ClearDeletedBy() *WorkflowLogUpsert {
 }
 
 // SetNodeIndex sets the "node_index" field.
-func (u *WorkflowLogUpsert) SetNodeIndex(v int32) *WorkflowLogUpsert {
+func (u *WorkflowLogUpsert) SetNodeIndex(v int) *WorkflowLogUpsert {
 	u.Set(workflowlog.FieldNodeIndex, v)
 	return u
 }
@@ -515,7 +511,7 @@ func (u *WorkflowLogUpsert) UpdateNodeIndex() *WorkflowLogUpsert {
 }
 
 // AddNodeIndex adds v to the "node_index" field.
-func (u *WorkflowLogUpsert) AddNodeIndex(v int32) *WorkflowLogUpsert {
+func (u *WorkflowLogUpsert) AddNodeIndex(v int) *WorkflowLogUpsert {
 	u.Add(workflowlog.FieldNodeIndex, v)
 	return u
 }
@@ -743,14 +739,14 @@ func (u *WorkflowLogUpsertOne) ClearDeletedBy() *WorkflowLogUpsertOne {
 }
 
 // SetNodeIndex sets the "node_index" field.
-func (u *WorkflowLogUpsertOne) SetNodeIndex(v int32) *WorkflowLogUpsertOne {
+func (u *WorkflowLogUpsertOne) SetNodeIndex(v int) *WorkflowLogUpsertOne {
 	return u.Update(func(s *WorkflowLogUpsert) {
 		s.SetNodeIndex(v)
 	})
 }
 
 // AddNodeIndex adds v to the "node_index" field.
-func (u *WorkflowLogUpsertOne) AddNodeIndex(v int32) *WorkflowLogUpsertOne {
+func (u *WorkflowLogUpsertOne) AddNodeIndex(v int) *WorkflowLogUpsertOne {
 	return u.Update(func(s *WorkflowLogUpsert) {
 		s.AddNodeIndex(v)
 	})
@@ -1159,14 +1155,14 @@ func (u *WorkflowLogUpsertBulk) ClearDeletedBy() *WorkflowLogUpsertBulk {
 }
 
 // SetNodeIndex sets the "node_index" field.
-func (u *WorkflowLogUpsertBulk) SetNodeIndex(v int32) *WorkflowLogUpsertBulk {
+func (u *WorkflowLogUpsertBulk) SetNodeIndex(v int) *WorkflowLogUpsertBulk {
 	return u.Update(func(s *WorkflowLogUpsert) {
 		s.SetNodeIndex(v)
 	})
 }
 
 // AddNodeIndex adds v to the "node_index" field.
-func (u *WorkflowLogUpsertBulk) AddNodeIndex(v int32) *WorkflowLogUpsertBulk {
+func (u *WorkflowLogUpsertBulk) AddNodeIndex(v int) *WorkflowLogUpsertBulk {
 	return u.Update(func(s *WorkflowLogUpsert) {
 		s.AddNodeIndex(v)
 	})

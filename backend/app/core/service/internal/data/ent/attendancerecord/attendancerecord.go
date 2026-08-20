@@ -28,16 +28,28 @@ const (
 	FieldDeletedBy = "deleted_by"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
-	// FieldRemark holds the string denoting the remark field in the database.
-	FieldRemark = "remark"
-	// FieldCheckResult holds the string denoting the check_result field in the database.
-	FieldCheckResult = "check_result"
-	// FieldLongitude holds the string denoting the longitude field in the database.
-	FieldLongitude = "longitude"
-	// FieldLatitude holds the string denoting the latitude field in the database.
-	FieldLatitude = "latitude"
-	// FieldBssid holds the string denoting the bssid field in the database.
-	FieldBssid = "bssid"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
+	// FieldWorkDate holds the string denoting the work_date field in the database.
+	FieldWorkDate = "work_date"
+	// FieldCheckInAt holds the string denoting the check_in_at field in the database.
+	FieldCheckInAt = "check_in_at"
+	// FieldCheckInLatitude holds the string denoting the check_in_latitude field in the database.
+	FieldCheckInLatitude = "check_in_latitude"
+	// FieldCheckInLongitude holds the string denoting the check_in_longitude field in the database.
+	FieldCheckInLongitude = "check_in_longitude"
+	// FieldCheckInWifiBssid holds the string denoting the check_in_wifi_bssid field in the database.
+	FieldCheckInWifiBssid = "check_in_wifi_bssid"
+	// FieldCheckOutAt holds the string denoting the check_out_at field in the database.
+	FieldCheckOutAt = "check_out_at"
+	// FieldCheckOutLatitude holds the string denoting the check_out_latitude field in the database.
+	FieldCheckOutLatitude = "check_out_latitude"
+	// FieldCheckOutLongitude holds the string denoting the check_out_longitude field in the database.
+	FieldCheckOutLongitude = "check_out_longitude"
+	// FieldCheckOutWifiBssid holds the string denoting the check_out_wifi_bssid field in the database.
+	FieldCheckOutWifiBssid = "check_out_wifi_bssid"
+	// FieldDayResult holds the string denoting the day_result field in the database.
+	FieldDayResult = "day_result"
 	// Table holds the table name of the attendancerecord in the database.
 	Table = "oa_attendance_record"
 )
@@ -52,11 +64,17 @@ var Columns = []string{
 	FieldUpdatedBy,
 	FieldDeletedBy,
 	FieldTenantID,
-	FieldRemark,
-	FieldCheckResult,
-	FieldLongitude,
-	FieldLatitude,
-	FieldBssid,
+	FieldUserID,
+	FieldWorkDate,
+	FieldCheckInAt,
+	FieldCheckInLatitude,
+	FieldCheckInLongitude,
+	FieldCheckInWifiBssid,
+	FieldCheckOutAt,
+	FieldCheckOutLatitude,
+	FieldCheckOutLongitude,
+	FieldCheckOutWifiBssid,
+	FieldDayResult,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -79,34 +97,41 @@ var (
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
 	DefaultTenantID uint32
+	// CheckInWifiBssidValidator is a validator for the "check_in_wifi_bssid" field. It is called by the builders before save.
+	CheckInWifiBssidValidator func(string) error
+	// CheckOutWifiBssidValidator is a validator for the "check_out_wifi_bssid" field. It is called by the builders before save.
+	CheckOutWifiBssidValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
 
-// CheckResult defines the type for the "check_result" enum field.
-type CheckResult string
+// DayResult defines the type for the "day_result" enum field.
+type DayResult string
 
-// CheckResultDENIED is the default value of the CheckResult enum.
-const DefaultCheckResult = CheckResultDENIED
+// DayResultPending is the default value of the DayResult enum.
+const DefaultDayResult = DayResultPending
 
-// CheckResult values.
+// DayResult values.
 const (
-	CheckResultIN_FENCE CheckResult = "IN_FENCE"
-	CheckResultIN_WIFI  CheckResult = "IN_WIFI"
-	CheckResultDENIED   CheckResult = "DENIED"
+	DayResultPending    DayResult = "PENDING"
+	DayResultNormal     DayResult = "NORMAL"
+	DayResultLate       DayResult = "LATE"
+	DayResultEarlyLeave DayResult = "EARLY_LEAVE"
+	DayResultAbsent     DayResult = "ABSENT"
+	DayResultOnLeave    DayResult = "ON_LEAVE"
 )
 
-func (cr CheckResult) String() string {
-	return string(cr)
+func (dr DayResult) String() string {
+	return string(dr)
 }
 
-// CheckResultValidator is a validator for the "check_result" field enum values. It is called by the builders before save.
-func CheckResultValidator(cr CheckResult) error {
-	switch cr {
-	case CheckResultIN_FENCE, CheckResultIN_WIFI, CheckResultDENIED:
+// DayResultValidator is a validator for the "day_result" field enum values. It is called by the builders before save.
+func DayResultValidator(dr DayResult) error {
+	switch dr {
+	case DayResultPending, DayResultNormal, DayResultLate, DayResultEarlyLeave, DayResultAbsent, DayResultOnLeave:
 		return nil
 	default:
-		return fmt.Errorf("attendancerecord: invalid enum value for check_result field: %q", cr)
+		return fmt.Errorf("attendancerecord: invalid enum value for day_result field: %q", dr)
 	}
 }
 
@@ -153,27 +178,57 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
-// ByRemark orders the results by the remark field.
-func ByRemark(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRemark, opts...).ToFunc()
+// ByUserID orders the results by the user_id field.
+func ByUserID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }
 
-// ByCheckResult orders the results by the check_result field.
-func ByCheckResult(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCheckResult, opts...).ToFunc()
+// ByWorkDate orders the results by the work_date field.
+func ByWorkDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWorkDate, opts...).ToFunc()
 }
 
-// ByLongitude orders the results by the longitude field.
-func ByLongitude(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLongitude, opts...).ToFunc()
+// ByCheckInAt orders the results by the check_in_at field.
+func ByCheckInAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckInAt, opts...).ToFunc()
 }
 
-// ByLatitude orders the results by the latitude field.
-func ByLatitude(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLatitude, opts...).ToFunc()
+// ByCheckInLatitude orders the results by the check_in_latitude field.
+func ByCheckInLatitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckInLatitude, opts...).ToFunc()
 }
 
-// ByBssid orders the results by the bssid field.
-func ByBssid(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBssid, opts...).ToFunc()
+// ByCheckInLongitude orders the results by the check_in_longitude field.
+func ByCheckInLongitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckInLongitude, opts...).ToFunc()
+}
+
+// ByCheckInWifiBssid orders the results by the check_in_wifi_bssid field.
+func ByCheckInWifiBssid(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckInWifiBssid, opts...).ToFunc()
+}
+
+// ByCheckOutAt orders the results by the check_out_at field.
+func ByCheckOutAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckOutAt, opts...).ToFunc()
+}
+
+// ByCheckOutLatitude orders the results by the check_out_latitude field.
+func ByCheckOutLatitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckOutLatitude, opts...).ToFunc()
+}
+
+// ByCheckOutLongitude orders the results by the check_out_longitude field.
+func ByCheckOutLongitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckOutLongitude, opts...).ToFunc()
+}
+
+// ByCheckOutWifiBssid orders the results by the check_out_wifi_bssid field.
+func ByCheckOutWifiBssid(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckOutWifiBssid, opts...).ToFunc()
+}
+
+// ByDayResult orders the results by the day_result field.
+func ByDayResult(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDayResult, opts...).ToFunc()
 }

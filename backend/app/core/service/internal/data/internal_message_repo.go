@@ -47,11 +47,11 @@ func NewInternalMessageRepo(
 	internalMessageRecipientRepo *InternalMessageRecipientRepo,
 ) *InternalMessageRepo {
 	repo := &InternalMessageRepo{
-		log:             ctx.NewLoggerHelper("internal-message/repo/core-service"),
-		entClient:       entClient,
-		mapper:          mapper.NewCopierMapper[internalMessageV1.InternalMessage, ent.InternalMessage](),
-		statusConverter: mapper.NewEnumTypeConverter[internalMessageV1.InternalMessage_Status, internalmessage.Status](internalMessageV1.InternalMessage_Status_name, internalMessageV1.InternalMessage_Status_value),
-		typeConverter:   mapper.NewEnumTypeConverter[internalMessageV1.InternalMessage_Type, internalmessage.Type](internalMessageV1.InternalMessage_Type_name, internalMessageV1.InternalMessage_Type_value),
+		log:                          ctx.NewLoggerHelper("internal-message/repo/core-service"),
+		entClient:                    entClient,
+		mapper:                       mapper.NewCopierMapper[internalMessageV1.InternalMessage, ent.InternalMessage](),
+		statusConverter:              mapper.NewEnumTypeConverter[internalMessageV1.InternalMessage_Status, internalmessage.Status](internalMessageV1.InternalMessage_Status_name, internalMessageV1.InternalMessage_Status_value),
+		typeConverter:                mapper.NewEnumTypeConverter[internalMessageV1.InternalMessage_Type, internalmessage.Type](internalMessageV1.InternalMessage_Type_name, internalMessageV1.InternalMessage_Type_value),
 		internalMessageRecipientRepo: internalMessageRecipientRepo,
 	}
 
@@ -282,4 +282,23 @@ func (r *InternalMessageRepo) Delete(ctx context.Context, id uint32) (err error)
 	}
 
 	return nil
+}
+
+// ListByIDs 按主键批量读取消息 DTO（收件箱组装用）。
+func (r *InternalMessageRepo) ListByIDs(ctx context.Context, ids []uint32) ([]*internalMessageV1.InternalMessage, error) {
+	if len(ids) == 0 {
+		return []*internalMessageV1.InternalMessage{}, nil
+	}
+	entities, err := r.entClient.Client().InternalMessage.Query().
+		Where(internalmessage.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf("list messages by ids failed: %s", err.Error())
+		return nil, internalMessageV1.ErrorInternalServerError("list messages failed")
+	}
+	items := make([]*internalMessageV1.InternalMessage, 0, len(entities))
+	for _, e := range entities {
+		items = append(items, r.mapper.ToDTO(e))
+	}
+	return items, nil
 }

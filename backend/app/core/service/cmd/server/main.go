@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"github.com/tx7do/kratos-transport/transport/asynq"
 
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -24,10 +25,12 @@ var version = "1.0.0"
 func newApp(
 	ctx *bootstrap.Context,
 	gs *grpc.Server,
+	as *asynq.Server,
 ) *kratos.App {
 	return bootstrap.NewApp(
 		ctx,
 		gs,
+		as,
 	)
 }
 

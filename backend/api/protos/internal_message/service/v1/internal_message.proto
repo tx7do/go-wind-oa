@@ -36,6 +36,17 @@ service InternalMessageService {
 
   // 撤销消息
   rpc RevokeMessage(RevokeMessageRequest) returns (google.protobuf.Empty);
+
+  // 查询当前用户收件箱（app 端：按收件人过滤，不含已删除/已撤销）
+  rpc ListMyMessages(ListMyMessagesRequest) returns (ListInternalMessageResponse) {}
+}
+
+// 查询我的收件箱 - 请求
+message ListMyMessagesRequest {
+  // 最大返回条数（默认 50）
+  optional int32 limit = 1 [
+    json_name = "limit"
+  ];
 }
 
 // 站内信消息

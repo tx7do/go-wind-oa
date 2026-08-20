@@ -288,6 +288,41 @@ func (r *InternalMessageRecipientRepo) MarkNotificationAsRead(ctx context.Contex
 	return err
 }
 
+// MarkNotificationsStatus 标记特定用户的某些或所有通知的状态
+func (r *InternalMessageRecipientRepo) MarkNotificationsStatus(ctx context.Context, req *internalMessageV1.MarkNotificationsStatusRequest) error {
+	if len(req.GetRecipientIds()) == 0 {
+		return internalMessageV1.ErrorBadRequest("invalid parameter")
+	}
+	// 强制使用调用者 user_id，忽略请求体中的 user_id
+	callerUserID, hasUser := viewerUserIDFromContext(ctx)
+	if !hasUser {
+		return internalMessageV1.ErrorBadRequest("missing viewer context")
+	}
+
+	now := time.Now()
+	var readAt *time.Time
+	var receiveAt *time.Time
+	switch req.GetNewStatus() {
+	case internalMessageV1.InternalMessageRecipient_READ:
+		readAt = trans.Ptr(now)
+	case internalMessageV1.InternalMessageRecipient_RECEIVED:
+		receiveAt = trans.Ptr(now)
+	}
+
+	_, err := r.entClient.Client().InternalMessageRecipient.Update().
+		Where(
+			internalmessagerecipient.IDIn(req.GetRecipientIds()...),
+			internalmessagerecipient.RecipientUserIDEQ(callerUserID),
+			internalmessagerecipient.StatusNEQ(*r.statusConverter.ToEntity(trans.Ptr(req.GetNewStatus()))),
+		).
+		SetNillableStatus(r.statusConverter.ToEntity(trans.Ptr(req.GetNewStatus()))).
+		SetNillableReadAt(readAt).
+		SetNillableReceivedAt(receiveAt).
+		SetNillableUpdatedAt(trans.Ptr(now)).
+		Save(ctx)
+	return err
+}
+
 // RevokeMessage 撤销某条消息
 // CleanByMessageID 事务级联清理：删除某条消息的所有收件人记录。
 // 仅在消息删除事务中调用，保证与主删除一起提交/回滚，避免留下悬空收件人行。
@@ -338,4 +373,32 @@ func (r *InternalMessageRecipientRepo) DeleteNotificationFromInbox(ctx context.C
 		).
 		Exec(ctx)
 	return err
+}
+
+// ListInboxMessageIDs 收件箱查询：按收件人过滤，排除已删除/已撤销，最新在前。
+// 供 app 端 ListMyMessages 组装消息内容。
+func (r *InternalMessageRecipientRepo) ListInboxMessageIDs(ctx context.Context, tenantID, recipientUserID uint32, limit int) ([]uint32, error) {
+	entities, err := r.entClient.Client().InternalMessageRecipient.Query().
+		Where(
+			internalmessagerecipient.TenantIDEQ(tenantID),
+			internalmessagerecipient.RecipientUserIDEQ(recipientUserID),
+			internalmessagerecipient.StatusNotIn(
+				internalmessagerecipient.StatusRevoked,
+				internalmessagerecipient.StatusDeleted,
+			),
+		).
+		Order(ent.Desc(internalmessagerecipient.FieldID)).
+		Limit(limit).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf("list inbox recipients failed: %s", err.Error())
+		return nil, internalMessageV1.ErrorInternalServerError("list inbox failed")
+	}
+	ids := make([]uint32, 0, len(entities))
+	for _, e := range entities {
+		if e.MessageID != nil && *e.MessageID != 0 {
+			ids = append(ids, *e.MessageID)
+		}
+	}
+	return ids, nil
 }

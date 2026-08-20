@@ -3,7 +3,6 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
 	"strings"
@@ -13,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// OA工作流定义表
+// OA 工作流定义表
 type WorkflowDefinition struct {
 	config `json:"-"`
 	// ID of the ent.
@@ -35,20 +34,16 @@ type WorkflowDefinition struct {
 	TenantID *uint32 `json:"tenant_id,omitempty"`
 	// 备注
 	Remark *string `json:"remark,omitempty"`
-	// 流程名称
-	Name *string `json:"name,omitempty"`
-	// 流程编码
+	// 流程代码
 	Code *string `json:"code,omitempty"`
 	// 版本号
-	Version *uint32 `json:"version,omitempty"`
-	// 描述
-	Description *string `json:"description,omitempty"`
-	// 节点配置(JSON)
-	NodeConfig any `json:"node_config,omitempty"`
-	// 动态表单schema(JSON)
-	FormSchema any `json:"form_schema,omitempty"`
+	Version *int `json:"version,omitempty"`
+	// 节点配置（JSON 文本）
+	NodeConfig *string `json:"node_config,omitempty"`
+	// 表单 schema（JSON 文本）
+	FormSchema *string `json:"form_schema,omitempty"`
 	// 定义状态
-	DefinitionStatus workflowdefinition.DefinitionStatus `json:"definition_status,omitempty"`
+	DefinitionStatus *workflowdefinition.DefinitionStatus `json:"definition_status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WorkflowDefinitionQuery when eager-loading is set.
 	Edges        WorkflowDefinitionEdges `json:"edges"`
@@ -78,11 +73,9 @@ func (*WorkflowDefinition) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case workflowdefinition.FieldNodeConfig, workflowdefinition.FieldFormSchema:
-			values[i] = new([]byte)
 		case workflowdefinition.FieldID, workflowdefinition.FieldCreatedBy, workflowdefinition.FieldUpdatedBy, workflowdefinition.FieldDeletedBy, workflowdefinition.FieldTenantID, workflowdefinition.FieldVersion:
 			values[i] = new(sql.NullInt64)
-		case workflowdefinition.FieldRemark, workflowdefinition.FieldName, workflowdefinition.FieldCode, workflowdefinition.FieldDescription, workflowdefinition.FieldDefinitionStatus:
+		case workflowdefinition.FieldRemark, workflowdefinition.FieldCode, workflowdefinition.FieldNodeConfig, workflowdefinition.FieldFormSchema, workflowdefinition.FieldDefinitionStatus:
 			values[i] = new(sql.NullString)
 		case workflowdefinition.FieldCreatedAt, workflowdefinition.FieldUpdatedAt, workflowdefinition.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -163,13 +156,6 @@ func (_m *WorkflowDefinition) assignValues(columns []string, values []any) error
 				_m.Remark = new(string)
 				*_m.Remark = value.String
 			}
-		case workflowdefinition.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				_m.Name = new(string)
-				*_m.Name = value.String
-			}
 		case workflowdefinition.FieldCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field code", values[i])
@@ -181,37 +167,29 @@ func (_m *WorkflowDefinition) assignValues(columns []string, values []any) error
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field version", values[i])
 			} else if value.Valid {
-				_m.Version = new(uint32)
-				*_m.Version = uint32(value.Int64)
-			}
-		case workflowdefinition.FieldDescription:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field description", values[i])
-			} else if value.Valid {
-				_m.Description = new(string)
-				*_m.Description = value.String
+				_m.Version = new(int)
+				*_m.Version = int(value.Int64)
 			}
 		case workflowdefinition.FieldNodeConfig:
-			if value, ok := values[i].(*[]byte); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field node_config", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.NodeConfig); err != nil {
-					return fmt.Errorf("unmarshal field node_config: %w", err)
-				}
+			} else if value.Valid {
+				_m.NodeConfig = new(string)
+				*_m.NodeConfig = value.String
 			}
 		case workflowdefinition.FieldFormSchema:
-			if value, ok := values[i].(*[]byte); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field form_schema", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.FormSchema); err != nil {
-					return fmt.Errorf("unmarshal field form_schema: %w", err)
-				}
+			} else if value.Valid {
+				_m.FormSchema = new(string)
+				*_m.FormSchema = value.String
 			}
 		case workflowdefinition.FieldDefinitionStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field definition_status", values[i])
 			} else if value.Valid {
-				_m.DefinitionStatus = workflowdefinition.DefinitionStatus(value.String)
+				_m.DefinitionStatus = new(workflowdefinition.DefinitionStatus)
+				*_m.DefinitionStatus = workflowdefinition.DefinitionStatus(value.String)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -294,11 +272,6 @@ func (_m *WorkflowDefinition) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.Name; v != nil {
-		builder.WriteString("name=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
 	if v := _m.Code; v != nil {
 		builder.WriteString("code=")
 		builder.WriteString(*v)
@@ -309,19 +282,20 @@ func (_m *WorkflowDefinition) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.Description; v != nil {
-		builder.WriteString("description=")
+	if v := _m.NodeConfig; v != nil {
+		builder.WriteString("node_config=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	builder.WriteString("node_config=")
-	builder.WriteString(fmt.Sprintf("%v", _m.NodeConfig))
+	if v := _m.FormSchema; v != nil {
+		builder.WriteString("form_schema=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("form_schema=")
-	builder.WriteString(fmt.Sprintf("%v", _m.FormSchema))
-	builder.WriteString(", ")
-	builder.WriteString("definition_status=")
-	builder.WriteString(fmt.Sprintf("%v", _m.DefinitionStatus))
+	if v := _m.DefinitionStatus; v != nil {
+		builder.WriteString("definition_status=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

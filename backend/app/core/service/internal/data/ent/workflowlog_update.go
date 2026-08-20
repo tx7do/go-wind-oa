@@ -152,14 +152,14 @@ func (_u *WorkflowLogUpdate) ClearDeletedBy() *WorkflowLogUpdate {
 }
 
 // SetNodeIndex sets the "node_index" field.
-func (_u *WorkflowLogUpdate) SetNodeIndex(v int32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) SetNodeIndex(v int) *WorkflowLogUpdate {
 	_u.mutation.ResetNodeIndex()
 	_u.mutation.SetNodeIndex(v)
 	return _u
 }
 
 // SetNillableNodeIndex sets the "node_index" field if the given value is not nil.
-func (_u *WorkflowLogUpdate) SetNillableNodeIndex(v *int32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) SetNillableNodeIndex(v *int) *WorkflowLogUpdate {
 	if v != nil {
 		_u.SetNodeIndex(*v)
 	}
@@ -167,7 +167,7 @@ func (_u *WorkflowLogUpdate) SetNillableNodeIndex(v *int32) *WorkflowLogUpdate {
 }
 
 // AddNodeIndex adds value to the "node_index" field.
-func (_u *WorkflowLogUpdate) AddNodeIndex(v int32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) AddNodeIndex(v int) *WorkflowLogUpdate {
 	_u.mutation.AddNodeIndex(v)
 	return _u
 }
@@ -349,13 +349,13 @@ func (_u *WorkflowLogUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		_spec.ClearField(workflowlog.FieldTenantID, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.NodeIndex(); ok {
-		_spec.SetField(workflowlog.FieldNodeIndex, field.TypeInt32, value)
+		_spec.SetField(workflowlog.FieldNodeIndex, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.AddedNodeIndex(); ok {
-		_spec.AddField(workflowlog.FieldNodeIndex, field.TypeInt32, value)
+		_spec.AddField(workflowlog.FieldNodeIndex, field.TypeInt, value)
 	}
 	if _u.mutation.NodeIndexCleared() {
-		_spec.ClearField(workflowlog.FieldNodeIndex, field.TypeInt32)
+		_spec.ClearField(workflowlog.FieldNodeIndex, field.TypeInt)
 	}
 	if value, ok := _u.mutation.LogAction(); ok {
 		_spec.SetField(workflowlog.FieldLogAction, field.TypeEnum, value)
@@ -542,14 +542,14 @@ func (_u *WorkflowLogUpdateOne) ClearDeletedBy() *WorkflowLogUpdateOne {
 }
 
 // SetNodeIndex sets the "node_index" field.
-func (_u *WorkflowLogUpdateOne) SetNodeIndex(v int32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) SetNodeIndex(v int) *WorkflowLogUpdateOne {
 	_u.mutation.ResetNodeIndex()
 	_u.mutation.SetNodeIndex(v)
 	return _u
 }
 
 // SetNillableNodeIndex sets the "node_index" field if the given value is not nil.
-func (_u *WorkflowLogUpdateOne) SetNillableNodeIndex(v *int32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) SetNillableNodeIndex(v *int) *WorkflowLogUpdateOne {
 	if v != nil {
 		_u.SetNodeIndex(*v)
 	}
@@ -557,7 +557,7 @@ func (_u *WorkflowLogUpdateOne) SetNillableNodeIndex(v *int32) *WorkflowLogUpdat
 }
 
 // AddNodeIndex adds value to the "node_index" field.
-func (_u *WorkflowLogUpdateOne) AddNodeIndex(v int32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) AddNodeIndex(v int) *WorkflowLogUpdateOne {
 	_u.mutation.AddNodeIndex(v)
 	return _u
 }
@@ -769,13 +769,13 @@ func (_u *WorkflowLogUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowLog
 		_spec.ClearField(workflowlog.FieldTenantID, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.NodeIndex(); ok {
-		_spec.SetField(workflowlog.FieldNodeIndex, field.TypeInt32, value)
+		_spec.SetField(workflowlog.FieldNodeIndex, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.AddedNodeIndex(); ok {
-		_spec.AddField(workflowlog.FieldNodeIndex, field.TypeInt32, value)
+		_spec.AddField(workflowlog.FieldNodeIndex, field.TypeInt, value)
 	}
 	if _u.mutation.NodeIndexCleared() {
-		_spec.ClearField(workflowlog.FieldNodeIndex, field.TypeInt32)
+		_spec.ClearField(workflowlog.FieldNodeIndex, field.TypeInt)
 	}
 	if value, ok := _u.mutation.LogAction(); ok {
 		_spec.SetField(workflowlog.FieldLogAction, field.TypeEnum, value)
