@@ -995,6 +995,18 @@ export interface AttendanceService {
   RunDailySettlement(
     request: oaservicev1_RunDailySettlementRequest,
   ): Promise<oaservicev1_RunDailySettlementResponse>;
+  // 设置节假日/调休日（按日期存在则覆盖）
+  UpsertHoliday(
+    request: oaservicev1_Holiday,
+  ): Promise<wellKnownEmpty>;
+  // 删除节假日/调休日设置
+  DeleteHoliday(
+    request: oaservicev1_DeleteHolidayRequest,
+  ): Promise<wellKnownEmpty>;
+  // 查询年度节假日/调休日设置
+  ListHolidays(
+    request: oaservicev1_ListHolidaysRequest,
+  ): Promise<oaservicev1_ListHolidaysResponse>;
 }
 
 export function createAttendanceServiceClient(
@@ -1047,6 +1059,43 @@ export function createAttendanceServiceClient(
         service: 'AttendanceService',
         method: 'RunDailySettlement',
       }) as Promise<oaservicev1_RunDailySettlementResponse>;
+    },
+    UpsertHoliday(request) {
+      const path = `admin/v1/oa/attendance/holidays`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'AttendanceService',
+        method: 'UpsertHoliday',
+      }) as Promise<wellKnownEmpty>;
+    },
+    DeleteHoliday(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/attendance/holidays/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'AttendanceService',
+        method: 'DeleteHoliday',
+      }) as Promise<wellKnownEmpty>;
+    },
+    ListHolidays(request) {
+      const path = `admin/v1/oa/attendance/holidays`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.year) {
+        queryParams.push(
+          `year=${encodeURIComponent(request.year.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'AttendanceService',
+        method: 'ListHolidays',
+      }) as Promise<oaservicev1_ListHolidaysResponse>;
     },
   };
 }
@@ -1114,6 +1163,38 @@ export type oaservicev1_RunDailySettlementRequest = {
 // 工作日结算 - 回应
 export type oaservicev1_RunDailySettlementResponse = {
   settledCount: number | undefined;
+};
+
+// 节假日/调休日设置
+export type oaservicev1_Holiday = {
+  createdAt?: wellKnownTimestamp;
+  date?: wellKnownTimestamp;
+  holidayType?: oaservicev1_Holiday_HolidayType;
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  name?: string;
+  tenantId?: number;
+};
+
+// 类型
+export type oaservicev1_Holiday_HolidayType =
+  | 'HOLIDAY'
+  | 'WORKDAY';
+// 删除节假日设置 - 请求
+export type oaservicev1_DeleteHolidayRequest = {
+  id: number | undefined;
+};
+
+// 查询节假日 - 请求
+export type oaservicev1_ListHolidaysRequest = {
+  year: number | undefined;
+};
+
+// 查询节假日 - 回应
+export type oaservicev1_ListHolidaysResponse = {
+  items: oaservicev1_Holiday[] | undefined;
+  total: number | undefined;
 };
 
 // 用户后台登录认证服务

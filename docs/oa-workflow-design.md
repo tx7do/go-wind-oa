@@ -3,6 +3,9 @@
 > 本文档面向维护者，记录 `go-wind-oa` 后端的架构决策、三 service 分離結構、proto 域分離，以及当前实现的边界与已知约束。读者应已熟悉 Kratos + Wire + Ent 的基本范式。
 >
 > 本文与代码同步，权威架构来源为代码本身；本文為導覽性說明。
+>
+> **⚠ 2026-08-20 勘误**：§1「范围外」中的会签/或签、主管级审批人指派、定义启用切换接口，
+> 以及 §5 描述的「仅 USER 单审批人线性状态机」均**已实现**——见文末 §9「实现状态（2026-08-20）」。
 
 ---
 
@@ -208,3 +211,66 @@ AuditTask(FORWARD) → Task.assignee ← forwardTo（状态保持 PENDING，idx 
 3. **无定时任务 / 超时处理**。长期 PENDING 任务不会自动催办或超时终结。
 4. **无会签 / 并行 / 回退**。线性状态机的硬约束。
 5. **通知仅文本**。`notifyAsync` 的 title/content 为固定文案。
+
+
+---
+
+## 9. 实现状态（2026-08-20，实测通过）
+
+> 本章为当前权威状态，与 §1-§8 中过时陈述冲突时以本章为准。全部能力经本地端到端冒烟实证（非仅编译级）。
+
+### 9.1 引擎能力（超出 v1 范围部分）
+
+- **多审批人与会签/或签**：`node_config` 新格式 `{"approvers":[{"type":"USER"|"LEADER"|"POSITION","id":N}],"strategy":"ALL"|"ANY"}`（旧单人格式自动归一化兼容）。ALL=会签（全员通过才推进，任一驳回即驳回）；ANY=或签（一人通过即推进并取消其余，全员驳回才驳回）。每审批人一条并行 task。
+- **审批人类型**：`USER` 显式指定；`LEADER`=申请人主组织单元负责人（user_org_unit → org_unit.leader_id）；`POSITION`=职位在职持有者（user_position，可展开多人）。寻人以申请人为基准，解析失败即提交失败（不挂起）。
+- **申请人为审批人自动跳过**：`launchFromNode` 统一入口——解析后剔除申请人（对自己视为自动同意），整节点全为申请人则写「自动通过」APPROVE 日志后跳过该节点继续推进，可连续跳多节点直至越界终结。
+- **撤回**：`WithdrawApply`（app 端 `POST /app/v1/oa/workflow/withdraw-apply`）。仅申请人本人 + 实例 PENDING；实例→WITHDRAWN、全部待办任务→CANCELLED、写 WITHDRAW 日志、通知原审批人。
+- **业务挂鉤**：实例携带 `business_type`/`business_id`；`WorkflowEventRegistry`（进程内 map）在三个终态（APPROVED/REJECTED/WITHDRAWN）同步回调业务模块。回调须校验单据.instance_id 关联（防伪造）且仅处理 PENDING 单据（幂等）。
+- **通知修复**：notifyManyAsync 用 `context.WithoutCancel(ctx)` 保留 viewer（SendMessage 从 viewer 推导发送者，防伪造），脱离已返回的 gRPC 请求生命周期。
+- **枚举扩展**：InstanceStatus+WITHDRAWN、TaskStatus+CANCELLED、LogAction+WITHDRAW；MyTaskItem 补 task_id（待办列表填充，供进详情）；GetTaskResponse 补 form_data（审批人可见申请内容）。
+
+### 9.2 请假（oa_leave_type / oa_leave_balance / oa_leave_application）
+
+- 类型（租户内 code 唯一）+ 额度（用户×类型×年度，total/used 支持半日 0.5 步进）+ 申请单。
+- 提交：校验额度 → 建单 → 进程内直调引擎 SubmitApply（code=LEAVE v1）。**流程定义自动引导**：租户内无 LEAVE 定义时按默认模板（提交给申请人主管 LEADER，会签）自动创建并启用——开箱即用。
+- 半日粒度：start_half（默认 AM）/end_half（默认 PM），`computeLeaveDays` 半日算天（同日 PM起+AM止非法）。请求时间戳统一 `.In(time.Local)` 后截断（Timestamp.AsTime 恒 UTC 位置的坑）。
+- 审批通过回调：单据 APPROVED + `AddUsedDays` 扣额度；驳回/撤回仅同步状态。
+- 姓名回填：applicant_name（resolver 批量查 user.username）。
+
+### 9.3 报销（oa_expense_application / oa_expense_item）
+
+- 申请单 + 多行明细（类别/金额/日期/说明/**发票文件 ID**）。O2M 边 Cascade；**不可加 Required()**（阻断父记录创建，同 workflow 边教训）。
+- 明细 List 需 WithItems 预载。提交挂 EXPENSE v1 流程（同样自动引导）。
+- **发票直传链路**：multipart POST /app/v1/file/upload（流式 reader 经 context 注入 minio）→ UploadFileResponse 返回 **file_id**（落库文件记录 ID）→ 明细 invoiceFileId 引用。移动端拍照/相册（image_picker）→ 压缩 → Dio multipart → 自动回填。
+- multipart 三要点（修复记录）：请求头补 Accept: application/json（kratos 响应编码按 Accept 回退 Content-Type）；oneof Source 打 File 标记（字节走 ctx reader 不走 proto 字段）；StorageObject 缺省空对象（自动桶名/UUID 对象名前提）。app BFF 曾双注册（生成版遮蔽手改流式版）已修。
+
+### 9.4 考勤（oa_attendance_record / oa_attendance_setting / oa_holiday）
+
+- 打卡：当日首次=签到、第二次=签退并结算（GPS 经纬度 + WiFi BSSID 全程落库）。409 已签退。
+- 结算：请假覆盖优先 ON_LEAVE；否则迟到（签到>上班时间）/早退（签退<下班时间）/正常。工时设置每租户一行（默认 09:00-18:00，admin 可改）。
+- **节假日表**：HOLIDAY=法定假日休息（可落工作日）、WORKDAY=调休上班（可落周末），优先于周末判定；未设置按周六日。管理员按日设置（存在则覆盖）。
+  - 休息日（节假日或周末）跳过结算物化；休息日打卡结算为 NORMAL（加班不计迟到）。
+  - 定时结算调度器逐租户判定休息日。
+- 每日定时结算：AttendanceScheduler（wire 注入常驻 goroutine）每 30 分钟检查，本地 00:30 后为「昨日」跑全租户结算。补结算仅处理仍 PENDING 的记录（幂等）。
+- user_name 回填。
+
+### 9.5 鉴权与站内信（CMS 基座随大重构就位）
+
+- core 完整 AuthenticationService（Login/Logout/RefreshToken，密码=base64(AES(明文))，库内 bcrypt）+ RBAC（登录要求用户有角色且角色含 `sys:access_backend` 权限码）。
+- admin 登录强制验证码（X-Captcha-Id/Value 头；答案在 Redis `gowind-cms:captcha:<id>`）。
+- app BFF 匿名请求按 Host→租户 domain 解析（fail-closed）；**LoginRequest.tenant_code 的 json_name 是蛇形**（传 tenantCode 会被静默忽略）。
+- app 端站内信收件箱恢复：core `ListMyMessages`（收件人过滤、排除已删除/已撤销）+ `GET /app/v1/internal-message/my-messages`。
+- admin 审批闭环：admin 挂 `AuditTask`（POST /admin/v1/oa/workflow/audit-task）+ 审批中心页（三 Tab + 详情审批/转办）。
+
+### 9.6 单元测试与冒烟
+
+- 纯逻辑单测：`internal/service/oa_logic_test.go`（computeLeaveDays 半日矩阵 / parseHHMM / truncateDate / isWeekend / 节点归一化与策略 / 迟到早退语义）。`go test -vet=off`（包内存量 vet 告警）。
+- 冒烟种子工具：`app/core/service/cmd/smokeseed`（租户/角色/权限/组织/双用户/请假类型额度，输出加密登录密码）。操作全手册见项目记忆。
+
+### 9.7 已知边界（现行）
+
+- 无事务多步写入（状态机/建单链）——与既有风险面一致。
+- 请假天数按自然日（含周末），未做工作日扣减；半天粒度已支持但额度过期/结转无。
+- 转办不校验目标用户存在性；或签部分驳回停留时无提醒。
+- 列表接口不分页（items+total 直返）。
+- form_schema 存储但无渲染器（表单为各端写死界面）；定义编辑为 JSON textarea+校验（非可视化编辑器）。

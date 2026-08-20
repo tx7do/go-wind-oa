@@ -5,6 +5,7 @@
     "attendanceRecords": "考勤记录",
     "leave": "请假管理",
     "expense": "报销管理",
-    "approval": "审批中心"
+    "approval": "审批中心",
+    "holidays": "节假日设置"
   }
 }

@@ -62,6 +62,16 @@ const oa: RouteRecordRaw[] = [
         component: () => import("@/pages/app/oa/attendance/records.vue"),
       },
       {
+        path: "holidays",
+        name: "OaHolidays",
+        meta: {
+          order: 3,
+          icon: "lucide:calendar-days",
+          title: "routes.oa.holidays",
+        },
+        component: () => import("@/pages/app/oa/attendance/holidays.vue"),
+      },
+      {
         path: "leave",
         name: "OaLeaveManagement",
         meta: {

@@ -5,6 +5,7 @@
     "attendanceRecords": "Attendance Records",
     "leave": "Leave Management",
     "expense": "Expense Management",
-    "approval": "Approval Center"
+    "approval": "Approval Center",
+    "holidays": "Holidays"
   }
 }

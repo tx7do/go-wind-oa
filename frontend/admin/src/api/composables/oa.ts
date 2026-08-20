@@ -345,3 +345,50 @@ export function auditActionLabel(action?: string): string {
     default: return "-";
   }
 }
+
+// ==============================
+// 节假日/调休日设置
+// ==============================
+
+import type {
+  oaservicev1_Holiday,
+  oaservicev1_ListHolidaysResponse,
+} from "@/api/generated/admin/service/v1";
+
+export function useListHolidays(
+  req: { year: number },
+  options?: Omit<UseQueryOptions<oaservicev1_ListHolidaysResponse, Error>, "queryKey">
+) {
+  return useQuery({
+    queryKey: ["listHolidays", req.year],
+    queryFn: () => apiClient.attendanceService.ListHolidays(req),
+    ...options,
+  });
+}
+
+export function useUpsertHoliday(
+  options?: UseMutationOptions<Record<never, never>, Error, oaservicev1_Holiday>
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.attendanceService.UpsertHoliday(req),
+    ...options,
+  });
+}
+
+export function useDeleteHoliday(
+  options?: UseMutationOptions<Record<never, never>, Error, { id: number }>
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.attendanceService.DeleteHoliday(req),
+    ...options,
+  });
+}
+
+/** 节假日类型 → 展示文案/标签色。 */
+export function holidayTypeLabel(t?: string): string {
+  return t === "WORKDAY" ? "调休上班" : "法定假日";
+}
+
+export function holidayTypeTag(t?: string): "danger" | "success" {
+  return t === "WORKDAY" ? "danger" : "success";
+}
