@@ -26,6 +26,53 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 类型
+type Holiday_HolidayType int32
+
+const (
+	Holiday_HOLIDAY Holiday_HolidayType = 0 // 法定假日（休息，优先于周末判定）
+	Holiday_WORKDAY Holiday_HolidayType = 1 // 调休上班（该日照常结算，即使落在周末）
+)
+
+// Enum value maps for Holiday_HolidayType.
+var (
+	Holiday_HolidayType_name = map[int32]string{
+		0: "HOLIDAY",
+		1: "WORKDAY",
+	}
+	Holiday_HolidayType_value = map[string]int32{
+		"HOLIDAY": 0,
+		"WORKDAY": 1,
+	}
+)
+
+func (x Holiday_HolidayType) Enum() *Holiday_HolidayType {
+	p := new(Holiday_HolidayType)
+	*p = x
+	return p
+}
+
+func (x Holiday_HolidayType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Holiday_HolidayType) Descriptor() protoreflect.EnumDescriptor {
+	return file_oa_service_v1_attendance_proto_enumTypes[0].Descriptor()
+}
+
+func (Holiday_HolidayType) Type() protoreflect.EnumType {
+	return &file_oa_service_v1_attendance_proto_enumTypes[0]
+}
+
+func (x Holiday_HolidayType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Holiday_HolidayType.Descriptor instead.
+func (Holiday_HolidayType) EnumDescriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{0, 0}
+}
+
 // 当日结算结果
 type AttendanceRecord_DayResult int32
 
@@ -69,11 +116,11 @@ func (x AttendanceRecord_DayResult) String() string {
 }
 
 func (AttendanceRecord_DayResult) Descriptor() protoreflect.EnumDescriptor {
-	return file_oa_service_v1_attendance_proto_enumTypes[0].Descriptor()
+	return file_oa_service_v1_attendance_proto_enumTypes[1].Descriptor()
 }
 
 func (AttendanceRecord_DayResult) Type() protoreflect.EnumType {
-	return &file_oa_service_v1_attendance_proto_enumTypes[0]
+	return &file_oa_service_v1_attendance_proto_enumTypes[1]
 }
 
 func (x AttendanceRecord_DayResult) Number() protoreflect.EnumNumber {
@@ -82,7 +129,235 @@ func (x AttendanceRecord_DayResult) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AttendanceRecord_DayResult.Descriptor instead.
 func (AttendanceRecord_DayResult) EnumDescriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{0, 0}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{4, 0}
+}
+
+// 节假日/调休日设置
+type Holiday struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                             // ID
+	Date          *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=date,proto3,oneof" json:"date,omitempty"`                                                                          // 日期
+	HolidayType   *Holiday_HolidayType   `protobuf:"varint,3,opt,name=holiday_type,json=holidayType,proto3,enum=oa.service.v1.Holiday_HolidayType,oneof" json:"holiday_type,omitempty"` // 类型
+	Name          *string                `protobuf:"bytes,4,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                                          // 名称
+	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                // 租户ID
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Holiday) Reset() {
+	*x = Holiday{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Holiday) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Holiday) ProtoMessage() {}
+
+func (x *Holiday) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Holiday.ProtoReflect.Descriptor instead.
+func (*Holiday) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Holiday) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *Holiday) GetDate() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Date
+	}
+	return nil
+}
+
+func (x *Holiday) GetHolidayType() Holiday_HolidayType {
+	if x != nil && x.HolidayType != nil {
+		return *x.HolidayType
+	}
+	return Holiday_HOLIDAY
+}
+
+func (x *Holiday) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *Holiday) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
+func (x *Holiday) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+// 删除节假日设置 - 请求
+type DeleteHolidayRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteHolidayRequest) Reset() {
+	*x = DeleteHolidayRequest{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteHolidayRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteHolidayRequest) ProtoMessage() {}
+
+func (x *DeleteHolidayRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteHolidayRequest.ProtoReflect.Descriptor instead.
+func (*DeleteHolidayRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *DeleteHolidayRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+// 查询节假日 - 请求
+type ListHolidaysRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Year          int32                  `protobuf:"varint,1,opt,name=year,proto3" json:"year,omitempty"` // 年度
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListHolidaysRequest) Reset() {
+	*x = ListHolidaysRequest{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListHolidaysRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListHolidaysRequest) ProtoMessage() {}
+
+func (x *ListHolidaysRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListHolidaysRequest.ProtoReflect.Descriptor instead.
+func (*ListHolidaysRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ListHolidaysRequest) GetYear() int32 {
+	if x != nil {
+		return x.Year
+	}
+	return 0
+}
+
+// 查询节假日 - 回应
+type ListHolidaysResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*Holiday             `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListHolidaysResponse) Reset() {
+	*x = ListHolidaysResponse{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListHolidaysResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListHolidaysResponse) ProtoMessage() {}
+
+func (x *ListHolidaysResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListHolidaysResponse.ProtoReflect.Descriptor instead.
+func (*ListHolidaysResponse) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ListHolidaysResponse) GetItems() []*Holiday {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *ListHolidaysResponse) GetTotal() uint64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
 }
 
 // 打卡记录（用户 x 工作日 唯一）
@@ -112,7 +387,7 @@ type AttendanceRecord struct {
 
 func (x *AttendanceRecord) Reset() {
 	*x = AttendanceRecord{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[0]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -124,7 +399,7 @@ func (x *AttendanceRecord) String() string {
 func (*AttendanceRecord) ProtoMessage() {}
 
 func (x *AttendanceRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[0]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -137,7 +412,7 @@ func (x *AttendanceRecord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttendanceRecord.ProtoReflect.Descriptor instead.
 func (*AttendanceRecord) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{0}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *AttendanceRecord) GetId() uint32 {
@@ -281,7 +556,7 @@ type AttendanceSetting struct {
 
 func (x *AttendanceSetting) Reset() {
 	*x = AttendanceSetting{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[1]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -293,7 +568,7 @@ func (x *AttendanceSetting) String() string {
 func (*AttendanceSetting) ProtoMessage() {}
 
 func (x *AttendanceSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[1]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -306,7 +581,7 @@ func (x *AttendanceSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttendanceSetting.ProtoReflect.Descriptor instead.
 func (*AttendanceSetting) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{1}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *AttendanceSetting) GetId() uint32 {
@@ -363,7 +638,7 @@ type CheckInRequest struct {
 
 func (x *CheckInRequest) Reset() {
 	*x = CheckInRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[2]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -375,7 +650,7 @@ func (x *CheckInRequest) String() string {
 func (*CheckInRequest) ProtoMessage() {}
 
 func (x *CheckInRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[2]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -388,7 +663,7 @@ func (x *CheckInRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckInRequest.ProtoReflect.Descriptor instead.
 func (*CheckInRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{2}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CheckInRequest) GetLatitude() float64 {
@@ -423,7 +698,7 @@ type GetMyAttendanceRecordsRequest struct {
 
 func (x *GetMyAttendanceRecordsRequest) Reset() {
 	*x = GetMyAttendanceRecordsRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[3]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -435,7 +710,7 @@ func (x *GetMyAttendanceRecordsRequest) String() string {
 func (*GetMyAttendanceRecordsRequest) ProtoMessage() {}
 
 func (x *GetMyAttendanceRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[3]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -448,7 +723,7 @@ func (x *GetMyAttendanceRecordsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMyAttendanceRecordsRequest.ProtoReflect.Descriptor instead.
 func (*GetMyAttendanceRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{3}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetMyAttendanceRecordsRequest) GetStartDate() *timestamppb.Timestamp {
@@ -476,7 +751,7 @@ type ListAttendanceRecordsRequest struct {
 
 func (x *ListAttendanceRecordsRequest) Reset() {
 	*x = ListAttendanceRecordsRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[4]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -488,7 +763,7 @@ func (x *ListAttendanceRecordsRequest) String() string {
 func (*ListAttendanceRecordsRequest) ProtoMessage() {}
 
 func (x *ListAttendanceRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[4]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -501,7 +776,7 @@ func (x *ListAttendanceRecordsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAttendanceRecordsRequest.ProtoReflect.Descriptor instead.
 func (*ListAttendanceRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{4}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListAttendanceRecordsRequest) GetWorkDate() *timestamppb.Timestamp {
@@ -529,7 +804,7 @@ type ListAttendanceRecordsResponse struct {
 
 func (x *ListAttendanceRecordsResponse) Reset() {
 	*x = ListAttendanceRecordsResponse{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[5]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -541,7 +816,7 @@ func (x *ListAttendanceRecordsResponse) String() string {
 func (*ListAttendanceRecordsResponse) ProtoMessage() {}
 
 func (x *ListAttendanceRecordsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[5]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -554,7 +829,7 @@ func (x *ListAttendanceRecordsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAttendanceRecordsResponse.ProtoReflect.Descriptor instead.
 func (*ListAttendanceRecordsResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{5}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListAttendanceRecordsResponse) GetItems() []*AttendanceRecord {
@@ -581,7 +856,7 @@ type RunDailySettlementRequest struct {
 
 func (x *RunDailySettlementRequest) Reset() {
 	*x = RunDailySettlementRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[6]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -593,7 +868,7 @@ func (x *RunDailySettlementRequest) String() string {
 func (*RunDailySettlementRequest) ProtoMessage() {}
 
 func (x *RunDailySettlementRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[6]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -606,7 +881,7 @@ func (x *RunDailySettlementRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunDailySettlementRequest.ProtoReflect.Descriptor instead.
 func (*RunDailySettlementRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{6}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *RunDailySettlementRequest) GetWorkDate() *timestamppb.Timestamp {
@@ -626,7 +901,7 @@ type RunDailySettlementResponse struct {
 
 func (x *RunDailySettlementResponse) Reset() {
 	*x = RunDailySettlementResponse{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[7]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -638,7 +913,7 @@ func (x *RunDailySettlementResponse) String() string {
 func (*RunDailySettlementResponse) ProtoMessage() {}
 
 func (x *RunDailySettlementResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[7]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -651,7 +926,7 @@ func (x *RunDailySettlementResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunDailySettlementResponse.ProtoReflect.Descriptor instead.
 func (*RunDailySettlementResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{7}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RunDailySettlementResponse) GetSettledCount() uint32 {
@@ -665,7 +940,32 @@ var File_oa_service_v1_attendance_proto protoreflect.FileDescriptor
 
 const file_oa_service_v1_attendance_proto_rawDesc = "" +
 	"\n" +
-	"\x1eoa/service/v1/attendance.proto\x12\roa.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xeb\r\n" +
+	"\x1eoa/service/v1/attendance.proto\x12\roa.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xa4\x04\n" +
+	"\aHoliday\x12 \n" +
+	"\x02id\x18\x01 \x01(\rB\v\xe0A\x01\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12_\n" +
+	"\x04date\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB*\xbaG'\x92\x02$日期（零点，租户内唯一）H\x01R\x04date\x88\x01\x01\x12X\n" +
+	"\fholiday_type\x18\x03 \x01(\x0e2\".oa.service.v1.Holiday.HolidayTypeB\f\xbaG\t\x92\x02\x06类型H\x02R\vholidayType\x88\x01\x01\x12E\n" +
+	"\x04name\x18\x04 \x01(\tB,\xbaG)\x92\x02&名称（如 国庆节/调休上班）H\x03R\x04name\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18( \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x04R\btenantId\x88\x01\x01\x12S\n" +
+	"\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x05R\tcreatedAt\x88\x01\x01\"'\n" +
+	"\vHolidayType\x12\v\n" +
+	"\aHOLIDAY\x10\x00\x12\v\n" +
+	"\aWORKDAY\x10\x01B\x05\n" +
+	"\x03_idB\a\n" +
+	"\x05_dateB\x0f\n" +
+	"\r_holiday_typeB\a\n" +
+	"\x05_nameB\f\n" +
+	"\n" +
+	"_tenant_idB\r\n" +
+	"\v_created_at\"0\n" +
+	"\x14DeleteHolidayRequest\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\rB\b\xbaG\x05\x92\x02\x02IDR\x02id\"B\n" +
+	"\x13ListHolidaysRequest\x12+\n" +
+	"\x04year\x18\x01 \x01(\x05B\x17\xbaG\x14\x92\x02\x11年度，0=当年R\x04year\"Z\n" +
+	"\x14ListHolidaysResponse\x12,\n" +
+	"\x05items\x18\x01 \x03(\v2\x16.oa.service.v1.HolidayR\x05items\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x04R\x05total\"\xeb\r\n" +
 	"\x10AttendanceRecord\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b记录IDH\x00R\x02id\x88\x01\x01\x12,\n" +
 	"\auser_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x01R\x06userId\x88\x01\x01\x12I\n" +
@@ -758,14 +1058,17 @@ const file_oa_service_v1_attendance_proto_rawDesc = "" +
 	"\x19RunDailySettlementRequest\x12p\n" +
 	"\twork_date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB7\xbaG4\x92\x021结算日期（日期，零点），不传=今天R\bworkDate\"b\n" +
 	"\x1aRunDailySettlementResponse\x12D\n" +
-	"\rsettled_count\x18\x01 \x01(\rB\x1f\xbaG\x1c\x92\x02\x19结算/物化的记录数R\fsettledCount2\xe6\x04\n" +
+	"\rsettled_count\x18\x01 \x01(\rB\x1f\xbaG\x1c\x92\x02\x19结算/物化的记录数R\fsettledCount2\xd4\x06\n" +
 	"\x11AttendanceService\x12K\n" +
 	"\aCheckIn\x12\x1d.oa.service.v1.CheckInRequest\x1a\x1f.oa.service.v1.AttendanceRecord\"\x00\x12v\n" +
 	"\x16GetMyAttendanceRecords\x12,.oa.service.v1.GetMyAttendanceRecordsRequest\x1a,.oa.service.v1.ListAttendanceRecordsResponse\"\x00\x12t\n" +
 	"\x15ListAttendanceRecords\x12+.oa.service.v1.ListAttendanceRecordsRequest\x1a,.oa.service.v1.ListAttendanceRecordsResponse\"\x00\x12R\n" +
 	"\x14GetAttendanceSetting\x12\x16.google.protobuf.Empty\x1a .oa.service.v1.AttendanceSetting\"\x00\x12U\n" +
 	"\x17UpdateAttendanceSetting\x12 .oa.service.v1.AttendanceSetting\x1a\x16.google.protobuf.Empty\"\x00\x12k\n" +
-	"\x12RunDailySettlement\x12(.oa.service.v1.RunDailySettlementRequest\x1a).oa.service.v1.RunDailySettlementResponse\"\x00B\xa4\x01\n" +
+	"\x12RunDailySettlement\x12(.oa.service.v1.RunDailySettlementRequest\x1a).oa.service.v1.RunDailySettlementResponse\"\x00\x12A\n" +
+	"\rUpsertHoliday\x12\x16.oa.service.v1.Holiday\x1a\x16.google.protobuf.Empty\"\x00\x12N\n" +
+	"\rDeleteHoliday\x12#.oa.service.v1.DeleteHolidayRequest\x1a\x16.google.protobuf.Empty\"\x00\x12Y\n" +
+	"\fListHolidays\x12\".oa.service.v1.ListHolidaysRequest\x1a#.oa.service.v1.ListHolidaysResponse\"\x00B\xa4\x01\n" +
 	"\x11com.oa.service.v1B\x0fAttendanceProtoP\x01Z(go-wind-oa/api/gen/go/oa/service/v1;oapb\xa2\x02\x03OSX\xaa\x02\rOa.Service.V1\xca\x02\rOa\\Service\\V1\xe2\x02\x19Oa\\Service\\V1\\GPBMetadata\xea\x02\x0fOa::Service::V1b\x06proto3"
 
 var (
@@ -780,52 +1083,67 @@ func file_oa_service_v1_attendance_proto_rawDescGZIP() []byte {
 	return file_oa_service_v1_attendance_proto_rawDescData
 }
 
-var file_oa_service_v1_attendance_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_oa_service_v1_attendance_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_oa_service_v1_attendance_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_oa_service_v1_attendance_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_oa_service_v1_attendance_proto_goTypes = []any{
-	(AttendanceRecord_DayResult)(0),       // 0: oa.service.v1.AttendanceRecord.DayResult
-	(*AttendanceRecord)(nil),              // 1: oa.service.v1.AttendanceRecord
-	(*AttendanceSetting)(nil),             // 2: oa.service.v1.AttendanceSetting
-	(*CheckInRequest)(nil),                // 3: oa.service.v1.CheckInRequest
-	(*GetMyAttendanceRecordsRequest)(nil), // 4: oa.service.v1.GetMyAttendanceRecordsRequest
-	(*ListAttendanceRecordsRequest)(nil),  // 5: oa.service.v1.ListAttendanceRecordsRequest
-	(*ListAttendanceRecordsResponse)(nil), // 6: oa.service.v1.ListAttendanceRecordsResponse
-	(*RunDailySettlementRequest)(nil),     // 7: oa.service.v1.RunDailySettlementRequest
-	(*RunDailySettlementResponse)(nil),    // 8: oa.service.v1.RunDailySettlementResponse
-	(*timestamppb.Timestamp)(nil),         // 9: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                 // 10: google.protobuf.Empty
+	(Holiday_HolidayType)(0),              // 0: oa.service.v1.Holiday.HolidayType
+	(AttendanceRecord_DayResult)(0),       // 1: oa.service.v1.AttendanceRecord.DayResult
+	(*Holiday)(nil),                       // 2: oa.service.v1.Holiday
+	(*DeleteHolidayRequest)(nil),          // 3: oa.service.v1.DeleteHolidayRequest
+	(*ListHolidaysRequest)(nil),           // 4: oa.service.v1.ListHolidaysRequest
+	(*ListHolidaysResponse)(nil),          // 5: oa.service.v1.ListHolidaysResponse
+	(*AttendanceRecord)(nil),              // 6: oa.service.v1.AttendanceRecord
+	(*AttendanceSetting)(nil),             // 7: oa.service.v1.AttendanceSetting
+	(*CheckInRequest)(nil),                // 8: oa.service.v1.CheckInRequest
+	(*GetMyAttendanceRecordsRequest)(nil), // 9: oa.service.v1.GetMyAttendanceRecordsRequest
+	(*ListAttendanceRecordsRequest)(nil),  // 10: oa.service.v1.ListAttendanceRecordsRequest
+	(*ListAttendanceRecordsResponse)(nil), // 11: oa.service.v1.ListAttendanceRecordsResponse
+	(*RunDailySettlementRequest)(nil),     // 12: oa.service.v1.RunDailySettlementRequest
+	(*RunDailySettlementResponse)(nil),    // 13: oa.service.v1.RunDailySettlementResponse
+	(*timestamppb.Timestamp)(nil),         // 14: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                 // 15: google.protobuf.Empty
 }
 var file_oa_service_v1_attendance_proto_depIdxs = []int32{
-	9,  // 0: oa.service.v1.AttendanceRecord.work_date:type_name -> google.protobuf.Timestamp
-	9,  // 1: oa.service.v1.AttendanceRecord.check_in_at:type_name -> google.protobuf.Timestamp
-	9,  // 2: oa.service.v1.AttendanceRecord.check_out_at:type_name -> google.protobuf.Timestamp
-	0,  // 3: oa.service.v1.AttendanceRecord.day_result:type_name -> oa.service.v1.AttendanceRecord.DayResult
-	9,  // 4: oa.service.v1.AttendanceRecord.created_at:type_name -> google.protobuf.Timestamp
-	9,  // 5: oa.service.v1.AttendanceRecord.updated_at:type_name -> google.protobuf.Timestamp
-	9,  // 6: oa.service.v1.AttendanceSetting.created_at:type_name -> google.protobuf.Timestamp
-	9,  // 7: oa.service.v1.AttendanceSetting.updated_at:type_name -> google.protobuf.Timestamp
-	9,  // 8: oa.service.v1.GetMyAttendanceRecordsRequest.start_date:type_name -> google.protobuf.Timestamp
-	9,  // 9: oa.service.v1.GetMyAttendanceRecordsRequest.end_date:type_name -> google.protobuf.Timestamp
-	9,  // 10: oa.service.v1.ListAttendanceRecordsRequest.work_date:type_name -> google.protobuf.Timestamp
-	1,  // 11: oa.service.v1.ListAttendanceRecordsResponse.items:type_name -> oa.service.v1.AttendanceRecord
-	9,  // 12: oa.service.v1.RunDailySettlementRequest.work_date:type_name -> google.protobuf.Timestamp
-	3,  // 13: oa.service.v1.AttendanceService.CheckIn:input_type -> oa.service.v1.CheckInRequest
-	4,  // 14: oa.service.v1.AttendanceService.GetMyAttendanceRecords:input_type -> oa.service.v1.GetMyAttendanceRecordsRequest
-	5,  // 15: oa.service.v1.AttendanceService.ListAttendanceRecords:input_type -> oa.service.v1.ListAttendanceRecordsRequest
-	10, // 16: oa.service.v1.AttendanceService.GetAttendanceSetting:input_type -> google.protobuf.Empty
-	2,  // 17: oa.service.v1.AttendanceService.UpdateAttendanceSetting:input_type -> oa.service.v1.AttendanceSetting
-	7,  // 18: oa.service.v1.AttendanceService.RunDailySettlement:input_type -> oa.service.v1.RunDailySettlementRequest
-	1,  // 19: oa.service.v1.AttendanceService.CheckIn:output_type -> oa.service.v1.AttendanceRecord
-	6,  // 20: oa.service.v1.AttendanceService.GetMyAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
-	6,  // 21: oa.service.v1.AttendanceService.ListAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
-	2,  // 22: oa.service.v1.AttendanceService.GetAttendanceSetting:output_type -> oa.service.v1.AttendanceSetting
-	10, // 23: oa.service.v1.AttendanceService.UpdateAttendanceSetting:output_type -> google.protobuf.Empty
-	8,  // 24: oa.service.v1.AttendanceService.RunDailySettlement:output_type -> oa.service.v1.RunDailySettlementResponse
-	19, // [19:25] is the sub-list for method output_type
-	13, // [13:19] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	14, // 0: oa.service.v1.Holiday.date:type_name -> google.protobuf.Timestamp
+	0,  // 1: oa.service.v1.Holiday.holiday_type:type_name -> oa.service.v1.Holiday.HolidayType
+	14, // 2: oa.service.v1.Holiday.created_at:type_name -> google.protobuf.Timestamp
+	2,  // 3: oa.service.v1.ListHolidaysResponse.items:type_name -> oa.service.v1.Holiday
+	14, // 4: oa.service.v1.AttendanceRecord.work_date:type_name -> google.protobuf.Timestamp
+	14, // 5: oa.service.v1.AttendanceRecord.check_in_at:type_name -> google.protobuf.Timestamp
+	14, // 6: oa.service.v1.AttendanceRecord.check_out_at:type_name -> google.protobuf.Timestamp
+	1,  // 7: oa.service.v1.AttendanceRecord.day_result:type_name -> oa.service.v1.AttendanceRecord.DayResult
+	14, // 8: oa.service.v1.AttendanceRecord.created_at:type_name -> google.protobuf.Timestamp
+	14, // 9: oa.service.v1.AttendanceRecord.updated_at:type_name -> google.protobuf.Timestamp
+	14, // 10: oa.service.v1.AttendanceSetting.created_at:type_name -> google.protobuf.Timestamp
+	14, // 11: oa.service.v1.AttendanceSetting.updated_at:type_name -> google.protobuf.Timestamp
+	14, // 12: oa.service.v1.GetMyAttendanceRecordsRequest.start_date:type_name -> google.protobuf.Timestamp
+	14, // 13: oa.service.v1.GetMyAttendanceRecordsRequest.end_date:type_name -> google.protobuf.Timestamp
+	14, // 14: oa.service.v1.ListAttendanceRecordsRequest.work_date:type_name -> google.protobuf.Timestamp
+	6,  // 15: oa.service.v1.ListAttendanceRecordsResponse.items:type_name -> oa.service.v1.AttendanceRecord
+	14, // 16: oa.service.v1.RunDailySettlementRequest.work_date:type_name -> google.protobuf.Timestamp
+	8,  // 17: oa.service.v1.AttendanceService.CheckIn:input_type -> oa.service.v1.CheckInRequest
+	9,  // 18: oa.service.v1.AttendanceService.GetMyAttendanceRecords:input_type -> oa.service.v1.GetMyAttendanceRecordsRequest
+	10, // 19: oa.service.v1.AttendanceService.ListAttendanceRecords:input_type -> oa.service.v1.ListAttendanceRecordsRequest
+	15, // 20: oa.service.v1.AttendanceService.GetAttendanceSetting:input_type -> google.protobuf.Empty
+	7,  // 21: oa.service.v1.AttendanceService.UpdateAttendanceSetting:input_type -> oa.service.v1.AttendanceSetting
+	12, // 22: oa.service.v1.AttendanceService.RunDailySettlement:input_type -> oa.service.v1.RunDailySettlementRequest
+	2,  // 23: oa.service.v1.AttendanceService.UpsertHoliday:input_type -> oa.service.v1.Holiday
+	3,  // 24: oa.service.v1.AttendanceService.DeleteHoliday:input_type -> oa.service.v1.DeleteHolidayRequest
+	4,  // 25: oa.service.v1.AttendanceService.ListHolidays:input_type -> oa.service.v1.ListHolidaysRequest
+	6,  // 26: oa.service.v1.AttendanceService.CheckIn:output_type -> oa.service.v1.AttendanceRecord
+	11, // 27: oa.service.v1.AttendanceService.GetMyAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
+	11, // 28: oa.service.v1.AttendanceService.ListAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
+	7,  // 29: oa.service.v1.AttendanceService.GetAttendanceSetting:output_type -> oa.service.v1.AttendanceSetting
+	15, // 30: oa.service.v1.AttendanceService.UpdateAttendanceSetting:output_type -> google.protobuf.Empty
+	13, // 31: oa.service.v1.AttendanceService.RunDailySettlement:output_type -> oa.service.v1.RunDailySettlementResponse
+	15, // 32: oa.service.v1.AttendanceService.UpsertHoliday:output_type -> google.protobuf.Empty
+	15, // 33: oa.service.v1.AttendanceService.DeleteHoliday:output_type -> google.protobuf.Empty
+	5,  // 34: oa.service.v1.AttendanceService.ListHolidays:output_type -> oa.service.v1.ListHolidaysResponse
+	26, // [26:35] is the sub-list for method output_type
+	17, // [17:26] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_oa_service_v1_attendance_proto_init() }
@@ -834,14 +1152,15 @@ func file_oa_service_v1_attendance_proto_init() {
 		return
 	}
 	file_oa_service_v1_attendance_proto_msgTypes[0].OneofWrappers = []any{}
-	file_oa_service_v1_attendance_proto_msgTypes[1].OneofWrappers = []any{}
+	file_oa_service_v1_attendance_proto_msgTypes[4].OneofWrappers = []any{}
+	file_oa_service_v1_attendance_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_oa_service_v1_attendance_proto_rawDesc), len(file_oa_service_v1_attendance_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   8,
+			NumEnums:      2,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

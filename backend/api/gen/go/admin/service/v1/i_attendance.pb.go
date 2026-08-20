@@ -27,12 +27,15 @@ var File_admin_service_v1_i_attendance_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_attendance_proto_rawDesc = "" +
 	"\n" +
-	"#admin/service/v1/i_attendance.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1eoa/service/v1/attendance.proto2\xcc\x04\n" +
+	"#admin/service/v1/i_attendance.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1eoa/service/v1/attendance.proto2\xbb\a\n" +
 	"\x11AttendanceService\x12\x9b\x01\n" +
 	"\x15ListAttendanceRecords\x12+.oa.service.v1.ListAttendanceRecordsRequest\x1a,.oa.service.v1.ListAttendanceRecordsResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/admin/v1/oa/attendance/records\x12z\n" +
 	"\x14GetAttendanceSetting\x12\x16.google.protobuf.Empty\x1a .oa.service.v1.AttendanceSetting\"(\x82\xd3\xe4\x93\x02\"\x12 /admin/v1/oa/attendance/settings\x12\x80\x01\n" +
 	"\x17UpdateAttendanceSetting\x12 .oa.service.v1.AttendanceSetting\x1a\x16.google.protobuf.Empty\"+\x82\xd3\xe4\x93\x02%:\x01*\x1a /admin/v1/oa/attendance/settings\x12\x99\x01\n" +
-	"\x12RunDailySettlement\x12(.oa.service.v1.RunDailySettlementRequest\x1a).oa.service.v1.RunDailySettlementResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/admin/v1/oa/attendance/settlementsB\xba\x01\n" +
+	"\x12RunDailySettlement\x12(.oa.service.v1.RunDailySettlementRequest\x1a).oa.service.v1.RunDailySettlementResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/admin/v1/oa/attendance/settlements\x12l\n" +
+	"\rUpsertHoliday\x12\x16.oa.service.v1.Holiday\x1a\x16.google.protobuf.Empty\"+\x82\xd3\xe4\x93\x02%:\x01*\" /admin/v1/oa/attendance/holidays\x12{\n" +
+	"\rDeleteHoliday\x12#.oa.service.v1.DeleteHolidayRequest\x1a\x16.google.protobuf.Empty\"-\x82\xd3\xe4\x93\x02'*%/admin/v1/oa/attendance/holidays/{id}\x12\x81\x01\n" +
+	"\fListHolidays\x12\".oa.service.v1.ListHolidaysRequest\x1a#.oa.service.v1.ListHolidaysResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /admin/v1/oa/attendance/holidaysB\xba\x01\n" +
 	"\x14com.admin.service.v1B\x10IAttendanceProtoP\x01Z.go-wind-oa/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_attendance_proto_goTypes = []any{
@@ -40,20 +43,30 @@ var file_admin_service_v1_i_attendance_proto_goTypes = []any{
 	(*emptypb.Empty)(nil),                    // 1: google.protobuf.Empty
 	(*v1.AttendanceSetting)(nil),             // 2: oa.service.v1.AttendanceSetting
 	(*v1.RunDailySettlementRequest)(nil),     // 3: oa.service.v1.RunDailySettlementRequest
-	(*v1.ListAttendanceRecordsResponse)(nil), // 4: oa.service.v1.ListAttendanceRecordsResponse
-	(*v1.RunDailySettlementResponse)(nil),    // 5: oa.service.v1.RunDailySettlementResponse
+	(*v1.Holiday)(nil),                       // 4: oa.service.v1.Holiday
+	(*v1.DeleteHolidayRequest)(nil),          // 5: oa.service.v1.DeleteHolidayRequest
+	(*v1.ListHolidaysRequest)(nil),           // 6: oa.service.v1.ListHolidaysRequest
+	(*v1.ListAttendanceRecordsResponse)(nil), // 7: oa.service.v1.ListAttendanceRecordsResponse
+	(*v1.RunDailySettlementResponse)(nil),    // 8: oa.service.v1.RunDailySettlementResponse
+	(*v1.ListHolidaysResponse)(nil),          // 9: oa.service.v1.ListHolidaysResponse
 }
 var file_admin_service_v1_i_attendance_proto_depIdxs = []int32{
 	0, // 0: admin.service.v1.AttendanceService.ListAttendanceRecords:input_type -> oa.service.v1.ListAttendanceRecordsRequest
 	1, // 1: admin.service.v1.AttendanceService.GetAttendanceSetting:input_type -> google.protobuf.Empty
 	2, // 2: admin.service.v1.AttendanceService.UpdateAttendanceSetting:input_type -> oa.service.v1.AttendanceSetting
 	3, // 3: admin.service.v1.AttendanceService.RunDailySettlement:input_type -> oa.service.v1.RunDailySettlementRequest
-	4, // 4: admin.service.v1.AttendanceService.ListAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
-	2, // 5: admin.service.v1.AttendanceService.GetAttendanceSetting:output_type -> oa.service.v1.AttendanceSetting
-	1, // 6: admin.service.v1.AttendanceService.UpdateAttendanceSetting:output_type -> google.protobuf.Empty
-	5, // 7: admin.service.v1.AttendanceService.RunDailySettlement:output_type -> oa.service.v1.RunDailySettlementResponse
-	4, // [4:8] is the sub-list for method output_type
-	0, // [0:4] is the sub-list for method input_type
+	4, // 4: admin.service.v1.AttendanceService.UpsertHoliday:input_type -> oa.service.v1.Holiday
+	5, // 5: admin.service.v1.AttendanceService.DeleteHoliday:input_type -> oa.service.v1.DeleteHolidayRequest
+	6, // 6: admin.service.v1.AttendanceService.ListHolidays:input_type -> oa.service.v1.ListHolidaysRequest
+	7, // 7: admin.service.v1.AttendanceService.ListAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
+	2, // 8: admin.service.v1.AttendanceService.GetAttendanceSetting:output_type -> oa.service.v1.AttendanceSetting
+	1, // 9: admin.service.v1.AttendanceService.UpdateAttendanceSetting:output_type -> google.protobuf.Empty
+	8, // 10: admin.service.v1.AttendanceService.RunDailySettlement:output_type -> oa.service.v1.RunDailySettlementResponse
+	1, // 11: admin.service.v1.AttendanceService.UpsertHoliday:output_type -> google.protobuf.Empty
+	1, // 12: admin.service.v1.AttendanceService.DeleteHoliday:output_type -> google.protobuf.Empty
+	9, // 13: admin.service.v1.AttendanceService.ListHolidays:output_type -> oa.service.v1.ListHolidaysResponse
+	7, // [7:14] is the sub-list for method output_type
+	0, // [0:7] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

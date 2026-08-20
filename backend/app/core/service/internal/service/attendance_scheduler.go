@@ -60,9 +60,6 @@ func (s *AttendanceScheduler) runSettlementForYesterday(now time.Time) {
 	}()
 
 	yesterday := truncateDate(now.AddDate(0, 0, -1))
-	if isWeekend(yesterday) {
-		return
-	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
@@ -73,6 +70,13 @@ func (s *AttendanceScheduler) runSettlementForYesterday(now time.Time) {
 		return
 	}
 	for _, tid := range tenantIDs {
+		// 跳过休息日（节假日表优先于周末；调休 WORKDAY 的周末照常结算）。
+		if rest, err := s.attendance.isRestDay(ctx, tid, yesterday); err != nil {
+			s.log.Errorf("settlement check rest day (tenant %d) failed: %s", tid, err.Error())
+			continue
+		} else if rest {
+			continue
+		}
 		settled, err := s.attendance.settleDateForTenant(ctx, tid, 0, yesterday)
 		if err != nil {
 			s.log.Errorf("settlement tenant %d failed: %s", tid, err.Error())

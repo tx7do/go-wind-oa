@@ -46,3 +46,15 @@ func (s *AttendanceService) UpdateAttendanceSetting(ctx context.Context, req *oa
 func (s *AttendanceService) RunDailySettlement(ctx context.Context, req *oaV1.RunDailySettlementRequest) (*oaV1.RunDailySettlementResponse, error) {
 	return s.attendanceServiceClient.RunDailySettlement(ctx, req)
 }
+
+func (s *AttendanceService) UpsertHoliday(ctx context.Context, req *oaV1.Holiday) (*emptypb.Empty, error) {
+	return s.attendanceServiceClient.UpsertHoliday(ctx, req)
+}
+
+func (s *AttendanceService) DeleteHoliday(ctx context.Context, req *oaV1.DeleteHolidayRequest) (*emptypb.Empty, error) {
+	return s.attendanceServiceClient.DeleteHoliday(ctx, req)
+}
+
+func (s *AttendanceService) ListHolidays(ctx context.Context, req *oaV1.ListHolidaysRequest) (*oaV1.ListHolidaysResponse, error) {
+	return s.attendanceServiceClient.ListHolidays(ctx, req)
+}

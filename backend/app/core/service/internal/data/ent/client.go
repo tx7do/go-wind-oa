@@ -26,6 +26,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/expenseapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/expenseitem"
 	"go-wind-oa/app/core/service/internal/data/ent/file"
+	"go-wind-oa/app/core/service/internal/data/ent/holiday"
 	"go-wind-oa/app/core/service/internal/data/ent/interactioncounter"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
@@ -125,6 +126,8 @@ type Client struct {
 	ExpenseItem *ExpenseItemClient
 	// File is the client for interacting with the File builders.
 	File *FileClient
+	// Holiday is the client for interacting with the Holiday builders.
+	Holiday *HolidayClient
 	// InteractionCounter is the client for interacting with the InteractionCounter builders.
 	InteractionCounter *InteractionCounterClient
 	// InternalMessage is the client for interacting with the InternalMessage builders.
@@ -265,6 +268,7 @@ func (c *Client) init() {
 	c.ExpenseApplication = NewExpenseApplicationClient(c.config)
 	c.ExpenseItem = NewExpenseItemClient(c.config)
 	c.File = NewFileClient(c.config)
+	c.Holiday = NewHolidayClient(c.config)
 	c.InteractionCounter = NewInteractionCounterClient(c.config)
 	c.InternalMessage = NewInternalMessageClient(c.config)
 	c.InternalMessageCategory = NewInternalMessageCategoryClient(c.config)
@@ -429,6 +433,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ExpenseApplication:       NewExpenseApplicationClient(cfg),
 		ExpenseItem:              NewExpenseItemClient(cfg),
 		File:                     NewFileClient(cfg),
+		Holiday:                  NewHolidayClient(cfg),
 		InteractionCounter:       NewInteractionCounterClient(cfg),
 		InternalMessage:          NewInternalMessageClient(cfg),
 		InternalMessageCategory:  NewInternalMessageCategoryClient(cfg),
@@ -520,6 +525,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ExpenseApplication:       NewExpenseApplicationClient(cfg),
 		ExpenseItem:              NewExpenseItemClient(cfg),
 		File:                     NewFileClient(cfg),
+		Holiday:                  NewHolidayClient(cfg),
 		InteractionCounter:       NewInteractionCounterClient(cfg),
 		InternalMessage:          NewInternalMessageClient(cfg),
 		InternalMessageCategory:  NewInternalMessageCategoryClient(cfg),
@@ -609,18 +615,19 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Api, c.ApiAuditLog, c.AttendanceRecord, c.AttendanceSetting, c.Category,
 		c.CategoryTranslation, c.Comment, c.CommentLike, c.DataAccessAuditLog,
 		c.DictEntry, c.DictEntryI18n, c.DictType, c.ExpenseApplication, c.ExpenseItem,
-		c.File, c.InteractionCounter, c.InternalMessage, c.InternalMessageCategory,
-		c.InternalMessageRecipient, c.Language, c.LeaveApplication, c.LeaveBalance,
-		c.LeaveType, c.LoginAuditLog, c.LoginPolicy, c.MediaAsset, c.MediaVariant,
-		c.Membership, c.MembershipOrgUnit, c.MembershipPosition, c.MembershipRole,
-		c.Menu, c.Navigation, c.NavigationItem, c.OperationAuditLog, c.OrgUnit, c.Page,
-		c.PageTranslation, c.Permission, c.PermissionApi, c.PermissionAuditLog,
-		c.PermissionGroup, c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog,
-		c.Position, c.Post, c.PostCategory, c.PostLike, c.PostTag, c.PostTranslation,
-		c.PostWatch, c.Role, c.RoleMetadata, c.RolePermission, c.Section,
-		c.SectionTranslation, c.Site, c.SiteSetting, c.Tag, c.TagTranslation, c.Task,
-		c.Tenant, c.User, c.UserCredential, c.UserOrgUnit, c.UserPosition, c.UserRole,
-		c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
+		c.File, c.Holiday, c.InteractionCounter, c.InternalMessage,
+		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
+		c.LeaveApplication, c.LeaveBalance, c.LeaveType, c.LoginAuditLog,
+		c.LoginPolicy, c.MediaAsset, c.MediaVariant, c.Membership, c.MembershipOrgUnit,
+		c.MembershipPosition, c.MembershipRole, c.Menu, c.Navigation, c.NavigationItem,
+		c.OperationAuditLog, c.OrgUnit, c.Page, c.PageTranslation, c.Permission,
+		c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu,
+		c.PermissionPolicy, c.PolicyEvaluationLog, c.Position, c.Post, c.PostCategory,
+		c.PostLike, c.PostTag, c.PostTranslation, c.PostWatch, c.Role, c.RoleMetadata,
+		c.RolePermission, c.Section, c.SectionTranslation, c.Site, c.SiteSetting,
+		c.Tag, c.TagTranslation, c.Task, c.Tenant, c.User, c.UserCredential,
+		c.UserOrgUnit, c.UserPosition, c.UserRole, c.WorkflowDefinition,
+		c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
 	} {
 		n.Use(hooks...)
 	}
@@ -633,18 +640,19 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Api, c.ApiAuditLog, c.AttendanceRecord, c.AttendanceSetting, c.Category,
 		c.CategoryTranslation, c.Comment, c.CommentLike, c.DataAccessAuditLog,
 		c.DictEntry, c.DictEntryI18n, c.DictType, c.ExpenseApplication, c.ExpenseItem,
-		c.File, c.InteractionCounter, c.InternalMessage, c.InternalMessageCategory,
-		c.InternalMessageRecipient, c.Language, c.LeaveApplication, c.LeaveBalance,
-		c.LeaveType, c.LoginAuditLog, c.LoginPolicy, c.MediaAsset, c.MediaVariant,
-		c.Membership, c.MembershipOrgUnit, c.MembershipPosition, c.MembershipRole,
-		c.Menu, c.Navigation, c.NavigationItem, c.OperationAuditLog, c.OrgUnit, c.Page,
-		c.PageTranslation, c.Permission, c.PermissionApi, c.PermissionAuditLog,
-		c.PermissionGroup, c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog,
-		c.Position, c.Post, c.PostCategory, c.PostLike, c.PostTag, c.PostTranslation,
-		c.PostWatch, c.Role, c.RoleMetadata, c.RolePermission, c.Section,
-		c.SectionTranslation, c.Site, c.SiteSetting, c.Tag, c.TagTranslation, c.Task,
-		c.Tenant, c.User, c.UserCredential, c.UserOrgUnit, c.UserPosition, c.UserRole,
-		c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
+		c.File, c.Holiday, c.InteractionCounter, c.InternalMessage,
+		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
+		c.LeaveApplication, c.LeaveBalance, c.LeaveType, c.LoginAuditLog,
+		c.LoginPolicy, c.MediaAsset, c.MediaVariant, c.Membership, c.MembershipOrgUnit,
+		c.MembershipPosition, c.MembershipRole, c.Menu, c.Navigation, c.NavigationItem,
+		c.OperationAuditLog, c.OrgUnit, c.Page, c.PageTranslation, c.Permission,
+		c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu,
+		c.PermissionPolicy, c.PolicyEvaluationLog, c.Position, c.Post, c.PostCategory,
+		c.PostLike, c.PostTag, c.PostTranslation, c.PostWatch, c.Role, c.RoleMetadata,
+		c.RolePermission, c.Section, c.SectionTranslation, c.Site, c.SiteSetting,
+		c.Tag, c.TagTranslation, c.Task, c.Tenant, c.User, c.UserCredential,
+		c.UserOrgUnit, c.UserPosition, c.UserRole, c.WorkflowDefinition,
+		c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -683,6 +691,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.ExpenseItem.mutate(ctx, m)
 	case *FileMutation:
 		return c.File.mutate(ctx, m)
+	case *HolidayMutation:
+		return c.Holiday.mutate(ctx, m)
 	case *InteractionCounterMutation:
 		return c.InteractionCounter.mutate(ctx, m)
 	case *InternalMessageMutation:
@@ -2969,6 +2979,140 @@ func (c *FileClient) mutate(ctx context.Context, m *FileMutation) (Value, error)
 		return (&FileDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown File mutation op: %q", m.Op())
+	}
+}
+
+// HolidayClient is a client for the Holiday schema.
+type HolidayClient struct {
+	config
+}
+
+// NewHolidayClient returns a client for the Holiday from the given config.
+func NewHolidayClient(c config) *HolidayClient {
+	return &HolidayClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `holiday.Hooks(f(g(h())))`.
+func (c *HolidayClient) Use(hooks ...Hook) {
+	c.hooks.Holiday = append(c.hooks.Holiday, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `holiday.Intercept(f(g(h())))`.
+func (c *HolidayClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Holiday = append(c.inters.Holiday, interceptors...)
+}
+
+// Create returns a builder for creating a Holiday entity.
+func (c *HolidayClient) Create() *HolidayCreate {
+	mutation := newHolidayMutation(c.config, OpCreate)
+	return &HolidayCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Holiday entities.
+func (c *HolidayClient) CreateBulk(builders ...*HolidayCreate) *HolidayCreateBulk {
+	return &HolidayCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *HolidayClient) MapCreateBulk(slice any, setFunc func(*HolidayCreate, int)) *HolidayCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &HolidayCreateBulk{err: fmt.Errorf("calling to HolidayClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*HolidayCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &HolidayCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Holiday.
+func (c *HolidayClient) Update() *HolidayUpdate {
+	mutation := newHolidayMutation(c.config, OpUpdate)
+	return &HolidayUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *HolidayClient) UpdateOne(_m *Holiday) *HolidayUpdateOne {
+	mutation := newHolidayMutation(c.config, OpUpdateOne, withHoliday(_m))
+	return &HolidayUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *HolidayClient) UpdateOneID(id uint32) *HolidayUpdateOne {
+	mutation := newHolidayMutation(c.config, OpUpdateOne, withHolidayID(id))
+	return &HolidayUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Holiday.
+func (c *HolidayClient) Delete() *HolidayDelete {
+	mutation := newHolidayMutation(c.config, OpDelete)
+	return &HolidayDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *HolidayClient) DeleteOne(_m *Holiday) *HolidayDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *HolidayClient) DeleteOneID(id uint32) *HolidayDeleteOne {
+	builder := c.Delete().Where(holiday.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &HolidayDeleteOne{builder}
+}
+
+// Query returns a query builder for Holiday.
+func (c *HolidayClient) Query() *HolidayQuery {
+	return &HolidayQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeHoliday},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Holiday entity by its id.
+func (c *HolidayClient) Get(ctx context.Context, id uint32) (*Holiday, error) {
+	return c.Query().Where(holiday.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *HolidayClient) GetX(ctx context.Context, id uint32) *Holiday {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *HolidayClient) Hooks() []Hook {
+	hooks := c.hooks.Holiday
+	return append(hooks[:len(hooks):len(hooks)], holiday.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *HolidayClient) Interceptors() []Interceptor {
+	return c.inters.Holiday
+}
+
+func (c *HolidayClient) mutate(ctx context.Context, m *HolidayMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&HolidayCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&HolidayUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&HolidayUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&HolidayDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Holiday mutation op: %q", m.Op())
 	}
 }
 
@@ -10869,7 +11013,7 @@ type (
 	hooks struct {
 		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, Category,
 		CategoryTranslation, Comment, CommentLike, DataAccessAuditLog, DictEntry,
-		DictEntryI18n, DictType, ExpenseApplication, ExpenseItem, File,
+		DictEntryI18n, DictType, ExpenseApplication, ExpenseItem, File, Holiday,
 		InteractionCounter, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LeaveApplication, LeaveBalance, LeaveType,
 		LoginAuditLog, LoginPolicy, MediaAsset, MediaVariant, Membership,
@@ -10885,7 +11029,7 @@ type (
 	inters struct {
 		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, Category,
 		CategoryTranslation, Comment, CommentLike, DataAccessAuditLog, DictEntry,
-		DictEntryI18n, DictType, ExpenseApplication, ExpenseItem, File,
+		DictEntryI18n, DictType, ExpenseApplication, ExpenseItem, File, Holiday,
 		InteractionCounter, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LeaveApplication, LeaveBalance, LeaveType,
 		LoginAuditLog, LoginPolicy, MediaAsset, MediaVariant, Membership,

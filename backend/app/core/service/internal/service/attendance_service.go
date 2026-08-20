@@ -11,6 +11,7 @@ import (
 
 	"go-wind-oa/app/core/service/internal/data"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
+	holidayEnt "go-wind-oa/app/core/service/internal/data/ent/holiday"
 
 	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
 )
@@ -58,7 +59,7 @@ func (s *AttendanceService) fillUserNames(ctx context.Context, tid uint32, items
 	}
 }
 
-// isWeekend 周六/周日（节假日表为未来扩展，当前仅按周末判断）。
+// isWeekend 周六/周日。
 func isWeekend(t time.Time) bool {
 	switch t.Weekday() {
 	case time.Saturday, time.Sunday:
@@ -66,6 +67,19 @@ func isWeekend(t time.Time) bool {
 	default:
 		return false
 	}
+}
+
+// isRestDay 该日是否休息日：节假日表优先（HOLIDAY=休息可落在工作日，
+// WORKDAY=调休上班可落在周末），无设置则按周末判定。
+func (s *AttendanceService) isRestDay(ctx context.Context, tid uint32, date time.Time) (bool, error) {
+	h, err := s.repo.GetHolidayByDate(ctx, tid, date)
+	if err != nil {
+		return false, err
+	}
+	if h != nil && h.HolidayType != nil {
+		return *h.HolidayType == holidayEnt.HolidayTypeHoliday, nil
+	}
+	return isWeekend(date), nil
 }
 
 // truncateDate 截断到当日零点（服务器本地时区）。
@@ -90,6 +104,13 @@ func (s *AttendanceService) computeDayResult(
 	ctx context.Context, tid, userID uint32,
 	workDate, checkInAt, checkOutAt time.Time,
 ) (oaV1.AttendanceRecord_DayResult, error) {
+	// 休息日（节假日/周末）打卡视为加班，不做迟到早退判定。
+	if rest, err := s.isRestDay(ctx, tid, workDate); err != nil {
+		return oaV1.AttendanceRecord_PENDING, err
+	} else if rest {
+		return oaV1.AttendanceRecord_NORMAL, nil
+	}
+
 	setting, err := s.repo.GetSetting(ctx, tid)
 	if err != nil {
 		return oaV1.AttendanceRecord_PENDING, err
@@ -242,7 +263,11 @@ func (s *AttendanceService) RunDailySettlement(ctx context.Context, req *oaV1.Ru
 		// 与打卡记录的本地日期轴对齐。
 		workDate = truncateDate(req.GetWorkDate().AsTime().In(time.Local))
 	}
-	if isWeekend(workDate) {
+	rest, err := s.isRestDay(ctx, tid, workDate)
+	if err != nil {
+		return nil, err
+	}
+	if rest {
 		return &oaV1.RunDailySettlementResponse{SettledCount: 0}, nil
 	}
 	settled, err := s.settleDateForTenant(ctx, tid, uid, workDate)
@@ -293,4 +318,53 @@ func (s *AttendanceService) settleDateForTenant(ctx context.Context, tid, operat
 		}
 	}
 	return settled, nil
+}
+
+// ===================== 节假日设置 =====================
+
+// UpsertHoliday 设置节假日/调休日（按日期存在则覆盖）。日期取本地零点。
+func (s *AttendanceService) UpsertHoliday(ctx context.Context, req *oaV1.Holiday) (*emptypb.Empty, error) {
+	tid, uid, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+	if req.GetDate() == nil {
+		return nil, oaV1.ErrorBadRequest("date required")
+	}
+	if err := s.repo.UpsertHoliday(ctx, tid, uid, truncateDate(req.GetDate().AsTime().In(time.Local)), req.GetHolidayType(), req.GetName()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// DeleteHoliday 删除节假日设置。
+func (s *AttendanceService) DeleteHoliday(ctx context.Context, req *oaV1.DeleteHolidayRequest) (*emptypb.Empty, error) {
+	tid, _, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+	if req.GetId() == 0 {
+		return nil, oaV1.ErrorBadRequest("invalid parameter")
+	}
+	if err := s.repo.DeleteHoliday(ctx, tid, req.GetId()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// ListHolidays 查询年度节假日/调休日设置。
+func (s *AttendanceService) ListHolidays(ctx context.Context, req *oaV1.ListHolidaysRequest) (*oaV1.ListHolidaysResponse, error) {
+	tid, _, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+	year := int(req.GetYear())
+	if year == 0 {
+		year = time.Now().Year()
+	}
+	items, err := s.repo.ListHolidays(ctx, tid, year)
+	if err != nil {
+		return nil, err
+	}
+	return &oaV1.ListHolidaysResponse{Items: items, Total: uint64(len(items))}, nil
 }

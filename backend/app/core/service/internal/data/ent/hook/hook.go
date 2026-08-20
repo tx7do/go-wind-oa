@@ -188,6 +188,18 @@ func (f FileFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FileMutation", m)
 }
 
+// The HolidayFunc type is an adapter to allow the use of ordinary
+// function as Holiday mutator.
+type HolidayFunc func(context.Context, *ent.HolidayMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f HolidayFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.HolidayMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HolidayMutation", m)
+}
+
 // The InteractionCounterFunc type is an adapter to allow the use of ordinary
 // function as InteractionCounter mutator.
 type InteractionCounterFunc func(context.Context, *ent.InteractionCounterMutation) (ent.Value, error)

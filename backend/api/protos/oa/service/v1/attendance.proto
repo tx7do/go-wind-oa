@@ -31,7 +31,76 @@ service AttendanceService {
 
   // 工作日结算（admin）：对指定日期为全部用户物化记录——无打卡且无请假覆盖记旷工，
   // 请假覆盖记请假；有签退未结算的记录补结算。可由外部定时任务每日调用。
+  // 休息日（周末或节假日表 HOLIDAY）跳过；调休 WORKDAY 覆盖周末照常结算。
   rpc RunDailySettlement(RunDailySettlementRequest) returns (RunDailySettlementResponse) {}
+
+  // 设置节假日/调休日（admin，按日期存在则覆盖）
+  rpc UpsertHoliday(Holiday) returns (google.protobuf.Empty) {}
+
+  // 删除节假日/调休日设置（admin）
+  rpc DeleteHoliday(DeleteHolidayRequest) returns (google.protobuf.Empty) {}
+
+  // 查询某年度的节假日/调休日设置（admin）
+  rpc ListHolidays(ListHolidaysRequest) returns (ListHolidaysResponse) {}
+}
+
+// 节假日/调休日设置
+message Holiday {
+  // 类型
+  enum HolidayType {
+    HOLIDAY = 0;  // 法定假日（休息，优先于周末判定）
+    WORKDAY = 1;  // 调休上班（该日照常结算，即使落在周末）
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "ID" }
+  ]; // ID
+
+  optional google.protobuf.Timestamp date = 2 [
+    json_name = "date",
+    (gnostic.openapi.v3.property) = { description: "日期（零点，租户内唯一）" }
+  ]; // 日期
+
+  optional HolidayType holiday_type = 3 [
+    json_name = "holidayType",
+    (gnostic.openapi.v3.property) = { description: "类型" }
+  ]; // 类型
+
+  optional string name = 4 [
+    json_name = "name",
+    (gnostic.openapi.v3.property) = { description: "名称（如 国庆节/调休上班）" }
+  ]; // 名称
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
+}
+
+// 删除节假日设置 - 请求
+message DeleteHolidayRequest {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "ID" }
+  ]; // ID
+}
+
+// 查询节假日 - 请求
+message ListHolidaysRequest {
+  int32 year = 1 [
+    json_name = "year",
+    (gnostic.openapi.v3.property) = { description: "年度，0=当年" }
+  ]; // 年度
+}
+
+// 查询节假日 - 回应
+message ListHolidaysResponse {
+  repeated Holiday items = 1;
+  uint64 total = 2;
 }
 
 // 打卡记录（用户 x 工作日 唯一）

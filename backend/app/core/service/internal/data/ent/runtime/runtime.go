@@ -20,6 +20,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/expenseapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/expenseitem"
 	"go-wind-oa/app/core/service/internal/data/ent/file"
+	"go-wind-oa/app/core/service/internal/data/ent/holiday"
 	"go-wind-oa/app/core/service/internal/data/ent/interactioncounter"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
@@ -585,6 +586,36 @@ func init() {
 	fileDescID := fileMixinFields0[0].Descriptor()
 	// file.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	file.IDValidator = fileDescID.Validators[0].(func(uint32) error)
+	holidayMixin := schema.Holiday{}.Mixin()
+	holiday.Policy = privacy.NewPolicies(holidayMixin[3], schema.Holiday{})
+	holiday.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := holiday.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	holidayMixinFields0 := holidayMixin[0].Fields()
+	_ = holidayMixinFields0
+	holidayMixinFields3 := holidayMixin[3].Fields()
+	_ = holidayMixinFields3
+	holidayFields := schema.Holiday{}.Fields()
+	_ = holidayFields
+	// holidayDescTenantID is the schema descriptor for tenant_id field.
+	holidayDescTenantID := holidayMixinFields3[0].Descriptor()
+	// holiday.DefaultTenantID holds the default value on creation for the tenant_id field.
+	holiday.DefaultTenantID = holidayDescTenantID.Default.(uint32)
+	// holidayDescName is the schema descriptor for name field.
+	holidayDescName := holidayFields[2].Descriptor()
+	// holiday.DefaultName holds the default value on creation for the name field.
+	holiday.DefaultName = holidayDescName.Default.(string)
+	// holiday.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	holiday.NameValidator = holidayDescName.Validators[0].(func(string) error)
+	// holidayDescID is the schema descriptor for id field.
+	holidayDescID := holidayMixinFields0[0].Descriptor()
+	// holiday.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	holiday.IDValidator = holidayDescID.Validators[0].(func(uint32) error)
 	interactioncounterMixin := schema.InteractionCounter{}.Mixin()
 	interactioncounter.Policy = privacy.NewPolicies(interactioncounterMixin[2], schema.InteractionCounter{})
 	interactioncounter.Hooks[0] = func(next ent.Mutator) ent.Mutator {

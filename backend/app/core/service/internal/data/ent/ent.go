@@ -21,6 +21,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/expenseapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/expenseitem"
 	"go-wind-oa/app/core/service/internal/data/ent/file"
+	"go-wind-oa/app/core/service/internal/data/ent/holiday"
 	"go-wind-oa/app/core/service/internal/data/ent/interactioncounter"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
@@ -159,6 +160,7 @@ func checkColumn(t, c string) error {
 			expenseapplication.Table:       expenseapplication.ValidColumn,
 			expenseitem.Table:              expenseitem.ValidColumn,
 			file.Table:                     file.ValidColumn,
+			holiday.Table:                  holiday.ValidColumn,
 			interactioncounter.Table:       interactioncounter.ValidColumn,
 			internalmessage.Table:          internalmessage.ValidColumn,
 			internalmessagecategory.Table:  internalmessagecategory.ValidColumn,

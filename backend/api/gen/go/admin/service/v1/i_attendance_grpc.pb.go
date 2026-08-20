@@ -25,6 +25,9 @@ const (
 	AttendanceService_GetAttendanceSetting_FullMethodName    = "/admin.service.v1.AttendanceService/GetAttendanceSetting"
 	AttendanceService_UpdateAttendanceSetting_FullMethodName = "/admin.service.v1.AttendanceService/UpdateAttendanceSetting"
 	AttendanceService_RunDailySettlement_FullMethodName      = "/admin.service.v1.AttendanceService/RunDailySettlement"
+	AttendanceService_UpsertHoliday_FullMethodName           = "/admin.service.v1.AttendanceService/UpsertHoliday"
+	AttendanceService_DeleteHoliday_FullMethodName           = "/admin.service.v1.AttendanceService/DeleteHoliday"
+	AttendanceService_ListHolidays_FullMethodName            = "/admin.service.v1.AttendanceService/ListHolidays"
 )
 
 // AttendanceServiceClient is the client API for AttendanceService service.
@@ -41,6 +44,12 @@ type AttendanceServiceClient interface {
 	UpdateAttendanceSetting(ctx context.Context, in *v1.AttendanceSetting, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 工作日结算（物化旷工/请假，补结算未签退记录）
 	RunDailySettlement(ctx context.Context, in *v1.RunDailySettlementRequest, opts ...grpc.CallOption) (*v1.RunDailySettlementResponse, error)
+	// 设置节假日/调休日（按日期存在则覆盖）
+	UpsertHoliday(ctx context.Context, in *v1.Holiday, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 删除节假日/调休日设置
+	DeleteHoliday(ctx context.Context, in *v1.DeleteHolidayRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 查询年度节假日/调休日设置
+	ListHolidays(ctx context.Context, in *v1.ListHolidaysRequest, opts ...grpc.CallOption) (*v1.ListHolidaysResponse, error)
 }
 
 type attendanceServiceClient struct {
@@ -91,6 +100,36 @@ func (c *attendanceServiceClient) RunDailySettlement(ctx context.Context, in *v1
 	return out, nil
 }
 
+func (c *attendanceServiceClient) UpsertHoliday(ctx context.Context, in *v1.Holiday, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AttendanceService_UpsertHoliday_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *attendanceServiceClient) DeleteHoliday(ctx context.Context, in *v1.DeleteHolidayRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AttendanceService_DeleteHoliday_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *attendanceServiceClient) ListHolidays(ctx context.Context, in *v1.ListHolidaysRequest, opts ...grpc.CallOption) (*v1.ListHolidaysResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.ListHolidaysResponse)
+	err := c.cc.Invoke(ctx, AttendanceService_ListHolidays_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AttendanceServiceServer is the server API for AttendanceService service.
 // All implementations must embed UnimplementedAttendanceServiceServer
 // for forward compatibility.
@@ -105,6 +144,12 @@ type AttendanceServiceServer interface {
 	UpdateAttendanceSetting(context.Context, *v1.AttendanceSetting) (*emptypb.Empty, error)
 	// 工作日结算（物化旷工/请假，补结算未签退记录）
 	RunDailySettlement(context.Context, *v1.RunDailySettlementRequest) (*v1.RunDailySettlementResponse, error)
+	// 设置节假日/调休日（按日期存在则覆盖）
+	UpsertHoliday(context.Context, *v1.Holiday) (*emptypb.Empty, error)
+	// 删除节假日/调休日设置
+	DeleteHoliday(context.Context, *v1.DeleteHolidayRequest) (*emptypb.Empty, error)
+	// 查询年度节假日/调休日设置
+	ListHolidays(context.Context, *v1.ListHolidaysRequest) (*v1.ListHolidaysResponse, error)
 	mustEmbedUnimplementedAttendanceServiceServer()
 }
 
@@ -126,6 +171,15 @@ func (UnimplementedAttendanceServiceServer) UpdateAttendanceSetting(context.Cont
 }
 func (UnimplementedAttendanceServiceServer) RunDailySettlement(context.Context, *v1.RunDailySettlementRequest) (*v1.RunDailySettlementResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RunDailySettlement not implemented")
+}
+func (UnimplementedAttendanceServiceServer) UpsertHoliday(context.Context, *v1.Holiday) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpsertHoliday not implemented")
+}
+func (UnimplementedAttendanceServiceServer) DeleteHoliday(context.Context, *v1.DeleteHolidayRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteHoliday not implemented")
+}
+func (UnimplementedAttendanceServiceServer) ListHolidays(context.Context, *v1.ListHolidaysRequest) (*v1.ListHolidaysResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListHolidays not implemented")
 }
 func (UnimplementedAttendanceServiceServer) mustEmbedUnimplementedAttendanceServiceServer() {}
 func (UnimplementedAttendanceServiceServer) testEmbeddedByValue()                           {}
@@ -220,6 +274,60 @@ func _AttendanceService_RunDailySettlement_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AttendanceService_UpsertHoliday_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.Holiday)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttendanceServiceServer).UpsertHoliday(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttendanceService_UpsertHoliday_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttendanceServiceServer).UpsertHoliday(ctx, req.(*v1.Holiday))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AttendanceService_DeleteHoliday_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.DeleteHolidayRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttendanceServiceServer).DeleteHoliday(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttendanceService_DeleteHoliday_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttendanceServiceServer).DeleteHoliday(ctx, req.(*v1.DeleteHolidayRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AttendanceService_ListHolidays_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.ListHolidaysRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttendanceServiceServer).ListHolidays(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttendanceService_ListHolidays_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttendanceServiceServer).ListHolidays(ctx, req.(*v1.ListHolidaysRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AttendanceService_ServiceDesc is the grpc.ServiceDesc for AttendanceService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +350,18 @@ var AttendanceService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RunDailySettlement",
 			Handler:    _AttendanceService_RunDailySettlement_Handler,
+		},
+		{
+			MethodName: "UpsertHoliday",
+			Handler:    _AttendanceService_UpsertHoliday_Handler,
+		},
+		{
+			MethodName: "DeleteHoliday",
+			Handler:    _AttendanceService_DeleteHoliday_Handler,
+		},
+		{
+			MethodName: "ListHolidays",
+			Handler:    _AttendanceService_ListHolidays_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

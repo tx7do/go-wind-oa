@@ -25,6 +25,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/expenseapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/expenseitem"
 	"go-wind-oa/app/core/service/internal/data/ent/file"
+	"go-wind-oa/app/core/service/internal/data/ent/holiday"
 	"go-wind-oa/app/core/service/internal/data/ent/interactioncounter"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
@@ -114,6 +115,7 @@ const (
 	TypeExpenseApplication       = "ExpenseApplication"
 	TypeExpenseItem              = "ExpenseItem"
 	TypeFile                     = "File"
+	TypeHoliday                  = "Holiday"
 	TypeInteractionCounter       = "InteractionCounter"
 	TypeInternalMessage          = "InternalMessage"
 	TypeInternalMessageCategory  = "InternalMessageCategory"
@@ -24805,6 +24807,1118 @@ func (m *FileMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *FileMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown File edge %s", name)
+}
+
+// HolidayMutation represents an operation that mutates the Holiday nodes in the graph.
+type HolidayMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uint32
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	created_by    *uint32
+	addcreated_by *int32
+	updated_by    *uint32
+	addupdated_by *int32
+	deleted_by    *uint32
+	adddeleted_by *int32
+	tenant_id     *uint32
+	addtenant_id  *int32
+	date          *time.Time
+	holiday_type  *holiday.HolidayType
+	name          *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*Holiday, error)
+	predicates    []predicate.Holiday
+}
+
+var _ ent.Mutation = (*HolidayMutation)(nil)
+
+// holidayOption allows management of the mutation configuration using functional options.
+type holidayOption func(*HolidayMutation)
+
+// newHolidayMutation creates new mutation for the Holiday entity.
+func newHolidayMutation(c config, op Op, opts ...holidayOption) *HolidayMutation {
+	m := &HolidayMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeHoliday,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withHolidayID sets the ID field of the mutation.
+func withHolidayID(id uint32) holidayOption {
+	return func(m *HolidayMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Holiday
+		)
+		m.oldValue = func(ctx context.Context) (*Holiday, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Holiday.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withHoliday sets the old Holiday of the mutation.
+func withHoliday(node *Holiday) holidayOption {
+	return func(m *HolidayMutation) {
+		m.oldValue = func(context.Context) (*Holiday, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m HolidayMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m HolidayMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Holiday entities.
+func (m *HolidayMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *HolidayMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *HolidayMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Holiday.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *HolidayMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *HolidayMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Holiday entity.
+// If the Holiday object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HolidayMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *HolidayMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[holiday.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *HolidayMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[holiday.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *HolidayMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, holiday.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *HolidayMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *HolidayMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Holiday entity.
+// If the Holiday object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HolidayMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *HolidayMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[holiday.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *HolidayMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[holiday.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *HolidayMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, holiday.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *HolidayMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *HolidayMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Holiday entity.
+// If the Holiday object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HolidayMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *HolidayMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[holiday.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *HolidayMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[holiday.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *HolidayMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, holiday.FieldDeletedAt)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *HolidayMutation) SetCreatedBy(u uint32) {
+	m.created_by = &u
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *HolidayMutation) CreatedBy() (r uint32, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the Holiday entity.
+// If the Holiday object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HolidayMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds u to the "created_by" field.
+func (m *HolidayMutation) AddCreatedBy(u int32) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += u
+	} else {
+		m.addcreated_by = &u
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *HolidayMutation) AddedCreatedBy() (r int32, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *HolidayMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[holiday.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *HolidayMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[holiday.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *HolidayMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, holiday.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *HolidayMutation) SetUpdatedBy(u uint32) {
+	m.updated_by = &u
+	m.addupdated_by = nil
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *HolidayMutation) UpdatedBy() (r uint32, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the Holiday entity.
+// If the Holiday object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HolidayMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// AddUpdatedBy adds u to the "updated_by" field.
+func (m *HolidayMutation) AddUpdatedBy(u int32) {
+	if m.addupdated_by != nil {
+		*m.addupdated_by += u
+	} else {
+		m.addupdated_by = &u
+	}
+}
+
+// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
+func (m *HolidayMutation) AddedUpdatedBy() (r int32, exists bool) {
+	v := m.addupdated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *HolidayMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	m.clearedFields[holiday.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *HolidayMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[holiday.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *HolidayMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	delete(m.clearedFields, holiday.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "deleted_by" field.
+func (m *HolidayMutation) SetDeletedBy(u uint32) {
+	m.deleted_by = &u
+	m.adddeleted_by = nil
+}
+
+// DeletedBy returns the value of the "deleted_by" field in the mutation.
+func (m *HolidayMutation) DeletedBy() (r uint32, exists bool) {
+	v := m.deleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "deleted_by" field's value of the Holiday entity.
+// If the Holiday object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HolidayMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// AddDeletedBy adds u to the "deleted_by" field.
+func (m *HolidayMutation) AddDeletedBy(u int32) {
+	if m.adddeleted_by != nil {
+		*m.adddeleted_by += u
+	} else {
+		m.adddeleted_by = &u
+	}
+}
+
+// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
+func (m *HolidayMutation) AddedDeletedBy() (r int32, exists bool) {
+	v := m.adddeleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (m *HolidayMutation) ClearDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	m.clearedFields[holiday.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
+func (m *HolidayMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[holiday.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" field.
+func (m *HolidayMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	delete(m.clearedFields, holiday.FieldDeletedBy)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *HolidayMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *HolidayMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the Holiday entity.
+// If the Holiday object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HolidayMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *HolidayMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *HolidayMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *HolidayMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[holiday.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *HolidayMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[holiday.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *HolidayMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, holiday.FieldTenantID)
+}
+
+// SetDate sets the "date" field.
+func (m *HolidayMutation) SetDate(t time.Time) {
+	m.date = &t
+}
+
+// Date returns the value of the "date" field in the mutation.
+func (m *HolidayMutation) Date() (r time.Time, exists bool) {
+	v := m.date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDate returns the old "date" field's value of the Holiday entity.
+// If the Holiday object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HolidayMutation) OldDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDate: %w", err)
+	}
+	return oldValue.Date, nil
+}
+
+// ResetDate resets all changes to the "date" field.
+func (m *HolidayMutation) ResetDate() {
+	m.date = nil
+}
+
+// SetHolidayType sets the "holiday_type" field.
+func (m *HolidayMutation) SetHolidayType(ht holiday.HolidayType) {
+	m.holiday_type = &ht
+}
+
+// HolidayType returns the value of the "holiday_type" field in the mutation.
+func (m *HolidayMutation) HolidayType() (r holiday.HolidayType, exists bool) {
+	v := m.holiday_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHolidayType returns the old "holiday_type" field's value of the Holiday entity.
+// If the Holiday object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HolidayMutation) OldHolidayType(ctx context.Context) (v *holiday.HolidayType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHolidayType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHolidayType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHolidayType: %w", err)
+	}
+	return oldValue.HolidayType, nil
+}
+
+// ClearHolidayType clears the value of the "holiday_type" field.
+func (m *HolidayMutation) ClearHolidayType() {
+	m.holiday_type = nil
+	m.clearedFields[holiday.FieldHolidayType] = struct{}{}
+}
+
+// HolidayTypeCleared returns if the "holiday_type" field was cleared in this mutation.
+func (m *HolidayMutation) HolidayTypeCleared() bool {
+	_, ok := m.clearedFields[holiday.FieldHolidayType]
+	return ok
+}
+
+// ResetHolidayType resets all changes to the "holiday_type" field.
+func (m *HolidayMutation) ResetHolidayType() {
+	m.holiday_type = nil
+	delete(m.clearedFields, holiday.FieldHolidayType)
+}
+
+// SetName sets the "name" field.
+func (m *HolidayMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *HolidayMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Holiday entity.
+// If the Holiday object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HolidayMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *HolidayMutation) ResetName() {
+	m.name = nil
+}
+
+// Where appends a list predicates to the HolidayMutation builder.
+func (m *HolidayMutation) Where(ps ...predicate.Holiday) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the HolidayMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *HolidayMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Holiday, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *HolidayMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *HolidayMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Holiday).
+func (m *HolidayMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *HolidayMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.created_at != nil {
+		fields = append(fields, holiday.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, holiday.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, holiday.FieldDeletedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, holiday.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, holiday.FieldUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		fields = append(fields, holiday.FieldDeletedBy)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, holiday.FieldTenantID)
+	}
+	if m.date != nil {
+		fields = append(fields, holiday.FieldDate)
+	}
+	if m.holiday_type != nil {
+		fields = append(fields, holiday.FieldHolidayType)
+	}
+	if m.name != nil {
+		fields = append(fields, holiday.FieldName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *HolidayMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case holiday.FieldCreatedAt:
+		return m.CreatedAt()
+	case holiday.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case holiday.FieldDeletedAt:
+		return m.DeletedAt()
+	case holiday.FieldCreatedBy:
+		return m.CreatedBy()
+	case holiday.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case holiday.FieldDeletedBy:
+		return m.DeletedBy()
+	case holiday.FieldTenantID:
+		return m.TenantID()
+	case holiday.FieldDate:
+		return m.Date()
+	case holiday.FieldHolidayType:
+		return m.HolidayType()
+	case holiday.FieldName:
+		return m.Name()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *HolidayMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case holiday.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case holiday.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case holiday.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case holiday.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case holiday.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case holiday.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case holiday.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case holiday.FieldDate:
+		return m.OldDate(ctx)
+	case holiday.FieldHolidayType:
+		return m.OldHolidayType(ctx)
+	case holiday.FieldName:
+		return m.OldName(ctx)
+	}
+	return nil, fmt.Errorf("unknown Holiday field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *HolidayMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case holiday.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case holiday.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case holiday.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case holiday.FieldCreatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case holiday.FieldUpdatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case holiday.FieldDeletedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case holiday.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case holiday.FieldDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDate(v)
+		return nil
+	case holiday.FieldHolidayType:
+		v, ok := value.(holiday.HolidayType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHolidayType(v)
+		return nil
+	case holiday.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Holiday field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *HolidayMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_by != nil {
+		fields = append(fields, holiday.FieldCreatedBy)
+	}
+	if m.addupdated_by != nil {
+		fields = append(fields, holiday.FieldUpdatedBy)
+	}
+	if m.adddeleted_by != nil {
+		fields = append(fields, holiday.FieldDeletedBy)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, holiday.FieldTenantID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *HolidayMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case holiday.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case holiday.FieldUpdatedBy:
+		return m.AddedUpdatedBy()
+	case holiday.FieldDeletedBy:
+		return m.AddedDeletedBy()
+	case holiday.FieldTenantID:
+		return m.AddedTenantID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *HolidayMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case holiday.FieldCreatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case holiday.FieldUpdatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedBy(v)
+		return nil
+	case holiday.FieldDeletedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedBy(v)
+		return nil
+	case holiday.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Holiday numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *HolidayMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(holiday.FieldCreatedAt) {
+		fields = append(fields, holiday.FieldCreatedAt)
+	}
+	if m.FieldCleared(holiday.FieldUpdatedAt) {
+		fields = append(fields, holiday.FieldUpdatedAt)
+	}
+	if m.FieldCleared(holiday.FieldDeletedAt) {
+		fields = append(fields, holiday.FieldDeletedAt)
+	}
+	if m.FieldCleared(holiday.FieldCreatedBy) {
+		fields = append(fields, holiday.FieldCreatedBy)
+	}
+	if m.FieldCleared(holiday.FieldUpdatedBy) {
+		fields = append(fields, holiday.FieldUpdatedBy)
+	}
+	if m.FieldCleared(holiday.FieldDeletedBy) {
+		fields = append(fields, holiday.FieldDeletedBy)
+	}
+	if m.FieldCleared(holiday.FieldTenantID) {
+		fields = append(fields, holiday.FieldTenantID)
+	}
+	if m.FieldCleared(holiday.FieldHolidayType) {
+		fields = append(fields, holiday.FieldHolidayType)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *HolidayMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *HolidayMutation) ClearField(name string) error {
+	switch name {
+	case holiday.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case holiday.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case holiday.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case holiday.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case holiday.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case holiday.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case holiday.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case holiday.FieldHolidayType:
+		m.ClearHolidayType()
+		return nil
+	}
+	return fmt.Errorf("unknown Holiday nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *HolidayMutation) ResetField(name string) error {
+	switch name {
+	case holiday.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case holiday.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case holiday.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case holiday.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case holiday.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case holiday.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case holiday.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case holiday.FieldDate:
+		m.ResetDate()
+		return nil
+	case holiday.FieldHolidayType:
+		m.ResetHolidayType()
+		return nil
+	case holiday.FieldName:
+		m.ResetName()
+		return nil
+	}
+	return fmt.Errorf("unknown Holiday field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *HolidayMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *HolidayMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *HolidayMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *HolidayMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *HolidayMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *HolidayMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *HolidayMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Holiday unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *HolidayMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Holiday edge %s", name)
 }
 
 // InteractionCounterMutation represents an operation that mutates the InteractionCounter nodes in the graph.

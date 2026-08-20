@@ -42,6 +42,8 @@ type Tx struct {
 	ExpenseItem *ExpenseItemClient
 	// File is the client for interacting with the File builders.
 	File *FileClient
+	// Holiday is the client for interacting with the Holiday builders.
+	Holiday *HolidayClient
 	// InteractionCounter is the client for interacting with the InteractionCounter builders.
 	InteractionCounter *InteractionCounterClient
 	// InternalMessage is the client for interacting with the InternalMessage builders.
@@ -302,6 +304,7 @@ func (tx *Tx) init() {
 	tx.ExpenseApplication = NewExpenseApplicationClient(tx.config)
 	tx.ExpenseItem = NewExpenseItemClient(tx.config)
 	tx.File = NewFileClient(tx.config)
+	tx.Holiday = NewHolidayClient(tx.config)
 	tx.InteractionCounter = NewInteractionCounterClient(tx.config)
 	tx.InternalMessage = NewInternalMessageClient(tx.config)
 	tx.InternalMessageCategory = NewInternalMessageCategoryClient(tx.config)

@@ -51,6 +51,9 @@ type ExpenseItem func(*sql.Selector)
 // File is the predicate function for file builders.
 type File func(*sql.Selector)
 
+// Holiday is the predicate function for holiday builders.
+type Holiday func(*sql.Selector)
+
 // InteractionCounter is the predicate function for interactioncounter builders.
 type InteractionCounter func(*sql.Selector)
 

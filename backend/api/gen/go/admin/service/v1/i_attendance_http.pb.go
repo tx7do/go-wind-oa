@@ -21,20 +21,29 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationAttendanceServiceDeleteHoliday = "/admin.service.v1.AttendanceService/DeleteHoliday"
 const OperationAttendanceServiceGetAttendanceSetting = "/admin.service.v1.AttendanceService/GetAttendanceSetting"
 const OperationAttendanceServiceListAttendanceRecords = "/admin.service.v1.AttendanceService/ListAttendanceRecords"
+const OperationAttendanceServiceListHolidays = "/admin.service.v1.AttendanceService/ListHolidays"
 const OperationAttendanceServiceRunDailySettlement = "/admin.service.v1.AttendanceService/RunDailySettlement"
 const OperationAttendanceServiceUpdateAttendanceSetting = "/admin.service.v1.AttendanceService/UpdateAttendanceSetting"
+const OperationAttendanceServiceUpsertHoliday = "/admin.service.v1.AttendanceService/UpsertHoliday"
 
 type AttendanceServiceHTTPServer interface {
+	// DeleteHoliday 删除节假日/调休日设置
+	DeleteHoliday(context.Context, *v1.DeleteHolidayRequest) (*emptypb.Empty, error)
 	// GetAttendanceSetting 读取考勤设置
 	GetAttendanceSetting(context.Context, *emptypb.Empty) (*v1.AttendanceSetting, error)
 	// ListAttendanceRecords 查询打卡记录（按工作日，可选用户）
 	ListAttendanceRecords(context.Context, *v1.ListAttendanceRecordsRequest) (*v1.ListAttendanceRecordsResponse, error)
+	// ListHolidays 查询年度节假日/调休日设置
+	ListHolidays(context.Context, *v1.ListHolidaysRequest) (*v1.ListHolidaysResponse, error)
 	// RunDailySettlement 工作日结算（物化旷工/请假，补结算未签退记录）
 	RunDailySettlement(context.Context, *v1.RunDailySettlementRequest) (*v1.RunDailySettlementResponse, error)
 	// UpdateAttendanceSetting 更新考勤设置
 	UpdateAttendanceSetting(context.Context, *v1.AttendanceSetting) (*emptypb.Empty, error)
+	// UpsertHoliday 设置节假日/调休日（按日期存在则覆盖）
+	UpsertHoliday(context.Context, *v1.Holiday) (*emptypb.Empty, error)
 }
 
 func RegisterAttendanceServiceHTTPServer(s *http.Server, srv AttendanceServiceHTTPServer) {
@@ -43,6 +52,9 @@ func RegisterAttendanceServiceHTTPServer(s *http.Server, srv AttendanceServiceHT
 	r.GET("/admin/v1/oa/attendance/settings", _AttendanceService_GetAttendanceSetting0_HTTP_Handler(srv))
 	r.PUT("/admin/v1/oa/attendance/settings", _AttendanceService_UpdateAttendanceSetting0_HTTP_Handler(srv))
 	r.POST("/admin/v1/oa/attendance/settlements", _AttendanceService_RunDailySettlement0_HTTP_Handler(srv))
+	r.POST("/admin/v1/oa/attendance/holidays", _AttendanceService_UpsertHoliday0_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/oa/attendance/holidays/{id}", _AttendanceService_DeleteHoliday0_HTTP_Handler(srv))
+	r.GET("/admin/v1/oa/attendance/holidays", _AttendanceService_ListHolidays0_HTTP_Handler(srv))
 }
 
 func _AttendanceService_ListAttendanceRecords0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
@@ -127,15 +139,84 @@ func _AttendanceService_RunDailySettlement0_HTTP_Handler(srv AttendanceServiceHT
 	}
 }
 
+func _AttendanceService_UpsertHoliday0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.Holiday
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceUpsertHoliday)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpsertHoliday(ctx, req.(*v1.Holiday))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AttendanceService_DeleteHoliday0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.DeleteHolidayRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceDeleteHoliday)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteHoliday(ctx, req.(*v1.DeleteHolidayRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AttendanceService_ListHolidays0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.ListHolidaysRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceListHolidays)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListHolidays(ctx, req.(*v1.ListHolidaysRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.ListHolidaysResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AttendanceServiceHTTPClient interface {
+	// DeleteHoliday 删除节假日/调休日设置
+	DeleteHoliday(ctx context.Context, req *v1.DeleteHolidayRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// GetAttendanceSetting 读取考勤设置
 	GetAttendanceSetting(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *v1.AttendanceSetting, err error)
 	// ListAttendanceRecords 查询打卡记录（按工作日，可选用户）
 	ListAttendanceRecords(ctx context.Context, req *v1.ListAttendanceRecordsRequest, opts ...http.CallOption) (rsp *v1.ListAttendanceRecordsResponse, err error)
+	// ListHolidays 查询年度节假日/调休日设置
+	ListHolidays(ctx context.Context, req *v1.ListHolidaysRequest, opts ...http.CallOption) (rsp *v1.ListHolidaysResponse, err error)
 	// RunDailySettlement 工作日结算（物化旷工/请假，补结算未签退记录）
 	RunDailySettlement(ctx context.Context, req *v1.RunDailySettlementRequest, opts ...http.CallOption) (rsp *v1.RunDailySettlementResponse, err error)
 	// UpdateAttendanceSetting 更新考勤设置
 	UpdateAttendanceSetting(ctx context.Context, req *v1.AttendanceSetting, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// UpsertHoliday 设置节假日/调休日（按日期存在则覆盖）
+	UpsertHoliday(ctx context.Context, req *v1.Holiday, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type AttendanceServiceHTTPClientImpl struct {
@@ -144,6 +225,20 @@ type AttendanceServiceHTTPClientImpl struct {
 
 func NewAttendanceServiceHTTPClient(client *http.Client) AttendanceServiceHTTPClient {
 	return &AttendanceServiceHTTPClientImpl{client}
+}
+
+// DeleteHoliday 删除节假日/调休日设置
+func (c *AttendanceServiceHTTPClientImpl) DeleteHoliday(ctx context.Context, in *v1.DeleteHolidayRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/oa/attendance/holidays/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAttendanceServiceDeleteHoliday))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 // GetAttendanceSetting 读取考勤设置
@@ -174,6 +269,20 @@ func (c *AttendanceServiceHTTPClientImpl) ListAttendanceRecords(ctx context.Cont
 	return &out, nil
 }
 
+// ListHolidays 查询年度节假日/调休日设置
+func (c *AttendanceServiceHTTPClientImpl) ListHolidays(ctx context.Context, in *v1.ListHolidaysRequest, opts ...http.CallOption) (*v1.ListHolidaysResponse, error) {
+	var out v1.ListHolidaysResponse
+	pattern := "/admin/v1/oa/attendance/holidays"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAttendanceServiceListHolidays))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // RunDailySettlement 工作日结算（物化旷工/请假，补结算未签退记录）
 func (c *AttendanceServiceHTTPClientImpl) RunDailySettlement(ctx context.Context, in *v1.RunDailySettlementRequest, opts ...http.CallOption) (*v1.RunDailySettlementResponse, error) {
 	var out v1.RunDailySettlementResponse
@@ -196,6 +305,20 @@ func (c *AttendanceServiceHTTPClientImpl) UpdateAttendanceSetting(ctx context.Co
 	opts = append(opts, http.Operation(OperationAttendanceServiceUpdateAttendanceSetting))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// UpsertHoliday 设置节假日/调休日（按日期存在则覆盖）
+func (c *AttendanceServiceHTTPClientImpl) UpsertHoliday(ctx context.Context, in *v1.Holiday, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/oa/attendance/holidays"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAttendanceServiceUpsertHoliday))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

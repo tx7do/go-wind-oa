@@ -35,6 +35,532 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on Holiday with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *Holiday) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Holiday with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in HolidayMultiError, or nil if none found.
+func (m *Holiday) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Holiday) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Id != nil {
+		// no validation rules for Id
+	}
+
+	if m.Date != nil {
+
+		if all {
+			switch v := interface{}(m.GetDate()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, HolidayValidationError{
+						field:  "Date",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, HolidayValidationError{
+						field:  "Date",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetDate()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return HolidayValidationError{
+					field:  "Date",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.HolidayType != nil {
+		// no validation rules for HolidayType
+	}
+
+	if m.Name != nil {
+		// no validation rules for Name
+	}
+
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
+	if m.CreatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCreatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, HolidayValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, HolidayValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return HolidayValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return HolidayMultiError(errors)
+	}
+
+	return nil
+}
+
+// HolidayMultiError is an error wrapping multiple validation errors returned
+// by Holiday.ValidateAll() if the designated constraints aren't met.
+type HolidayMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m HolidayMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m HolidayMultiError) AllErrors() []error { return m }
+
+// HolidayValidationError is the validation error returned by Holiday.Validate
+// if the designated constraints aren't met.
+type HolidayValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e HolidayValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e HolidayValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e HolidayValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e HolidayValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e HolidayValidationError) ErrorName() string { return "HolidayValidationError" }
+
+// Error satisfies the builtin error interface
+func (e HolidayValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sHoliday.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = HolidayValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = HolidayValidationError{}
+
+// Validate checks the field values on DeleteHolidayRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteHolidayRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteHolidayRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteHolidayRequestMultiError, or nil if none found.
+func (m *DeleteHolidayRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteHolidayRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return DeleteHolidayRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteHolidayRequestMultiError is an error wrapping multiple validation
+// errors returned by DeleteHolidayRequest.ValidateAll() if the designated
+// constraints aren't met.
+type DeleteHolidayRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteHolidayRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteHolidayRequestMultiError) AllErrors() []error { return m }
+
+// DeleteHolidayRequestValidationError is the validation error returned by
+// DeleteHolidayRequest.Validate if the designated constraints aren't met.
+type DeleteHolidayRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteHolidayRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteHolidayRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteHolidayRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteHolidayRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteHolidayRequestValidationError) ErrorName() string {
+	return "DeleteHolidayRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteHolidayRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteHolidayRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteHolidayRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteHolidayRequestValidationError{}
+
+// Validate checks the field values on ListHolidaysRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListHolidaysRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListHolidaysRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListHolidaysRequestMultiError, or nil if none found.
+func (m *ListHolidaysRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListHolidaysRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Year
+
+	if len(errors) > 0 {
+		return ListHolidaysRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListHolidaysRequestMultiError is an error wrapping multiple validation
+// errors returned by ListHolidaysRequest.ValidateAll() if the designated
+// constraints aren't met.
+type ListHolidaysRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListHolidaysRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListHolidaysRequestMultiError) AllErrors() []error { return m }
+
+// ListHolidaysRequestValidationError is the validation error returned by
+// ListHolidaysRequest.Validate if the designated constraints aren't met.
+type ListHolidaysRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListHolidaysRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListHolidaysRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListHolidaysRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListHolidaysRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListHolidaysRequestValidationError) ErrorName() string {
+	return "ListHolidaysRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListHolidaysRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListHolidaysRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListHolidaysRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListHolidaysRequestValidationError{}
+
+// Validate checks the field values on ListHolidaysResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListHolidaysResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListHolidaysResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListHolidaysResponseMultiError, or nil if none found.
+func (m *ListHolidaysResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListHolidaysResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListHolidaysResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListHolidaysResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListHolidaysResponseValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return ListHolidaysResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListHolidaysResponseMultiError is an error wrapping multiple validation
+// errors returned by ListHolidaysResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ListHolidaysResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListHolidaysResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListHolidaysResponseMultiError) AllErrors() []error { return m }
+
+// ListHolidaysResponseValidationError is the validation error returned by
+// ListHolidaysResponse.Validate if the designated constraints aren't met.
+type ListHolidaysResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListHolidaysResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListHolidaysResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListHolidaysResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListHolidaysResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListHolidaysResponseValidationError) ErrorName() string {
+	return "ListHolidaysResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListHolidaysResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListHolidaysResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListHolidaysResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListHolidaysResponseValidationError{}
+
 // Validate checks the field values on AttendanceRecord with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.

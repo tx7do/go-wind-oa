@@ -846,6 +846,34 @@ var (
 			},
 		},
 	}
+	// OaHolidayColumns holds the columns for the "oa_holiday" table.
+	OaHolidayColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "date", Type: field.TypeTime, Comment: "日期（零点，租户内唯一）"},
+		{Name: "holiday_type", Type: field.TypeEnum, Nullable: true, Comment: "类型", Enums: []string{"HOLIDAY", "WORKDAY"}, Default: "HOLIDAY"},
+		{Name: "name", Type: field.TypeString, Size: 64, Comment: "名称（如 国庆节/调休上班）", Default: ""},
+	}
+	// OaHolidayTable holds the schema information for the "oa_holiday" table.
+	OaHolidayTable = &schema.Table{
+		Name:       "oa_holiday",
+		Comment:    "OA 节假日表（HOLIDAY=法定假日休息，WORKDAY=调休上班；优先于周末判定）",
+		Columns:    OaHolidayColumns,
+		PrimaryKey: []*schema.Column{OaHolidayColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "uix_oa_holiday_tenant_date",
+				Unique:  true,
+				Columns: []*schema.Column{OaHolidayColumns[7], OaHolidayColumns[8]},
+			},
+		},
+	}
 	// InteractionCountersColumns holds the columns for the "interaction_counters" table.
 	InteractionCountersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -4416,6 +4444,7 @@ var (
 		OaExpenseApplicationTable,
 		OaExpenseItemTable,
 		FilesTable,
+		OaHolidayTable,
 		InteractionCountersTable,
 		InternalMessagesTable,
 		InternalMessageCategoriesTable,
@@ -4554,6 +4583,11 @@ func init() {
 	}
 	FilesTable.Annotation = &entsql.Annotation{
 		Table:     "files",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaHolidayTable.Annotation = &entsql.Annotation{
+		Table:     "oa_holiday",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

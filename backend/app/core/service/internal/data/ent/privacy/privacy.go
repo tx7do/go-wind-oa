@@ -471,6 +471,30 @@ func (f FileMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) 
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.FileMutation", m)
 }
 
+// The HolidayQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type HolidayQueryRuleFunc func(context.Context, *ent.HolidayQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f HolidayQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.HolidayQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.HolidayQuery", q)
+}
+
+// The HolidayMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type HolidayMutationRuleFunc func(context.Context, *ent.HolidayMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f HolidayMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.HolidayMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.HolidayMutation", m)
+}
+
 // The InteractionCounterQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type InteractionCounterQueryRuleFunc func(context.Context, *ent.InteractionCounterQuery) error
@@ -1904,6 +1928,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.FileQuery:
 		return q.Filter(), nil
+	case *ent.HolidayQuery:
+		return q.Filter(), nil
 	case *ent.InteractionCounterQuery:
 		return q.Filter(), nil
 	case *ent.InternalMessageQuery:
@@ -2054,6 +2080,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.ExpenseItemMutation:
 		return m.Filter(), nil
 	case *ent.FileMutation:
+		return m.Filter(), nil
+	case *ent.HolidayMutation:
 		return m.Filter(), nil
 	case *ent.InteractionCounterMutation:
 		return m.Filter(), nil

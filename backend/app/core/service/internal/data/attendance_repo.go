@@ -13,6 +13,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancesetting"
+	"go-wind-oa/app/core/service/internal/data/ent/holiday"
 	"go-wind-oa/app/core/service/internal/data/ent/user"
 
 	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
@@ -312,4 +313,114 @@ func (r *AttendanceRepo) UpdateSetting(ctx context.Context, tid, uid uint32, wor
 		return oaV1.ErrorInternalServerError("update attendance setting failed")
 	}
 	return nil
+}
+
+// GetHolidayByDate 读取某日节假日设置，不存在返回 nil。
+func (r *AttendanceRepo) GetHolidayByDate(ctx context.Context, tid uint32, date time.Time) (*ent.Holiday, error) {
+	entity, err := r.entClient.Client().Holiday.Query().
+		Where(
+			holiday.TenantIDEQ(tid),
+			holiday.DateEQ(date),
+		).
+		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, nil
+		}
+		r.log.Errorf("query holiday failed: %s", err.Error())
+		return nil, oaV1.ErrorInternalServerError("query holiday failed")
+	}
+	return entity, nil
+}
+
+// ListHolidays 年度节假日列表（升序）。
+func (r *AttendanceRepo) ListHolidays(ctx context.Context, tid uint32, year int) ([]*oaV1.Holiday, error) {
+	entities, err := r.entClient.Client().Holiday.Query().
+		Where(
+			holiday.TenantIDEQ(tid),
+			holiday.DateGTE(time.Date(year, 1, 1, 0, 0, 0, 0, time.Local)),
+			holiday.DateLT(time.Date(year+1, 1, 1, 0, 0, 0, 0, time.Local)),
+		).
+		Order(ent.Asc(holiday.FieldDate)).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf("list holidays failed: %s", err.Error())
+		return nil, oaV1.ErrorInternalServerError("list holidays failed")
+	}
+	items := make([]*oaV1.Holiday, 0, len(entities))
+	for _, e := range entities {
+		items = append(items, holidayToDTO(e))
+	}
+	return items, nil
+}
+
+// UpsertHoliday 按日期存在则覆盖（类型+名称），否则创建。
+func (r *AttendanceRepo) UpsertHoliday(ctx context.Context, tid, uid uint32, date time.Time, holidayType oaV1.Holiday_HolidayType, name string) error {
+	entity, err := r.GetHolidayByDate(ctx, tid, date)
+	if err != nil {
+		return err
+	}
+	if entity == nil {
+		if _, err := r.entClient.Client().Holiday.Create().
+			SetDate(date).
+			SetHolidayType(holidayTypeToEntity(holidayType)).
+			SetName(name).
+			SetTenantID(tid).
+			SetCreatedBy(uid).
+			SetCreatedAt(time.Now()).
+			Save(ctx); err != nil {
+			r.log.Errorf("insert holiday failed: %s", err.Error())
+			return oaV1.ErrorInternalServerError("insert holiday failed")
+		}
+		return nil
+	}
+	if _, err := r.entClient.Client().Holiday.Update().
+		Where(holiday.IDEQ(entity.ID)).
+		SetHolidayType(holidayTypeToEntity(holidayType)).
+		SetName(name).
+		SetUpdatedBy(uid).
+		SetUpdatedAt(time.Now()).
+		Save(ctx); err != nil {
+		r.log.Errorf("update holiday failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("update holiday failed")
+	}
+	return nil
+}
+
+// DeleteHolidayHoliday 删除节假日设置。
+func (r *AttendanceRepo) DeleteHoliday(ctx context.Context, tid, id uint32) error {
+	if _, err := r.entClient.Client().Holiday.Delete().
+		Where(
+			holiday.IDEQ(id),
+			holiday.TenantIDEQ(tid),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("delete holiday failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("delete holiday failed")
+	}
+	return nil
+}
+
+func holidayTypeToEntity(t oaV1.Holiday_HolidayType) holiday.HolidayType {
+	if t == oaV1.Holiday_WORKDAY {
+		return holiday.HolidayTypeWorkday
+	}
+	return holiday.HolidayTypeHoliday
+}
+
+func holidayToDTO(e *ent.Holiday) *oaV1.Holiday {
+	dto := &oaV1.Holiday{
+		Id:       trans.Ptr(e.ID),
+		Name:     trans.Ptr(e.Name),
+		TenantId: e.TenantID,
+	}
+	date := e.Date
+	dto.Date = timeutil.TimeToTimestamppb(&date)
+	t := oaV1.Holiday_HOLIDAY
+	if e.HolidayType != nil && *e.HolidayType == holiday.HolidayTypeWorkday {
+		t = oaV1.Holiday_WORKDAY
+	}
+	dto.HolidayType = t.Enum()
+	dto.CreatedAt = timeutil.TimeToTimestamppb(e.CreatedAt)
+	return dto
 }
