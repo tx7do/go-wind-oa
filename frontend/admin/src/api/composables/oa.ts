@@ -303,10 +303,19 @@ import type {
   oaservicev1_ListType,
 } from "@/api/generated/admin/service/v1";
 
-export async function fetchMyTasks(listType: oaservicev1_ListType) {
+export async function fetchMyTasks(
+  listType: oaservicev1_ListType,
+  page?: number,
+  pageSize?: number
+) {
   return queryClient.fetchQuery({
-    queryKey: ["myTasks", listType],
-    queryFn: () => apiClient.workflowService.GetMyTasks({ listType }),
+    queryKey: ["myTasks", listType, page, pageSize],
+    queryFn: () =>
+      apiClient.workflowService.GetMyTasks({
+        listType,
+        page: page ?? undefined,
+        pageSize: pageSize ?? undefined,
+      }),
     staleTime: 0,
     retry: 0,
   }) as Promise<oaservicev1_GetMyTasksResponse>;

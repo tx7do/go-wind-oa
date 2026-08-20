@@ -46,6 +46,17 @@
             </ElTableColumn>
             <ElTableColumn prop="instanceId" label="流程实例" width="100" />
           </ElTable>
+          <div class="pager">
+            <ElPagination
+              v-model:current-page="appPage"
+              v-model:page-size="appPageSize"
+              :total="appTotal"
+              :page-sizes="[10, 20, 50]"
+              layout="total, sizes, prev, pager, next"
+              @current-change="loadAll"
+              @size-change="loadAll"
+            />
+          </div>
         </ElTabPane>
       </ElTabs>
     </ElCard>
@@ -89,7 +100,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import {
   ElButton,
   ElCard,
@@ -99,6 +110,7 @@ import {
   ElInput,
   ElInputNumber,
   ElMessage,
+  ElPagination,
   ElTable,
   ElTableColumn,
   ElTabPane,
@@ -129,9 +141,18 @@ const balancesQuery = useListLeaveBalances(reactive({ userId: 0, year: 0 }), {
 
 const applications = ref<any[]>([]);
 const loadingApps = ref(false);
-const appsQuery = useListLeaveApplications(reactive({ userId: 0, status: undefined }), {
-  enabled: false,
-});
+const appPage = ref(1);
+const appPageSize = ref(10);
+const appTotal = ref(0);
+const appsQuery = useListLeaveApplications(
+  reactive({
+    userId: 0,
+    status: undefined,
+    page: computed(() => appPage.value),
+    pageSize: computed(() => appPageSize.value),
+  }),
+  { enabled: false }
+);
 
 async function loadAll() {
   loadingTypes.value = true;
@@ -144,6 +165,7 @@ async function loadAll() {
     balances.value = b.data?.items ?? [];
     const a = await appsQuery.refetch();
     applications.value = a.data?.items ?? [];
+    appTotal.value = Number(a.data?.total ?? 0);
   } finally {
     loadingTypes.value = false;
     loadingBalances.value = false;
@@ -246,5 +268,10 @@ onMounted(loadAll);
 .subtitle {
   font-size: 14px;
   font-weight: 600;
+}
+.pager {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 </style>

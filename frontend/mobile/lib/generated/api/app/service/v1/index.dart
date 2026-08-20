@@ -2952,6 +2952,12 @@ class ExpenseServiceClient {
     if (request.status != null) {
       queryParams.add('status=${Uri.encodeComponent(request.status!.toString())}');
     }
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
     var uri = path;
     if (queryParams.isNotEmpty) {
       uri += '?${queryParams.join("&")}';
@@ -3194,16 +3200,22 @@ class OaServiceV1SubmitExpenseApplicationResponse {
 
 /// 查询报销申请 - 请求
 class OaServiceV1ListExpenseApplicationsRequest {
+  int? page;
+  int? pageSize;
   OaServiceV1ExpenseApplication$ExpenseStatus? status;
   int? userId;
 
   OaServiceV1ListExpenseApplicationsRequest({
+    this.page,
+    this.pageSize,
     this.status,
     this.userId,
   });
 
   factory OaServiceV1ListExpenseApplicationsRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1ListExpenseApplicationsRequest(
+      page: json['page'] as int?,
+      pageSize: json['pageSize'] as int?,
       status: json['status'] != null ? OaServiceV1ExpenseApplication$ExpenseStatus.fromString(json['status'] as String) : null,
       userId: json['userId'] as int?,
     );
@@ -3211,6 +3223,8 @@ class OaServiceV1ListExpenseApplicationsRequest {
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
+    if (page != null) json['page'] = page;
+    if (pageSize != null) json['pageSize'] = pageSize;
     if (status != null) json['status'] = status!.value;
     if (userId != null) json['userId'] = userId;
     return json;
@@ -3218,7 +3232,7 @@ class OaServiceV1ListExpenseApplicationsRequest {
 
   @override
   String toString() {
-    return 'OaServiceV1ListExpenseApplicationsRequest(status: $status, userId: $userId)';
+    return 'OaServiceV1ListExpenseApplicationsRequest(page: $page, pageSize: $pageSize, status: $status, userId: $userId)';
   }
 
   @override
@@ -3226,21 +3240,29 @@ class OaServiceV1ListExpenseApplicationsRequest {
     identical(this, other) ||
     other is OaServiceV1ListExpenseApplicationsRequest &&
       runtimeType == other.runtimeType
+      && page == other.page
+      && pageSize == other.pageSize
       && status == other.status
       && userId == other.userId
     ;
 
   @override
   int get hashCode => Object.hashAll([
+    page,
+    pageSize,
     status,
     userId,
   ]);
 
   OaServiceV1ListExpenseApplicationsRequest copyWith({
+    int? page,
+    int? pageSize,
     OaServiceV1ExpenseApplication$ExpenseStatus? status,
     int? userId,
   }) {
     return OaServiceV1ListExpenseApplicationsRequest(
+      page: page ?? this.page,
+      pageSize: pageSize ?? this.pageSize,
       status: status ?? this.status,
       userId: userId ?? this.userId,
     );
@@ -5697,6 +5719,12 @@ class LeaveServiceClient {
     if (request.status != null) {
       queryParams.add('status=${Uri.encodeComponent(request.status!.toString())}');
     }
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
     var uri = path;
     if (queryParams.isNotEmpty) {
       uri += '?${queryParams.join("&")}';
@@ -5949,16 +5977,22 @@ class OaServiceV1SubmitLeaveApplicationResponse {
 
 /// 查询请假申请 - 请求
 class OaServiceV1ListLeaveApplicationsRequest {
+  int? page;
+  int? pageSize;
   OaServiceV1LeaveApplication$LeaveStatus? status;
   int? userId;
 
   OaServiceV1ListLeaveApplicationsRequest({
+    this.page,
+    this.pageSize,
     this.status,
     this.userId,
   });
 
   factory OaServiceV1ListLeaveApplicationsRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1ListLeaveApplicationsRequest(
+      page: json['page'] as int?,
+      pageSize: json['pageSize'] as int?,
       status: json['status'] != null ? OaServiceV1LeaveApplication$LeaveStatus.fromString(json['status'] as String) : null,
       userId: json['userId'] as int?,
     );
@@ -5966,6 +6000,8 @@ class OaServiceV1ListLeaveApplicationsRequest {
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
+    if (page != null) json['page'] = page;
+    if (pageSize != null) json['pageSize'] = pageSize;
     if (status != null) json['status'] = status!.value;
     if (userId != null) json['userId'] = userId;
     return json;
@@ -5973,7 +6009,7 @@ class OaServiceV1ListLeaveApplicationsRequest {
 
   @override
   String toString() {
-    return 'OaServiceV1ListLeaveApplicationsRequest(status: $status, userId: $userId)';
+    return 'OaServiceV1ListLeaveApplicationsRequest(page: $page, pageSize: $pageSize, status: $status, userId: $userId)';
   }
 
   @override
@@ -5981,21 +6017,29 @@ class OaServiceV1ListLeaveApplicationsRequest {
     identical(this, other) ||
     other is OaServiceV1ListLeaveApplicationsRequest &&
       runtimeType == other.runtimeType
+      && page == other.page
+      && pageSize == other.pageSize
       && status == other.status
       && userId == other.userId
     ;
 
   @override
   int get hashCode => Object.hashAll([
+    page,
+    pageSize,
     status,
     userId,
   ]);
 
   OaServiceV1ListLeaveApplicationsRequest copyWith({
+    int? page,
+    int? pageSize,
     OaServiceV1LeaveApplication$LeaveStatus? status,
     int? userId,
   }) {
     return OaServiceV1ListLeaveApplicationsRequest(
+      page: page ?? this.page,
+      pageSize: pageSize ?? this.pageSize,
       status: status ?? this.status,
       userId: userId ?? this.userId,
     );
@@ -11628,6 +11672,12 @@ class WorkflowServiceClient {
     if (request.listType != null) {
       queryParams.add('listType=${Uri.encodeComponent(request.listType!.toString())}');
     }
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
     var uri = path;
     if (queryParams.isNotEmpty) {
       uri += '?${queryParams.join("&")}';
@@ -11915,26 +11965,34 @@ class OaServiceV1WithdrawApplyRequest {
 /// 查询我的任务 - 请求
 class OaServiceV1GetMyTasksRequest {
   OaServiceV1ListType? listType;
+  int? page;
+  int? pageSize;
 
   OaServiceV1GetMyTasksRequest({
     this.listType,
+    this.page,
+    this.pageSize,
   });
 
   factory OaServiceV1GetMyTasksRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetMyTasksRequest(
       listType: json['listType'] != null ? OaServiceV1ListType.fromString(json['listType'] as String) : null,
+      page: json['page'] as int?,
+      pageSize: json['pageSize'] as int?,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     if (listType != null) json['listType'] = listType!.value;
+    if (page != null) json['page'] = page;
+    if (pageSize != null) json['pageSize'] = pageSize;
     return json;
   }
 
   @override
   String toString() {
-    return 'OaServiceV1GetMyTasksRequest(listType: $listType)';
+    return 'OaServiceV1GetMyTasksRequest(listType: $listType, page: $page, pageSize: $pageSize)';
   }
 
   @override
@@ -11943,18 +12001,26 @@ class OaServiceV1GetMyTasksRequest {
     other is OaServiceV1GetMyTasksRequest &&
       runtimeType == other.runtimeType
       && listType == other.listType
+      && page == other.page
+      && pageSize == other.pageSize
     ;
 
   @override
   int get hashCode => Object.hashAll([
     listType,
+    page,
+    pageSize,
   ]);
 
   OaServiceV1GetMyTasksRequest copyWith({
     OaServiceV1ListType? listType,
+    int? page,
+    int? pageSize,
   }) {
     return OaServiceV1GetMyTasksRequest(
       listType: listType ?? this.listType,
+      page: page ?? this.page,
+      pageSize: pageSize ?? this.pageSize,
     );
   }
 }

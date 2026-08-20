@@ -48,6 +48,17 @@
           </template>
         </ElTableColumn>
       </ElTable>
+      <div class="pager">
+        <ElPagination
+          v-model:current-page="page"
+          v-model:page-size="pageSize"
+          :total="total"
+          :page-sizes="[10, 20, 50]"
+          layout="total, sizes, prev, pager, next"
+          @current-change="loadRecords"
+          @size-change="loadRecords"
+        />
+      </div>
     </ElCard>
 
     <ElDialog v-model="settingsVisible" title="考勤设置" width="420px">
@@ -78,6 +89,7 @@ import {
   ElFormItem,
   ElInput,
   ElMessage,
+  ElPagination,
   ElTable,
   ElTableColumn,
   ElTag,
@@ -95,9 +107,17 @@ const today = () => new Date().toISOString().slice(0, 10);
 const workDate = ref(today());
 const records = ref<any[]>([]);
 const loading = ref(false);
+const page = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
 
 const recordsQuery = useListAttendanceRecords(
-  reactive({ userId: 0, workDate: computed(() => `${workDate.value}T00:00:00Z`) }),
+  reactive({
+    userId: 0,
+    workDate: computed(() => `${workDate.value}T00:00:00Z`),
+    page: computed(() => page.value),
+    pageSize: computed(() => pageSize.value),
+  }),
   { enabled: false }
 );
 
@@ -106,6 +126,7 @@ async function loadRecords() {
   try {
     const resp = await recordsQuery.refetch();
     records.value = resp.data?.items ?? [];
+    total.value = Number(resp.data?.total ?? 0);
   } finally {
     loading.value = false;
   }
@@ -202,5 +223,10 @@ onMounted(loadRecords);
 .label {
   font-size: 14px;
   color: var(--el-text-color-regular);
+}
+.pager {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 </style>

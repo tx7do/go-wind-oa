@@ -1027,6 +1027,16 @@ export function createAttendanceServiceClient(
           `userId=${encodeURIComponent(request.userId.toString())}`,
         );
       }
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
       let uri = path;
       if (queryParams.length > 0) {
         uri += `?${queryParams.join('&')}`;
@@ -1101,6 +1111,8 @@ export function createAttendanceServiceClient(
 }
 // 查询记录 - 请求（admin）
 export type oaservicev1_ListAttendanceRecordsRequest = {
+  page?: number;
+  pageSize?: number;
   userId: number | undefined;
   workDate: undefined | wellKnownTimestamp;
 };
@@ -2683,6 +2695,16 @@ export function createExpenseServiceClient(
           `status=${encodeURIComponent(request.status.toString())}`,
         );
       }
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
       let uri = path;
       if (queryParams.length > 0) {
         uri += `?${queryParams.join('&')}`;
@@ -2707,6 +2729,8 @@ export function createExpenseServiceClient(
 }
 // 查询报销申请 - 请求
 export type oaservicev1_ListExpenseApplicationsRequest = {
+  page?: number;
+  pageSize?: number;
   status: oaservicev1_ExpenseApplication_ExpenseStatus | undefined;
   userId: number | undefined;
 };
@@ -4497,6 +4521,16 @@ export function createLeaveServiceClient(
           `status=${encodeURIComponent(request.status.toString())}`,
         );
       }
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
       let uri = path;
       if (queryParams.length > 0) {
         uri += `?${queryParams.join('&')}`;
@@ -4587,6 +4621,8 @@ export type oaservicev1_LeaveBalance = {
 
 // 查询请假申请 - 请求
 export type oaservicev1_ListLeaveApplicationsRequest = {
+  page?: number;
+  pageSize?: number;
   status: oaservicev1_LeaveApplication_LeaveStatus | undefined;
   userId: number | undefined;
 };
@@ -11392,6 +11428,16 @@ export function createWorkflowServiceClient(
           `listType=${encodeURIComponent(request.listType.toString())}`,
         );
       }
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
       let uri = path;
       if (queryParams.length > 0) {
         uri += `?${queryParams.join('&')}`;
@@ -11480,6 +11526,8 @@ export type oaservicev1_AuditAction =
 // 查询我的任务 - 请求
 export type oaservicev1_GetMyTasksRequest = {
   listType: oaservicev1_ListType | undefined;
+  page?: number;
+  pageSize?: number;
 };
 
 // 任务列表类型

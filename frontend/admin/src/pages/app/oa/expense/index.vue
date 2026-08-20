@@ -29,14 +29,26 @@
           <template #default="{ row }">{{ fmtTime(row.createdAt || row.created_at) }}</template>
         </ElTableColumn>
       </ElTable>
+      <div class="pager">
+        <ElPagination
+          v-model:current-page="page"
+          v-model:page-size="pageSize"
+          :total="total"
+          :page-sizes="[10, 20, 50]"
+          layout="total, sizes, prev, pager, next"
+          @current-change="load"
+          @size-change="load"
+        />
+      </div>
     </ElCard>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import {
   ElCard,
+  ElPagination,
   ElTable,
   ElTableColumn,
   ElTag,
@@ -46,15 +58,25 @@ import { useListExpenseApplications } from "@/api/composables";
 
 const applications = ref<any[]>([]);
 const loading = ref(false);
-const appsQuery = useListExpenseApplications(reactive({ userId: 0, status: undefined }), {
-  enabled: false,
-});
+const page = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
+const appsQuery = useListExpenseApplications(
+  reactive({
+    userId: 0,
+    status: undefined,
+    page: computed(() => page.value),
+    pageSize: computed(() => pageSize.value),
+  }),
+  { enabled: false }
+);
 
 async function load() {
   loading.value = true;
   try {
     const resp = await appsQuery.refetch();
     applications.value = resp.data?.items ?? [];
+    total.value = Number(resp.data?.total ?? 0);
   } finally {
     loading.value = false;
   }
@@ -95,5 +117,10 @@ onMounted(load);
   width: 100%;
   min-width: 0;
   flex-shrink: 0;
+}
+.pager {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 </style>

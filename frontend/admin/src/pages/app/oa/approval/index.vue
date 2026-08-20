@@ -1,7 +1,7 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
     <ElCard shadow="never" class="flex-1">
-      <ElTabs v-model="tab" @tab-change="load">
+      <ElTabs v-model="tab" @tab-change="onTabChange">
         <ElTabPane label="待我审批" name="PENDING" />
         <ElTabPane label="已办" name="DONE" />
         <ElTabPane label="我发起的" name="SUBMITTED" />
@@ -26,6 +26,17 @@
           </template>
         </ElTableColumn>
       </ElTable>
+      <div class="pager">
+        <ElPagination
+          v-model:current-page="page"
+          v-model:page-size="pageSize"
+          :total="total"
+          :page-sizes="[10, 20, 50]"
+          layout="total, sizes, prev, pager, next"
+          @current-change="load"
+          @size-change="load"
+        />
+      </div>
     </ElCard>
 
     <ApprovalDetailDrawer ref="drawerRef" @success="load" />
@@ -37,6 +48,7 @@ import { onMounted, ref } from "vue";
 import {
   ElButton,
   ElCard,
+  ElPagination,
   ElTable,
   ElTableColumn,
   ElTabPane,
@@ -50,16 +62,25 @@ import type { oaservicev1_ListType } from "@/api/generated/admin/service/v1";
 const tab = ref<oaservicev1_ListType>("PENDING");
 const items = ref<any[]>([]);
 const loading = ref(false);
+const page = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
 const drawerRef = ref();
 
 async function load() {
   loading.value = true;
   try {
-    const resp = await fetchMyTasks(tab.value);
+    const resp = await fetchMyTasks(tab.value, page.value, pageSize.value);
     items.value = resp.items ?? [];
+    total.value = Number(resp.total ?? 0);
   } finally {
     loading.value = false;
   }
+}
+
+function onTabChange() {
+  page.value = 1;
+  load();
 }
 
 function openDetail(taskId: number) {
@@ -79,5 +100,10 @@ onMounted(load);
   width: 100%;
   min-width: 0;
   flex-shrink: 0;
+}
+.pager {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 </style>
