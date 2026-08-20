@@ -18,4 +18,7 @@ class AppRoutePath {
   static const oaLeave = '/oa/leave';
   static const oaExpense = '/oa/expense';
   static const oaBusinessTrip = '/oa/business-trip';
+  static const oaOvertime = '/oa/overtime';
+  static const oaSealApplication = '/oa/seal-application';
+  static const oaOuting = '/oa/outing';
 }

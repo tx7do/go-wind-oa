@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package app.service.v1;
+
+import "google/api/annotations.proto";
+
+import "oa/service/v1/seal_application.proto";
+
+// OA 用印申请参与服务（app 边端，移动端）
+service SealApplicationService {
+  // 提交用印申请
+  rpc SubmitSealApplication(oa.service.v1.SubmitSealApplicationRequest) returns (oa.service.v1.SubmitSealApplicationResponse) {
+    option (google.api.http) = {
+      post: "/app/v1/oa/seal-applications"
+      body: "*"
+    };
+  }
+
+  // 查询我的用印申请
+  rpc ListSealApplications(oa.service.v1.ListSealApplicationsRequest) returns (oa.service.v1.ListSealApplicationsResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/seal-applications"
+    };
+  }
+
+  // 查询用印申请详情
+  rpc GetSealApplication(oa.service.v1.GetSealApplicationRequest) returns (oa.service.v1.SealApplication) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/seal-applications/{id}"
+    };
+  }
+}

@@ -1,0 +1,167 @@
+syntax = "proto3";
+
+package oa.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/field_behavior.proto";
+
+import "google/protobuf/timestamp.proto";
+
+// OA 用印申请服务（申请挂工作流审批，终态仅同步单据状态，无额度副作用）
+service SealApplicationService {
+  // 提交用印申请（自动创建 SEAL_APPLICATION 工作流实例）
+  rpc SubmitSealApplication(SubmitSealApplicationRequest) returns (SubmitSealApplicationResponse) {}
+
+  // 查询用印申请列表（user_id==0 时查全部，admin 用）
+  rpc ListSealApplications(ListSealApplicationsRequest) returns (ListSealApplicationsResponse) {}
+
+  // 查询用印申请详情（申请人本人或 admin）
+  rpc GetSealApplication(GetSealApplicationRequest) returns (SealApplication) {}
+}
+
+// 用印申请单
+message SealApplication {
+  // 申请单状态（与工作流实例终态同步）
+  enum SealStatus {
+    PENDING = 0;    // 审批中
+    APPROVED = 1;   // 已通过
+    REJECTED = 2;   // 已驳回
+    WITHDRAWN = 3;  // 已撤回
+  }
+
+  // 印章类型
+  enum SealType {
+    OFFICIAL_SEAL = 0;    // 公章
+    CONTRACT_SEAL = 1;    // 合同章
+    FINANCE_SEAL = 2;     // 财务章
+    LEGAL_SEAL = 3;       // 法人章
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "申请单ID" }
+  ]; // 申请单ID
+
+  optional string purpose = 2 [
+    json_name = "purpose",
+    (gnostic.openapi.v3.property) = { description: "用印事由" }
+  ]; // 用印事由
+
+  optional SealType seal_type = 3 [
+    json_name = "sealType",
+    (gnostic.openapi.v3.property) = { description: "印章类型" }
+  ]; // 印章类型
+
+  optional int32 file_count = 4 [
+    json_name = "fileCount",
+    (gnostic.openapi.v3.property) = { description: "用印文件份数" }
+  ]; // 用印文件份数
+
+  optional string recipient = 5 [
+    json_name = "recipient",
+    (gnostic.openapi.v3.property) = { description: "收件方" }
+  ]; // 收件方
+
+  optional string applicant_name = 10 [
+    json_name = "applicantName",
+    (gnostic.openapi.v3.property) = { description: "申请人姓名（服务端回填）" }
+  ]; // 申请人姓名
+
+  optional SealStatus seal_status = 6 [
+    json_name = "sealStatus",
+    (gnostic.openapi.v3.property) = { description: "申请单状态" }
+  ]; // 申请单状态
+
+  optional uint32 instance_id = 7 [
+    json_name = "instanceId",
+    (gnostic.openapi.v3.property) = { description: "关联工作流实例ID" }
+  ]; // 关联工作流实例ID
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
+  ];  // 租户ID
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "申请人用户ID"}];
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}];
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}];
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];
+}
+
+// 查询用印申请 - 请求
+message ListSealApplicationsRequest {
+  uint32 user_id = 1 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = { description: "申请人用户ID，0=全部（app 端忽略此字段按本人查）" }
+  ]; // 申请人用户ID
+
+  SealApplication.SealStatus status = 2 [
+    json_name = "status",
+    (gnostic.openapi.v3.property) = { description: "状态过滤，不传=全部" }
+  ]; // 状态过滤
+
+  optional int32 page = 3 [
+    json_name = "page",
+    (gnostic.openapi.v3.property) = { description: "页码（从 1 起，不传=不限页）" }
+  ]; // 页码
+
+  optional int32 page_size = 4 [
+    json_name = "pageSize",
+    (gnostic.openapi.v3.property) = { description: "每页条数（不传=不限页）" }
+  ]; // 每页条数
+}
+
+// 查询用印申请 - 回应
+message ListSealApplicationsResponse {
+  repeated SealApplication items = 1;
+  uint64 total = 2;
+}
+
+// 查询用印申请详情 - 请求
+message GetSealApplicationRequest {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "申请单ID" }
+  ]; // 申请单ID
+}
+
+// 提交用印申请 - 请求
+message SubmitSealApplicationRequest {
+  string purpose = 1 [
+    json_name = "purpose",
+    (gnostic.openapi.v3.property) = { description: "用印事由" }
+  ]; // 用印事由
+
+  SealApplication.SealType seal_type = 2 [
+    json_name = "sealType",
+    (gnostic.openapi.v3.property) = { description: "印章类型" }
+  ]; // 印章类型
+
+  int32 file_count = 3 [
+    json_name = "fileCount",
+    (gnostic.openapi.v3.property) = { description: "用印文件份数" }
+  ]; // 用印文件份数
+
+  string recipient = 4 [
+    json_name = "recipient",
+    (gnostic.openapi.v3.property) = { description: "收件方" }
+  ]; // 收件方
+}
+
+// 提交用印申请 - 回应
+message SubmitSealApplicationResponse {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "申请单ID" }
+  ]; // 申请单ID
+
+  uint32 instance_id = 2 [
+    json_name = "instanceId",
+    (gnostic.openapi.v3.property) = { description: "工作流实例ID" }
+  ]; // 工作流实例ID
+}

@@ -2352,6 +2352,78 @@ var (
 			},
 		},
 	}
+	// OaOutingApplicationColumns holds the columns for the "oa_outing_application" table.
+	OaOutingApplicationColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "reason", Type: field.TypeString, Size: 512, Comment: "外出事由", Default: ""},
+		{Name: "destination", Type: field.TypeString, Size: 256, Comment: "外出目的地", Default: ""},
+		{Name: "start_time", Type: field.TypeTime, Comment: "外出开始时间"},
+		{Name: "end_time", Type: field.TypeTime, Comment: "外出结束时间"},
+		{Name: "outing_status", Type: field.TypeEnum, Nullable: true, Comment: "申请单状态", Enums: []string{"PENDING", "APPROVED", "REJECTED", "WITHDRAWN"}, Default: "PENDING"},
+		{Name: "instance_id", Type: field.TypeUint32, Nullable: true, Comment: "关联工作流实例ID"},
+	}
+	// OaOutingApplicationTable holds the schema information for the "oa_outing_application" table.
+	OaOutingApplicationTable = &schema.Table{
+		Name:       "oa_outing_application",
+		Comment:    "OA 外出申请单表",
+		Columns:    OaOutingApplicationColumns,
+		PrimaryKey: []*schema.Column{OaOutingApplicationColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_outing_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaOutingApplicationColumns[7]},
+			},
+			{
+				Name:    "idx_oa_outing_tenant_created_by",
+				Unique:  false,
+				Columns: []*schema.Column{OaOutingApplicationColumns[7], OaOutingApplicationColumns[4]},
+			},
+		},
+	}
+	// OaOvertimeApplicationColumns holds the columns for the "oa_overtime_application" table.
+	OaOvertimeApplicationColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "reason", Type: field.TypeString, Size: 512, Comment: "加班事由", Default: ""},
+		{Name: "start_time", Type: field.TypeTime, Comment: "加班开始时间"},
+		{Name: "end_time", Type: field.TypeTime, Comment: "加班结束时间"},
+		{Name: "compensation_type", Type: field.TypeEnum, Nullable: true, Comment: "补偿方式", Enums: []string{"COMP_LEAVE", "OVERTIME_PAY"}, Default: "COMP_LEAVE"},
+		{Name: "overtime_status", Type: field.TypeEnum, Nullable: true, Comment: "申请单状态", Enums: []string{"PENDING", "APPROVED", "REJECTED", "WITHDRAWN"}, Default: "PENDING"},
+		{Name: "instance_id", Type: field.TypeUint32, Nullable: true, Comment: "关联工作流实例ID"},
+	}
+	// OaOvertimeApplicationTable holds the schema information for the "oa_overtime_application" table.
+	OaOvertimeApplicationTable = &schema.Table{
+		Name:       "oa_overtime_application",
+		Comment:    "OA 加班申请单表",
+		Columns:    OaOvertimeApplicationColumns,
+		PrimaryKey: []*schema.Column{OaOvertimeApplicationColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_overtime_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaOvertimeApplicationColumns[7]},
+			},
+			{
+				Name:    "idx_oa_overtime_tenant_created_by",
+				Unique:  false,
+				Columns: []*schema.Column{OaOvertimeApplicationColumns[7], OaOvertimeApplicationColumns[4]},
+			},
+		},
+	}
 	// PagesColumns holds the columns for the "pages" table.
 	PagesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -3439,6 +3511,42 @@ var (
 			},
 		},
 	}
+	// OaSealApplicationColumns holds the columns for the "oa_seal_application" table.
+	OaSealApplicationColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "purpose", Type: field.TypeString, Size: 512, Comment: "用印事由", Default: ""},
+		{Name: "seal_type", Type: field.TypeEnum, Nullable: true, Comment: "印章类型", Enums: []string{"OFFICIAL_SEAL", "CONTRACT_SEAL", "FINANCE_SEAL", "LEGAL_SEAL"}, Default: "OFFICIAL_SEAL"},
+		{Name: "file_count", Type: field.TypeInt32, Comment: "用印文件份数", Default: 0},
+		{Name: "recipient", Type: field.TypeString, Size: 256, Comment: "收件方", Default: ""},
+		{Name: "seal_status", Type: field.TypeEnum, Nullable: true, Comment: "申请单状态", Enums: []string{"PENDING", "APPROVED", "REJECTED", "WITHDRAWN"}, Default: "PENDING"},
+		{Name: "instance_id", Type: field.TypeUint32, Nullable: true, Comment: "关联工作流实例ID"},
+	}
+	// OaSealApplicationTable holds the schema information for the "oa_seal_application" table.
+	OaSealApplicationTable = &schema.Table{
+		Name:       "oa_seal_application",
+		Comment:    "OA 用印申请单表",
+		Columns:    OaSealApplicationColumns,
+		PrimaryKey: []*schema.Column{OaSealApplicationColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_seal_app_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaSealApplicationColumns[7]},
+			},
+			{
+				Name:    "idx_oa_seal_app_tenant_created_by",
+				Unique:  false,
+				Columns: []*schema.Column{OaSealApplicationColumns[7], OaSealApplicationColumns[4]},
+			},
+		},
+	}
 	// SectionsColumns holds the columns for the "sections" table.
 	SectionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -4504,6 +4612,8 @@ var (
 		NavigationItemsTable,
 		SysOperationAuditLogsTable,
 		SysOrgUnitsTable,
+		OaOutingApplicationTable,
+		OaOvertimeApplicationTable,
 		PagesTable,
 		PageTranslationsTable,
 		SysPermissionsTable,
@@ -4523,6 +4633,7 @@ var (
 		SysRolesTable,
 		SysRoleMetadataTable,
 		SysRolePermissionsTable,
+		OaSealApplicationTable,
 		SectionsTable,
 		SectionTranslationsTable,
 		SitesTable,
@@ -4742,6 +4853,16 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
+	OaOutingApplicationTable.Annotation = &entsql.Annotation{
+		Table:     "oa_outing_application",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaOvertimeApplicationTable.Annotation = &entsql.Annotation{
+		Table:     "oa_overtime_application",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
 	PagesTable.ForeignKeys[0].RefTable = PagesTable
 	PagesTable.Annotation = &entsql.Annotation{
 		Table:     "pages",
@@ -4836,6 +4957,11 @@ func init() {
 	}
 	SysRolePermissionsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_role_permissions",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaSealApplicationTable.Annotation = &entsql.Annotation{
+		Table:     "oa_seal_application",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

@@ -7,6 +7,9 @@
     "expense": "Expense Management",
     "approval": "Approval Center",
     "holidays": "Holidays",
-    "businessTrip": "Business Trip Applications"
+    "businessTrip": "Business Trip Applications",
+    "overtime": "Overtime Applications",
+    "sealApplication": "Seal Applications",
+    "outing": "Outing Applications"
   }
 }

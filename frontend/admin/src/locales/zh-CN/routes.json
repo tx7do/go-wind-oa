@@ -7,6 +7,9 @@
     "expense": "报销管理",
     "approval": "审批中心",
     "holidays": "节假日设置",
-    "businessTrip": "出差申请"
+    "businessTrip": "出差申请",
+    "overtime": "加班申请",
+    "sealApplication": "用印申请",
+    "outing": "外出申请"
   }
 }

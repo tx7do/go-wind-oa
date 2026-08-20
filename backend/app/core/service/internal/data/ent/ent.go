@@ -44,6 +44,8 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/navigationitem"
 	"go-wind-oa/app/core/service/internal/data/ent/operationauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/orgunit"
+	"go-wind-oa/app/core/service/internal/data/ent/outingapplication"
+	"go-wind-oa/app/core/service/internal/data/ent/overtimeapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/page"
 	"go-wind-oa/app/core/service/internal/data/ent/pagetranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/permission"
@@ -63,6 +65,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/role"
 	"go-wind-oa/app/core/service/internal/data/ent/rolemetadata"
 	"go-wind-oa/app/core/service/internal/data/ent/rolepermission"
+	"go-wind-oa/app/core/service/internal/data/ent/sealapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/section"
 	"go-wind-oa/app/core/service/internal/data/ent/sectiontranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/site"
@@ -184,6 +187,8 @@ func checkColumn(t, c string) error {
 			navigationitem.Table:           navigationitem.ValidColumn,
 			operationauditlog.Table:        operationauditlog.ValidColumn,
 			orgunit.Table:                  orgunit.ValidColumn,
+			outingapplication.Table:        outingapplication.ValidColumn,
+			overtimeapplication.Table:      overtimeapplication.ValidColumn,
 			page.Table:                     page.ValidColumn,
 			pagetranslation.Table:          pagetranslation.ValidColumn,
 			permission.Table:               permission.ValidColumn,
@@ -203,6 +208,7 @@ func checkColumn(t, c string) error {
 			role.Table:                     role.ValidColumn,
 			rolemetadata.Table:             rolemetadata.ValidColumn,
 			rolepermission.Table:           rolepermission.ValidColumn,
+			sealapplication.Table:          sealapplication.ValidColumn,
 			section.Table:                  section.ValidColumn,
 			sectiontranslation.Table:       sectiontranslation.ValidColumn,
 			site.Table:                     site.ValidColumn,

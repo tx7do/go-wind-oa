@@ -8109,6 +8109,1088 @@ class SiteServiceV1DeleteNavigationRequest {
   }
 }
 
+/// OA 外出申请参与服务（app 边端，移动端）
+class OutingServiceClient {
+  final ClientTransport _transport;
+
+  OutingServiceClient(this._transport);
+
+  /// 提交外出申请
+  Future<OaServiceV1SubmitOutingApplicationResponse> submitOutingApplication(OaServiceV1SubmitOutingApplicationRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/outing/applications';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'OutingService',
+      method: 'SubmitOutingApplication',
+    ), headers: headers);
+    return OaServiceV1SubmitOutingApplicationResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询我的外出申请
+  Future<OaServiceV1ListOutingApplicationsResponse> listOutingApplications(OaServiceV1ListOutingApplicationsRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/outing/applications';
+    final queryParams = <String>[];
+    if (request.userId != null) {
+      queryParams.add('userId=${Uri.encodeComponent(request.userId!.toString())}');
+    }
+    if (request.status != null) {
+      queryParams.add('status=${Uri.encodeComponent(request.status!.toString())}');
+    }
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'OutingService',
+      method: 'ListOutingApplications',
+    ), headers: headers);
+    return OaServiceV1ListOutingApplicationsResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询外出申请详情
+  Future<OaServiceV1OutingApplication> getOutingApplication(OaServiceV1GetOutingApplicationRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/oa/outing/applications/${request.id}';
+    final result = await _transport.unary(path, 'GET', null, TransportMeta(
+      service: 'OutingService',
+      method: 'GetOutingApplication',
+    ), headers: headers);
+    return OaServiceV1OutingApplication.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 提交外出申请 - 请求
+class OaServiceV1SubmitOutingApplicationRequest {
+  String? destination;
+  String? endTime;
+  String? reason;
+  String? startTime;
+
+  OaServiceV1SubmitOutingApplicationRequest({
+    this.destination,
+    this.endTime,
+    this.reason,
+    this.startTime,
+  });
+
+  factory OaServiceV1SubmitOutingApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitOutingApplicationRequest(
+      destination: json['destination'] as String?,
+      endTime: json['endTime'] as String?,
+      reason: json['reason'] as String?,
+      startTime: json['startTime'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (destination != null) json['destination'] = destination;
+    if (endTime != null) json['endTime'] = endTime;
+    if (reason != null) json['reason'] = reason;
+    if (startTime != null) json['startTime'] = startTime;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitOutingApplicationRequest(destination: $destination, endTime: $endTime, reason: $reason, startTime: $startTime)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitOutingApplicationRequest &&
+      runtimeType == other.runtimeType
+      && destination == other.destination
+      && endTime == other.endTime
+      && reason == other.reason
+      && startTime == other.startTime
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    destination,
+    endTime,
+    reason,
+    startTime,
+  ]);
+
+  OaServiceV1SubmitOutingApplicationRequest copyWith({
+    String? destination,
+    String? endTime,
+    String? reason,
+    String? startTime,
+  }) {
+    return OaServiceV1SubmitOutingApplicationRequest(
+      destination: destination ?? this.destination,
+      endTime: endTime ?? this.endTime,
+      reason: reason ?? this.reason,
+      startTime: startTime ?? this.startTime,
+    );
+  }
+}
+
+/// 提交外出申请 - 回应
+class OaServiceV1SubmitOutingApplicationResponse {
+  int? id;
+  int? instanceId;
+
+  OaServiceV1SubmitOutingApplicationResponse({
+    this.id,
+    this.instanceId,
+  });
+
+  factory OaServiceV1SubmitOutingApplicationResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitOutingApplicationResponse(
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitOutingApplicationResponse(id: $id, instanceId: $instanceId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitOutingApplicationResponse &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && instanceId == other.instanceId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    instanceId,
+  ]);
+
+  OaServiceV1SubmitOutingApplicationResponse copyWith({
+    int? id,
+    int? instanceId,
+  }) {
+    return OaServiceV1SubmitOutingApplicationResponse(
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+    );
+  }
+}
+
+/// 查询外出申请 - 请求
+class OaServiceV1ListOutingApplicationsRequest {
+  int? page;
+  int? pageSize;
+  OaServiceV1OutingApplication$OutingStatus? status;
+  int? userId;
+
+  OaServiceV1ListOutingApplicationsRequest({
+    this.page,
+    this.pageSize,
+    this.status,
+    this.userId,
+  });
+
+  factory OaServiceV1ListOutingApplicationsRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListOutingApplicationsRequest(
+      page: json['page'] as int?,
+      pageSize: json['pageSize'] as int?,
+      status: json['status'] != null ? OaServiceV1OutingApplication$OutingStatus.fromString(json['status'] as String) : null,
+      userId: json['userId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (page != null) json['page'] = page;
+    if (pageSize != null) json['pageSize'] = pageSize;
+    if (status != null) json['status'] = status!.value;
+    if (userId != null) json['userId'] = userId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListOutingApplicationsRequest(page: $page, pageSize: $pageSize, status: $status, userId: $userId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListOutingApplicationsRequest &&
+      runtimeType == other.runtimeType
+      && page == other.page
+      && pageSize == other.pageSize
+      && status == other.status
+      && userId == other.userId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    page,
+    pageSize,
+    status,
+    userId,
+  ]);
+
+  OaServiceV1ListOutingApplicationsRequest copyWith({
+    int? page,
+    int? pageSize,
+    OaServiceV1OutingApplication$OutingStatus? status,
+    int? userId,
+  }) {
+    return OaServiceV1ListOutingApplicationsRequest(
+      page: page ?? this.page,
+      pageSize: pageSize ?? this.pageSize,
+      status: status ?? this.status,
+      userId: userId ?? this.userId,
+    );
+  }
+}
+
+/// 申请单状态（与工作流实例终态同步）
+enum OaServiceV1OutingApplication$OutingStatus {
+  approved('APPROVED'),
+  pending('PENDING'),
+  rejected('REJECTED'),
+  withdrawn('WITHDRAWN');
+
+  final String value;
+  const OaServiceV1OutingApplication$OutingStatus(this.value);
+
+  static OaServiceV1OutingApplication$OutingStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1OutingApplication\$OutingStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 查询外出申请 - 回应
+class OaServiceV1ListOutingApplicationsResponse {
+  List<OaServiceV1OutingApplication>? items;
+  int? total;
+
+  OaServiceV1ListOutingApplicationsResponse({
+    this.items,
+    this.total,
+  });
+
+  factory OaServiceV1ListOutingApplicationsResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListOutingApplicationsResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1OutingApplication.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListOutingApplicationsResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListOutingApplicationsResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  OaServiceV1ListOutingApplicationsResponse copyWith({
+    List<OaServiceV1OutingApplication>? items,
+    int? total,
+  }) {
+    return OaServiceV1ListOutingApplicationsResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 外出申请单
+class OaServiceV1OutingApplication {
+  String? applicantName;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? destination;
+  String? endTime;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? instanceId;
+  OaServiceV1OutingApplication$OutingStatus? outingStatus;
+  String? reason;
+  String? startTime;
+  int? tenantId;
+  String? updatedAt;
+  int? updatedBy;
+
+  OaServiceV1OutingApplication({
+    this.applicantName,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.destination,
+    this.endTime,
+    this.id,
+    this.instanceId,
+    this.outingStatus,
+    this.reason,
+    this.startTime,
+    this.tenantId,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory OaServiceV1OutingApplication.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1OutingApplication(
+      applicantName: json['applicantName'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      destination: json['destination'] as String?,
+      endTime: json['endTime'] as String?,
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+      outingStatus: json['outingStatus'] != null ? OaServiceV1OutingApplication$OutingStatus.fromString(json['outingStatus'] as String) : null,
+      reason: json['reason'] as String?,
+      startTime: json['startTime'] as String?,
+      tenantId: json['tenantId'] as int?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (applicantName != null) json['applicantName'] = applicantName;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (destination != null) json['destination'] = destination;
+    if (endTime != null) json['endTime'] = endTime;
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    if (outingStatus != null) json['outingStatus'] = outingStatus!.value;
+    if (reason != null) json['reason'] = reason;
+    if (startTime != null) json['startTime'] = startTime;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1OutingApplication(applicantName: $applicantName, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, destination: $destination, endTime: $endTime, id: $id, instanceId: $instanceId, outingStatus: $outingStatus, reason: $reason, startTime: $startTime, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1OutingApplication &&
+      runtimeType == other.runtimeType
+      && applicantName == other.applicantName
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && destination == other.destination
+      && endTime == other.endTime
+      && id == other.id
+      && instanceId == other.instanceId
+      && outingStatus == other.outingStatus
+      && reason == other.reason
+      && startTime == other.startTime
+      && tenantId == other.tenantId
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    applicantName,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    destination,
+    endTime,
+    id,
+    instanceId,
+    outingStatus,
+    reason,
+    startTime,
+    tenantId,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  OaServiceV1OutingApplication copyWith({
+    String? applicantName,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? destination,
+    String? endTime,
+    int? id,
+    int? instanceId,
+    OaServiceV1OutingApplication$OutingStatus? outingStatus,
+    String? reason,
+    String? startTime,
+    int? tenantId,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return OaServiceV1OutingApplication(
+      applicantName: applicantName ?? this.applicantName,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      destination: destination ?? this.destination,
+      endTime: endTime ?? this.endTime,
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+      outingStatus: outingStatus ?? this.outingStatus,
+      reason: reason ?? this.reason,
+      startTime: startTime ?? this.startTime,
+      tenantId: tenantId ?? this.tenantId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 查询外出申请详情 - 请求
+class OaServiceV1GetOutingApplicationRequest {
+  int? id;
+
+  OaServiceV1GetOutingApplicationRequest({
+    this.id,
+  });
+
+  factory OaServiceV1GetOutingApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1GetOutingApplicationRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1GetOutingApplicationRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1GetOutingApplicationRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  OaServiceV1GetOutingApplicationRequest copyWith({
+    int? id,
+  }) {
+    return OaServiceV1GetOutingApplicationRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// OA 加班申请参与服务（app 边端，移动端）
+class OvertimeServiceClient {
+  final ClientTransport _transport;
+
+  OvertimeServiceClient(this._transport);
+
+  /// 提交加班申请
+  Future<OaServiceV1SubmitOvertimeApplicationResponse> submitOvertimeApplication(OaServiceV1SubmitOvertimeApplicationRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/overtime/applications';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'OvertimeService',
+      method: 'SubmitOvertimeApplication',
+    ), headers: headers);
+    return OaServiceV1SubmitOvertimeApplicationResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询我的加班申请
+  Future<OaServiceV1ListOvertimeApplicationsResponse> listOvertimeApplications(OaServiceV1ListOvertimeApplicationsRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/overtime/applications';
+    final queryParams = <String>[];
+    if (request.userId != null) {
+      queryParams.add('userId=${Uri.encodeComponent(request.userId!.toString())}');
+    }
+    if (request.status != null) {
+      queryParams.add('status=${Uri.encodeComponent(request.status!.toString())}');
+    }
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'OvertimeService',
+      method: 'ListOvertimeApplications',
+    ), headers: headers);
+    return OaServiceV1ListOvertimeApplicationsResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询加班申请详情
+  Future<OaServiceV1OvertimeApplication> getOvertimeApplication(OaServiceV1GetOvertimeApplicationRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/oa/overtime/applications/${request.id}';
+    final result = await _transport.unary(path, 'GET', null, TransportMeta(
+      service: 'OvertimeService',
+      method: 'GetOvertimeApplication',
+    ), headers: headers);
+    return OaServiceV1OvertimeApplication.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 提交加班申请 - 请求
+class OaServiceV1SubmitOvertimeApplicationRequest {
+  OaServiceV1OvertimeApplication$CompensationType? compensationType;
+  String? endTime;
+  String? reason;
+  String? startTime;
+
+  OaServiceV1SubmitOvertimeApplicationRequest({
+    this.compensationType,
+    this.endTime,
+    this.reason,
+    this.startTime,
+  });
+
+  factory OaServiceV1SubmitOvertimeApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitOvertimeApplicationRequest(
+      compensationType: json['compensationType'] != null ? OaServiceV1OvertimeApplication$CompensationType.fromString(json['compensationType'] as String) : null,
+      endTime: json['endTime'] as String?,
+      reason: json['reason'] as String?,
+      startTime: json['startTime'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (compensationType != null) json['compensationType'] = compensationType!.value;
+    if (endTime != null) json['endTime'] = endTime;
+    if (reason != null) json['reason'] = reason;
+    if (startTime != null) json['startTime'] = startTime;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitOvertimeApplicationRequest(compensationType: $compensationType, endTime: $endTime, reason: $reason, startTime: $startTime)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitOvertimeApplicationRequest &&
+      runtimeType == other.runtimeType
+      && compensationType == other.compensationType
+      && endTime == other.endTime
+      && reason == other.reason
+      && startTime == other.startTime
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    compensationType,
+    endTime,
+    reason,
+    startTime,
+  ]);
+
+  OaServiceV1SubmitOvertimeApplicationRequest copyWith({
+    OaServiceV1OvertimeApplication$CompensationType? compensationType,
+    String? endTime,
+    String? reason,
+    String? startTime,
+  }) {
+    return OaServiceV1SubmitOvertimeApplicationRequest(
+      compensationType: compensationType ?? this.compensationType,
+      endTime: endTime ?? this.endTime,
+      reason: reason ?? this.reason,
+      startTime: startTime ?? this.startTime,
+    );
+  }
+}
+
+/// 补偿方式
+enum OaServiceV1OvertimeApplication$CompensationType {
+  compLeave('COMP_LEAVE'),
+  overtimePay('OVERTIME_PAY');
+
+  final String value;
+  const OaServiceV1OvertimeApplication$CompensationType(this.value);
+
+  static OaServiceV1OvertimeApplication$CompensationType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1OvertimeApplication\$CompensationType value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 提交加班申请 - 回应
+class OaServiceV1SubmitOvertimeApplicationResponse {
+  int? id;
+  int? instanceId;
+
+  OaServiceV1SubmitOvertimeApplicationResponse({
+    this.id,
+    this.instanceId,
+  });
+
+  factory OaServiceV1SubmitOvertimeApplicationResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitOvertimeApplicationResponse(
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitOvertimeApplicationResponse(id: $id, instanceId: $instanceId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitOvertimeApplicationResponse &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && instanceId == other.instanceId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    instanceId,
+  ]);
+
+  OaServiceV1SubmitOvertimeApplicationResponse copyWith({
+    int? id,
+    int? instanceId,
+  }) {
+    return OaServiceV1SubmitOvertimeApplicationResponse(
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+    );
+  }
+}
+
+/// 查询加班申请 - 请求
+class OaServiceV1ListOvertimeApplicationsRequest {
+  int? page;
+  int? pageSize;
+  OaServiceV1OvertimeApplication$OvertimeStatus? status;
+  int? userId;
+
+  OaServiceV1ListOvertimeApplicationsRequest({
+    this.page,
+    this.pageSize,
+    this.status,
+    this.userId,
+  });
+
+  factory OaServiceV1ListOvertimeApplicationsRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListOvertimeApplicationsRequest(
+      page: json['page'] as int?,
+      pageSize: json['pageSize'] as int?,
+      status: json['status'] != null ? OaServiceV1OvertimeApplication$OvertimeStatus.fromString(json['status'] as String) : null,
+      userId: json['userId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (page != null) json['page'] = page;
+    if (pageSize != null) json['pageSize'] = pageSize;
+    if (status != null) json['status'] = status!.value;
+    if (userId != null) json['userId'] = userId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListOvertimeApplicationsRequest(page: $page, pageSize: $pageSize, status: $status, userId: $userId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListOvertimeApplicationsRequest &&
+      runtimeType == other.runtimeType
+      && page == other.page
+      && pageSize == other.pageSize
+      && status == other.status
+      && userId == other.userId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    page,
+    pageSize,
+    status,
+    userId,
+  ]);
+
+  OaServiceV1ListOvertimeApplicationsRequest copyWith({
+    int? page,
+    int? pageSize,
+    OaServiceV1OvertimeApplication$OvertimeStatus? status,
+    int? userId,
+  }) {
+    return OaServiceV1ListOvertimeApplicationsRequest(
+      page: page ?? this.page,
+      pageSize: pageSize ?? this.pageSize,
+      status: status ?? this.status,
+      userId: userId ?? this.userId,
+    );
+  }
+}
+
+/// 申请单状态（与工作流实例终态同步）
+enum OaServiceV1OvertimeApplication$OvertimeStatus {
+  approved('APPROVED'),
+  pending('PENDING'),
+  rejected('REJECTED'),
+  withdrawn('WITHDRAWN');
+
+  final String value;
+  const OaServiceV1OvertimeApplication$OvertimeStatus(this.value);
+
+  static OaServiceV1OvertimeApplication$OvertimeStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1OvertimeApplication\$OvertimeStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 查询加班申请 - 回应
+class OaServiceV1ListOvertimeApplicationsResponse {
+  List<OaServiceV1OvertimeApplication>? items;
+  int? total;
+
+  OaServiceV1ListOvertimeApplicationsResponse({
+    this.items,
+    this.total,
+  });
+
+  factory OaServiceV1ListOvertimeApplicationsResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListOvertimeApplicationsResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1OvertimeApplication.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListOvertimeApplicationsResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListOvertimeApplicationsResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  OaServiceV1ListOvertimeApplicationsResponse copyWith({
+    List<OaServiceV1OvertimeApplication>? items,
+    int? total,
+  }) {
+    return OaServiceV1ListOvertimeApplicationsResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 加班申请单
+class OaServiceV1OvertimeApplication {
+  String? applicantName;
+  OaServiceV1OvertimeApplication$CompensationType? compensationType;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? endTime;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? instanceId;
+  OaServiceV1OvertimeApplication$OvertimeStatus? overtimeStatus;
+  String? reason;
+  String? startTime;
+  int? tenantId;
+  String? updatedAt;
+  int? updatedBy;
+
+  OaServiceV1OvertimeApplication({
+    this.applicantName,
+    this.compensationType,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.endTime,
+    this.id,
+    this.instanceId,
+    this.overtimeStatus,
+    this.reason,
+    this.startTime,
+    this.tenantId,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory OaServiceV1OvertimeApplication.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1OvertimeApplication(
+      applicantName: json['applicantName'] as String?,
+      compensationType: json['compensationType'] != null ? OaServiceV1OvertimeApplication$CompensationType.fromString(json['compensationType'] as String) : null,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      endTime: json['endTime'] as String?,
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+      overtimeStatus: json['overtimeStatus'] != null ? OaServiceV1OvertimeApplication$OvertimeStatus.fromString(json['overtimeStatus'] as String) : null,
+      reason: json['reason'] as String?,
+      startTime: json['startTime'] as String?,
+      tenantId: json['tenantId'] as int?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (applicantName != null) json['applicantName'] = applicantName;
+    if (compensationType != null) json['compensationType'] = compensationType!.value;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (endTime != null) json['endTime'] = endTime;
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    if (overtimeStatus != null) json['overtimeStatus'] = overtimeStatus!.value;
+    if (reason != null) json['reason'] = reason;
+    if (startTime != null) json['startTime'] = startTime;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1OvertimeApplication(applicantName: $applicantName, compensationType: $compensationType, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, endTime: $endTime, id: $id, instanceId: $instanceId, overtimeStatus: $overtimeStatus, reason: $reason, startTime: $startTime, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1OvertimeApplication &&
+      runtimeType == other.runtimeType
+      && applicantName == other.applicantName
+      && compensationType == other.compensationType
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && endTime == other.endTime
+      && id == other.id
+      && instanceId == other.instanceId
+      && overtimeStatus == other.overtimeStatus
+      && reason == other.reason
+      && startTime == other.startTime
+      && tenantId == other.tenantId
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    applicantName,
+    compensationType,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    endTime,
+    id,
+    instanceId,
+    overtimeStatus,
+    reason,
+    startTime,
+    tenantId,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  OaServiceV1OvertimeApplication copyWith({
+    String? applicantName,
+    OaServiceV1OvertimeApplication$CompensationType? compensationType,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? endTime,
+    int? id,
+    int? instanceId,
+    OaServiceV1OvertimeApplication$OvertimeStatus? overtimeStatus,
+    String? reason,
+    String? startTime,
+    int? tenantId,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return OaServiceV1OvertimeApplication(
+      applicantName: applicantName ?? this.applicantName,
+      compensationType: compensationType ?? this.compensationType,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      endTime: endTime ?? this.endTime,
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+      overtimeStatus: overtimeStatus ?? this.overtimeStatus,
+      reason: reason ?? this.reason,
+      startTime: startTime ?? this.startTime,
+      tenantId: tenantId ?? this.tenantId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 查询加班申请详情 - 请求
+class OaServiceV1GetOvertimeApplicationRequest {
+  int? id;
+
+  OaServiceV1GetOvertimeApplicationRequest({
+    this.id,
+  });
+
+  factory OaServiceV1GetOvertimeApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1GetOvertimeApplicationRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1GetOvertimeApplicationRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1GetOvertimeApplicationRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  OaServiceV1GetOvertimeApplicationRequest copyWith({
+    int? id,
+  }) {
+    return OaServiceV1GetOvertimeApplicationRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
 /// 页面服务
 class PageServiceClient {
   final ClientTransport _transport;
@@ -9597,6 +10679,556 @@ class ContentServiceV1DeletePostRequest {
     int? id,
   }) {
     return ContentServiceV1DeletePostRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
+/// OA 用印申请参与服务（app 边端，移动端）
+class SealApplicationServiceClient {
+  final ClientTransport _transport;
+
+  SealApplicationServiceClient(this._transport);
+
+  /// 提交用印申请
+  Future<OaServiceV1SubmitSealApplicationResponse> submitSealApplication(OaServiceV1SubmitSealApplicationRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/seal-applications';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'SealApplicationService',
+      method: 'SubmitSealApplication',
+    ), headers: headers);
+    return OaServiceV1SubmitSealApplicationResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询我的用印申请
+  Future<OaServiceV1ListSealApplicationsResponse> listSealApplications(OaServiceV1ListSealApplicationsRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/seal-applications';
+    final queryParams = <String>[];
+    if (request.userId != null) {
+      queryParams.add('userId=${Uri.encodeComponent(request.userId!.toString())}');
+    }
+    if (request.status != null) {
+      queryParams.add('status=${Uri.encodeComponent(request.status!.toString())}');
+    }
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'SealApplicationService',
+      method: 'ListSealApplications',
+    ), headers: headers);
+    return OaServiceV1ListSealApplicationsResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询用印申请详情
+  Future<OaServiceV1SealApplication> getSealApplication(OaServiceV1GetSealApplicationRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/oa/seal-applications/${request.id}';
+    final result = await _transport.unary(path, 'GET', null, TransportMeta(
+      service: 'SealApplicationService',
+      method: 'GetSealApplication',
+    ), headers: headers);
+    return OaServiceV1SealApplication.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 提交用印申请 - 请求
+class OaServiceV1SubmitSealApplicationRequest {
+  int? fileCount;
+  String? purpose;
+  String? recipient;
+  OaServiceV1SealApplication$SealType? sealType;
+
+  OaServiceV1SubmitSealApplicationRequest({
+    this.fileCount,
+    this.purpose,
+    this.recipient,
+    this.sealType,
+  });
+
+  factory OaServiceV1SubmitSealApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitSealApplicationRequest(
+      fileCount: json['fileCount'] as int?,
+      purpose: json['purpose'] as String?,
+      recipient: json['recipient'] as String?,
+      sealType: json['sealType'] != null ? OaServiceV1SealApplication$SealType.fromString(json['sealType'] as String) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (fileCount != null) json['fileCount'] = fileCount;
+    if (purpose != null) json['purpose'] = purpose;
+    if (recipient != null) json['recipient'] = recipient;
+    if (sealType != null) json['sealType'] = sealType!.value;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitSealApplicationRequest(fileCount: $fileCount, purpose: $purpose, recipient: $recipient, sealType: $sealType)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitSealApplicationRequest &&
+      runtimeType == other.runtimeType
+      && fileCount == other.fileCount
+      && purpose == other.purpose
+      && recipient == other.recipient
+      && sealType == other.sealType
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    fileCount,
+    purpose,
+    recipient,
+    sealType,
+  ]);
+
+  OaServiceV1SubmitSealApplicationRequest copyWith({
+    int? fileCount,
+    String? purpose,
+    String? recipient,
+    OaServiceV1SealApplication$SealType? sealType,
+  }) {
+    return OaServiceV1SubmitSealApplicationRequest(
+      fileCount: fileCount ?? this.fileCount,
+      purpose: purpose ?? this.purpose,
+      recipient: recipient ?? this.recipient,
+      sealType: sealType ?? this.sealType,
+    );
+  }
+}
+
+/// 印章类型
+enum OaServiceV1SealApplication$SealType {
+  contractSeal('CONTRACT_SEAL'),
+  financeSeal('FINANCE_SEAL'),
+  legalSeal('LEGAL_SEAL'),
+  officialSeal('OFFICIAL_SEAL');
+
+  final String value;
+  const OaServiceV1SealApplication$SealType(this.value);
+
+  static OaServiceV1SealApplication$SealType fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1SealApplication\$SealType value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 提交用印申请 - 回应
+class OaServiceV1SubmitSealApplicationResponse {
+  int? id;
+  int? instanceId;
+
+  OaServiceV1SubmitSealApplicationResponse({
+    this.id,
+    this.instanceId,
+  });
+
+  factory OaServiceV1SubmitSealApplicationResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitSealApplicationResponse(
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitSealApplicationResponse(id: $id, instanceId: $instanceId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitSealApplicationResponse &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && instanceId == other.instanceId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    instanceId,
+  ]);
+
+  OaServiceV1SubmitSealApplicationResponse copyWith({
+    int? id,
+    int? instanceId,
+  }) {
+    return OaServiceV1SubmitSealApplicationResponse(
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+    );
+  }
+}
+
+/// 查询用印申请 - 请求
+class OaServiceV1ListSealApplicationsRequest {
+  int? page;
+  int? pageSize;
+  OaServiceV1SealApplication$SealStatus? status;
+  int? userId;
+
+  OaServiceV1ListSealApplicationsRequest({
+    this.page,
+    this.pageSize,
+    this.status,
+    this.userId,
+  });
+
+  factory OaServiceV1ListSealApplicationsRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListSealApplicationsRequest(
+      page: json['page'] as int?,
+      pageSize: json['pageSize'] as int?,
+      status: json['status'] != null ? OaServiceV1SealApplication$SealStatus.fromString(json['status'] as String) : null,
+      userId: json['userId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (page != null) json['page'] = page;
+    if (pageSize != null) json['pageSize'] = pageSize;
+    if (status != null) json['status'] = status!.value;
+    if (userId != null) json['userId'] = userId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListSealApplicationsRequest(page: $page, pageSize: $pageSize, status: $status, userId: $userId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListSealApplicationsRequest &&
+      runtimeType == other.runtimeType
+      && page == other.page
+      && pageSize == other.pageSize
+      && status == other.status
+      && userId == other.userId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    page,
+    pageSize,
+    status,
+    userId,
+  ]);
+
+  OaServiceV1ListSealApplicationsRequest copyWith({
+    int? page,
+    int? pageSize,
+    OaServiceV1SealApplication$SealStatus? status,
+    int? userId,
+  }) {
+    return OaServiceV1ListSealApplicationsRequest(
+      page: page ?? this.page,
+      pageSize: pageSize ?? this.pageSize,
+      status: status ?? this.status,
+      userId: userId ?? this.userId,
+    );
+  }
+}
+
+/// 申请单状态（与工作流实例终态同步）
+enum OaServiceV1SealApplication$SealStatus {
+  approved('APPROVED'),
+  pending('PENDING'),
+  rejected('REJECTED'),
+  withdrawn('WITHDRAWN');
+
+  final String value;
+  const OaServiceV1SealApplication$SealStatus(this.value);
+
+  static OaServiceV1SealApplication$SealStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1SealApplication\$SealStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 查询用印申请 - 回应
+class OaServiceV1ListSealApplicationsResponse {
+  List<OaServiceV1SealApplication>? items;
+  int? total;
+
+  OaServiceV1ListSealApplicationsResponse({
+    this.items,
+    this.total,
+  });
+
+  factory OaServiceV1ListSealApplicationsResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListSealApplicationsResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1SealApplication.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListSealApplicationsResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListSealApplicationsResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  OaServiceV1ListSealApplicationsResponse copyWith({
+    List<OaServiceV1SealApplication>? items,
+    int? total,
+  }) {
+    return OaServiceV1ListSealApplicationsResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 用印申请单
+class OaServiceV1SealApplication {
+  String? applicantName;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  int? fileCount;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? instanceId;
+  String? purpose;
+  String? recipient;
+  OaServiceV1SealApplication$SealStatus? sealStatus;
+  OaServiceV1SealApplication$SealType? sealType;
+  int? tenantId;
+  String? updatedAt;
+  int? updatedBy;
+
+  OaServiceV1SealApplication({
+    this.applicantName,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.fileCount,
+    this.id,
+    this.instanceId,
+    this.purpose,
+    this.recipient,
+    this.sealStatus,
+    this.sealType,
+    this.tenantId,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory OaServiceV1SealApplication.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SealApplication(
+      applicantName: json['applicantName'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      fileCount: json['fileCount'] as int?,
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+      purpose: json['purpose'] as String?,
+      recipient: json['recipient'] as String?,
+      sealStatus: json['sealStatus'] != null ? OaServiceV1SealApplication$SealStatus.fromString(json['sealStatus'] as String) : null,
+      sealType: json['sealType'] != null ? OaServiceV1SealApplication$SealType.fromString(json['sealType'] as String) : null,
+      tenantId: json['tenantId'] as int?,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (applicantName != null) json['applicantName'] = applicantName;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (fileCount != null) json['fileCount'] = fileCount;
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    if (purpose != null) json['purpose'] = purpose;
+    if (recipient != null) json['recipient'] = recipient;
+    if (sealStatus != null) json['sealStatus'] = sealStatus!.value;
+    if (sealType != null) json['sealType'] = sealType!.value;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SealApplication(applicantName: $applicantName, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, fileCount: $fileCount, id: $id, instanceId: $instanceId, purpose: $purpose, recipient: $recipient, sealStatus: $sealStatus, sealType: $sealType, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SealApplication &&
+      runtimeType == other.runtimeType
+      && applicantName == other.applicantName
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && fileCount == other.fileCount
+      && id == other.id
+      && instanceId == other.instanceId
+      && purpose == other.purpose
+      && recipient == other.recipient
+      && sealStatus == other.sealStatus
+      && sealType == other.sealType
+      && tenantId == other.tenantId
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    applicantName,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    fileCount,
+    id,
+    instanceId,
+    purpose,
+    recipient,
+    sealStatus,
+    sealType,
+    tenantId,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  OaServiceV1SealApplication copyWith({
+    String? applicantName,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    int? fileCount,
+    int? id,
+    int? instanceId,
+    String? purpose,
+    String? recipient,
+    OaServiceV1SealApplication$SealStatus? sealStatus,
+    OaServiceV1SealApplication$SealType? sealType,
+    int? tenantId,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return OaServiceV1SealApplication(
+      applicantName: applicantName ?? this.applicantName,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      fileCount: fileCount ?? this.fileCount,
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+      purpose: purpose ?? this.purpose,
+      recipient: recipient ?? this.recipient,
+      sealStatus: sealStatus ?? this.sealStatus,
+      sealType: sealType ?? this.sealType,
+      tenantId: tenantId ?? this.tenantId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 查询用印申请详情 - 请求
+class OaServiceV1GetSealApplicationRequest {
+  int? id;
+
+  OaServiceV1GetSealApplicationRequest({
+    this.id,
+  });
+
+  factory OaServiceV1GetSealApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1GetSealApplicationRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1GetSealApplicationRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1GetSealApplicationRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  OaServiceV1GetSealApplicationRequest copyWith({
+    int? id,
+  }) {
+    return OaServiceV1GetSealApplicationRequest(
       id: id ?? this.id,
     );
   }
@@ -13254,8 +14886,11 @@ class ApiClient {
   InternalMessageServiceClient? _internalMessageService;
   LeaveServiceClient? _leaveService;
   NavigationServiceClient? _navigationService;
+  OutingServiceClient? _outingService;
+  OvertimeServiceClient? _overtimeService;
   PageServiceClient? _pageService;
   PostServiceClient? _postService;
+  SealApplicationServiceClient? _sealApplicationService;
   SectionServiceClient? _sectionService;
   TagServiceClient? _tagService;
   UserProfileServiceClient? _userProfileService;
@@ -13318,6 +14953,16 @@ class ApiClient {
     return _navigationService!;
   }
 
+  OutingServiceClient get outingService {
+    _outingService ??= OutingServiceClient(_transport);
+    return _outingService!;
+  }
+
+  OvertimeServiceClient get overtimeService {
+    _overtimeService ??= OvertimeServiceClient(_transport);
+    return _overtimeService!;
+  }
+
   PageServiceClient get pageService {
     _pageService ??= PageServiceClient(_transport);
     return _pageService!;
@@ -13326,6 +14971,11 @@ class ApiClient {
   PostServiceClient get postService {
     _postService ??= PostServiceClient(_transport);
     return _postService!;
+  }
+
+  SealApplicationServiceClient get sealApplicationService {
+    _sealApplicationService ??= SealApplicationServiceClient(_transport);
+    return _sealApplicationService!;
   }
 
   SectionServiceClient get sectionService {
@@ -13361,8 +15011,11 @@ class ApiClient {
     _internalMessageService = null;
     _leaveService = null;
     _navigationService = null;
+    _outingService = null;
+    _overtimeService = null;
     _pageService = null;
     _postService = null;
+    _sealApplicationService = null;
     _sectionService = null;
     _tagService = null;
     _userProfileService = null;

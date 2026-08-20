@@ -35,6 +35,9 @@ var ProviderSet = wire.NewSet(
 	data.NewLeaveServiceClient,
 	data.NewExpenseServiceClient,
 	data.NewBusinessTripServiceClient,
+	data.NewOvertimeServiceClient,
+	data.NewSealApplicationServiceClient,
+	data.NewOutingServiceClient,
 	data.NewAttendanceServiceClient,
 	data.NewInternalMessageServiceClient,
 

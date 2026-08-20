@@ -101,6 +101,36 @@ const oa: RouteRecordRaw[] = [
         },
         component: () => import("@/pages/app/oa/business_trip/index.vue"),
       },
+      {
+        path: "overtime",
+        name: "OaOvertimeManagement",
+        meta: {
+          order: 7,
+          icon: "lucide:clock-alert",
+          title: "routes.oa.overtime",
+        },
+        component: () => import("@/pages/app/oa/overtime/index.vue"),
+      },
+      {
+        path: "seal-application",
+        name: "OaSealApplicationManagement",
+        meta: {
+          order: 8,
+          icon: "lucide:stamp",
+          title: "routes.oa.sealApplication",
+        },
+        component: () => import("@/pages/app/oa/seal_application/index.vue"),
+      },
+      {
+        path: "outing",
+        name: "OaOutingManagement",
+        meta: {
+          order: 9,
+          icon: "lucide:door-open",
+          title: "routes.oa.outing",
+        },
+        component: () => import("@/pages/app/oa/outing/index.vue"),
+      },
     ],
   },
 ];

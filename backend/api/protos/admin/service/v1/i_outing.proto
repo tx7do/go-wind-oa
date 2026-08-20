@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+
+import "oa/service/v1/outing.proto";
+
+// OA 外出申请管理服务（admin 边端）
+service OutingService {
+  // 查询外出申请列表
+  rpc ListOutingApplications(oa.service.v1.ListOutingApplicationsRequest) returns (oa.service.v1.ListOutingApplicationsResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/outing/applications"
+    };
+  }
+
+  // 查询外出申请详情
+  rpc GetOutingApplication(oa.service.v1.GetOutingApplicationRequest) returns (oa.service.v1.OutingApplication) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/outing/applications/{id}"
+    };
+  }
+}

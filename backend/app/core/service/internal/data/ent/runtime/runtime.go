@@ -43,6 +43,8 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/navigationitem"
 	"go-wind-oa/app/core/service/internal/data/ent/operationauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/orgunit"
+	"go-wind-oa/app/core/service/internal/data/ent/outingapplication"
+	"go-wind-oa/app/core/service/internal/data/ent/overtimeapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/page"
 	"go-wind-oa/app/core/service/internal/data/ent/pagetranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/permission"
@@ -63,6 +65,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/rolemetadata"
 	"go-wind-oa/app/core/service/internal/data/ent/rolepermission"
 	"go-wind-oa/app/core/service/internal/data/ent/schema"
+	"go-wind-oa/app/core/service/internal/data/ent/sealapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/section"
 	"go-wind-oa/app/core/service/internal/data/ent/sectiontranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/site"
@@ -1328,6 +1331,72 @@ func init() {
 	orgunitDescID := orgunitMixinFields0[0].Descriptor()
 	// orgunit.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	orgunit.IDValidator = orgunitDescID.Validators[0].(func(uint32) error)
+	outingapplicationMixin := schema.OutingApplication{}.Mixin()
+	outingapplication.Policy = privacy.NewPolicies(outingapplicationMixin[3], schema.OutingApplication{})
+	outingapplication.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := outingapplication.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	outingapplicationMixinFields0 := outingapplicationMixin[0].Fields()
+	_ = outingapplicationMixinFields0
+	outingapplicationMixinFields3 := outingapplicationMixin[3].Fields()
+	_ = outingapplicationMixinFields3
+	outingapplicationFields := schema.OutingApplication{}.Fields()
+	_ = outingapplicationFields
+	// outingapplicationDescTenantID is the schema descriptor for tenant_id field.
+	outingapplicationDescTenantID := outingapplicationMixinFields3[0].Descriptor()
+	// outingapplication.DefaultTenantID holds the default value on creation for the tenant_id field.
+	outingapplication.DefaultTenantID = outingapplicationDescTenantID.Default.(uint32)
+	// outingapplicationDescReason is the schema descriptor for reason field.
+	outingapplicationDescReason := outingapplicationFields[0].Descriptor()
+	// outingapplication.DefaultReason holds the default value on creation for the reason field.
+	outingapplication.DefaultReason = outingapplicationDescReason.Default.(string)
+	// outingapplication.ReasonValidator is a validator for the "reason" field. It is called by the builders before save.
+	outingapplication.ReasonValidator = outingapplicationDescReason.Validators[0].(func(string) error)
+	// outingapplicationDescDestination is the schema descriptor for destination field.
+	outingapplicationDescDestination := outingapplicationFields[1].Descriptor()
+	// outingapplication.DefaultDestination holds the default value on creation for the destination field.
+	outingapplication.DefaultDestination = outingapplicationDescDestination.Default.(string)
+	// outingapplication.DestinationValidator is a validator for the "destination" field. It is called by the builders before save.
+	outingapplication.DestinationValidator = outingapplicationDescDestination.Validators[0].(func(string) error)
+	// outingapplicationDescID is the schema descriptor for id field.
+	outingapplicationDescID := outingapplicationMixinFields0[0].Descriptor()
+	// outingapplication.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	outingapplication.IDValidator = outingapplicationDescID.Validators[0].(func(uint32) error)
+	overtimeapplicationMixin := schema.OvertimeApplication{}.Mixin()
+	overtimeapplication.Policy = privacy.NewPolicies(overtimeapplicationMixin[3], schema.OvertimeApplication{})
+	overtimeapplication.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := overtimeapplication.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	overtimeapplicationMixinFields0 := overtimeapplicationMixin[0].Fields()
+	_ = overtimeapplicationMixinFields0
+	overtimeapplicationMixinFields3 := overtimeapplicationMixin[3].Fields()
+	_ = overtimeapplicationMixinFields3
+	overtimeapplicationFields := schema.OvertimeApplication{}.Fields()
+	_ = overtimeapplicationFields
+	// overtimeapplicationDescTenantID is the schema descriptor for tenant_id field.
+	overtimeapplicationDescTenantID := overtimeapplicationMixinFields3[0].Descriptor()
+	// overtimeapplication.DefaultTenantID holds the default value on creation for the tenant_id field.
+	overtimeapplication.DefaultTenantID = overtimeapplicationDescTenantID.Default.(uint32)
+	// overtimeapplicationDescReason is the schema descriptor for reason field.
+	overtimeapplicationDescReason := overtimeapplicationFields[0].Descriptor()
+	// overtimeapplication.DefaultReason holds the default value on creation for the reason field.
+	overtimeapplication.DefaultReason = overtimeapplicationDescReason.Default.(string)
+	// overtimeapplication.ReasonValidator is a validator for the "reason" field. It is called by the builders before save.
+	overtimeapplication.ReasonValidator = overtimeapplicationDescReason.Validators[0].(func(string) error)
+	// overtimeapplicationDescID is the schema descriptor for id field.
+	overtimeapplicationDescID := overtimeapplicationMixinFields0[0].Descriptor()
+	// overtimeapplication.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	overtimeapplication.IDValidator = overtimeapplicationDescID.Validators[0].(func(uint32) error)
 	pageMixin := schema.Page{}.Mixin()
 	page.Policy = privacy.NewPolicies(pageMixin[7], schema.Page{})
 	page.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -1954,6 +2023,46 @@ func init() {
 	rolepermissionDescID := rolepermissionMixinFields0[0].Descriptor()
 	// rolepermission.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	rolepermission.IDValidator = rolepermissionDescID.Validators[0].(func(uint32) error)
+	sealapplicationMixin := schema.SealApplication{}.Mixin()
+	sealapplication.Policy = privacy.NewPolicies(sealapplicationMixin[3], schema.SealApplication{})
+	sealapplication.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := sealapplication.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	sealapplicationMixinFields0 := sealapplicationMixin[0].Fields()
+	_ = sealapplicationMixinFields0
+	sealapplicationMixinFields3 := sealapplicationMixin[3].Fields()
+	_ = sealapplicationMixinFields3
+	sealapplicationFields := schema.SealApplication{}.Fields()
+	_ = sealapplicationFields
+	// sealapplicationDescTenantID is the schema descriptor for tenant_id field.
+	sealapplicationDescTenantID := sealapplicationMixinFields3[0].Descriptor()
+	// sealapplication.DefaultTenantID holds the default value on creation for the tenant_id field.
+	sealapplication.DefaultTenantID = sealapplicationDescTenantID.Default.(uint32)
+	// sealapplicationDescPurpose is the schema descriptor for purpose field.
+	sealapplicationDescPurpose := sealapplicationFields[0].Descriptor()
+	// sealapplication.DefaultPurpose holds the default value on creation for the purpose field.
+	sealapplication.DefaultPurpose = sealapplicationDescPurpose.Default.(string)
+	// sealapplication.PurposeValidator is a validator for the "purpose" field. It is called by the builders before save.
+	sealapplication.PurposeValidator = sealapplicationDescPurpose.Validators[0].(func(string) error)
+	// sealapplicationDescFileCount is the schema descriptor for file_count field.
+	sealapplicationDescFileCount := sealapplicationFields[2].Descriptor()
+	// sealapplication.DefaultFileCount holds the default value on creation for the file_count field.
+	sealapplication.DefaultFileCount = sealapplicationDescFileCount.Default.(int32)
+	// sealapplicationDescRecipient is the schema descriptor for recipient field.
+	sealapplicationDescRecipient := sealapplicationFields[3].Descriptor()
+	// sealapplication.DefaultRecipient holds the default value on creation for the recipient field.
+	sealapplication.DefaultRecipient = sealapplicationDescRecipient.Default.(string)
+	// sealapplication.RecipientValidator is a validator for the "recipient" field. It is called by the builders before save.
+	sealapplication.RecipientValidator = sealapplicationDescRecipient.Validators[0].(func(string) error)
+	// sealapplicationDescID is the schema descriptor for id field.
+	sealapplicationDescID := sealapplicationMixinFields0[0].Descriptor()
+	// sealapplication.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	sealapplication.IDValidator = sealapplicationDescID.Validators[0].(func(uint32) error)
 	sectionMixin := schema.Section{}.Mixin()
 	section.Policy = privacy.NewPolicies(sectionMixin[4], schema.Section{})
 	section.Hooks[0] = func(next ent.Mutator) ent.Mutator {

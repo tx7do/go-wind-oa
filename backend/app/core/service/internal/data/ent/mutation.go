@@ -48,6 +48,8 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/navigationitem"
 	"go-wind-oa/app/core/service/internal/data/ent/operationauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/orgunit"
+	"go-wind-oa/app/core/service/internal/data/ent/outingapplication"
+	"go-wind-oa/app/core/service/internal/data/ent/overtimeapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/page"
 	"go-wind-oa/app/core/service/internal/data/ent/pagetranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/permission"
@@ -68,6 +70,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/role"
 	"go-wind-oa/app/core/service/internal/data/ent/rolemetadata"
 	"go-wind-oa/app/core/service/internal/data/ent/rolepermission"
+	"go-wind-oa/app/core/service/internal/data/ent/sealapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/section"
 	"go-wind-oa/app/core/service/internal/data/ent/sectiontranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/site"
@@ -139,6 +142,8 @@ const (
 	TypeNavigationItem           = "NavigationItem"
 	TypeOperationAuditLog        = "OperationAuditLog"
 	TypeOrgUnit                  = "OrgUnit"
+	TypeOutingApplication        = "OutingApplication"
+	TypeOvertimeApplication      = "OvertimeApplication"
 	TypePage                     = "Page"
 	TypePageTranslation          = "PageTranslation"
 	TypePermission               = "Permission"
@@ -158,6 +163,7 @@ const (
 	TypeRole                     = "Role"
 	TypeRoleMetadata             = "RoleMetadata"
 	TypeRolePermission           = "RolePermission"
+	TypeSealApplication          = "SealApplication"
 	TypeSection                  = "Section"
 	TypeSectionTranslation       = "SectionTranslation"
 	TypeSite                     = "Site"
@@ -61060,6 +61066,2679 @@ func (m *OrgUnitMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown OrgUnit edge %s", name)
 }
 
+// OutingApplicationMutation represents an operation that mutates the OutingApplication nodes in the graph.
+type OutingApplicationMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *uint32
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	created_by     *uint32
+	addcreated_by  *int32
+	updated_by     *uint32
+	addupdated_by  *int32
+	deleted_by     *uint32
+	adddeleted_by  *int32
+	tenant_id      *uint32
+	addtenant_id   *int32
+	reason         *string
+	destination    *string
+	start_time     *time.Time
+	end_time       *time.Time
+	outing_status  *outingapplication.OutingStatus
+	instance_id    *uint32
+	addinstance_id *int32
+	clearedFields  map[string]struct{}
+	done           bool
+	oldValue       func(context.Context) (*OutingApplication, error)
+	predicates     []predicate.OutingApplication
+}
+
+var _ ent.Mutation = (*OutingApplicationMutation)(nil)
+
+// outingapplicationOption allows management of the mutation configuration using functional options.
+type outingapplicationOption func(*OutingApplicationMutation)
+
+// newOutingApplicationMutation creates new mutation for the OutingApplication entity.
+func newOutingApplicationMutation(c config, op Op, opts ...outingapplicationOption) *OutingApplicationMutation {
+	m := &OutingApplicationMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeOutingApplication,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withOutingApplicationID sets the ID field of the mutation.
+func withOutingApplicationID(id uint32) outingapplicationOption {
+	return func(m *OutingApplicationMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *OutingApplication
+		)
+		m.oldValue = func(ctx context.Context) (*OutingApplication, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().OutingApplication.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withOutingApplication sets the old OutingApplication of the mutation.
+func withOutingApplication(node *OutingApplication) outingapplicationOption {
+	return func(m *OutingApplicationMutation) {
+		m.oldValue = func(context.Context) (*OutingApplication, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m OutingApplicationMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m OutingApplicationMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of OutingApplication entities.
+func (m *OutingApplicationMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *OutingApplicationMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *OutingApplicationMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().OutingApplication.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *OutingApplicationMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *OutingApplicationMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *OutingApplicationMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[outingapplication.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *OutingApplicationMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[outingapplication.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *OutingApplicationMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, outingapplication.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *OutingApplicationMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *OutingApplicationMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *OutingApplicationMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[outingapplication.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *OutingApplicationMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[outingapplication.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *OutingApplicationMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, outingapplication.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *OutingApplicationMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *OutingApplicationMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *OutingApplicationMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[outingapplication.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *OutingApplicationMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[outingapplication.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *OutingApplicationMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, outingapplication.FieldDeletedAt)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *OutingApplicationMutation) SetCreatedBy(u uint32) {
+	m.created_by = &u
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *OutingApplicationMutation) CreatedBy() (r uint32, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds u to the "created_by" field.
+func (m *OutingApplicationMutation) AddCreatedBy(u int32) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += u
+	} else {
+		m.addcreated_by = &u
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *OutingApplicationMutation) AddedCreatedBy() (r int32, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *OutingApplicationMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[outingapplication.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *OutingApplicationMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[outingapplication.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *OutingApplicationMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, outingapplication.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *OutingApplicationMutation) SetUpdatedBy(u uint32) {
+	m.updated_by = &u
+	m.addupdated_by = nil
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *OutingApplicationMutation) UpdatedBy() (r uint32, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// AddUpdatedBy adds u to the "updated_by" field.
+func (m *OutingApplicationMutation) AddUpdatedBy(u int32) {
+	if m.addupdated_by != nil {
+		*m.addupdated_by += u
+	} else {
+		m.addupdated_by = &u
+	}
+}
+
+// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
+func (m *OutingApplicationMutation) AddedUpdatedBy() (r int32, exists bool) {
+	v := m.addupdated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *OutingApplicationMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	m.clearedFields[outingapplication.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *OutingApplicationMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[outingapplication.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *OutingApplicationMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	delete(m.clearedFields, outingapplication.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "deleted_by" field.
+func (m *OutingApplicationMutation) SetDeletedBy(u uint32) {
+	m.deleted_by = &u
+	m.adddeleted_by = nil
+}
+
+// DeletedBy returns the value of the "deleted_by" field in the mutation.
+func (m *OutingApplicationMutation) DeletedBy() (r uint32, exists bool) {
+	v := m.deleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "deleted_by" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// AddDeletedBy adds u to the "deleted_by" field.
+func (m *OutingApplicationMutation) AddDeletedBy(u int32) {
+	if m.adddeleted_by != nil {
+		*m.adddeleted_by += u
+	} else {
+		m.adddeleted_by = &u
+	}
+}
+
+// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
+func (m *OutingApplicationMutation) AddedDeletedBy() (r int32, exists bool) {
+	v := m.adddeleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (m *OutingApplicationMutation) ClearDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	m.clearedFields[outingapplication.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
+func (m *OutingApplicationMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[outingapplication.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" field.
+func (m *OutingApplicationMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	delete(m.clearedFields, outingapplication.FieldDeletedBy)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *OutingApplicationMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *OutingApplicationMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *OutingApplicationMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *OutingApplicationMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *OutingApplicationMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[outingapplication.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *OutingApplicationMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[outingapplication.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *OutingApplicationMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, outingapplication.FieldTenantID)
+}
+
+// SetReason sets the "reason" field.
+func (m *OutingApplicationMutation) SetReason(s string) {
+	m.reason = &s
+}
+
+// Reason returns the value of the "reason" field in the mutation.
+func (m *OutingApplicationMutation) Reason() (r string, exists bool) {
+	v := m.reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReason returns the old "reason" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldReason(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReason: %w", err)
+	}
+	return oldValue.Reason, nil
+}
+
+// ResetReason resets all changes to the "reason" field.
+func (m *OutingApplicationMutation) ResetReason() {
+	m.reason = nil
+}
+
+// SetDestination sets the "destination" field.
+func (m *OutingApplicationMutation) SetDestination(s string) {
+	m.destination = &s
+}
+
+// Destination returns the value of the "destination" field in the mutation.
+func (m *OutingApplicationMutation) Destination() (r string, exists bool) {
+	v := m.destination
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDestination returns the old "destination" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldDestination(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDestination is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDestination requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDestination: %w", err)
+	}
+	return oldValue.Destination, nil
+}
+
+// ResetDestination resets all changes to the "destination" field.
+func (m *OutingApplicationMutation) ResetDestination() {
+	m.destination = nil
+}
+
+// SetStartTime sets the "start_time" field.
+func (m *OutingApplicationMutation) SetStartTime(t time.Time) {
+	m.start_time = &t
+}
+
+// StartTime returns the value of the "start_time" field in the mutation.
+func (m *OutingApplicationMutation) StartTime() (r time.Time, exists bool) {
+	v := m.start_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStartTime returns the old "start_time" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldStartTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStartTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStartTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStartTime: %w", err)
+	}
+	return oldValue.StartTime, nil
+}
+
+// ResetStartTime resets all changes to the "start_time" field.
+func (m *OutingApplicationMutation) ResetStartTime() {
+	m.start_time = nil
+}
+
+// SetEndTime sets the "end_time" field.
+func (m *OutingApplicationMutation) SetEndTime(t time.Time) {
+	m.end_time = &t
+}
+
+// EndTime returns the value of the "end_time" field in the mutation.
+func (m *OutingApplicationMutation) EndTime() (r time.Time, exists bool) {
+	v := m.end_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEndTime returns the old "end_time" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldEndTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEndTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEndTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEndTime: %w", err)
+	}
+	return oldValue.EndTime, nil
+}
+
+// ResetEndTime resets all changes to the "end_time" field.
+func (m *OutingApplicationMutation) ResetEndTime() {
+	m.end_time = nil
+}
+
+// SetOutingStatus sets the "outing_status" field.
+func (m *OutingApplicationMutation) SetOutingStatus(os outingapplication.OutingStatus) {
+	m.outing_status = &os
+}
+
+// OutingStatus returns the value of the "outing_status" field in the mutation.
+func (m *OutingApplicationMutation) OutingStatus() (r outingapplication.OutingStatus, exists bool) {
+	v := m.outing_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutingStatus returns the old "outing_status" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldOutingStatus(ctx context.Context) (v *outingapplication.OutingStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutingStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutingStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutingStatus: %w", err)
+	}
+	return oldValue.OutingStatus, nil
+}
+
+// ClearOutingStatus clears the value of the "outing_status" field.
+func (m *OutingApplicationMutation) ClearOutingStatus() {
+	m.outing_status = nil
+	m.clearedFields[outingapplication.FieldOutingStatus] = struct{}{}
+}
+
+// OutingStatusCleared returns if the "outing_status" field was cleared in this mutation.
+func (m *OutingApplicationMutation) OutingStatusCleared() bool {
+	_, ok := m.clearedFields[outingapplication.FieldOutingStatus]
+	return ok
+}
+
+// ResetOutingStatus resets all changes to the "outing_status" field.
+func (m *OutingApplicationMutation) ResetOutingStatus() {
+	m.outing_status = nil
+	delete(m.clearedFields, outingapplication.FieldOutingStatus)
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (m *OutingApplicationMutation) SetInstanceID(u uint32) {
+	m.instance_id = &u
+	m.addinstance_id = nil
+}
+
+// InstanceID returns the value of the "instance_id" field in the mutation.
+func (m *OutingApplicationMutation) InstanceID() (r uint32, exists bool) {
+	v := m.instance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInstanceID returns the old "instance_id" field's value of the OutingApplication entity.
+// If the OutingApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OutingApplicationMutation) OldInstanceID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInstanceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInstanceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInstanceID: %w", err)
+	}
+	return oldValue.InstanceID, nil
+}
+
+// AddInstanceID adds u to the "instance_id" field.
+func (m *OutingApplicationMutation) AddInstanceID(u int32) {
+	if m.addinstance_id != nil {
+		*m.addinstance_id += u
+	} else {
+		m.addinstance_id = &u
+	}
+}
+
+// AddedInstanceID returns the value that was added to the "instance_id" field in this mutation.
+func (m *OutingApplicationMutation) AddedInstanceID() (r int32, exists bool) {
+	v := m.addinstance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearInstanceID clears the value of the "instance_id" field.
+func (m *OutingApplicationMutation) ClearInstanceID() {
+	m.instance_id = nil
+	m.addinstance_id = nil
+	m.clearedFields[outingapplication.FieldInstanceID] = struct{}{}
+}
+
+// InstanceIDCleared returns if the "instance_id" field was cleared in this mutation.
+func (m *OutingApplicationMutation) InstanceIDCleared() bool {
+	_, ok := m.clearedFields[outingapplication.FieldInstanceID]
+	return ok
+}
+
+// ResetInstanceID resets all changes to the "instance_id" field.
+func (m *OutingApplicationMutation) ResetInstanceID() {
+	m.instance_id = nil
+	m.addinstance_id = nil
+	delete(m.clearedFields, outingapplication.FieldInstanceID)
+}
+
+// Where appends a list predicates to the OutingApplicationMutation builder.
+func (m *OutingApplicationMutation) Where(ps ...predicate.OutingApplication) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the OutingApplicationMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *OutingApplicationMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.OutingApplication, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *OutingApplicationMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *OutingApplicationMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (OutingApplication).
+func (m *OutingApplicationMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *OutingApplicationMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.created_at != nil {
+		fields = append(fields, outingapplication.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, outingapplication.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, outingapplication.FieldDeletedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, outingapplication.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, outingapplication.FieldUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		fields = append(fields, outingapplication.FieldDeletedBy)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, outingapplication.FieldTenantID)
+	}
+	if m.reason != nil {
+		fields = append(fields, outingapplication.FieldReason)
+	}
+	if m.destination != nil {
+		fields = append(fields, outingapplication.FieldDestination)
+	}
+	if m.start_time != nil {
+		fields = append(fields, outingapplication.FieldStartTime)
+	}
+	if m.end_time != nil {
+		fields = append(fields, outingapplication.FieldEndTime)
+	}
+	if m.outing_status != nil {
+		fields = append(fields, outingapplication.FieldOutingStatus)
+	}
+	if m.instance_id != nil {
+		fields = append(fields, outingapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *OutingApplicationMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case outingapplication.FieldCreatedAt:
+		return m.CreatedAt()
+	case outingapplication.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case outingapplication.FieldDeletedAt:
+		return m.DeletedAt()
+	case outingapplication.FieldCreatedBy:
+		return m.CreatedBy()
+	case outingapplication.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case outingapplication.FieldDeletedBy:
+		return m.DeletedBy()
+	case outingapplication.FieldTenantID:
+		return m.TenantID()
+	case outingapplication.FieldReason:
+		return m.Reason()
+	case outingapplication.FieldDestination:
+		return m.Destination()
+	case outingapplication.FieldStartTime:
+		return m.StartTime()
+	case outingapplication.FieldEndTime:
+		return m.EndTime()
+	case outingapplication.FieldOutingStatus:
+		return m.OutingStatus()
+	case outingapplication.FieldInstanceID:
+		return m.InstanceID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *OutingApplicationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case outingapplication.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case outingapplication.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case outingapplication.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case outingapplication.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case outingapplication.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case outingapplication.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case outingapplication.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case outingapplication.FieldReason:
+		return m.OldReason(ctx)
+	case outingapplication.FieldDestination:
+		return m.OldDestination(ctx)
+	case outingapplication.FieldStartTime:
+		return m.OldStartTime(ctx)
+	case outingapplication.FieldEndTime:
+		return m.OldEndTime(ctx)
+	case outingapplication.FieldOutingStatus:
+		return m.OldOutingStatus(ctx)
+	case outingapplication.FieldInstanceID:
+		return m.OldInstanceID(ctx)
+	}
+	return nil, fmt.Errorf("unknown OutingApplication field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *OutingApplicationMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case outingapplication.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case outingapplication.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case outingapplication.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case outingapplication.FieldCreatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case outingapplication.FieldUpdatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case outingapplication.FieldDeletedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case outingapplication.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case outingapplication.FieldReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReason(v)
+		return nil
+	case outingapplication.FieldDestination:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDestination(v)
+		return nil
+	case outingapplication.FieldStartTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStartTime(v)
+		return nil
+	case outingapplication.FieldEndTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEndTime(v)
+		return nil
+	case outingapplication.FieldOutingStatus:
+		v, ok := value.(outingapplication.OutingStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOutingStatus(v)
+		return nil
+	case outingapplication.FieldInstanceID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInstanceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown OutingApplication field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *OutingApplicationMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_by != nil {
+		fields = append(fields, outingapplication.FieldCreatedBy)
+	}
+	if m.addupdated_by != nil {
+		fields = append(fields, outingapplication.FieldUpdatedBy)
+	}
+	if m.adddeleted_by != nil {
+		fields = append(fields, outingapplication.FieldDeletedBy)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, outingapplication.FieldTenantID)
+	}
+	if m.addinstance_id != nil {
+		fields = append(fields, outingapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *OutingApplicationMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case outingapplication.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case outingapplication.FieldUpdatedBy:
+		return m.AddedUpdatedBy()
+	case outingapplication.FieldDeletedBy:
+		return m.AddedDeletedBy()
+	case outingapplication.FieldTenantID:
+		return m.AddedTenantID()
+	case outingapplication.FieldInstanceID:
+		return m.AddedInstanceID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *OutingApplicationMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case outingapplication.FieldCreatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case outingapplication.FieldUpdatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedBy(v)
+		return nil
+	case outingapplication.FieldDeletedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedBy(v)
+		return nil
+	case outingapplication.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	case outingapplication.FieldInstanceID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddInstanceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown OutingApplication numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *OutingApplicationMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(outingapplication.FieldCreatedAt) {
+		fields = append(fields, outingapplication.FieldCreatedAt)
+	}
+	if m.FieldCleared(outingapplication.FieldUpdatedAt) {
+		fields = append(fields, outingapplication.FieldUpdatedAt)
+	}
+	if m.FieldCleared(outingapplication.FieldDeletedAt) {
+		fields = append(fields, outingapplication.FieldDeletedAt)
+	}
+	if m.FieldCleared(outingapplication.FieldCreatedBy) {
+		fields = append(fields, outingapplication.FieldCreatedBy)
+	}
+	if m.FieldCleared(outingapplication.FieldUpdatedBy) {
+		fields = append(fields, outingapplication.FieldUpdatedBy)
+	}
+	if m.FieldCleared(outingapplication.FieldDeletedBy) {
+		fields = append(fields, outingapplication.FieldDeletedBy)
+	}
+	if m.FieldCleared(outingapplication.FieldTenantID) {
+		fields = append(fields, outingapplication.FieldTenantID)
+	}
+	if m.FieldCleared(outingapplication.FieldOutingStatus) {
+		fields = append(fields, outingapplication.FieldOutingStatus)
+	}
+	if m.FieldCleared(outingapplication.FieldInstanceID) {
+		fields = append(fields, outingapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *OutingApplicationMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *OutingApplicationMutation) ClearField(name string) error {
+	switch name {
+	case outingapplication.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case outingapplication.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case outingapplication.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case outingapplication.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case outingapplication.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case outingapplication.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case outingapplication.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case outingapplication.FieldOutingStatus:
+		m.ClearOutingStatus()
+		return nil
+	case outingapplication.FieldInstanceID:
+		m.ClearInstanceID()
+		return nil
+	}
+	return fmt.Errorf("unknown OutingApplication nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *OutingApplicationMutation) ResetField(name string) error {
+	switch name {
+	case outingapplication.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case outingapplication.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case outingapplication.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case outingapplication.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case outingapplication.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case outingapplication.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case outingapplication.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case outingapplication.FieldReason:
+		m.ResetReason()
+		return nil
+	case outingapplication.FieldDestination:
+		m.ResetDestination()
+		return nil
+	case outingapplication.FieldStartTime:
+		m.ResetStartTime()
+		return nil
+	case outingapplication.FieldEndTime:
+		m.ResetEndTime()
+		return nil
+	case outingapplication.FieldOutingStatus:
+		m.ResetOutingStatus()
+		return nil
+	case outingapplication.FieldInstanceID:
+		m.ResetInstanceID()
+		return nil
+	}
+	return fmt.Errorf("unknown OutingApplication field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *OutingApplicationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *OutingApplicationMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *OutingApplicationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *OutingApplicationMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *OutingApplicationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *OutingApplicationMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *OutingApplicationMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown OutingApplication unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *OutingApplicationMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown OutingApplication edge %s", name)
+}
+
+// OvertimeApplicationMutation represents an operation that mutates the OvertimeApplication nodes in the graph.
+type OvertimeApplicationMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *uint32
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	created_by        *uint32
+	addcreated_by     *int32
+	updated_by        *uint32
+	addupdated_by     *int32
+	deleted_by        *uint32
+	adddeleted_by     *int32
+	tenant_id         *uint32
+	addtenant_id      *int32
+	reason            *string
+	start_time        *time.Time
+	end_time          *time.Time
+	compensation_type *overtimeapplication.CompensationType
+	overtime_status   *overtimeapplication.OvertimeStatus
+	instance_id       *uint32
+	addinstance_id    *int32
+	clearedFields     map[string]struct{}
+	done              bool
+	oldValue          func(context.Context) (*OvertimeApplication, error)
+	predicates        []predicate.OvertimeApplication
+}
+
+var _ ent.Mutation = (*OvertimeApplicationMutation)(nil)
+
+// overtimeapplicationOption allows management of the mutation configuration using functional options.
+type overtimeapplicationOption func(*OvertimeApplicationMutation)
+
+// newOvertimeApplicationMutation creates new mutation for the OvertimeApplication entity.
+func newOvertimeApplicationMutation(c config, op Op, opts ...overtimeapplicationOption) *OvertimeApplicationMutation {
+	m := &OvertimeApplicationMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeOvertimeApplication,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withOvertimeApplicationID sets the ID field of the mutation.
+func withOvertimeApplicationID(id uint32) overtimeapplicationOption {
+	return func(m *OvertimeApplicationMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *OvertimeApplication
+		)
+		m.oldValue = func(ctx context.Context) (*OvertimeApplication, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().OvertimeApplication.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withOvertimeApplication sets the old OvertimeApplication of the mutation.
+func withOvertimeApplication(node *OvertimeApplication) overtimeapplicationOption {
+	return func(m *OvertimeApplicationMutation) {
+		m.oldValue = func(context.Context) (*OvertimeApplication, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m OvertimeApplicationMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m OvertimeApplicationMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of OvertimeApplication entities.
+func (m *OvertimeApplicationMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *OvertimeApplicationMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *OvertimeApplicationMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().OvertimeApplication.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *OvertimeApplicationMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *OvertimeApplicationMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *OvertimeApplicationMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[overtimeapplication.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *OvertimeApplicationMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[overtimeapplication.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *OvertimeApplicationMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, overtimeapplication.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *OvertimeApplicationMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *OvertimeApplicationMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *OvertimeApplicationMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[overtimeapplication.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *OvertimeApplicationMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[overtimeapplication.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *OvertimeApplicationMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, overtimeapplication.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *OvertimeApplicationMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *OvertimeApplicationMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *OvertimeApplicationMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[overtimeapplication.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *OvertimeApplicationMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[overtimeapplication.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *OvertimeApplicationMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, overtimeapplication.FieldDeletedAt)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *OvertimeApplicationMutation) SetCreatedBy(u uint32) {
+	m.created_by = &u
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *OvertimeApplicationMutation) CreatedBy() (r uint32, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds u to the "created_by" field.
+func (m *OvertimeApplicationMutation) AddCreatedBy(u int32) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += u
+	} else {
+		m.addcreated_by = &u
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *OvertimeApplicationMutation) AddedCreatedBy() (r int32, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *OvertimeApplicationMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[overtimeapplication.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *OvertimeApplicationMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[overtimeapplication.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *OvertimeApplicationMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, overtimeapplication.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *OvertimeApplicationMutation) SetUpdatedBy(u uint32) {
+	m.updated_by = &u
+	m.addupdated_by = nil
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *OvertimeApplicationMutation) UpdatedBy() (r uint32, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// AddUpdatedBy adds u to the "updated_by" field.
+func (m *OvertimeApplicationMutation) AddUpdatedBy(u int32) {
+	if m.addupdated_by != nil {
+		*m.addupdated_by += u
+	} else {
+		m.addupdated_by = &u
+	}
+}
+
+// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
+func (m *OvertimeApplicationMutation) AddedUpdatedBy() (r int32, exists bool) {
+	v := m.addupdated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *OvertimeApplicationMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	m.clearedFields[overtimeapplication.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *OvertimeApplicationMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[overtimeapplication.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *OvertimeApplicationMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	delete(m.clearedFields, overtimeapplication.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "deleted_by" field.
+func (m *OvertimeApplicationMutation) SetDeletedBy(u uint32) {
+	m.deleted_by = &u
+	m.adddeleted_by = nil
+}
+
+// DeletedBy returns the value of the "deleted_by" field in the mutation.
+func (m *OvertimeApplicationMutation) DeletedBy() (r uint32, exists bool) {
+	v := m.deleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "deleted_by" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// AddDeletedBy adds u to the "deleted_by" field.
+func (m *OvertimeApplicationMutation) AddDeletedBy(u int32) {
+	if m.adddeleted_by != nil {
+		*m.adddeleted_by += u
+	} else {
+		m.adddeleted_by = &u
+	}
+}
+
+// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
+func (m *OvertimeApplicationMutation) AddedDeletedBy() (r int32, exists bool) {
+	v := m.adddeleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (m *OvertimeApplicationMutation) ClearDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	m.clearedFields[overtimeapplication.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
+func (m *OvertimeApplicationMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[overtimeapplication.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" field.
+func (m *OvertimeApplicationMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	delete(m.clearedFields, overtimeapplication.FieldDeletedBy)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *OvertimeApplicationMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *OvertimeApplicationMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *OvertimeApplicationMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *OvertimeApplicationMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *OvertimeApplicationMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[overtimeapplication.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *OvertimeApplicationMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[overtimeapplication.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *OvertimeApplicationMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, overtimeapplication.FieldTenantID)
+}
+
+// SetReason sets the "reason" field.
+func (m *OvertimeApplicationMutation) SetReason(s string) {
+	m.reason = &s
+}
+
+// Reason returns the value of the "reason" field in the mutation.
+func (m *OvertimeApplicationMutation) Reason() (r string, exists bool) {
+	v := m.reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReason returns the old "reason" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldReason(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReason: %w", err)
+	}
+	return oldValue.Reason, nil
+}
+
+// ResetReason resets all changes to the "reason" field.
+func (m *OvertimeApplicationMutation) ResetReason() {
+	m.reason = nil
+}
+
+// SetStartTime sets the "start_time" field.
+func (m *OvertimeApplicationMutation) SetStartTime(t time.Time) {
+	m.start_time = &t
+}
+
+// StartTime returns the value of the "start_time" field in the mutation.
+func (m *OvertimeApplicationMutation) StartTime() (r time.Time, exists bool) {
+	v := m.start_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStartTime returns the old "start_time" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldStartTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStartTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStartTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStartTime: %w", err)
+	}
+	return oldValue.StartTime, nil
+}
+
+// ResetStartTime resets all changes to the "start_time" field.
+func (m *OvertimeApplicationMutation) ResetStartTime() {
+	m.start_time = nil
+}
+
+// SetEndTime sets the "end_time" field.
+func (m *OvertimeApplicationMutation) SetEndTime(t time.Time) {
+	m.end_time = &t
+}
+
+// EndTime returns the value of the "end_time" field in the mutation.
+func (m *OvertimeApplicationMutation) EndTime() (r time.Time, exists bool) {
+	v := m.end_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEndTime returns the old "end_time" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldEndTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEndTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEndTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEndTime: %w", err)
+	}
+	return oldValue.EndTime, nil
+}
+
+// ResetEndTime resets all changes to the "end_time" field.
+func (m *OvertimeApplicationMutation) ResetEndTime() {
+	m.end_time = nil
+}
+
+// SetCompensationType sets the "compensation_type" field.
+func (m *OvertimeApplicationMutation) SetCompensationType(ot overtimeapplication.CompensationType) {
+	m.compensation_type = &ot
+}
+
+// CompensationType returns the value of the "compensation_type" field in the mutation.
+func (m *OvertimeApplicationMutation) CompensationType() (r overtimeapplication.CompensationType, exists bool) {
+	v := m.compensation_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCompensationType returns the old "compensation_type" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldCompensationType(ctx context.Context) (v *overtimeapplication.CompensationType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCompensationType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCompensationType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCompensationType: %w", err)
+	}
+	return oldValue.CompensationType, nil
+}
+
+// ClearCompensationType clears the value of the "compensation_type" field.
+func (m *OvertimeApplicationMutation) ClearCompensationType() {
+	m.compensation_type = nil
+	m.clearedFields[overtimeapplication.FieldCompensationType] = struct{}{}
+}
+
+// CompensationTypeCleared returns if the "compensation_type" field was cleared in this mutation.
+func (m *OvertimeApplicationMutation) CompensationTypeCleared() bool {
+	_, ok := m.clearedFields[overtimeapplication.FieldCompensationType]
+	return ok
+}
+
+// ResetCompensationType resets all changes to the "compensation_type" field.
+func (m *OvertimeApplicationMutation) ResetCompensationType() {
+	m.compensation_type = nil
+	delete(m.clearedFields, overtimeapplication.FieldCompensationType)
+}
+
+// SetOvertimeStatus sets the "overtime_status" field.
+func (m *OvertimeApplicationMutation) SetOvertimeStatus(os overtimeapplication.OvertimeStatus) {
+	m.overtime_status = &os
+}
+
+// OvertimeStatus returns the value of the "overtime_status" field in the mutation.
+func (m *OvertimeApplicationMutation) OvertimeStatus() (r overtimeapplication.OvertimeStatus, exists bool) {
+	v := m.overtime_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOvertimeStatus returns the old "overtime_status" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldOvertimeStatus(ctx context.Context) (v *overtimeapplication.OvertimeStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOvertimeStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOvertimeStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOvertimeStatus: %w", err)
+	}
+	return oldValue.OvertimeStatus, nil
+}
+
+// ClearOvertimeStatus clears the value of the "overtime_status" field.
+func (m *OvertimeApplicationMutation) ClearOvertimeStatus() {
+	m.overtime_status = nil
+	m.clearedFields[overtimeapplication.FieldOvertimeStatus] = struct{}{}
+}
+
+// OvertimeStatusCleared returns if the "overtime_status" field was cleared in this mutation.
+func (m *OvertimeApplicationMutation) OvertimeStatusCleared() bool {
+	_, ok := m.clearedFields[overtimeapplication.FieldOvertimeStatus]
+	return ok
+}
+
+// ResetOvertimeStatus resets all changes to the "overtime_status" field.
+func (m *OvertimeApplicationMutation) ResetOvertimeStatus() {
+	m.overtime_status = nil
+	delete(m.clearedFields, overtimeapplication.FieldOvertimeStatus)
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (m *OvertimeApplicationMutation) SetInstanceID(u uint32) {
+	m.instance_id = &u
+	m.addinstance_id = nil
+}
+
+// InstanceID returns the value of the "instance_id" field in the mutation.
+func (m *OvertimeApplicationMutation) InstanceID() (r uint32, exists bool) {
+	v := m.instance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInstanceID returns the old "instance_id" field's value of the OvertimeApplication entity.
+// If the OvertimeApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OvertimeApplicationMutation) OldInstanceID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInstanceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInstanceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInstanceID: %w", err)
+	}
+	return oldValue.InstanceID, nil
+}
+
+// AddInstanceID adds u to the "instance_id" field.
+func (m *OvertimeApplicationMutation) AddInstanceID(u int32) {
+	if m.addinstance_id != nil {
+		*m.addinstance_id += u
+	} else {
+		m.addinstance_id = &u
+	}
+}
+
+// AddedInstanceID returns the value that was added to the "instance_id" field in this mutation.
+func (m *OvertimeApplicationMutation) AddedInstanceID() (r int32, exists bool) {
+	v := m.addinstance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearInstanceID clears the value of the "instance_id" field.
+func (m *OvertimeApplicationMutation) ClearInstanceID() {
+	m.instance_id = nil
+	m.addinstance_id = nil
+	m.clearedFields[overtimeapplication.FieldInstanceID] = struct{}{}
+}
+
+// InstanceIDCleared returns if the "instance_id" field was cleared in this mutation.
+func (m *OvertimeApplicationMutation) InstanceIDCleared() bool {
+	_, ok := m.clearedFields[overtimeapplication.FieldInstanceID]
+	return ok
+}
+
+// ResetInstanceID resets all changes to the "instance_id" field.
+func (m *OvertimeApplicationMutation) ResetInstanceID() {
+	m.instance_id = nil
+	m.addinstance_id = nil
+	delete(m.clearedFields, overtimeapplication.FieldInstanceID)
+}
+
+// Where appends a list predicates to the OvertimeApplicationMutation builder.
+func (m *OvertimeApplicationMutation) Where(ps ...predicate.OvertimeApplication) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the OvertimeApplicationMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *OvertimeApplicationMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.OvertimeApplication, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *OvertimeApplicationMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *OvertimeApplicationMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (OvertimeApplication).
+func (m *OvertimeApplicationMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *OvertimeApplicationMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.created_at != nil {
+		fields = append(fields, overtimeapplication.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, overtimeapplication.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, overtimeapplication.FieldDeletedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, overtimeapplication.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, overtimeapplication.FieldUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		fields = append(fields, overtimeapplication.FieldDeletedBy)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, overtimeapplication.FieldTenantID)
+	}
+	if m.reason != nil {
+		fields = append(fields, overtimeapplication.FieldReason)
+	}
+	if m.start_time != nil {
+		fields = append(fields, overtimeapplication.FieldStartTime)
+	}
+	if m.end_time != nil {
+		fields = append(fields, overtimeapplication.FieldEndTime)
+	}
+	if m.compensation_type != nil {
+		fields = append(fields, overtimeapplication.FieldCompensationType)
+	}
+	if m.overtime_status != nil {
+		fields = append(fields, overtimeapplication.FieldOvertimeStatus)
+	}
+	if m.instance_id != nil {
+		fields = append(fields, overtimeapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *OvertimeApplicationMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case overtimeapplication.FieldCreatedAt:
+		return m.CreatedAt()
+	case overtimeapplication.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case overtimeapplication.FieldDeletedAt:
+		return m.DeletedAt()
+	case overtimeapplication.FieldCreatedBy:
+		return m.CreatedBy()
+	case overtimeapplication.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case overtimeapplication.FieldDeletedBy:
+		return m.DeletedBy()
+	case overtimeapplication.FieldTenantID:
+		return m.TenantID()
+	case overtimeapplication.FieldReason:
+		return m.Reason()
+	case overtimeapplication.FieldStartTime:
+		return m.StartTime()
+	case overtimeapplication.FieldEndTime:
+		return m.EndTime()
+	case overtimeapplication.FieldCompensationType:
+		return m.CompensationType()
+	case overtimeapplication.FieldOvertimeStatus:
+		return m.OvertimeStatus()
+	case overtimeapplication.FieldInstanceID:
+		return m.InstanceID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *OvertimeApplicationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case overtimeapplication.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case overtimeapplication.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case overtimeapplication.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case overtimeapplication.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case overtimeapplication.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case overtimeapplication.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case overtimeapplication.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case overtimeapplication.FieldReason:
+		return m.OldReason(ctx)
+	case overtimeapplication.FieldStartTime:
+		return m.OldStartTime(ctx)
+	case overtimeapplication.FieldEndTime:
+		return m.OldEndTime(ctx)
+	case overtimeapplication.FieldCompensationType:
+		return m.OldCompensationType(ctx)
+	case overtimeapplication.FieldOvertimeStatus:
+		return m.OldOvertimeStatus(ctx)
+	case overtimeapplication.FieldInstanceID:
+		return m.OldInstanceID(ctx)
+	}
+	return nil, fmt.Errorf("unknown OvertimeApplication field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *OvertimeApplicationMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case overtimeapplication.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case overtimeapplication.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case overtimeapplication.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case overtimeapplication.FieldCreatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case overtimeapplication.FieldUpdatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case overtimeapplication.FieldDeletedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case overtimeapplication.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case overtimeapplication.FieldReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReason(v)
+		return nil
+	case overtimeapplication.FieldStartTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStartTime(v)
+		return nil
+	case overtimeapplication.FieldEndTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEndTime(v)
+		return nil
+	case overtimeapplication.FieldCompensationType:
+		v, ok := value.(overtimeapplication.CompensationType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCompensationType(v)
+		return nil
+	case overtimeapplication.FieldOvertimeStatus:
+		v, ok := value.(overtimeapplication.OvertimeStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOvertimeStatus(v)
+		return nil
+	case overtimeapplication.FieldInstanceID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInstanceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown OvertimeApplication field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *OvertimeApplicationMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_by != nil {
+		fields = append(fields, overtimeapplication.FieldCreatedBy)
+	}
+	if m.addupdated_by != nil {
+		fields = append(fields, overtimeapplication.FieldUpdatedBy)
+	}
+	if m.adddeleted_by != nil {
+		fields = append(fields, overtimeapplication.FieldDeletedBy)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, overtimeapplication.FieldTenantID)
+	}
+	if m.addinstance_id != nil {
+		fields = append(fields, overtimeapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *OvertimeApplicationMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case overtimeapplication.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case overtimeapplication.FieldUpdatedBy:
+		return m.AddedUpdatedBy()
+	case overtimeapplication.FieldDeletedBy:
+		return m.AddedDeletedBy()
+	case overtimeapplication.FieldTenantID:
+		return m.AddedTenantID()
+	case overtimeapplication.FieldInstanceID:
+		return m.AddedInstanceID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *OvertimeApplicationMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case overtimeapplication.FieldCreatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case overtimeapplication.FieldUpdatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedBy(v)
+		return nil
+	case overtimeapplication.FieldDeletedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedBy(v)
+		return nil
+	case overtimeapplication.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	case overtimeapplication.FieldInstanceID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddInstanceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown OvertimeApplication numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *OvertimeApplicationMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(overtimeapplication.FieldCreatedAt) {
+		fields = append(fields, overtimeapplication.FieldCreatedAt)
+	}
+	if m.FieldCleared(overtimeapplication.FieldUpdatedAt) {
+		fields = append(fields, overtimeapplication.FieldUpdatedAt)
+	}
+	if m.FieldCleared(overtimeapplication.FieldDeletedAt) {
+		fields = append(fields, overtimeapplication.FieldDeletedAt)
+	}
+	if m.FieldCleared(overtimeapplication.FieldCreatedBy) {
+		fields = append(fields, overtimeapplication.FieldCreatedBy)
+	}
+	if m.FieldCleared(overtimeapplication.FieldUpdatedBy) {
+		fields = append(fields, overtimeapplication.FieldUpdatedBy)
+	}
+	if m.FieldCleared(overtimeapplication.FieldDeletedBy) {
+		fields = append(fields, overtimeapplication.FieldDeletedBy)
+	}
+	if m.FieldCleared(overtimeapplication.FieldTenantID) {
+		fields = append(fields, overtimeapplication.FieldTenantID)
+	}
+	if m.FieldCleared(overtimeapplication.FieldCompensationType) {
+		fields = append(fields, overtimeapplication.FieldCompensationType)
+	}
+	if m.FieldCleared(overtimeapplication.FieldOvertimeStatus) {
+		fields = append(fields, overtimeapplication.FieldOvertimeStatus)
+	}
+	if m.FieldCleared(overtimeapplication.FieldInstanceID) {
+		fields = append(fields, overtimeapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *OvertimeApplicationMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *OvertimeApplicationMutation) ClearField(name string) error {
+	switch name {
+	case overtimeapplication.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case overtimeapplication.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case overtimeapplication.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case overtimeapplication.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case overtimeapplication.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case overtimeapplication.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case overtimeapplication.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case overtimeapplication.FieldCompensationType:
+		m.ClearCompensationType()
+		return nil
+	case overtimeapplication.FieldOvertimeStatus:
+		m.ClearOvertimeStatus()
+		return nil
+	case overtimeapplication.FieldInstanceID:
+		m.ClearInstanceID()
+		return nil
+	}
+	return fmt.Errorf("unknown OvertimeApplication nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *OvertimeApplicationMutation) ResetField(name string) error {
+	switch name {
+	case overtimeapplication.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case overtimeapplication.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case overtimeapplication.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case overtimeapplication.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case overtimeapplication.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case overtimeapplication.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case overtimeapplication.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case overtimeapplication.FieldReason:
+		m.ResetReason()
+		return nil
+	case overtimeapplication.FieldStartTime:
+		m.ResetStartTime()
+		return nil
+	case overtimeapplication.FieldEndTime:
+		m.ResetEndTime()
+		return nil
+	case overtimeapplication.FieldCompensationType:
+		m.ResetCompensationType()
+		return nil
+	case overtimeapplication.FieldOvertimeStatus:
+		m.ResetOvertimeStatus()
+		return nil
+	case overtimeapplication.FieldInstanceID:
+		m.ResetInstanceID()
+		return nil
+	}
+	return fmt.Errorf("unknown OvertimeApplication field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *OvertimeApplicationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *OvertimeApplicationMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *OvertimeApplicationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *OvertimeApplicationMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *OvertimeApplicationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *OvertimeApplicationMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *OvertimeApplicationMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown OvertimeApplication unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *OvertimeApplicationMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown OvertimeApplication edge %s", name)
+}
+
 // PageMutation represents an operation that mutates the Page nodes in the graph.
 type PageMutation struct {
 	config
@@ -87564,6 +90243,1385 @@ func (m *RolePermissionMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *RolePermissionMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown RolePermission edge %s", name)
+}
+
+// SealApplicationMutation represents an operation that mutates the SealApplication nodes in the graph.
+type SealApplicationMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *uint32
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	created_by     *uint32
+	addcreated_by  *int32
+	updated_by     *uint32
+	addupdated_by  *int32
+	deleted_by     *uint32
+	adddeleted_by  *int32
+	tenant_id      *uint32
+	addtenant_id   *int32
+	purpose        *string
+	seal_type      *sealapplication.SealType
+	file_count     *int32
+	addfile_count  *int32
+	recipient      *string
+	seal_status    *sealapplication.SealStatus
+	instance_id    *uint32
+	addinstance_id *int32
+	clearedFields  map[string]struct{}
+	done           bool
+	oldValue       func(context.Context) (*SealApplication, error)
+	predicates     []predicate.SealApplication
+}
+
+var _ ent.Mutation = (*SealApplicationMutation)(nil)
+
+// sealapplicationOption allows management of the mutation configuration using functional options.
+type sealapplicationOption func(*SealApplicationMutation)
+
+// newSealApplicationMutation creates new mutation for the SealApplication entity.
+func newSealApplicationMutation(c config, op Op, opts ...sealapplicationOption) *SealApplicationMutation {
+	m := &SealApplicationMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSealApplication,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSealApplicationID sets the ID field of the mutation.
+func withSealApplicationID(id uint32) sealapplicationOption {
+	return func(m *SealApplicationMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SealApplication
+		)
+		m.oldValue = func(ctx context.Context) (*SealApplication, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SealApplication.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSealApplication sets the old SealApplication of the mutation.
+func withSealApplication(node *SealApplication) sealapplicationOption {
+	return func(m *SealApplicationMutation) {
+		m.oldValue = func(context.Context) (*SealApplication, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SealApplicationMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SealApplicationMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SealApplication entities.
+func (m *SealApplicationMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SealApplicationMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SealApplicationMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SealApplication.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *SealApplicationMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *SealApplicationMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *SealApplicationMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[sealapplication.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *SealApplicationMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[sealapplication.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *SealApplicationMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, sealapplication.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *SealApplicationMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *SealApplicationMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *SealApplicationMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[sealapplication.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *SealApplicationMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[sealapplication.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *SealApplicationMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, sealapplication.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *SealApplicationMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *SealApplicationMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *SealApplicationMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[sealapplication.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *SealApplicationMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[sealapplication.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *SealApplicationMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, sealapplication.FieldDeletedAt)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *SealApplicationMutation) SetCreatedBy(u uint32) {
+	m.created_by = &u
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *SealApplicationMutation) CreatedBy() (r uint32, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds u to the "created_by" field.
+func (m *SealApplicationMutation) AddCreatedBy(u int32) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += u
+	} else {
+		m.addcreated_by = &u
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *SealApplicationMutation) AddedCreatedBy() (r int32, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *SealApplicationMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[sealapplication.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *SealApplicationMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[sealapplication.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *SealApplicationMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, sealapplication.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *SealApplicationMutation) SetUpdatedBy(u uint32) {
+	m.updated_by = &u
+	m.addupdated_by = nil
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *SealApplicationMutation) UpdatedBy() (r uint32, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// AddUpdatedBy adds u to the "updated_by" field.
+func (m *SealApplicationMutation) AddUpdatedBy(u int32) {
+	if m.addupdated_by != nil {
+		*m.addupdated_by += u
+	} else {
+		m.addupdated_by = &u
+	}
+}
+
+// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
+func (m *SealApplicationMutation) AddedUpdatedBy() (r int32, exists bool) {
+	v := m.addupdated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *SealApplicationMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	m.clearedFields[sealapplication.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *SealApplicationMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[sealapplication.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *SealApplicationMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	delete(m.clearedFields, sealapplication.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "deleted_by" field.
+func (m *SealApplicationMutation) SetDeletedBy(u uint32) {
+	m.deleted_by = &u
+	m.adddeleted_by = nil
+}
+
+// DeletedBy returns the value of the "deleted_by" field in the mutation.
+func (m *SealApplicationMutation) DeletedBy() (r uint32, exists bool) {
+	v := m.deleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "deleted_by" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// AddDeletedBy adds u to the "deleted_by" field.
+func (m *SealApplicationMutation) AddDeletedBy(u int32) {
+	if m.adddeleted_by != nil {
+		*m.adddeleted_by += u
+	} else {
+		m.adddeleted_by = &u
+	}
+}
+
+// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
+func (m *SealApplicationMutation) AddedDeletedBy() (r int32, exists bool) {
+	v := m.adddeleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (m *SealApplicationMutation) ClearDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	m.clearedFields[sealapplication.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
+func (m *SealApplicationMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[sealapplication.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" field.
+func (m *SealApplicationMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	delete(m.clearedFields, sealapplication.FieldDeletedBy)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *SealApplicationMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *SealApplicationMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *SealApplicationMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *SealApplicationMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *SealApplicationMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[sealapplication.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *SealApplicationMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[sealapplication.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *SealApplicationMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, sealapplication.FieldTenantID)
+}
+
+// SetPurpose sets the "purpose" field.
+func (m *SealApplicationMutation) SetPurpose(s string) {
+	m.purpose = &s
+}
+
+// Purpose returns the value of the "purpose" field in the mutation.
+func (m *SealApplicationMutation) Purpose() (r string, exists bool) {
+	v := m.purpose
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPurpose returns the old "purpose" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldPurpose(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPurpose is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPurpose requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPurpose: %w", err)
+	}
+	return oldValue.Purpose, nil
+}
+
+// ResetPurpose resets all changes to the "purpose" field.
+func (m *SealApplicationMutation) ResetPurpose() {
+	m.purpose = nil
+}
+
+// SetSealType sets the "seal_type" field.
+func (m *SealApplicationMutation) SetSealType(st sealapplication.SealType) {
+	m.seal_type = &st
+}
+
+// SealType returns the value of the "seal_type" field in the mutation.
+func (m *SealApplicationMutation) SealType() (r sealapplication.SealType, exists bool) {
+	v := m.seal_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSealType returns the old "seal_type" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldSealType(ctx context.Context) (v *sealapplication.SealType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSealType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSealType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSealType: %w", err)
+	}
+	return oldValue.SealType, nil
+}
+
+// ClearSealType clears the value of the "seal_type" field.
+func (m *SealApplicationMutation) ClearSealType() {
+	m.seal_type = nil
+	m.clearedFields[sealapplication.FieldSealType] = struct{}{}
+}
+
+// SealTypeCleared returns if the "seal_type" field was cleared in this mutation.
+func (m *SealApplicationMutation) SealTypeCleared() bool {
+	_, ok := m.clearedFields[sealapplication.FieldSealType]
+	return ok
+}
+
+// ResetSealType resets all changes to the "seal_type" field.
+func (m *SealApplicationMutation) ResetSealType() {
+	m.seal_type = nil
+	delete(m.clearedFields, sealapplication.FieldSealType)
+}
+
+// SetFileCount sets the "file_count" field.
+func (m *SealApplicationMutation) SetFileCount(i int32) {
+	m.file_count = &i
+	m.addfile_count = nil
+}
+
+// FileCount returns the value of the "file_count" field in the mutation.
+func (m *SealApplicationMutation) FileCount() (r int32, exists bool) {
+	v := m.file_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileCount returns the old "file_count" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldFileCount(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileCount: %w", err)
+	}
+	return oldValue.FileCount, nil
+}
+
+// AddFileCount adds i to the "file_count" field.
+func (m *SealApplicationMutation) AddFileCount(i int32) {
+	if m.addfile_count != nil {
+		*m.addfile_count += i
+	} else {
+		m.addfile_count = &i
+	}
+}
+
+// AddedFileCount returns the value that was added to the "file_count" field in this mutation.
+func (m *SealApplicationMutation) AddedFileCount() (r int32, exists bool) {
+	v := m.addfile_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFileCount resets all changes to the "file_count" field.
+func (m *SealApplicationMutation) ResetFileCount() {
+	m.file_count = nil
+	m.addfile_count = nil
+}
+
+// SetRecipient sets the "recipient" field.
+func (m *SealApplicationMutation) SetRecipient(s string) {
+	m.recipient = &s
+}
+
+// Recipient returns the value of the "recipient" field in the mutation.
+func (m *SealApplicationMutation) Recipient() (r string, exists bool) {
+	v := m.recipient
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecipient returns the old "recipient" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldRecipient(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecipient is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecipient requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecipient: %w", err)
+	}
+	return oldValue.Recipient, nil
+}
+
+// ResetRecipient resets all changes to the "recipient" field.
+func (m *SealApplicationMutation) ResetRecipient() {
+	m.recipient = nil
+}
+
+// SetSealStatus sets the "seal_status" field.
+func (m *SealApplicationMutation) SetSealStatus(ss sealapplication.SealStatus) {
+	m.seal_status = &ss
+}
+
+// SealStatus returns the value of the "seal_status" field in the mutation.
+func (m *SealApplicationMutation) SealStatus() (r sealapplication.SealStatus, exists bool) {
+	v := m.seal_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSealStatus returns the old "seal_status" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldSealStatus(ctx context.Context) (v *sealapplication.SealStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSealStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSealStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSealStatus: %w", err)
+	}
+	return oldValue.SealStatus, nil
+}
+
+// ClearSealStatus clears the value of the "seal_status" field.
+func (m *SealApplicationMutation) ClearSealStatus() {
+	m.seal_status = nil
+	m.clearedFields[sealapplication.FieldSealStatus] = struct{}{}
+}
+
+// SealStatusCleared returns if the "seal_status" field was cleared in this mutation.
+func (m *SealApplicationMutation) SealStatusCleared() bool {
+	_, ok := m.clearedFields[sealapplication.FieldSealStatus]
+	return ok
+}
+
+// ResetSealStatus resets all changes to the "seal_status" field.
+func (m *SealApplicationMutation) ResetSealStatus() {
+	m.seal_status = nil
+	delete(m.clearedFields, sealapplication.FieldSealStatus)
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (m *SealApplicationMutation) SetInstanceID(u uint32) {
+	m.instance_id = &u
+	m.addinstance_id = nil
+}
+
+// InstanceID returns the value of the "instance_id" field in the mutation.
+func (m *SealApplicationMutation) InstanceID() (r uint32, exists bool) {
+	v := m.instance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInstanceID returns the old "instance_id" field's value of the SealApplication entity.
+// If the SealApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SealApplicationMutation) OldInstanceID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInstanceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInstanceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInstanceID: %w", err)
+	}
+	return oldValue.InstanceID, nil
+}
+
+// AddInstanceID adds u to the "instance_id" field.
+func (m *SealApplicationMutation) AddInstanceID(u int32) {
+	if m.addinstance_id != nil {
+		*m.addinstance_id += u
+	} else {
+		m.addinstance_id = &u
+	}
+}
+
+// AddedInstanceID returns the value that was added to the "instance_id" field in this mutation.
+func (m *SealApplicationMutation) AddedInstanceID() (r int32, exists bool) {
+	v := m.addinstance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearInstanceID clears the value of the "instance_id" field.
+func (m *SealApplicationMutation) ClearInstanceID() {
+	m.instance_id = nil
+	m.addinstance_id = nil
+	m.clearedFields[sealapplication.FieldInstanceID] = struct{}{}
+}
+
+// InstanceIDCleared returns if the "instance_id" field was cleared in this mutation.
+func (m *SealApplicationMutation) InstanceIDCleared() bool {
+	_, ok := m.clearedFields[sealapplication.FieldInstanceID]
+	return ok
+}
+
+// ResetInstanceID resets all changes to the "instance_id" field.
+func (m *SealApplicationMutation) ResetInstanceID() {
+	m.instance_id = nil
+	m.addinstance_id = nil
+	delete(m.clearedFields, sealapplication.FieldInstanceID)
+}
+
+// Where appends a list predicates to the SealApplicationMutation builder.
+func (m *SealApplicationMutation) Where(ps ...predicate.SealApplication) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SealApplicationMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SealApplicationMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SealApplication, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SealApplicationMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SealApplicationMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SealApplication).
+func (m *SealApplicationMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SealApplicationMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.created_at != nil {
+		fields = append(fields, sealapplication.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, sealapplication.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, sealapplication.FieldDeletedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, sealapplication.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, sealapplication.FieldUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		fields = append(fields, sealapplication.FieldDeletedBy)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, sealapplication.FieldTenantID)
+	}
+	if m.purpose != nil {
+		fields = append(fields, sealapplication.FieldPurpose)
+	}
+	if m.seal_type != nil {
+		fields = append(fields, sealapplication.FieldSealType)
+	}
+	if m.file_count != nil {
+		fields = append(fields, sealapplication.FieldFileCount)
+	}
+	if m.recipient != nil {
+		fields = append(fields, sealapplication.FieldRecipient)
+	}
+	if m.seal_status != nil {
+		fields = append(fields, sealapplication.FieldSealStatus)
+	}
+	if m.instance_id != nil {
+		fields = append(fields, sealapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SealApplicationMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case sealapplication.FieldCreatedAt:
+		return m.CreatedAt()
+	case sealapplication.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case sealapplication.FieldDeletedAt:
+		return m.DeletedAt()
+	case sealapplication.FieldCreatedBy:
+		return m.CreatedBy()
+	case sealapplication.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case sealapplication.FieldDeletedBy:
+		return m.DeletedBy()
+	case sealapplication.FieldTenantID:
+		return m.TenantID()
+	case sealapplication.FieldPurpose:
+		return m.Purpose()
+	case sealapplication.FieldSealType:
+		return m.SealType()
+	case sealapplication.FieldFileCount:
+		return m.FileCount()
+	case sealapplication.FieldRecipient:
+		return m.Recipient()
+	case sealapplication.FieldSealStatus:
+		return m.SealStatus()
+	case sealapplication.FieldInstanceID:
+		return m.InstanceID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SealApplicationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case sealapplication.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case sealapplication.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case sealapplication.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case sealapplication.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case sealapplication.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case sealapplication.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case sealapplication.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case sealapplication.FieldPurpose:
+		return m.OldPurpose(ctx)
+	case sealapplication.FieldSealType:
+		return m.OldSealType(ctx)
+	case sealapplication.FieldFileCount:
+		return m.OldFileCount(ctx)
+	case sealapplication.FieldRecipient:
+		return m.OldRecipient(ctx)
+	case sealapplication.FieldSealStatus:
+		return m.OldSealStatus(ctx)
+	case sealapplication.FieldInstanceID:
+		return m.OldInstanceID(ctx)
+	}
+	return nil, fmt.Errorf("unknown SealApplication field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SealApplicationMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case sealapplication.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case sealapplication.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case sealapplication.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case sealapplication.FieldCreatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case sealapplication.FieldUpdatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case sealapplication.FieldDeletedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case sealapplication.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case sealapplication.FieldPurpose:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPurpose(v)
+		return nil
+	case sealapplication.FieldSealType:
+		v, ok := value.(sealapplication.SealType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSealType(v)
+		return nil
+	case sealapplication.FieldFileCount:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileCount(v)
+		return nil
+	case sealapplication.FieldRecipient:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecipient(v)
+		return nil
+	case sealapplication.FieldSealStatus:
+		v, ok := value.(sealapplication.SealStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSealStatus(v)
+		return nil
+	case sealapplication.FieldInstanceID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInstanceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SealApplication field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SealApplicationMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_by != nil {
+		fields = append(fields, sealapplication.FieldCreatedBy)
+	}
+	if m.addupdated_by != nil {
+		fields = append(fields, sealapplication.FieldUpdatedBy)
+	}
+	if m.adddeleted_by != nil {
+		fields = append(fields, sealapplication.FieldDeletedBy)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, sealapplication.FieldTenantID)
+	}
+	if m.addfile_count != nil {
+		fields = append(fields, sealapplication.FieldFileCount)
+	}
+	if m.addinstance_id != nil {
+		fields = append(fields, sealapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SealApplicationMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case sealapplication.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case sealapplication.FieldUpdatedBy:
+		return m.AddedUpdatedBy()
+	case sealapplication.FieldDeletedBy:
+		return m.AddedDeletedBy()
+	case sealapplication.FieldTenantID:
+		return m.AddedTenantID()
+	case sealapplication.FieldFileCount:
+		return m.AddedFileCount()
+	case sealapplication.FieldInstanceID:
+		return m.AddedInstanceID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SealApplicationMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case sealapplication.FieldCreatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case sealapplication.FieldUpdatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedBy(v)
+		return nil
+	case sealapplication.FieldDeletedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedBy(v)
+		return nil
+	case sealapplication.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	case sealapplication.FieldFileCount:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFileCount(v)
+		return nil
+	case sealapplication.FieldInstanceID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddInstanceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SealApplication numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SealApplicationMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(sealapplication.FieldCreatedAt) {
+		fields = append(fields, sealapplication.FieldCreatedAt)
+	}
+	if m.FieldCleared(sealapplication.FieldUpdatedAt) {
+		fields = append(fields, sealapplication.FieldUpdatedAt)
+	}
+	if m.FieldCleared(sealapplication.FieldDeletedAt) {
+		fields = append(fields, sealapplication.FieldDeletedAt)
+	}
+	if m.FieldCleared(sealapplication.FieldCreatedBy) {
+		fields = append(fields, sealapplication.FieldCreatedBy)
+	}
+	if m.FieldCleared(sealapplication.FieldUpdatedBy) {
+		fields = append(fields, sealapplication.FieldUpdatedBy)
+	}
+	if m.FieldCleared(sealapplication.FieldDeletedBy) {
+		fields = append(fields, sealapplication.FieldDeletedBy)
+	}
+	if m.FieldCleared(sealapplication.FieldTenantID) {
+		fields = append(fields, sealapplication.FieldTenantID)
+	}
+	if m.FieldCleared(sealapplication.FieldSealType) {
+		fields = append(fields, sealapplication.FieldSealType)
+	}
+	if m.FieldCleared(sealapplication.FieldSealStatus) {
+		fields = append(fields, sealapplication.FieldSealStatus)
+	}
+	if m.FieldCleared(sealapplication.FieldInstanceID) {
+		fields = append(fields, sealapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SealApplicationMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SealApplicationMutation) ClearField(name string) error {
+	switch name {
+	case sealapplication.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case sealapplication.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case sealapplication.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case sealapplication.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case sealapplication.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case sealapplication.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case sealapplication.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case sealapplication.FieldSealType:
+		m.ClearSealType()
+		return nil
+	case sealapplication.FieldSealStatus:
+		m.ClearSealStatus()
+		return nil
+	case sealapplication.FieldInstanceID:
+		m.ClearInstanceID()
+		return nil
+	}
+	return fmt.Errorf("unknown SealApplication nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SealApplicationMutation) ResetField(name string) error {
+	switch name {
+	case sealapplication.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case sealapplication.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case sealapplication.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case sealapplication.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case sealapplication.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case sealapplication.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case sealapplication.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case sealapplication.FieldPurpose:
+		m.ResetPurpose()
+		return nil
+	case sealapplication.FieldSealType:
+		m.ResetSealType()
+		return nil
+	case sealapplication.FieldFileCount:
+		m.ResetFileCount()
+		return nil
+	case sealapplication.FieldRecipient:
+		m.ResetRecipient()
+		return nil
+	case sealapplication.FieldSealStatus:
+		m.ResetSealStatus()
+		return nil
+	case sealapplication.FieldInstanceID:
+		m.ResetInstanceID()
+		return nil
+	}
+	return fmt.Errorf("unknown SealApplication field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SealApplicationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SealApplicationMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SealApplicationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SealApplicationMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SealApplicationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SealApplicationMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SealApplicationMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown SealApplication unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SealApplicationMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown SealApplication edge %s", name)
 }
 
 // SectionMutation represents an operation that mutates the Section nodes in the graph.

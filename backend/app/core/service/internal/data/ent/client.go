@@ -49,6 +49,8 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/navigationitem"
 	"go-wind-oa/app/core/service/internal/data/ent/operationauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/orgunit"
+	"go-wind-oa/app/core/service/internal/data/ent/outingapplication"
+	"go-wind-oa/app/core/service/internal/data/ent/overtimeapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/page"
 	"go-wind-oa/app/core/service/internal/data/ent/pagetranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/permission"
@@ -68,6 +70,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/role"
 	"go-wind-oa/app/core/service/internal/data/ent/rolemetadata"
 	"go-wind-oa/app/core/service/internal/data/ent/rolepermission"
+	"go-wind-oa/app/core/service/internal/data/ent/sealapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/section"
 	"go-wind-oa/app/core/service/internal/data/ent/sectiontranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/site"
@@ -173,6 +176,10 @@ type Client struct {
 	OperationAuditLog *OperationAuditLogClient
 	// OrgUnit is the client for interacting with the OrgUnit builders.
 	OrgUnit *OrgUnitClient
+	// OutingApplication is the client for interacting with the OutingApplication builders.
+	OutingApplication *OutingApplicationClient
+	// OvertimeApplication is the client for interacting with the OvertimeApplication builders.
+	OvertimeApplication *OvertimeApplicationClient
 	// Page is the client for interacting with the Page builders.
 	Page *PageClient
 	// PageTranslation is the client for interacting with the PageTranslation builders.
@@ -211,6 +218,8 @@ type Client struct {
 	RoleMetadata *RoleMetadataClient
 	// RolePermission is the client for interacting with the RolePermission builders.
 	RolePermission *RolePermissionClient
+	// SealApplication is the client for interacting with the SealApplication builders.
+	SealApplication *SealApplicationClient
 	// Section is the client for interacting with the Section builders.
 	Section *SectionClient
 	// SectionTranslation is the client for interacting with the SectionTranslation builders.
@@ -294,6 +303,8 @@ func (c *Client) init() {
 	c.NavigationItem = NewNavigationItemClient(c.config)
 	c.OperationAuditLog = NewOperationAuditLogClient(c.config)
 	c.OrgUnit = NewOrgUnitClient(c.config)
+	c.OutingApplication = NewOutingApplicationClient(c.config)
+	c.OvertimeApplication = NewOvertimeApplicationClient(c.config)
 	c.Page = NewPageClient(c.config)
 	c.PageTranslation = NewPageTranslationClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
@@ -313,6 +324,7 @@ func (c *Client) init() {
 	c.Role = NewRoleClient(c.config)
 	c.RoleMetadata = NewRoleMetadataClient(c.config)
 	c.RolePermission = NewRolePermissionClient(c.config)
+	c.SealApplication = NewSealApplicationClient(c.config)
 	c.Section = NewSectionClient(c.config)
 	c.SectionTranslation = NewSectionTranslationClient(c.config)
 	c.Site = NewSiteClient(c.config)
@@ -460,6 +472,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		NavigationItem:           NewNavigationItemClient(cfg),
 		OperationAuditLog:        NewOperationAuditLogClient(cfg),
 		OrgUnit:                  NewOrgUnitClient(cfg),
+		OutingApplication:        NewOutingApplicationClient(cfg),
+		OvertimeApplication:      NewOvertimeApplicationClient(cfg),
 		Page:                     NewPageClient(cfg),
 		PageTranslation:          NewPageTranslationClient(cfg),
 		Permission:               NewPermissionClient(cfg),
@@ -479,6 +493,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Role:                     NewRoleClient(cfg),
 		RoleMetadata:             NewRoleMetadataClient(cfg),
 		RolePermission:           NewRolePermissionClient(cfg),
+		SealApplication:          NewSealApplicationClient(cfg),
 		Section:                  NewSectionClient(cfg),
 		SectionTranslation:       NewSectionTranslationClient(cfg),
 		Site:                     NewSiteClient(cfg),
@@ -553,6 +568,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		NavigationItem:           NewNavigationItemClient(cfg),
 		OperationAuditLog:        NewOperationAuditLogClient(cfg),
 		OrgUnit:                  NewOrgUnitClient(cfg),
+		OutingApplication:        NewOutingApplicationClient(cfg),
+		OvertimeApplication:      NewOvertimeApplicationClient(cfg),
 		Page:                     NewPageClient(cfg),
 		PageTranslation:          NewPageTranslationClient(cfg),
 		Permission:               NewPermissionClient(cfg),
@@ -572,6 +589,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Role:                     NewRoleClient(cfg),
 		RoleMetadata:             NewRoleMetadataClient(cfg),
 		RolePermission:           NewRolePermissionClient(cfg),
+		SealApplication:          NewSealApplicationClient(cfg),
 		Section:                  NewSectionClient(cfg),
 		SectionTranslation:       NewSectionTranslationClient(cfg),
 		Site:                     NewSiteClient(cfg),
@@ -626,14 +644,15 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Language, c.LeaveApplication, c.LeaveBalance, c.LeaveType, c.LoginAuditLog,
 		c.LoginPolicy, c.MediaAsset, c.MediaVariant, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.Navigation, c.NavigationItem,
-		c.OperationAuditLog, c.OrgUnit, c.Page, c.PageTranslation, c.Permission,
-		c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu,
-		c.PermissionPolicy, c.PolicyEvaluationLog, c.Position, c.Post, c.PostCategory,
-		c.PostLike, c.PostTag, c.PostTranslation, c.PostWatch, c.Role, c.RoleMetadata,
-		c.RolePermission, c.Section, c.SectionTranslation, c.Site, c.SiteSetting,
-		c.Tag, c.TagTranslation, c.Task, c.Tenant, c.User, c.UserCredential,
-		c.UserOrgUnit, c.UserPosition, c.UserRole, c.WorkflowDefinition,
-		c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
+		c.OperationAuditLog, c.OrgUnit, c.OutingApplication, c.OvertimeApplication,
+		c.Page, c.PageTranslation, c.Permission, c.PermissionApi, c.PermissionAuditLog,
+		c.PermissionGroup, c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog,
+		c.Position, c.Post, c.PostCategory, c.PostLike, c.PostTag, c.PostTranslation,
+		c.PostWatch, c.Role, c.RoleMetadata, c.RolePermission, c.SealApplication,
+		c.Section, c.SectionTranslation, c.Site, c.SiteSetting, c.Tag,
+		c.TagTranslation, c.Task, c.Tenant, c.User, c.UserCredential, c.UserOrgUnit,
+		c.UserPosition, c.UserRole, c.WorkflowDefinition, c.WorkflowInstance,
+		c.WorkflowLog, c.WorkflowTask,
 	} {
 		n.Use(hooks...)
 	}
@@ -651,14 +670,15 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Language, c.LeaveApplication, c.LeaveBalance, c.LeaveType, c.LoginAuditLog,
 		c.LoginPolicy, c.MediaAsset, c.MediaVariant, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.Navigation, c.NavigationItem,
-		c.OperationAuditLog, c.OrgUnit, c.Page, c.PageTranslation, c.Permission,
-		c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu,
-		c.PermissionPolicy, c.PolicyEvaluationLog, c.Position, c.Post, c.PostCategory,
-		c.PostLike, c.PostTag, c.PostTranslation, c.PostWatch, c.Role, c.RoleMetadata,
-		c.RolePermission, c.Section, c.SectionTranslation, c.Site, c.SiteSetting,
-		c.Tag, c.TagTranslation, c.Task, c.Tenant, c.User, c.UserCredential,
-		c.UserOrgUnit, c.UserPosition, c.UserRole, c.WorkflowDefinition,
-		c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
+		c.OperationAuditLog, c.OrgUnit, c.OutingApplication, c.OvertimeApplication,
+		c.Page, c.PageTranslation, c.Permission, c.PermissionApi, c.PermissionAuditLog,
+		c.PermissionGroup, c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog,
+		c.Position, c.Post, c.PostCategory, c.PostLike, c.PostTag, c.PostTranslation,
+		c.PostWatch, c.Role, c.RoleMetadata, c.RolePermission, c.SealApplication,
+		c.Section, c.SectionTranslation, c.Site, c.SiteSetting, c.Tag,
+		c.TagTranslation, c.Task, c.Tenant, c.User, c.UserCredential, c.UserOrgUnit,
+		c.UserPosition, c.UserRole, c.WorkflowDefinition, c.WorkflowInstance,
+		c.WorkflowLog, c.WorkflowTask,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -743,6 +763,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.OperationAuditLog.mutate(ctx, m)
 	case *OrgUnitMutation:
 		return c.OrgUnit.mutate(ctx, m)
+	case *OutingApplicationMutation:
+		return c.OutingApplication.mutate(ctx, m)
+	case *OvertimeApplicationMutation:
+		return c.OvertimeApplication.mutate(ctx, m)
 	case *PageMutation:
 		return c.Page.mutate(ctx, m)
 	case *PageTranslationMutation:
@@ -781,6 +805,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.RoleMetadata.mutate(ctx, m)
 	case *RolePermissionMutation:
 		return c.RolePermission.mutate(ctx, m)
+	case *SealApplicationMutation:
+		return c.SealApplication.mutate(ctx, m)
 	case *SectionMutation:
 		return c.Section.mutate(ctx, m)
 	case *SectionTranslationMutation:
@@ -6167,6 +6193,274 @@ func (c *OrgUnitClient) mutate(ctx context.Context, m *OrgUnitMutation) (Value, 
 	}
 }
 
+// OutingApplicationClient is a client for the OutingApplication schema.
+type OutingApplicationClient struct {
+	config
+}
+
+// NewOutingApplicationClient returns a client for the OutingApplication from the given config.
+func NewOutingApplicationClient(c config) *OutingApplicationClient {
+	return &OutingApplicationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `outingapplication.Hooks(f(g(h())))`.
+func (c *OutingApplicationClient) Use(hooks ...Hook) {
+	c.hooks.OutingApplication = append(c.hooks.OutingApplication, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `outingapplication.Intercept(f(g(h())))`.
+func (c *OutingApplicationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.OutingApplication = append(c.inters.OutingApplication, interceptors...)
+}
+
+// Create returns a builder for creating a OutingApplication entity.
+func (c *OutingApplicationClient) Create() *OutingApplicationCreate {
+	mutation := newOutingApplicationMutation(c.config, OpCreate)
+	return &OutingApplicationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OutingApplication entities.
+func (c *OutingApplicationClient) CreateBulk(builders ...*OutingApplicationCreate) *OutingApplicationCreateBulk {
+	return &OutingApplicationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *OutingApplicationClient) MapCreateBulk(slice any, setFunc func(*OutingApplicationCreate, int)) *OutingApplicationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &OutingApplicationCreateBulk{err: fmt.Errorf("calling to OutingApplicationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*OutingApplicationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &OutingApplicationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OutingApplication.
+func (c *OutingApplicationClient) Update() *OutingApplicationUpdate {
+	mutation := newOutingApplicationMutation(c.config, OpUpdate)
+	return &OutingApplicationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OutingApplicationClient) UpdateOne(_m *OutingApplication) *OutingApplicationUpdateOne {
+	mutation := newOutingApplicationMutation(c.config, OpUpdateOne, withOutingApplication(_m))
+	return &OutingApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OutingApplicationClient) UpdateOneID(id uint32) *OutingApplicationUpdateOne {
+	mutation := newOutingApplicationMutation(c.config, OpUpdateOne, withOutingApplicationID(id))
+	return &OutingApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OutingApplication.
+func (c *OutingApplicationClient) Delete() *OutingApplicationDelete {
+	mutation := newOutingApplicationMutation(c.config, OpDelete)
+	return &OutingApplicationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *OutingApplicationClient) DeleteOne(_m *OutingApplication) *OutingApplicationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *OutingApplicationClient) DeleteOneID(id uint32) *OutingApplicationDeleteOne {
+	builder := c.Delete().Where(outingapplication.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OutingApplicationDeleteOne{builder}
+}
+
+// Query returns a query builder for OutingApplication.
+func (c *OutingApplicationClient) Query() *OutingApplicationQuery {
+	return &OutingApplicationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeOutingApplication},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a OutingApplication entity by its id.
+func (c *OutingApplicationClient) Get(ctx context.Context, id uint32) (*OutingApplication, error) {
+	return c.Query().Where(outingapplication.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OutingApplicationClient) GetX(ctx context.Context, id uint32) *OutingApplication {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *OutingApplicationClient) Hooks() []Hook {
+	hooks := c.hooks.OutingApplication
+	return append(hooks[:len(hooks):len(hooks)], outingapplication.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *OutingApplicationClient) Interceptors() []Interceptor {
+	return c.inters.OutingApplication
+}
+
+func (c *OutingApplicationClient) mutate(ctx context.Context, m *OutingApplicationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OutingApplicationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OutingApplicationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OutingApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OutingApplicationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown OutingApplication mutation op: %q", m.Op())
+	}
+}
+
+// OvertimeApplicationClient is a client for the OvertimeApplication schema.
+type OvertimeApplicationClient struct {
+	config
+}
+
+// NewOvertimeApplicationClient returns a client for the OvertimeApplication from the given config.
+func NewOvertimeApplicationClient(c config) *OvertimeApplicationClient {
+	return &OvertimeApplicationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `overtimeapplication.Hooks(f(g(h())))`.
+func (c *OvertimeApplicationClient) Use(hooks ...Hook) {
+	c.hooks.OvertimeApplication = append(c.hooks.OvertimeApplication, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `overtimeapplication.Intercept(f(g(h())))`.
+func (c *OvertimeApplicationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.OvertimeApplication = append(c.inters.OvertimeApplication, interceptors...)
+}
+
+// Create returns a builder for creating a OvertimeApplication entity.
+func (c *OvertimeApplicationClient) Create() *OvertimeApplicationCreate {
+	mutation := newOvertimeApplicationMutation(c.config, OpCreate)
+	return &OvertimeApplicationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OvertimeApplication entities.
+func (c *OvertimeApplicationClient) CreateBulk(builders ...*OvertimeApplicationCreate) *OvertimeApplicationCreateBulk {
+	return &OvertimeApplicationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *OvertimeApplicationClient) MapCreateBulk(slice any, setFunc func(*OvertimeApplicationCreate, int)) *OvertimeApplicationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &OvertimeApplicationCreateBulk{err: fmt.Errorf("calling to OvertimeApplicationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*OvertimeApplicationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &OvertimeApplicationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OvertimeApplication.
+func (c *OvertimeApplicationClient) Update() *OvertimeApplicationUpdate {
+	mutation := newOvertimeApplicationMutation(c.config, OpUpdate)
+	return &OvertimeApplicationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OvertimeApplicationClient) UpdateOne(_m *OvertimeApplication) *OvertimeApplicationUpdateOne {
+	mutation := newOvertimeApplicationMutation(c.config, OpUpdateOne, withOvertimeApplication(_m))
+	return &OvertimeApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OvertimeApplicationClient) UpdateOneID(id uint32) *OvertimeApplicationUpdateOne {
+	mutation := newOvertimeApplicationMutation(c.config, OpUpdateOne, withOvertimeApplicationID(id))
+	return &OvertimeApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OvertimeApplication.
+func (c *OvertimeApplicationClient) Delete() *OvertimeApplicationDelete {
+	mutation := newOvertimeApplicationMutation(c.config, OpDelete)
+	return &OvertimeApplicationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *OvertimeApplicationClient) DeleteOne(_m *OvertimeApplication) *OvertimeApplicationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *OvertimeApplicationClient) DeleteOneID(id uint32) *OvertimeApplicationDeleteOne {
+	builder := c.Delete().Where(overtimeapplication.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OvertimeApplicationDeleteOne{builder}
+}
+
+// Query returns a query builder for OvertimeApplication.
+func (c *OvertimeApplicationClient) Query() *OvertimeApplicationQuery {
+	return &OvertimeApplicationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeOvertimeApplication},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a OvertimeApplication entity by its id.
+func (c *OvertimeApplicationClient) Get(ctx context.Context, id uint32) (*OvertimeApplication, error) {
+	return c.Query().Where(overtimeapplication.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OvertimeApplicationClient) GetX(ctx context.Context, id uint32) *OvertimeApplication {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *OvertimeApplicationClient) Hooks() []Hook {
+	hooks := c.hooks.OvertimeApplication
+	return append(hooks[:len(hooks):len(hooks)], overtimeapplication.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *OvertimeApplicationClient) Interceptors() []Interceptor {
+	return c.inters.OvertimeApplication
+}
+
+func (c *OvertimeApplicationClient) mutate(ctx context.Context, m *OvertimeApplicationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OvertimeApplicationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OvertimeApplicationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OvertimeApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OvertimeApplicationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown OvertimeApplication mutation op: %q", m.Op())
+	}
+}
+
 // PageClient is a client for the Page schema.
 type PageClient struct {
 	config
@@ -8777,6 +9071,140 @@ func (c *RolePermissionClient) mutate(ctx context.Context, m *RolePermissionMuta
 	}
 }
 
+// SealApplicationClient is a client for the SealApplication schema.
+type SealApplicationClient struct {
+	config
+}
+
+// NewSealApplicationClient returns a client for the SealApplication from the given config.
+func NewSealApplicationClient(c config) *SealApplicationClient {
+	return &SealApplicationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sealapplication.Hooks(f(g(h())))`.
+func (c *SealApplicationClient) Use(hooks ...Hook) {
+	c.hooks.SealApplication = append(c.hooks.SealApplication, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `sealapplication.Intercept(f(g(h())))`.
+func (c *SealApplicationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SealApplication = append(c.inters.SealApplication, interceptors...)
+}
+
+// Create returns a builder for creating a SealApplication entity.
+func (c *SealApplicationClient) Create() *SealApplicationCreate {
+	mutation := newSealApplicationMutation(c.config, OpCreate)
+	return &SealApplicationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SealApplication entities.
+func (c *SealApplicationClient) CreateBulk(builders ...*SealApplicationCreate) *SealApplicationCreateBulk {
+	return &SealApplicationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SealApplicationClient) MapCreateBulk(slice any, setFunc func(*SealApplicationCreate, int)) *SealApplicationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SealApplicationCreateBulk{err: fmt.Errorf("calling to SealApplicationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SealApplicationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SealApplicationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SealApplication.
+func (c *SealApplicationClient) Update() *SealApplicationUpdate {
+	mutation := newSealApplicationMutation(c.config, OpUpdate)
+	return &SealApplicationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SealApplicationClient) UpdateOne(_m *SealApplication) *SealApplicationUpdateOne {
+	mutation := newSealApplicationMutation(c.config, OpUpdateOne, withSealApplication(_m))
+	return &SealApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SealApplicationClient) UpdateOneID(id uint32) *SealApplicationUpdateOne {
+	mutation := newSealApplicationMutation(c.config, OpUpdateOne, withSealApplicationID(id))
+	return &SealApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SealApplication.
+func (c *SealApplicationClient) Delete() *SealApplicationDelete {
+	mutation := newSealApplicationMutation(c.config, OpDelete)
+	return &SealApplicationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SealApplicationClient) DeleteOne(_m *SealApplication) *SealApplicationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SealApplicationClient) DeleteOneID(id uint32) *SealApplicationDeleteOne {
+	builder := c.Delete().Where(sealapplication.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SealApplicationDeleteOne{builder}
+}
+
+// Query returns a query builder for SealApplication.
+func (c *SealApplicationClient) Query() *SealApplicationQuery {
+	return &SealApplicationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSealApplication},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SealApplication entity by its id.
+func (c *SealApplicationClient) Get(ctx context.Context, id uint32) (*SealApplication, error) {
+	return c.Query().Where(sealapplication.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SealApplicationClient) GetX(ctx context.Context, id uint32) *SealApplication {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SealApplicationClient) Hooks() []Hook {
+	hooks := c.hooks.SealApplication
+	return append(hooks[:len(hooks):len(hooks)], sealapplication.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *SealApplicationClient) Interceptors() []Interceptor {
+	return c.inters.SealApplication
+}
+
+func (c *SealApplicationClient) mutate(ctx context.Context, m *SealApplicationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SealApplicationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SealApplicationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SealApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SealApplicationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SealApplication mutation op: %q", m.Op())
+	}
+}
+
 // SectionClient is a client for the Section schema.
 type SectionClient struct {
 	config
@@ -11160,13 +11588,15 @@ type (
 		InternalMessageRecipient, Language, LeaveApplication, LeaveBalance, LeaveType,
 		LoginAuditLog, LoginPolicy, MediaAsset, MediaVariant, Membership,
 		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu, Navigation,
-		NavigationItem, OperationAuditLog, OrgUnit, Page, PageTranslation, Permission,
-		PermissionApi, PermissionAuditLog, PermissionGroup, PermissionMenu,
-		PermissionPolicy, PolicyEvaluationLog, Position, Post, PostCategory, PostLike,
-		PostTag, PostTranslation, PostWatch, Role, RoleMetadata, RolePermission,
-		Section, SectionTranslation, Site, SiteSetting, Tag, TagTranslation, Task,
-		Tenant, User, UserCredential, UserOrgUnit, UserPosition, UserRole,
-		WorkflowDefinition, WorkflowInstance, WorkflowLog, WorkflowTask []ent.Hook
+		NavigationItem, OperationAuditLog, OrgUnit, OutingApplication,
+		OvertimeApplication, Page, PageTranslation, Permission, PermissionApi,
+		PermissionAuditLog, PermissionGroup, PermissionMenu, PermissionPolicy,
+		PolicyEvaluationLog, Position, Post, PostCategory, PostLike, PostTag,
+		PostTranslation, PostWatch, Role, RoleMetadata, RolePermission,
+		SealApplication, Section, SectionTranslation, Site, SiteSetting, Tag,
+		TagTranslation, Task, Tenant, User, UserCredential, UserOrgUnit, UserPosition,
+		UserRole, WorkflowDefinition, WorkflowInstance, WorkflowLog,
+		WorkflowTask []ent.Hook
 	}
 	inters struct {
 		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, BusinessTripApplication,
@@ -11176,13 +11606,14 @@ type (
 		InternalMessageRecipient, Language, LeaveApplication, LeaveBalance, LeaveType,
 		LoginAuditLog, LoginPolicy, MediaAsset, MediaVariant, Membership,
 		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu, Navigation,
-		NavigationItem, OperationAuditLog, OrgUnit, Page, PageTranslation, Permission,
-		PermissionApi, PermissionAuditLog, PermissionGroup, PermissionMenu,
-		PermissionPolicy, PolicyEvaluationLog, Position, Post, PostCategory, PostLike,
-		PostTag, PostTranslation, PostWatch, Role, RoleMetadata, RolePermission,
-		Section, SectionTranslation, Site, SiteSetting, Tag, TagTranslation, Task,
-		Tenant, User, UserCredential, UserOrgUnit, UserPosition, UserRole,
-		WorkflowDefinition, WorkflowInstance, WorkflowLog,
+		NavigationItem, OperationAuditLog, OrgUnit, OutingApplication,
+		OvertimeApplication, Page, PageTranslation, Permission, PermissionApi,
+		PermissionAuditLog, PermissionGroup, PermissionMenu, PermissionPolicy,
+		PolicyEvaluationLog, Position, Post, PostCategory, PostLike, PostTag,
+		PostTranslation, PostWatch, Role, RoleMetadata, RolePermission,
+		SealApplication, Section, SectionTranslation, Site, SiteSetting, Tag,
+		TagTranslation, Task, Tenant, User, UserCredential, UserOrgUnit, UserPosition,
+		UserRole, WorkflowDefinition, WorkflowInstance, WorkflowLog,
 		WorkflowTask []ent.Interceptor
 	}
 )

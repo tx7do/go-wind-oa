@@ -123,6 +123,9 @@ func NewRestServer(
 	leaveService *service.LeaveService,
 	expenseService *service.ExpenseService,
 	businessTripService *service.BusinessTripService,
+	overtimeService *service.OvertimeService,
+	sealApplicationService *service.SealApplicationService,
+	outingService *service.OutingService,
 	attendanceService *service.AttendanceService,
 
 	apiAuditLogService *service.ApiAuditLogService,
@@ -195,6 +198,9 @@ func NewRestServer(
 	adminV1.RegisterLeaveServiceHTTPServer(srv, leaveService)
 	adminV1.RegisterExpenseServiceHTTPServer(srv, expenseService)
 	adminV1.RegisterBusinessTripServiceHTTPServer(srv, businessTripService)
+	adminV1.RegisterOvertimeServiceHTTPServer(srv, overtimeService)
+	adminV1.RegisterSealApplicationServiceHTTPServer(srv, sealApplicationService)
+	adminV1.RegisterOutingServiceHTTPServer(srv, outingService)
 	adminV1.RegisterAttendanceServiceHTTPServer(srv, attendanceService)
 
 	adminV1.RegisterTranslatorServiceHTTPServer(srv, translatorService)

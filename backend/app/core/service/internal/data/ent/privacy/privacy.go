@@ -1023,6 +1023,54 @@ func (f OrgUnitMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutatio
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.OrgUnitMutation", m)
 }
 
+// The OutingApplicationQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type OutingApplicationQueryRuleFunc func(context.Context, *ent.OutingApplicationQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f OutingApplicationQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.OutingApplicationQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.OutingApplicationQuery", q)
+}
+
+// The OutingApplicationMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type OutingApplicationMutationRuleFunc func(context.Context, *ent.OutingApplicationMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f OutingApplicationMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.OutingApplicationMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.OutingApplicationMutation", m)
+}
+
+// The OvertimeApplicationQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type OvertimeApplicationQueryRuleFunc func(context.Context, *ent.OvertimeApplicationQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f OvertimeApplicationQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.OvertimeApplicationQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.OvertimeApplicationQuery", q)
+}
+
+// The OvertimeApplicationMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type OvertimeApplicationMutationRuleFunc func(context.Context, *ent.OvertimeApplicationMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f OvertimeApplicationMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.OvertimeApplicationMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.OvertimeApplicationMutation", m)
+}
+
 // The PageQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PageQueryRuleFunc func(context.Context, *ent.PageQuery) error
@@ -1477,6 +1525,30 @@ func (f RolePermissionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.
 		return f(ctx, m)
 	}
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.RolePermissionMutation", m)
+}
+
+// The SealApplicationQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type SealApplicationQueryRuleFunc func(context.Context, *ent.SealApplicationQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f SealApplicationQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.SealApplicationQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.SealApplicationQuery", q)
+}
+
+// The SealApplicationMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type SealApplicationMutationRuleFunc func(context.Context, *ent.SealApplicationMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f SealApplicationMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.SealApplicationMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.SealApplicationMutation", m)
 }
 
 // The SectionQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -1998,6 +2070,10 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.OrgUnitQuery:
 		return q.Filter(), nil
+	case *ent.OutingApplicationQuery:
+		return q.Filter(), nil
+	case *ent.OvertimeApplicationQuery:
+		return q.Filter(), nil
 	case *ent.PageQuery:
 		return q.Filter(), nil
 	case *ent.PageTranslationQuery:
@@ -2035,6 +2111,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 	case *ent.RoleMetadataQuery:
 		return q.Filter(), nil
 	case *ent.RolePermissionQuery:
+		return q.Filter(), nil
+	case *ent.SealApplicationQuery:
 		return q.Filter(), nil
 	case *ent.SectionQuery:
 		return q.Filter(), nil
@@ -2153,6 +2231,10 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.OrgUnitMutation:
 		return m.Filter(), nil
+	case *ent.OutingApplicationMutation:
+		return m.Filter(), nil
+	case *ent.OvertimeApplicationMutation:
+		return m.Filter(), nil
 	case *ent.PageMutation:
 		return m.Filter(), nil
 	case *ent.PageTranslationMutation:
@@ -2190,6 +2272,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.RoleMetadataMutation:
 		return m.Filter(), nil
 	case *ent.RolePermissionMutation:
+		return m.Filter(), nil
+	case *ent.SealApplicationMutation:
 		return m.Filter(), nil
 	case *ent.SectionMutation:
 		return m.Filter(), nil

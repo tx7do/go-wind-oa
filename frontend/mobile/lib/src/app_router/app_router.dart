@@ -18,6 +18,9 @@ import 'package:flutter_app/src/features/oa/pages/attendance/oa_attendance_page.
 import 'package:flutter_app/src/features/oa/pages/leave/oa_leave_page.dart';
 import 'package:flutter_app/src/features/oa/pages/expense/oa_expense_page.dart';
 import 'package:flutter_app/src/features/oa/pages/business_trip/oa_business_trip_page.dart';
+import 'package:flutter_app/src/features/oa/pages/overtime/oa_overtime_page.dart';
+import 'package:flutter_app/src/features/oa/pages/seal_application/oa_seal_application_page.dart';
+import 'package:flutter_app/src/features/oa/pages/outing/oa_outing_page.dart';
 
 /// OA 移动端路由。
 ///
@@ -104,6 +107,27 @@ class AppRouter {
         path: constants.AppRoutePath.oaBusinessTrip,
         builder: (context, state) {
           return const OaBusinessTripPage();
+        },
+      ),
+      GoRoute(
+        name: RouteNames.oaOvertime,
+        path: constants.AppRoutePath.oaOvertime,
+        builder: (context, state) {
+          return const OaOvertimePage();
+        },
+      ),
+      GoRoute(
+        name: RouteNames.oaSealApplication,
+        path: constants.AppRoutePath.oaSealApplication,
+        builder: (context, state) {
+          return const OaSealApplicationPage();
+        },
+      ),
+      GoRoute(
+        name: RouteNames.oaOuting,
+        path: constants.AppRoutePath.oaOuting,
+        builder: (context, state) {
+          return const OaOutingPage();
         },
       ),
       // ── 登录（非 Shell） ────────────────────────────

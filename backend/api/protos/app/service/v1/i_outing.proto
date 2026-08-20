@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package app.service.v1;
+
+import "google/api/annotations.proto";
+
+import "oa/service/v1/outing.proto";
+
+// OA 外出申请参与服务（app 边端，移动端）
+service OutingService {
+  // 提交外出申请
+  rpc SubmitOutingApplication(oa.service.v1.SubmitOutingApplicationRequest) returns (oa.service.v1.SubmitOutingApplicationResponse) {
+    option (google.api.http) = {
+      post: "/app/v1/oa/outing/applications"
+      body: "*"
+    };
+  }
+
+  // 查询我的外出申请
+  rpc ListOutingApplications(oa.service.v1.ListOutingApplicationsRequest) returns (oa.service.v1.ListOutingApplicationsResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/outing/applications"
+    };
+  }
+
+  // 查询外出申请详情
+  rpc GetOutingApplication(oa.service.v1.GetOutingApplicationRequest) returns (oa.service.v1.OutingApplication) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/outing/applications/{id}"
+    };
+  }
+}

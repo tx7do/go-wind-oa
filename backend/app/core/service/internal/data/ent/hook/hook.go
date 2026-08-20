@@ -464,6 +464,30 @@ func (f OrgUnitFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrgUnitMutation", m)
 }
 
+// The OutingApplicationFunc type is an adapter to allow the use of ordinary
+// function as OutingApplication mutator.
+type OutingApplicationFunc func(context.Context, *ent.OutingApplicationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OutingApplicationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OutingApplicationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OutingApplicationMutation", m)
+}
+
+// The OvertimeApplicationFunc type is an adapter to allow the use of ordinary
+// function as OvertimeApplication mutator.
+type OvertimeApplicationFunc func(context.Context, *ent.OvertimeApplicationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OvertimeApplicationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OvertimeApplicationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OvertimeApplicationMutation", m)
+}
+
 // The PageFunc type is an adapter to allow the use of ordinary
 // function as Page mutator.
 type PageFunc func(context.Context, *ent.PageMutation) (ent.Value, error)
@@ -690,6 +714,18 @@ func (f RolePermissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RolePermissionMutation", m)
+}
+
+// The SealApplicationFunc type is an adapter to allow the use of ordinary
+// function as SealApplication mutator.
+type SealApplicationFunc func(context.Context, *ent.SealApplicationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SealApplicationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SealApplicationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SealApplicationMutation", m)
 }
 
 // The SectionFunc type is an adapter to allow the use of ordinary

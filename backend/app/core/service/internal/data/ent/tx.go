@@ -88,6 +88,10 @@ type Tx struct {
 	OperationAuditLog *OperationAuditLogClient
 	// OrgUnit is the client for interacting with the OrgUnit builders.
 	OrgUnit *OrgUnitClient
+	// OutingApplication is the client for interacting with the OutingApplication builders.
+	OutingApplication *OutingApplicationClient
+	// OvertimeApplication is the client for interacting with the OvertimeApplication builders.
+	OvertimeApplication *OvertimeApplicationClient
 	// Page is the client for interacting with the Page builders.
 	Page *PageClient
 	// PageTranslation is the client for interacting with the PageTranslation builders.
@@ -126,6 +130,8 @@ type Tx struct {
 	RoleMetadata *RoleMetadataClient
 	// RolePermission is the client for interacting with the RolePermission builders.
 	RolePermission *RolePermissionClient
+	// SealApplication is the client for interacting with the SealApplication builders.
+	SealApplication *SealApplicationClient
 	// Section is the client for interacting with the Section builders.
 	Section *SectionClient
 	// SectionTranslation is the client for interacting with the SectionTranslation builders.
@@ -329,6 +335,8 @@ func (tx *Tx) init() {
 	tx.NavigationItem = NewNavigationItemClient(tx.config)
 	tx.OperationAuditLog = NewOperationAuditLogClient(tx.config)
 	tx.OrgUnit = NewOrgUnitClient(tx.config)
+	tx.OutingApplication = NewOutingApplicationClient(tx.config)
+	tx.OvertimeApplication = NewOvertimeApplicationClient(tx.config)
 	tx.Page = NewPageClient(tx.config)
 	tx.PageTranslation = NewPageTranslationClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
@@ -348,6 +356,7 @@ func (tx *Tx) init() {
 	tx.Role = NewRoleClient(tx.config)
 	tx.RoleMetadata = NewRoleMetadataClient(tx.config)
 	tx.RolePermission = NewRolePermissionClient(tx.config)
+	tx.SealApplication = NewSealApplicationClient(tx.config)
 	tx.Section = NewSectionClient(tx.config)
 	tx.SectionTranslation = NewSectionTranslationClient(tx.config)
 	tx.Site = NewSiteClient(tx.config)

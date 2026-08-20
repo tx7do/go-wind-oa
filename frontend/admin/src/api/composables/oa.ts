@@ -272,6 +272,52 @@ export function useListBusinessTripApplications(
 }
 
 // ==============================
+// 加班 / 用印 / 外出申请单
+// ==============================
+
+import type {
+  oaservicev1_ListOvertimeApplicationsRequest,
+  oaservicev1_ListOvertimeApplicationsResponse,
+  oaservicev1_ListSealApplicationsRequest,
+  oaservicev1_ListSealApplicationsResponse,
+  oaservicev1_ListOutingApplicationsRequest,
+  oaservicev1_ListOutingApplicationsResponse,
+} from "@/api/generated/admin/service/v1";
+
+export function useListOvertimeApplications(
+  req: oaservicev1_ListOvertimeApplicationsRequest,
+  options?: Omit<UseQueryOptions<oaservicev1_ListOvertimeApplicationsResponse, Error>, "queryKey">
+) {
+  return useQuery({
+    queryKey: ["listOvertimeApplications", req],
+    queryFn: () => apiClient.overtimeService.ListOvertimeApplications(req),
+    ...options,
+  });
+}
+
+export function useListSealApplications(
+  req: oaservicev1_ListSealApplicationsRequest,
+  options?: Omit<UseQueryOptions<oaservicev1_ListSealApplicationsResponse, Error>, "queryKey">
+) {
+  return useQuery({
+    queryKey: ["listSealApplications", req],
+    queryFn: () => apiClient.sealApplicationService.ListSealApplications(req),
+    ...options,
+  });
+}
+
+export function useListOutingApplications(
+  req: oaservicev1_ListOutingApplicationsRequest,
+  options?: Omit<UseQueryOptions<oaservicev1_ListOutingApplicationsResponse, Error>, "queryKey">
+) {
+  return useQuery({
+    queryKey: ["listOutingApplications", req],
+    queryFn: () => apiClient.outingService.ListOutingApplications(req),
+    ...options,
+  });
+}
+
+// ==============================
 // 考勤记录 / 设置 / 结算
 // ==============================
 

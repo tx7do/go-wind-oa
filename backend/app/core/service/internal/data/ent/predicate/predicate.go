@@ -120,6 +120,12 @@ type OperationAuditLog func(*sql.Selector)
 // OrgUnit is the predicate function for orgunit builders.
 type OrgUnit func(*sql.Selector)
 
+// OutingApplication is the predicate function for outingapplication builders.
+type OutingApplication func(*sql.Selector)
+
+// OvertimeApplication is the predicate function for overtimeapplication builders.
+type OvertimeApplication func(*sql.Selector)
+
 // Page is the predicate function for page builders.
 type Page func(*sql.Selector)
 
@@ -176,6 +182,9 @@ type RoleMetadata func(*sql.Selector)
 
 // RolePermission is the predicate function for rolepermission builders.
 type RolePermission func(*sql.Selector)
+
+// SealApplication is the predicate function for sealapplication builders.
+type SealApplication func(*sql.Selector)
 
 // Section is the predicate function for section builders.
 type Section func(*sql.Selector)

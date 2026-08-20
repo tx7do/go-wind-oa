@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package app.service.v1;
+
+import "google/api/annotations.proto";
+
+import "oa/service/v1/overtime.proto";
+
+// OA 加班申请参与服务（app 边端，移动端）
+service OvertimeService {
+  // 提交加班申请
+  rpc SubmitOvertimeApplication(oa.service.v1.SubmitOvertimeApplicationRequest) returns (oa.service.v1.SubmitOvertimeApplicationResponse) {
+    option (google.api.http) = {
+      post: "/app/v1/oa/overtime/applications"
+      body: "*"
+    };
+  }
+
+  // 查询我的加班申请
+  rpc ListOvertimeApplications(oa.service.v1.ListOvertimeApplicationsRequest) returns (oa.service.v1.ListOvertimeApplicationsResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/overtime/applications"
+    };
+  }
+
+  // 查询加班申请详情
+  rpc GetOvertimeApplication(oa.service.v1.GetOvertimeApplicationRequest) returns (oa.service.v1.OvertimeApplication) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/overtime/applications/{id}"
+    };
+  }
+}

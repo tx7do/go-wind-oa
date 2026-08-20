@@ -6832,6 +6832,226 @@ export type identityservicev1_DeleteOrgUnitRequest = {
   id?: number;
 };
 
+// OA 外出申请管理服务（admin 边端）
+export interface OutingService {
+  // 查询外出申请列表
+  ListOutingApplications(
+    request: oaservicev1_ListOutingApplicationsRequest,
+  ): Promise<oaservicev1_ListOutingApplicationsResponse>;
+  // 查询外出申请详情
+  GetOutingApplication(
+    request: oaservicev1_GetOutingApplicationRequest,
+  ): Promise<oaservicev1_OutingApplication>;
+}
+
+export function createOutingServiceClient(
+  transport: ClientTransport,
+): OutingService {
+  return {
+    ListOutingApplications(request) {
+      const path = `admin/v1/oa/outing/applications`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.userId) {
+        queryParams.push(
+          `userId=${encodeURIComponent(request.userId.toString())}`,
+        );
+      }
+      if (request.status) {
+        queryParams.push(
+          `status=${encodeURIComponent(request.status.toString())}`,
+        );
+      }
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'OutingService',
+        method: 'ListOutingApplications',
+      }) as Promise<oaservicev1_ListOutingApplicationsResponse>;
+    },
+    GetOutingApplication(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/outing/applications/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'OutingService',
+        method: 'GetOutingApplication',
+      }) as Promise<oaservicev1_OutingApplication>;
+    },
+  };
+}
+// 查询外出申请 - 请求
+export type oaservicev1_ListOutingApplicationsRequest = {
+  page?: number;
+  pageSize?: number;
+  status: oaservicev1_OutingApplication_OutingStatus | undefined;
+  userId: number | undefined;
+};
+
+// 申请单状态（与工作流实例终态同步）
+export type oaservicev1_OutingApplication_OutingStatus =
+  | 'APPROVED'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'WITHDRAWN';
+// 查询外出申请 - 回应
+export type oaservicev1_ListOutingApplicationsResponse = {
+  items: oaservicev1_OutingApplication[] | undefined;
+  total: number | undefined;
+};
+
+// 外出申请单
+export type oaservicev1_OutingApplication = {
+  applicantName?: string;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  destination?: string;
+  endTime?: wellKnownTimestamp;
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  instanceId?: number;
+  outingStatus?: oaservicev1_OutingApplication_OutingStatus;
+  reason?: string;
+  startTime?: wellKnownTimestamp;
+  tenantId?: number;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// 查询外出申请详情 - 请求
+export type oaservicev1_GetOutingApplicationRequest = {
+  id: number | undefined;
+};
+
+// OA 加班申请管理服务（admin 边端）
+export interface OvertimeService {
+  // 查询加班申请列表
+  ListOvertimeApplications(
+    request: oaservicev1_ListOvertimeApplicationsRequest,
+  ): Promise<oaservicev1_ListOvertimeApplicationsResponse>;
+  // 查询加班申请详情
+  GetOvertimeApplication(
+    request: oaservicev1_GetOvertimeApplicationRequest,
+  ): Promise<oaservicev1_OvertimeApplication>;
+}
+
+export function createOvertimeServiceClient(
+  transport: ClientTransport,
+): OvertimeService {
+  return {
+    ListOvertimeApplications(request) {
+      const path = `admin/v1/oa/overtime/applications`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.userId) {
+        queryParams.push(
+          `userId=${encodeURIComponent(request.userId.toString())}`,
+        );
+      }
+      if (request.status) {
+        queryParams.push(
+          `status=${encodeURIComponent(request.status.toString())}`,
+        );
+      }
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'OvertimeService',
+        method: 'ListOvertimeApplications',
+      }) as Promise<oaservicev1_ListOvertimeApplicationsResponse>;
+    },
+    GetOvertimeApplication(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/overtime/applications/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'OvertimeService',
+        method: 'GetOvertimeApplication',
+      }) as Promise<oaservicev1_OvertimeApplication>;
+    },
+  };
+}
+// 查询加班申请 - 请求
+export type oaservicev1_ListOvertimeApplicationsRequest = {
+  page?: number;
+  pageSize?: number;
+  status: oaservicev1_OvertimeApplication_OvertimeStatus | undefined;
+  userId: number | undefined;
+};
+
+// 申请单状态（与工作流实例终态同步）
+export type oaservicev1_OvertimeApplication_OvertimeStatus =
+  | 'APPROVED'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'WITHDRAWN';
+// 查询加班申请 - 回应
+export type oaservicev1_ListOvertimeApplicationsResponse = {
+  items: oaservicev1_OvertimeApplication[] | undefined;
+  total: number | undefined;
+};
+
+// 加班申请单
+export type oaservicev1_OvertimeApplication = {
+  applicantName?: string;
+  compensationType?: oaservicev1_OvertimeApplication_CompensationType;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  endTime?: wellKnownTimestamp;
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  instanceId?: number;
+  overtimeStatus?: oaservicev1_OvertimeApplication_OvertimeStatus;
+  reason?: string;
+  startTime?: wellKnownTimestamp;
+  tenantId?: number;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// 补偿方式
+export type oaservicev1_OvertimeApplication_CompensationType =
+  | 'COMP_LEAVE'
+  | 'OVERTIME_PAY';
+// 查询加班申请详情 - 请求
+export type oaservicev1_GetOvertimeApplicationRequest = {
+  id: number | undefined;
+};
+
 // 页面服务
 export interface PageService {
   // 获取页面列表
@@ -8953,6 +9173,120 @@ export type permissionservicev1_DeleteRoleRequest = {
   code?: string;
   id?: number;
   tenantId?: number;
+};
+
+// OA 用印申请管理服务（admin 边端）
+export interface SealApplicationService {
+  // 查询用印申请列表
+  ListSealApplications(
+    request: oaservicev1_ListSealApplicationsRequest,
+  ): Promise<oaservicev1_ListSealApplicationsResponse>;
+  // 查询用印申请详情
+  GetSealApplication(
+    request: oaservicev1_GetSealApplicationRequest,
+  ): Promise<oaservicev1_SealApplication>;
+}
+
+export function createSealApplicationServiceClient(
+  transport: ClientTransport,
+): SealApplicationService {
+  return {
+    ListSealApplications(request) {
+      const path = `admin/v1/oa/seal-applications`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.userId) {
+        queryParams.push(
+          `userId=${encodeURIComponent(request.userId.toString())}`,
+        );
+      }
+      if (request.status) {
+        queryParams.push(
+          `status=${encodeURIComponent(request.status.toString())}`,
+        );
+      }
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'SealApplicationService',
+        method: 'ListSealApplications',
+      }) as Promise<oaservicev1_ListSealApplicationsResponse>;
+    },
+    GetSealApplication(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/seal-applications/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'SealApplicationService',
+        method: 'GetSealApplication',
+      }) as Promise<oaservicev1_SealApplication>;
+    },
+  };
+}
+// 查询用印申请 - 请求
+export type oaservicev1_ListSealApplicationsRequest = {
+  page?: number;
+  pageSize?: number;
+  status: oaservicev1_SealApplication_SealStatus | undefined;
+  userId: number | undefined;
+};
+
+// 申请单状态（与工作流实例终态同步）
+export type oaservicev1_SealApplication_SealStatus =
+  | 'APPROVED'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'WITHDRAWN';
+// 查询用印申请 - 回应
+export type oaservicev1_ListSealApplicationsResponse = {
+  items: oaservicev1_SealApplication[] | undefined;
+  total: number | undefined;
+};
+
+// 用印申请单
+export type oaservicev1_SealApplication = {
+  applicantName?: string;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  fileCount?: number;
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  instanceId?: number;
+  purpose?: string;
+  recipient?: string;
+  sealStatus?: oaservicev1_SealApplication_SealStatus;
+  sealType?: oaservicev1_SealApplication_SealType;
+  tenantId?: number;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// 印章类型
+export type oaservicev1_SealApplication_SealType =
+  | 'CONTRACT_SEAL'
+  | 'FINANCE_SEAL'
+  | 'LEGAL_SEAL'
+  | 'OFFICIAL_SEAL';
+// 查询用印申请详情 - 请求
+export type oaservicev1_GetSealApplicationRequest = {
+  id: number | undefined;
 };
 
 // 页面区块服务
@@ -11746,6 +12080,8 @@ export class ApiClient {
   private _navigationService?: NavigationService;
   private _operationAuditLogService?: OperationAuditLogService;
   private _orgUnitService?: OrgUnitService;
+  private _outingService?: OutingService;
+  private _overtimeService?: OvertimeService;
   private _pageService?: PageService;
   private _permissionAuditLogService?: PermissionAuditLogService;
   private _permissionGroupService?: PermissionGroupService;
@@ -11754,6 +12090,7 @@ export class ApiClient {
   private _positionService?: PositionService;
   private _postService?: PostService;
   private _roleService?: RoleService;
+  private _sealApplicationService?: SealApplicationService;
   private _sectionService?: SectionService;
   private _siteService?: SiteService;
   private _siteSettingService?: SiteSettingService;
@@ -11882,6 +12219,14 @@ export class ApiClient {
     return this._orgUnitService ??= createOrgUnitServiceClient(this._transport);
   }
 
+  get outingService(): OutingService {
+    return this._outingService ??= createOutingServiceClient(this._transport);
+  }
+
+  get overtimeService(): OvertimeService {
+    return this._overtimeService ??= createOvertimeServiceClient(this._transport);
+  }
+
   get pageService(): PageService {
     return this._pageService ??= createPageServiceClient(this._transport);
   }
@@ -11912,6 +12257,10 @@ export class ApiClient {
 
   get roleService(): RoleService {
     return this._roleService ??= createRoleServiceClient(this._transport);
+  }
+
+  get sealApplicationService(): SealApplicationService {
+    return this._sealApplicationService ??= createSealApplicationServiceClient(this._transport);
   }
 
   get sectionService(): SectionService {
