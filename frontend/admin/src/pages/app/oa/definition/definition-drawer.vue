@@ -4,13 +4,9 @@
     :title="title"
     :config="{ component: 'drawer', drawer: { size: DRAWER_WIDTH, closeOnClickModal: false } }"
   >
-    <ElForm ref="formRef" :model="formData" :rules="formRules" label-width="140px">
-      <ElFormItem :label="$t('pages.oa.definition.fieldName')" prop="name">
-        <ElInput v-model="formData.name" :placeholder="$t('common.placeholder.input')" clearable />
-      </ElFormItem>
-
+    <ElForm ref="formRef" :model="formData" :rules="formRules" label-width="120px">
       <ElFormItem :label="$t('pages.oa.definition.fieldCode')" prop="code">
-        <ElInput v-model="formData.code" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput v-model="formData.code" placeholder="如 LEAVE / EXPENSE / TRIP" clearable />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.oa.definition.fieldVersion')" prop="version">
@@ -23,30 +19,140 @@
         />
       </ElFormItem>
 
-      <ElFormItem :label="$t('pages.oa.definition.fieldDescription')" prop="description">
-        <ElInput
-          v-model="formData.description"
-          type="textarea"
-          :placeholder="$t('common.placeholder.input')"
-          :rows="3"
-        />
+      <ElFormItem label="备注">
+        <ElInput v-model="formData.remark" placeholder="流程用途说明（可选）" :rows="2" type="textarea" />
       </ElFormItem>
 
-      <ElFormItem :label="$t('pages.oa.definition.fieldNodeConfig')" prop="node_config">
+      <!-- ============ 审批流（node_config） ============ -->
+      <ElFormItem label="审批流">
+        <div class="editor-switch">
+          <ElRadioGroup v-model="nodeMode" size="small" @change="onNodeModeChange">
+            <ElRadioButton value="visual">可视化</ElRadioButton>
+            <ElRadioButton value="json">JSON</ElRadioButton>
+          </ElRadioGroup>
+        </div>
+
+        <div v-if="nodeMode === 'visual'" class="node-editor">
+          <div v-for="(node, ni) in nodeDrafts" :key="ni" class="node-card">
+            <div class="node-head">
+              <span class="node-title">节点 {{ ni + 1 }}</span>
+              <div class="node-ops">
+                <ElButton size="small" text :disabled="ni === 0" @click="moveNode(ni, -1)">上移</ElButton>
+                <ElButton size="small" text :disabled="ni === nodeDrafts.length - 1" @click="moveNode(ni, 1)">下移</ElButton>
+                <ElButton size="small" text type="danger" :disabled="nodeDrafts.length <= 1" @click="nodeDrafts.splice(ni, 1)">删除</ElButton>
+              </div>
+            </div>
+
+            <ElFormItem label="审批策略" label-width="80px">
+              <ElRadioGroup v-model="node.strategy">
+                <ElRadio value="ALL">会签（全员通过）</ElRadio>
+                <ElRadio value="ANY">或签（一人通过）</ElRadio>
+              </ElRadioGroup>
+            </ElFormItem>
+
+            <div class="approver-list">
+              <div v-for="(ap, ai) in node.approvers" :key="ai" class="approver-row">
+                <ElSelect v-model="ap.type" style="width: 170px" @change="onApproverTypeChange(ap)">
+                  <ElOption label="指定用户" value="USER" />
+                  <ElOption label="申请人主管" value="LEADER" />
+                  <ElOption label="职位持有者" value="POSITION" />
+                </ElSelect>
+                <ElInputNumber
+                  v-if="ap.type !== 'LEADER'"
+                  v-model="ap.id"
+                  :min="1"
+                  :controls="false"
+                  :placeholder="ap.type === 'USER' ? '用户ID' : '职位ID'"
+                  style="width: 160px"
+                />
+                <span v-else class="hint-inline">按提交人自动解析</span>
+                <ElButton size="small" text type="danger" :disabled="node.approvers.length <= 1" @click="node.approvers.splice(ai, 1)">移除</ElButton>
+              </div>
+              <ElButton size="small" plain @click="node.approvers.push({ type: 'USER', id: undefined })">+ 添加审批人</ElButton>
+            </div>
+          </div>
+
+          <ElButton type="primary" plain size="small" @click="addNode">+ 添加节点</ElButton>
+          <div v-if="nodeDrafts.length" class="json-preview">
+            <div class="preview-title">生成配置预览</div>
+            <code>{{ nodesToConfig() }}</code>
+          </div>
+        </div>
+
         <ElInput
+          v-else
           v-model="formData.node_config"
           type="textarea"
-          placeholder='[{"approvers":[{"type":"USER","id":123},{"type":"LEADER"}],"strategy":"ALL"}] strategy=ALL 会签(默认)/ANY 或签；type=USER 指定用户/LEADER 申请人主管/POSITION 职位持有者'
+          placeholder='[{"approvers":[{"type":"USER","id":123},{"type":"LEADER"}],"strategy":"ALL"}]'
           :rows="8"
         />
       </ElFormItem>
 
-      <ElFormItem :label="$t('pages.oa.definition.fieldFormSchema')" prop="form_schema">
+      <!-- ============ 申请表单（form_schema） ============ -->
+      <ElFormItem label="申请表单">
+        <div class="editor-switch">
+          <ElRadioGroup v-model="formMode" size="small" @change="onFormModeChange">
+            <ElRadioButton value="visual">可视化</ElRadioButton>
+            <ElRadioButton value="json">JSON</ElRadioButton>
+          </ElRadioGroup>
+        </div>
+
+        <div v-if="formMode === 'visual'" class="form-editor">
+          <ElTable v-if="formFieldDrafts.length" :data="formFieldDrafts" border size="small">
+            <ElTableColumn label="字段名 key" width="130">
+              <template #default="{ row }">
+                <ElInput v-model="row.key" placeholder="如 reason" size="small" />
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="显示名 label" width="130">
+              <template #default="{ row }">
+                <ElInput v-model="row.label" placeholder="如 事由" size="small" />
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="类型" width="120">
+              <template #default="{ row }">
+                <ElSelect v-model="row.type" size="small">
+                  <ElOption label="单行文本" value="text" />
+                  <ElOption label="多行文本" value="textarea" />
+                  <ElOption label="数字" value="number" />
+                  <ElOption label="日期" value="date" />
+                  <ElOption label="下拉选择" value="select" />
+                </ElSelect>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="必填" width="60" align="center">
+              <template #default="{ row }">
+                <ElCheckbox v-model="row.required" size="small" />
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="选项（select 用，逗号分隔）" min-width="160">
+              <template #default="{ row }">
+                <ElInput v-if="row.type === 'select'" v-model="row.options" placeholder="普通,紧急" size="small" />
+                <span v-else class="hint-inline">-</span>
+              </template>
+            </ElTableColumn>
+            <ElTableColumn label="操作" width="60" align="center">
+              <template #default="{ $index }">
+                <ElButton size="small" text type="danger" @click="formFieldDrafts.splice($index, 1)">删</ElButton>
+              </template>
+            </ElTableColumn>
+          </ElTable>
+          <ElButton size="small" plain class="add-field-btn" @click="formFieldDrafts.push({ key: '', label: '', type: 'text', required: false, options: '' })">
+            + 添加字段
+          </ElButton>
+          <div class="hint">不配置表单时，移动端提交该流程回退为自由 JSON 输入。</div>
+          <div v-if="formFieldDrafts.some((f) => f.key.trim())" class="json-preview">
+            <div class="preview-title">生成配置预览</div>
+            <code>{{ fieldsToSchema() }}</code>
+          </div>
+        </div>
+
         <ElInput
+          v-else
           v-model="formData.form_schema"
           type="textarea"
-          :placeholder="$t('common.placeholder.input')"
-          :rows="8"
+          placeholder='[{"key":"reason","label":"事由","type":"textarea","required":true}]（可留空）'
+          :rows="6"
         />
       </ElFormItem>
     </ElForm>
@@ -64,6 +170,21 @@
 
 <script lang="ts" setup>
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
+import {
+  ElButton,
+  ElCheckbox,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElInputNumber,
+  ElOption,
+  ElRadioButton,
+  ElRadioGroup,
+  ElRadio,
+  ElSelect,
+  ElTable,
+  ElTableColumn,
+} from "element-plus";
 import { ref, reactive, computed, watch } from "vue";
 
 import { useCreateWorkflowDefinition } from "@/api/composables";
@@ -79,19 +200,42 @@ const visible = ref(false);
 const loading = ref(false);
 const formRef = ref<FormInstance>();
 
-// 表单数据
+/** 审批人草稿。LEADER 无需 id（按提交人动态解析）。 */
+interface ApproverDraft {
+  type: "USER" | "LEADER" | "POSITION";
+  id?: number;
+}
+
+/** 节点草稿：策略 + 审批人列表。 */
+interface NodeDraft {
+  strategy: "ALL" | "ANY";
+  approvers: ApproverDraft[];
+}
+
+/** 表单字段草稿（options 为逗号分隔字符串，仅 select 用）。 */
+interface FieldDraft {
+  key: string;
+  label: string;
+  type: "text" | "textarea" | "number" | "date" | "select";
+  required: boolean;
+  options: string;
+}
+
+const nodeMode = ref<"visual" | "json">("visual");
+const formMode = ref<"visual" | "json">("visual");
+const nodeDrafts = ref<NodeDraft[]>([]);
+const formFieldDrafts = ref<FieldDraft[]>([]);
+
+// 表单数据（JSON 模式下的文本框 + 提交基础字段）
 const formData = reactive({
-  name: "",
   code: "",
   version: 1,
-  description: "",
+  remark: "",
   node_config: "",
   form_schema: "",
 });
 
-// 表单验证规则
 const formRules: FormRules = {
-  name: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   code: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   version: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   form_schema: [
@@ -175,30 +319,177 @@ const title = computed(() =>
   $t("common.modal.create", { moduleName: $t("pages.oa.definition.title") })
 );
 
-// 重置表单
+// ============ 节点编辑 ============
+
+function addNode() {
+  nodeDrafts.value.push({ strategy: "ALL", approvers: [{ type: "LEADER" }] });
+}
+
+function moveNode(index: number, delta: number) {
+  const target = index + delta;
+  if (target < 0 || target >= nodeDrafts.value.length) return;
+  const list = nodeDrafts.value;
+  [list[index], list[target]] = [list[target], list[index]];
+}
+
+function onApproverTypeChange(ap: ApproverDraft) {
+  if (ap.type === "LEADER") ap.id = undefined;
+  else if (!ap.id) ap.id = 1;
+}
+
+/** 节点草稿 → node_config JSON（新格式）。 */
+function nodesToConfig(): string {
+  const nodes = nodeDrafts.value
+    .filter((n) => n.approvers.length > 0)
+    .map((n) => ({
+      approvers: n.approvers.map((a) => (a.type === "LEADER" ? { type: a.type } : { type: a.type, id: a.id ?? 0 })),
+      strategy: n.strategy,
+    }));
+  return JSON.stringify(nodes);
+}
+
+/** JSON 文本 → 节点草稿（兼容旧单人格式），用于切到可视化模式时解析。 */
+function configToNodes(json: string) {
+  const drafts: NodeDraft[] = [];
+  try {
+    const parsed = JSON.parse(json);
+    if (!Array.isArray(parsed)) return drafts;
+    for (const node of parsed) {
+      const approvers: ApproverDraft[] = Array.isArray(node.approvers) && node.approvers.length > 0
+        ? node.approvers
+            .filter((a: any) => ["USER", "LEADER", "POSITION"].includes(a.type))
+            .map((a: any) => ({ type: a.type, id: a.id }))
+        : (node.approver_type === "USER" && node.approver ? [{ type: "USER" as const, id: node.approver }] : []);
+      if (approvers.length === 0) continue;
+      drafts.push({
+        strategy: node.strategy === "ANY" ? "ANY" : "ALL",
+        approvers,
+      });
+    }
+  } catch {
+    /* 非法 JSON：返回已解析部分 */
+  }
+  return drafts;
+}
+
+// ============ 表单字段编辑 ============
+
+/** 字段草稿 → form_schema JSON。key 为空的行跳过；select 解析逗号选项。 */
+function fieldsToSchema(): string {
+  const fields = formFieldDrafts.value
+    .filter((f) => f.key.trim())
+    .map((f) => {
+      const item: Record<string, unknown> = {
+        key: f.key.trim(),
+        label: f.label.trim() || f.key.trim(),
+        type: f.type,
+        required: f.required,
+      };
+      if (f.type === "select") {
+        item.options = f.options
+          .split(/[,，]/)
+          .map((o) => o.trim())
+          .filter(Boolean);
+      }
+      return item;
+    });
+  return fields.length ? JSON.stringify(fields) : "";
+}
+
+/** JSON 文本 → 字段草稿。 */
+function schemaToFields(json: string) {
+  const drafts: FieldDraft[] = [];
+  try {
+    const parsed = JSON.parse(json);
+    const list = Array.isArray(parsed) ? parsed : [parsed];
+    for (const f of list) {
+      if (!f?.key) continue;
+      drafts.push({
+        key: String(f.key),
+        label: String(f.label ?? f.key),
+        type: (["text", "textarea", "number", "date", "select"].includes(f.type) ? f.type : "text") as FieldDraft["type"],
+        required: f.required === true,
+        options: Array.isArray(f.options) ? f.options.join(",") : "",
+      });
+    }
+  } catch {
+    /* 非法 JSON：返回已解析部分 */
+  }
+  return drafts;
+}
+
+// ============ 模式切换 ============
+
+function onNodeModeChange(mode: string | number | boolean | undefined) {
+  if (mode === "visual") {
+    const drafts = configToNodes(formData.node_config);
+    if (drafts.length) nodeDrafts.value = drafts;
+    if (!nodeDrafts.value.length) addNode();
+  } else {
+    formData.node_config = nodeDrafts.value.length ? nodesToConfig() : formData.node_config;
+  }
+}
+
+function onFormModeChange(mode: string | number | boolean | undefined) {
+  if (mode === "visual") {
+    const drafts = schemaToFields(formData.form_schema);
+    if (drafts.length) formFieldDrafts.value = drafts;
+  } else {
+    formData.form_schema = fieldsToSchema();
+  }
+}
+
+// ============ 生命周期与提交 ============
+
 function resetForm() {
-  formData.name = "";
   formData.code = "";
   formData.version = 1;
-  formData.description = "";
+  formData.remark = "";
   formData.node_config = "";
   formData.form_schema = "";
+  nodeMode.value = "visual";
+  formMode.value = "visual";
+  nodeDrafts.value = [];
+  formFieldDrafts.value = [];
+  addNode();
   formRef.value?.clearValidate();
 }
 
-// 打开抽屉（仅创建模式）
 function open(_row?: any) {
   visible.value = true;
   resetForm();
 }
 
-// 关闭抽屉
 function handleClose() {
   visible.value = false;
   resetForm();
 }
 
-// 提交表单
+/** 可视化模式校验：每节点至少一审批人，USER/POSITION 必须有 id，select 必须有选项。 */
+function validateDrafts(): string | null {
+  if (!nodeDrafts.value.length) return "至少需要一个审批节点";
+  for (let i = 0; i < nodeDrafts.value.length; i++) {
+    const node = nodeDrafts.value[i];
+    if (!node.approvers.length) return `节点 ${i + 1} 至少需要一个审批人`;
+    for (const ap of node.approvers) {
+      if (ap.type !== "LEADER" && (!ap.id || ap.id <= 0)) {
+        return `节点 ${i + 1} 的 ${ap.type === "USER" ? "用户" : "职位"}ID 必须为正整数`;
+      }
+    }
+  }
+  const keys = new Set<string>();
+  for (const f of formFieldDrafts.value) {
+    if (!f.key.trim()) continue;
+    if (keys.has(f.key.trim())) return `字段 key 重复：${f.key.trim()}`;
+    keys.add(f.key.trim());
+    if (f.type === "select") {
+      const opts = f.options.split(/[,，]/).map((o) => o.trim()).filter(Boolean);
+      if (!opts.length) return `字段 ${f.key} 为下拉选择，必须提供选项`;
+    }
+  }
+  return null;
+}
+
 async function handleSubmit() {
   if (!formRef.value) return;
 
@@ -208,9 +499,28 @@ async function handleSubmit() {
   );
   if (!valid) return;
 
+  // 可视化模式：生成 JSON 并做结构校验。
+  if (nodeMode.value === "visual" || formMode.value === "visual") {
+    const err = validateDrafts();
+    if (err) {
+      ElMessage.warning(err);
+      return;
+    }
+    if (nodeMode.value === "visual") formData.node_config = nodesToConfig();
+    if (formMode.value === "visual") formData.form_schema = fieldsToSchema();
+  }
+
   try {
     loading.value = true;
-    await createDefinition({ data: formData });
+    await createDefinition({
+      data: {
+        code: formData.code,
+        version: formData.version,
+        remark: formData.remark || undefined,
+        nodeConfig: formData.node_config,
+        formSchema: formData.form_schema || undefined,
+      },
+    });
     ElMessage.success($t("common.notification.createSuccess"));
     emit("success");
     handleClose();
@@ -221,7 +531,6 @@ async function handleSubmit() {
   }
 }
 
-// ProModal 关闭时自动重置表单
 watch(visible, (val) => {
   if (!val) resetForm();
 });
@@ -234,5 +543,89 @@ defineExpose({ open });
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+.editor-switch {
+  margin-bottom: 10px;
+}
+
+.node-editor {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.node-card {
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.node-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.node-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.node-ops {
+  display: flex;
+  gap: 4px;
+}
+
+.approver-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.approver-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hint-inline {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.form-editor {
+  width: 100%;
+}
+
+.add-field-btn {
+  margin-top: 8px;
+}
+
+.hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.json-preview {
+  margin-top: 8px;
+  padding: 8px;
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
+  font-size: 12px;
+  word-break: break-all;
+
+  .preview-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  code {
+    white-space: pre-wrap;
+  }
 }
 </style>
