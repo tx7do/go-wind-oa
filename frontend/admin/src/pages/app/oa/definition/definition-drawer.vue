@@ -33,9 +33,68 @@
         </div>
 
         <div v-if="nodeMode === 'visual'" class="node-editor">
-          <div v-for="(node, ni) in nodeDrafts" :key="ni" class="node-card">
+          <!-- 流程画布：开始 → 节点 → 结束，实时预览，点击节点定位卡片 -->
+          <div class="flow-canvas" :class="{ dragging: dragIndex !== null }">
+            <div class="flow-pill flow-start">开始</div>
+            <template v-for="(node, ni) in nodeDrafts" :key="'c' + ni">
+              <div class="flow-arrow">→</div>
+              <div
+                class="flow-chip"
+                :class="{ active: activeNode === ni }"
+                @click="focusNode(ni)"
+              >
+                <div class="chip-title">
+                  <span class="chip-name">{{ ni + 1 }}</span>
+                  <span class="chip-strategy" :class="node.strategy === 'ANY' ? 'any' : 'all'">
+                    {{ node.strategy === "ANY" ? "或签" : "会签" }}
+                  </span>
+                </div>
+                <div class="chip-approvers">
+                  {{ node.approvers.map(approverLabel).join("、") || "未配置" }}
+                </div>
+              </div>
+            </template>
+            <div class="flow-arrow">→</div>
+            <div class="flow-pill flow-end">结束</div>
+          </div>
+
+          <!-- 节点模板快加 + 添加节点 -->
+          <div class="node-toolbar">
+            <ElDropdown @command="addNodeByTemplate">
+              <ElButton type="primary" plain size="small">
+                + 从模板添加节点<ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
+              </ElButton>
+              <template #dropdown>
+                <ElDropdownMenu>
+                  <ElDropdownItem command="leader-all">主管审批 · 会签</ElDropdownItem>
+                  <ElDropdownItem command="leader-any">主管审批 · 或签</ElDropdownItem>
+                  <ElDropdownItem command="user-all">指定用户 · 会签</ElDropdownItem>
+                  <ElDropdownItem command="position-all">职位持有者 · 会签</ElDropdownItem>
+                </ElDropdownMenu>
+              </template>
+            </ElDropdown>
+            <ElButton size="small" plain @click="addNode">+ 空白节点</ElButton>
+          </div>
+
+          <!-- 节点卡片（可拖拽排序） -->
+          <div
+            v-for="(node, ni) in nodeDrafts"
+            :key="'n' + ni"
+            class="node-card"
+            :class="{ 'drag-over': dragOverIndex === ni, dragging: dragIndex === ni }"
+            :data-node="ni"
+            draggable="true"
+            @dragstart="onDragStart(ni)"
+            @dragover.prevent="onDragOver(ni)"
+            @dragleave="dragOverIndex = null"
+            @drop.prevent="onDrop(ni)"
+            @dragend="onDragEnd"
+          >
             <div class="node-head">
-              <span class="node-title">节点 {{ ni + 1 }}</span>
+              <span class="node-title">
+                <ElIcon class="drag-handle"><Rank /></ElIcon>
+                节点 {{ ni + 1 }}
+              </span>
               <div class="node-ops">
                 <ElButton size="small" text :disabled="ni === 0" @click="moveNode(ni, -1)">上移</ElButton>
                 <ElButton size="small" text :disabled="ni === nodeDrafts.length - 1" @click="moveNode(ni, 1)">下移</ElButton>
@@ -52,13 +111,46 @@
 
             <div class="approver-list">
               <div v-for="(ap, ai) in node.approvers" :key="ai" class="approver-row">
-                <ElSelect v-model="ap.type" style="width: 170px" @change="onApproverTypeChange(ap)">
+                <ElSelect v-model="ap.type" style="width: 150px" @change="onApproverTypeChange(ap)">
                   <ElOption label="指定用户" value="USER" />
                   <ElOption label="申请人主管" value="LEADER" />
                   <ElOption label="职位持有者" value="POSITION" />
                 </ElSelect>
+
+                <!-- 用户选择器：按姓名选择（列表加载失败回退手填 ID） -->
+                <ElSelect
+                  v-if="ap.type === 'USER' && users.length"
+                  :model-value="ap.id"
+                  filterable
+                  placeholder="搜索并选择用户"
+                  style="width: 220px"
+                  @update:model-value="(v: any) => (ap.id = Number(v))"
+                >
+                  <ElOption
+                    v-for="u in users"
+                    :key="u.id"
+                    :label="`${userDisplayName(u)} (#${u.id})`"
+                    :value="u.id!"
+                  />
+                </ElSelect>
+                <!-- 职位选择器 -->
+                <ElSelect
+                  v-else-if="ap.type === 'POSITION' && positions.length"
+                  :model-value="ap.id"
+                  filterable
+                  placeholder="搜索并选择职位"
+                  style="width: 220px"
+                  @update:model-value="(v: any) => (ap.id = Number(v))"
+                >
+                  <ElOption
+                    v-for="p in positions"
+                    :key="p.id"
+                    :label="`${positionDisplayName(p)} (#${p.id})`"
+                    :value="p.id!"
+                  />
+                </ElSelect>
                 <ElInputNumber
-                  v-if="ap.type !== 'LEADER'"
+                  v-else-if="ap.type !== 'LEADER'"
                   v-model="ap.id"
                   :min="1"
                   :controls="false"
@@ -66,13 +158,13 @@
                   style="width: 160px"
                 />
                 <span v-else class="hint-inline">按提交人自动解析</span>
+
                 <ElButton size="small" text type="danger" :disabled="node.approvers.length <= 1" @click="node.approvers.splice(ai, 1)">移除</ElButton>
               </div>
               <ElButton size="small" plain @click="node.approvers.push({ type: 'USER', id: undefined })">+ 添加审批人</ElButton>
             </div>
           </div>
 
-          <ElButton type="primary" plain size="small" @click="addNode">+ 添加节点</ElButton>
           <div v-if="nodeDrafts.length" class="json-preview">
             <div class="preview-title">生成配置预览</div>
             <code>{{ nodesToConfig() }}</code>
@@ -171,10 +263,16 @@
 <script lang="ts" setup>
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import {
+  ArrowDown,
+  Rank,
+} from "@element-plus/icons-vue";
+import {
   ElButton,
   ElCheckbox,
-  ElForm,
-  ElFormItem,
+  ElDropdown,
+  ElDropdownItem,
+  ElDropdownMenu,
+  ElIcon,
   ElInput,
   ElInputNumber,
   ElOption,
@@ -185,9 +283,19 @@ import {
   ElTable,
   ElTableColumn,
 } from "element-plus";
-import { ref, reactive, computed, watch } from "vue";
+import { ref, reactive, computed, watch, onMounted } from "vue";
 
-import { useCreateWorkflowDefinition } from "@/api/composables";
+import {
+  useCreateWorkflowDefinition,
+  fetchUsers,
+  fetchPositions,
+  userDisplayName,
+  positionDisplayName,
+} from "@/api/composables";
+import type {
+  identityservicev1_User,
+  identityservicev1_Position,
+} from "@/api/generated/admin/service/v1";
 import { $t } from "@/core/i18n";
 import { DRAWER_WIDTH } from "@/constants";
 import ProModal from "@/components/Pro/ProModal/index.vue";
@@ -225,6 +333,15 @@ const nodeMode = ref<"visual" | "json">("visual");
 const formMode = ref<"visual" | "json">("visual");
 const nodeDrafts = ref<NodeDraft[]>([]);
 const formFieldDrafts = ref<FieldDraft[]>([]);
+
+// 审批人选择器数据源（用户/职位，列表加载失败时选择器回退手填 ID）。
+const users = ref<identityservicev1_User[]>([]);
+const positions = ref<identityservicev1_Position[]>([]);
+
+// 拖拽排序与画布定位状态。
+const dragIndex = ref<number | null>(null);
+const dragOverIndex = ref<number | null>(null);
+const activeNode = ref<number | null>(null);
 
 // 表单数据（JSON 模式下的文本框 + 提交基础字段）
 const formData = reactive({
@@ -319,10 +436,44 @@ const title = computed(() =>
   $t("common.modal.create", { moduleName: $t("pages.oa.definition.title") })
 );
 
+onMounted(async () => {
+  // 选择器数据源尽力加载：失败不阻塞编辑（回退手填 ID）。
+  try {
+    const resp = await fetchUsers();
+    users.value = resp.items ?? [];
+  } catch {
+    users.value = [];
+  }
+  try {
+    const resp = await fetchPositions();
+    positions.value = resp.items ?? [];
+  } catch {
+    positions.value = [];
+  }
+});
+
 // ============ 节点编辑 ============
 
 function addNode() {
   nodeDrafts.value.push({ strategy: "ALL", approvers: [{ type: "LEADER" }] });
+}
+
+/** 模板快加：常用节点形态一键创建。 */
+function addNodeByTemplate(command: string) {
+  switch (command) {
+    case "leader-all":
+      nodeDrafts.value.push({ strategy: "ALL", approvers: [{ type: "LEADER" }] });
+      break;
+    case "leader-any":
+      nodeDrafts.value.push({ strategy: "ANY", approvers: [{ type: "LEADER" }] });
+      break;
+    case "user-all":
+      nodeDrafts.value.push({ strategy: "ALL", approvers: [{ type: "USER", id: undefined }] });
+      break;
+    case "position-all":
+      nodeDrafts.value.push({ strategy: "ALL", approvers: [{ type: "POSITION", id: undefined }] });
+      break;
+  }
 }
 
 function moveNode(index: number, delta: number) {
@@ -336,6 +487,61 @@ function onApproverTypeChange(ap: ApproverDraft) {
   if (ap.type === "LEADER") ap.id = undefined;
   else if (!ap.id) ap.id = 1;
 }
+
+// ============ 拖拽排序（HTML5 原生） ============
+
+function onDragStart(index: number) {
+  dragIndex.value = index;
+}
+
+function onDragOver(index: number) {
+  if (dragIndex.value === null || dragIndex.value === index) return;
+  dragOverIndex.value = index;
+}
+
+function onDrop(index: number) {
+  const from = dragIndex.value;
+  if (from === null || from === index) {
+    onDragEnd();
+    return;
+  }
+  const list = nodeDrafts.value;
+  const [moved] = list.splice(from, 1);
+  list.splice(index, 0, moved);
+  onDragEnd();
+}
+
+function onDragEnd() {
+  dragIndex.value = null;
+  dragOverIndex.value = null;
+}
+
+// ============ 画布 ============
+
+/** 画布节点 chip 的审批人短标签。 */
+function approverLabel(ap: ApproverDraft): string {
+  switch (ap.type) {
+    case "LEADER":
+      return "主管";
+    case "USER": {
+      const u = users.value.find((x) => x.id === ap.id);
+      return u ? userDisplayName(u) : ap.id ? `用户#${ap.id}` : "未选用户";
+    }
+    case "POSITION": {
+      const p = positions.value.find((x) => x.id === ap.id);
+      return p ? positionDisplayName(p) : ap.id ? `职位#${ap.id}` : "未选职位";
+    }
+  }
+}
+
+/** 点击画布节点：高亮并滚动到对应卡片。 */
+function focusNode(index: number) {
+  activeNode.value = index;
+  const el = document.querySelector(`.node-card[data-node="${index}"]`);
+  el?.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+// ============ 序列化 ============
 
 /** 节点草稿 → node_config JSON（新格式）。 */
 function nodesToConfig(): string {
@@ -371,8 +577,6 @@ function configToNodes(json: string) {
   }
   return drafts;
 }
-
-// ============ 表单字段编辑 ============
 
 /** 字段草稿 → form_schema JSON。key 为空的行跳过；select 解析逗号选项。 */
 function fieldsToSchema(): string {
@@ -451,6 +655,7 @@ function resetForm() {
   formMode.value = "visual";
   nodeDrafts.value = [];
   formFieldDrafts.value = [];
+  activeNode.value = null;
   addNode();
   formRef.value?.clearValidate();
 }
@@ -473,7 +678,7 @@ function validateDrafts(): string | null {
     if (!node.approvers.length) return `节点 ${i + 1} 至少需要一个审批人`;
     for (const ap of node.approvers) {
       if (ap.type !== "LEADER" && (!ap.id || ap.id <= 0)) {
-        return `节点 ${i + 1} 的 ${ap.type === "USER" ? "用户" : "职位"}ID 必须为正整数`;
+        return `节点 ${i + 1} 的${ap.type === "USER" ? "用户" : "职位"}必须选择`;
       }
     }
   }
@@ -556,10 +761,122 @@ defineExpose({ open });
   gap: 12px;
 }
 
+/* ============ 流程画布 ============ */
+.flow-canvas {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  background: var(--el-fill-color-lighter);
+  border-radius: 6px;
+  overflow-x: auto;
+
+  &.dragging {
+    outline: 1px dashed var(--el-color-primary-light-5);
+  }
+}
+
+.flow-pill {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.flow-start {
+    background: var(--el-color-success-light-8);
+    color: var(--el-color-success);
+    border: 1px solid var(--el-color-success-light-5);
+  }
+
+  &.flow-end {
+    background: var(--el-fill-color);
+    color: var(--el-text-color-secondary);
+    border: 1px solid var(--el-border-color);
+  }
+}
+
+.flow-arrow {
+  flex-shrink: 0;
+  color: var(--el-text-color-placeholder);
+  font-size: 14px;
+}
+
+.flow-chip {
+  flex-shrink: 0;
+  min-width: 84px;
+  max-width: 150px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-color-primary-light-7);
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+
+  &:hover,
+  &.active {
+    border-color: var(--el-color-primary);
+    box-shadow: 0 0 0 2px var(--el-color-primary-light-8);
+  }
+
+  .chip-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .chip-name {
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .chip-strategy {
+      font-size: 10px;
+      padding: 0 6px;
+      border-radius: 999px;
+
+      &.all {
+        background: var(--el-color-primary-light-9);
+        color: var(--el-color-primary);
+      }
+
+      &.any {
+        background: var(--el-color-warning-light-9);
+        color: var(--el-color-warning);
+      }
+    }
+  }
+
+  .chip-approvers {
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* ============ 节点卡片 ============ */
+.node-toolbar {
+  display: flex;
+  gap: 8px;
+}
+
 .node-card {
   border: 1px solid var(--el-border-color-light);
   border-radius: 6px;
   padding: 12px;
+  background: var(--el-bg-color);
+  transition: border-color 0.15s, opacity 0.15s;
+
+  &.drag-over {
+    border-color: var(--el-color-primary);
+    border-style: dashed;
+  }
+
+  &.dragging {
+    opacity: 0.45;
+  }
 }
 
 .node-head {
@@ -567,11 +884,19 @@ defineExpose({ open });
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  cursor: grab;
 }
 
 .node-title {
   font-weight: 600;
   font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  .drag-handle {
+    color: var(--el-text-color-placeholder);
+  }
 }
 
 .node-ops {

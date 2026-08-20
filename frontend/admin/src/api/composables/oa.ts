@@ -401,3 +401,56 @@ export function holidayTypeLabel(t?: string): string {
 export function holidayTypeTag(t?: string): "danger" | "success" {
   return t === "WORKDAY" ? "danger" : "success";
 }
+
+// ==============================
+// 流程编辑器数据源：用户 / 职位列表
+// ==============================
+
+import type {
+  identityservicev1_ListUserResponse,
+  identityservicev1_User,
+  identityservicev1_ListPositionResponse,
+  identityservicev1_Position,
+} from "@/api/generated/admin/service/v1";
+
+/** 用户列表（审批人选择器）。取前 200 条，展示 姓名(#ID)。 */
+export async function fetchUsers() {
+  return queryClient.fetchQuery({
+    queryKey: ["workflowEditorUsers"],
+    queryFn: () =>
+      apiClient.userService.List({
+        page: 1,
+        pageSize: 200,
+        noPaging: false,
+        sorting: undefined,
+      }),
+    staleTime: 60_000,
+    retry: 0,
+  }) as Promise<identityservicev1_ListUserResponse>;
+}
+
+export function userDisplayName(u?: identityservicev1_User): string {
+  if (!u) return "";
+  return u.realname || u.nickname || u.username || `#${u.id}`;
+}
+
+/** 职位列表（职位审批人选择器）。取前 200 条。 */
+export async function fetchPositions() {
+  return queryClient.fetchQuery({
+    queryKey: ["workflowEditorPositions"],
+    queryFn: () =>
+      apiClient.positionService.List({
+        page: 1,
+        pageSize: 200,
+        noPaging: false,
+        sorting: undefined,
+      }),
+    staleTime: 60_000,
+    retry: 0,
+  }) as Promise<identityservicev1_ListPositionResponse>;
+}
+
+export function positionDisplayName(p?: identityservicev1_Position): string {
+  if (!p) return "";
+  return p.name || `#${p.id}`;
+}
