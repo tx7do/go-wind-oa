@@ -262,6 +262,16 @@ message ListAttendanceRecordsRequest {
     json_name = "userId",
     (gnostic.openapi.v3.property) = { description: "用户ID，0=全部" }
   ]; // 用户ID
+
+  optional int32 page = 3 [
+    json_name = "page",
+    (gnostic.openapi.v3.property) = { description: "页码（从 1 起，不传=不限页）" }
+  ]; // 页码
+
+  optional int32 page_size = 4 [
+    json_name = "pageSize",
+    (gnostic.openapi.v3.property) = { description: "每页条数（不传=不限页）" }
+  ]; // 每页条数
 }
 
 // 查询记录 - 回应

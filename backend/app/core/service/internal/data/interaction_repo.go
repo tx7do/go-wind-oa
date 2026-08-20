@@ -873,9 +873,9 @@ func (r *InteractionRepo) PurgeUserInteractions(ctx context.Context, userID uint
 					postlike.UserIDEQ(uid),
 					postlike.PostIDEQ(targetID),
 				).
-		Exec(ctx)
-	},
-)
+				Exec(ctx)
+		},
+	)
 	if err != nil {
 		r.log.Errorf("purge user post_like batch failed: %s", err.Error())
 		return totalAffected, err

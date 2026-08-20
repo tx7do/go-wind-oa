@@ -79,7 +79,6 @@ func (Site) Fields() []ent.Field {
 			Comment("主题名称").
 			Optional().
 			Nillable(),
-
 	}
 }
 

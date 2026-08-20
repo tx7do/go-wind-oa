@@ -161,6 +161,16 @@ message ListExpenseApplicationsRequest {
     json_name = "status",
     (gnostic.openapi.v3.property) = { description: "状态过滤，不传=全部" }
   ]; // 状态过滤
+
+  optional int32 page = 3 [
+    json_name = "page",
+    (gnostic.openapi.v3.property) = { description: "页码（从 1 起，不传=不限页）" }
+  ]; // 页码
+
+  optional int32 page_size = 4 [
+    json_name = "pageSize",
+    (gnostic.openapi.v3.property) = { description: "每页条数（不传=不限页）" }
+  ]; // 每页条数
 }
 
 // 查询报销申请 - 回应

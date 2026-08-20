@@ -145,12 +145,12 @@ func (s *ExpenseService) ListExpenseApplications(ctx context.Context, req *oaV1.
 	if !ok {
 		return nil, oaV1.ErrorForbidden("missing viewer context")
 	}
-	items, err := s.appRepo.List(ctx, tid, req.GetUserId(), req.GetStatus())
+	items, total, err := s.appRepo.List(ctx, tid, req.GetUserId(), req.GetStatus(), req.GetPage(), req.GetPageSize())
 	if err != nil {
 		return nil, err
 	}
 	s.fillApplicantNames(ctx, tid, items)
-	return &oaV1.ListExpenseApplicationsResponse{Items: items, Total: uint64(len(items))}, nil
+	return &oaV1.ListExpenseApplicationsResponse{Items: items, Total: uint64(total)}, nil
 }
 
 func (s *ExpenseService) GetExpenseApplication(ctx context.Context, req *oaV1.GetExpenseApplicationRequest) (*oaV1.ExpenseApplication, error) {

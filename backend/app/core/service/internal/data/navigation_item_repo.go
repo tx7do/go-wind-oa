@@ -237,7 +237,7 @@ func (r *NavigationItemRepo) newUpdateOneBuilder(tx *ent.Tx, data *siteV1.Naviga
 		SetNillableIsInvalid(data.IsInvalid).
 		SetNillableRequiredPermission(data.RequiredPermission).
 		SetNillableParentID(data.ParentId).
-			SetUpdatedAt(now)
+		SetUpdatedAt(now)
 	return builder
 }
 

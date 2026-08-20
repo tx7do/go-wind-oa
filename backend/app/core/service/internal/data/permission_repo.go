@@ -43,9 +43,9 @@ type PermissionRepo struct {
 		permissionV1.Permission, ent.Permission,
 	]
 
-	permissionApiRepo   *PermissionApiRepo
-	permissionMenuRepo  *PermissionMenuRepo
-	rolePermissionRepo  *RolePermissionRepo
+	permissionApiRepo  *PermissionApiRepo
+	permissionMenuRepo *PermissionMenuRepo
+	rolePermissionRepo *RolePermissionRepo
 }
 
 func NewPermissionRepo(
@@ -58,13 +58,13 @@ func NewPermissionRepo(
 	repo := &PermissionRepo{
 		log:       ctx.NewLoggerHelper("permission/repo/core-service"),
 		entClient: entClient,
-		mapper: mapper.NewCopierMapper[permissionV1.Permission, ent.Permission](),
+		mapper:    mapper.NewCopierMapper[permissionV1.Permission, ent.Permission](),
 		statusConverter: mapper.NewEnumTypeConverter[permissionV1.Permission_Status, permission.Status](
 			permissionV1.Permission_Status_name, permissionV1.Permission_Status_value,
 		),
-		permissionApiRepo:   permissionApiRepo,
-		permissionMenuRepo:  permissionMenuRepo,
-		rolePermissionRepo:  rolePermissionRepo,
+		permissionApiRepo:  permissionApiRepo,
+		permissionMenuRepo: permissionMenuRepo,
+		rolePermissionRepo: rolePermissionRepo,
 	}
 
 	repo.init()

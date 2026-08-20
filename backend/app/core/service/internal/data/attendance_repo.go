@@ -227,8 +227,8 @@ func (r *AttendanceRepo) ListByUserRange(ctx context.Context, tid, userID uint32
 	return items, nil
 }
 
-// ListByDate 按工作日查全部（admin，可选用户过滤）。
-func (r *AttendanceRepo) ListByDate(ctx context.Context, tid, userID uint32, workDate time.Time) ([]*oaV1.AttendanceRecord, error) {
+// ListByDate 按工作日查全部（admin，可选用户过滤）。pageSize>0 时分页并返回真实总数。
+func (r *AttendanceRepo) ListByDate(ctx context.Context, tid, userID uint32, workDate time.Time, page, pageSize int32) ([]*oaV1.AttendanceRecord, int, error) {
 	query := r.entClient.Client().AttendanceRecord.Query().
 		Where(
 			attendancerecord.TenantIDEQ(tid),
@@ -237,16 +237,27 @@ func (r *AttendanceRepo) ListByDate(ctx context.Context, tid, userID uint32, wor
 	if userID != 0 {
 		query = query.Where(attendancerecord.UserIDEQ(userID))
 	}
-	entities, err := query.All(ctx)
+	total, err := query.Clone().Count(ctx)
+	if err != nil {
+		r.log.Errorf("count attendance records failed: %s", err.Error())
+		return nil, 0, oaV1.ErrorInternalServerError("count attendance records failed")
+	}
+	if pageSize > 0 {
+		if page < 1 {
+			page = 1
+		}
+		query = query.Offset((int(page) - 1) * int(pageSize)).Limit(int(pageSize))
+	}
+	entities, err := query.Order(ent.Asc(attendancerecord.FieldUserID)).All(ctx)
 	if err != nil {
 		r.log.Errorf("list attendance records by date failed: %s", err.Error())
-		return nil, oaV1.ErrorInternalServerError("list attendance records failed")
+		return nil, 0, oaV1.ErrorInternalServerError("list attendance records failed")
 	}
 	items := make([]*oaV1.AttendanceRecord, 0, len(entities))
 	for _, e := range entities {
 		items = append(items, AttendanceRecordToDTO(e))
 	}
-	return items, nil
+	return items, total, nil
 }
 
 // ListUserIDs 结算用：租户内全部用户 ID。

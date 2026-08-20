@@ -178,12 +178,14 @@ func (r *LeaveApplicationRepo) SetInstanceID(ctx context.Context, tid, id, insta
 }
 
 // List 查询申请单。userID==0 时查全部（admin）；status 非零值时按状态过滤。
+// pageSize>0 时分页（page 从 1 起）并返回真实总数，否则全量（total=条数）。
 func (r *LeaveApplicationRepo) List(
 	ctx context.Context,
 	tid, userID uint32,
 	status oaV1.LeaveApplication_LeaveStatus,
 	leaveTypeRepo *LeaveTypeRepo,
-) ([]*oaV1.LeaveApplication, error) {
+	page, pageSize int32,
+) ([]*oaV1.LeaveApplication, int, error) {
 	query := r.entClient.Client().LeaveApplication.Query().
 		Where(leaveapplication.TenantIDEQ(tid))
 	if userID != 0 {
@@ -192,10 +194,21 @@ func (r *LeaveApplicationRepo) List(
 	if status != 0 {
 		query = query.Where(leaveapplication.LeaveStatusEQ(leaveStatusToEntity(status)))
 	}
-	entities, err := query.All(ctx)
+	total, err := query.Clone().Count(ctx)
+	if err != nil {
+		r.log.Errorf("count leave applications failed: %s", err.Error())
+		return nil, 0, oaV1.ErrorInternalServerError("count leave applications failed")
+	}
+	if pageSize > 0 {
+		if page < 1 {
+			page = 1
+		}
+		query = query.Offset((int(page) - 1) * int(pageSize)).Limit(int(pageSize))
+	}
+	entities, err := query.Order(ent.Desc(leaveapplication.FieldID)).All(ctx)
 	if err != nil {
 		r.log.Errorf("list leave applications failed: %s", err.Error())
-		return nil, oaV1.ErrorInternalServerError("list leave applications failed")
+		return nil, 0, oaV1.ErrorInternalServerError("list leave applications failed")
 	}
 
 	typeNames := make(map[uint32]string)
@@ -211,7 +224,7 @@ func (r *LeaveApplicationRepo) List(
 		}
 		items = append(items, leaveApplicationToDTO(e, name))
 	}
-	return items, nil
+	return items, total, nil
 }
 
 // GetEntity 供工作流终结回调读取原始实体（校验关联与状态同步）。不存在返回 nil。

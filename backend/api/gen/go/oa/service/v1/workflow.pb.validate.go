@@ -2170,6 +2170,14 @@ func (m *GetMyTasksRequest) validate(all bool) error {
 
 	// no validation rules for ListType
 
+	if m.Page != nil {
+		// no validation rules for Page
+	}
+
+	if m.PageSize != nil {
+		// no validation rules for PageSize
+	}
+
 	if len(errors) > 0 {
 		return GetMyTasksRequestMultiError(errors)
 	}

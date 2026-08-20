@@ -743,8 +743,10 @@ func (x *GetMyAttendanceRecordsRequest) GetEndDate() *timestamppb.Timestamp {
 // 查询记录 - 请求（admin）
 type ListAttendanceRecordsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	WorkDate      *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=work_date,json=workDate,proto3" json:"work_date,omitempty"` // 工作日
-	UserId        uint32                 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`      // 用户ID
+	WorkDate      *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=work_date,json=workDate,proto3" json:"work_date,omitempty"`        // 工作日
+	UserId        uint32                 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`             // 用户ID
+	Page          *int32                 `protobuf:"varint,3,opt,name=page,proto3,oneof" json:"page,omitempty"`                         // 页码
+	PageSize      *int32                 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"` // 每页条数
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -789,6 +791,20 @@ func (x *ListAttendanceRecordsRequest) GetWorkDate() *timestamppb.Timestamp {
 func (x *ListAttendanceRecordsRequest) GetUserId() uint32 {
 	if x != nil {
 		return x.UserId
+	}
+	return 0
+}
+
+func (x *ListAttendanceRecordsRequest) GetPage() int32 {
+	if x != nil && x.Page != nil {
+		return *x.Page
+	}
+	return 0
+}
+
+func (x *ListAttendanceRecordsRequest) GetPageSize() int32 {
+	if x != nil && x.PageSize != nil {
+		return *x.PageSize
 	}
 	return 0
 }
@@ -1048,10 +1064,15 @@ const file_oa_service_v1_attendance_proto_rawDesc = "" +
 	"\x1dGetMyAttendanceRecordsRequest\x12j\n" +
 	"\n" +
 	"start_date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB/\xbaG,\x92\x02)开始日期（含），不传=近 30 天R\tstartDate\x12R\n" +
-	"\bend_date\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15结束日期（含）R\aendDate\"\xb1\x01\n" +
+	"\bend_date\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15结束日期（含）R\aendDate\"\xdd\x02\n" +
 	"\x1cListAttendanceRecordsRequest\x12]\n" +
 	"\twork_date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB$\xbaG!\x92\x02\x1e工作日（日期，零点）R\bworkDate\x122\n" +
-	"\auser_id\x18\x02 \x01(\rB\x19\xbaG\x16\x92\x02\x13用户ID，0=全部R\x06userId\"l\n" +
+	"\auser_id\x18\x02 \x01(\rB\x19\xbaG\x16\x92\x02\x13用户ID，0=全部R\x06userId\x12G\n" +
+	"\x04page\x18\x03 \x01(\x05B.\xbaG+\x92\x02(页码（从 1 起，不传=不限页）H\x00R\x04page\x88\x01\x01\x12J\n" +
+	"\tpage_size\x18\x04 \x01(\x05B(\xbaG%\x92\x02\"每页条数（不传=不限页）H\x01R\bpageSize\x88\x01\x01B\a\n" +
+	"\x05_pageB\f\n" +
+	"\n" +
+	"_page_size\"l\n" +
 	"\x1dListAttendanceRecordsResponse\x125\n" +
 	"\x05items\x18\x01 \x03(\v2\x1f.oa.service.v1.AttendanceRecordR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\x8d\x01\n" +
@@ -1154,6 +1175,7 @@ func file_oa_service_v1_attendance_proto_init() {
 	file_oa_service_v1_attendance_proto_msgTypes[0].OneofWrappers = []any{}
 	file_oa_service_v1_attendance_proto_msgTypes[4].OneofWrappers = []any{}
 	file_oa_service_v1_attendance_proto_msgTypes[5].OneofWrappers = []any{}
+	file_oa_service_v1_attendance_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

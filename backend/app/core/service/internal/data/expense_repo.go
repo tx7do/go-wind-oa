@@ -200,11 +200,13 @@ func (r *ExpenseApplicationRepo) SetInstanceID(ctx context.Context, tid, id, ins
 }
 
 // List 查询申请单。userID==0 时查全部（admin）；status 非零值时按状态过滤。
+// pageSize>0 时分页（page 从 1 起）并返回真实总数，否则全量（total=条数）。
 func (r *ExpenseApplicationRepo) List(
 	ctx context.Context,
 	tid, userID uint32,
 	status oaV1.ExpenseApplication_ExpenseStatus,
-) ([]*oaV1.ExpenseApplication, error) {
+	page, pageSize int32,
+) ([]*oaV1.ExpenseApplication, int, error) {
 	query := r.entClient.Client().ExpenseApplication.Query().
 		Where(expenseapplication.TenantIDEQ(tid))
 	if userID != 0 {
@@ -213,17 +215,28 @@ func (r *ExpenseApplicationRepo) List(
 	if status != 0 {
 		query = query.Where(expenseapplication.ExpenseStatusEQ(expenseStatusToEntity(status)))
 	}
+	total, err := query.Clone().Count(ctx)
+	if err != nil {
+		r.log.Errorf("count expense applications failed: %s", err.Error())
+		return nil, 0, oaV1.ErrorInternalServerError("count expense applications failed")
+	}
+	if pageSize > 0 {
+		if page < 1 {
+			page = 1
+		}
+		query = query.Offset((int(page) - 1) * int(pageSize)).Limit(int(pageSize))
+	}
 	// WithItems 预载明细（列表 DTO 读取 Edges.Items）。
-	entities, err := query.WithItems().All(ctx)
+	entities, err := query.Order(ent.Desc(expenseapplication.FieldID)).WithItems().All(ctx)
 	if err != nil {
 		r.log.Errorf("list expense applications failed: %s", err.Error())
-		return nil, oaV1.ErrorInternalServerError("list expense applications failed")
+		return nil, 0, oaV1.ErrorInternalServerError("list expense applications failed")
 	}
 	items := make([]*oaV1.ExpenseApplication, 0, len(entities))
 	for _, e := range entities {
 		items = append(items, expenseApplicationToDTO(e))
 	}
-	return items, nil
+	return items, total, nil
 }
 
 // GetEntity 供工作流终结回调读取原始实体（校验关联与状态同步）。不存在返回 nil。

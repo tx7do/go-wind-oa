@@ -186,17 +186,28 @@ func (r *WorkflowInstanceRepo) GetDefinitionNodeConfig(ctx context.Context, id u
 	return *def.NodeConfig, nil
 }
 
-// ListByCreator “我的申请”列表。按创建者+租户查询实例。
-func (r *WorkflowInstanceRepo) ListByCreator(ctx context.Context, tenantID uint32, creatorUserID uint32) ([]*oaV1.MyTaskItem, error) {
-	entities, err := r.entClient.Client().WorkflowInstance.Query().
+// ListByCreator “我的申请”列表。按创建者+租户查询实例。pageSize>0 时分页并返回真实总数。
+func (r *WorkflowInstanceRepo) ListByCreator(ctx context.Context, tenantID uint32, creatorUserID uint32, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {
+	query := r.entClient.Client().WorkflowInstance.Query().
 		Where(
 			workflowinstance.CreatedByEQ(creatorUserID),
 			workflowinstance.TenantIDEQ(tenantID),
-		).
-		All(ctx)
+		)
+	total, err := query.Clone().Count(ctx)
+	if err != nil {
+		r.log.Errorf("count instances by creator failed: %s", err.Error())
+		return nil, 0, oaV1.ErrorInternalServerError("count instances failed")
+	}
+	if pageSize > 0 {
+		if page < 1 {
+			page = 1
+		}
+		query = query.Offset((int(page) - 1) * int(pageSize)).Limit(int(pageSize))
+	}
+	entities, err := query.Order(ent.Desc(workflowinstance.FieldID)).All(ctx)
 	if err != nil {
 		r.log.Errorf("list instances by creator failed: %s", err.Error())
-		return nil, oaV1.ErrorInternalServerError("list instances failed")
+		return nil, 0, oaV1.ErrorInternalServerError("list instances failed")
 	}
 
 	items := make([]*oaV1.MyTaskItem, 0, len(entities))
@@ -214,7 +225,7 @@ func (r *WorkflowInstanceRepo) ListByCreator(ctx context.Context, tenantID uint3
 		}
 		items = append(items, item)
 	}
-	return items, nil
+	return items, total, nil
 }
 
 func instanceStatusLabel(s *workflowinstance.InstanceStatus) string {

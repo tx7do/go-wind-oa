@@ -278,12 +278,12 @@ func (s *LeaveService) ListLeaveApplications(ctx context.Context, req *oaV1.List
 	if !ok {
 		return nil, oaV1.ErrorForbidden("missing viewer context")
 	}
-	items, err := s.appRepo.List(ctx, tid, req.GetUserId(), req.GetStatus(), s.typeRepo)
+	items, total, err := s.appRepo.List(ctx, tid, req.GetUserId(), req.GetStatus(), s.typeRepo, req.GetPage(), req.GetPageSize())
 	if err != nil {
 		return nil, err
 	}
 	s.fillApplicantNames(ctx, tid, items)
-	return &oaV1.ListLeaveApplicationsResponse{Items: items, Total: uint64(len(items))}, nil
+	return &oaV1.ListLeaveApplicationsResponse{Items: items, Total: uint64(total)}, nil
 }
 
 func (s *LeaveService) GetLeaveApplication(ctx context.Context, req *oaV1.GetLeaveApplicationRequest) (*oaV1.LeaveApplication, error) {

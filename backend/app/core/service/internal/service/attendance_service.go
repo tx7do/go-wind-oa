@@ -216,12 +216,12 @@ func (s *AttendanceService) ListAttendanceRecords(ctx context.Context, req *oaV1
 	if req.GetWorkDate() == nil {
 		return nil, oaV1.ErrorBadRequest("work date required")
 	}
-	items, err := s.repo.ListByDate(ctx, tid, req.GetUserId(), truncateDate(req.GetWorkDate().AsTime().In(time.Local)))
+	items, total, err := s.repo.ListByDate(ctx, tid, req.GetUserId(), truncateDate(req.GetWorkDate().AsTime().In(time.Local)), req.GetPage(), req.GetPageSize())
 	if err != nil {
 		return nil, err
 	}
 	s.fillUserNames(ctx, tid, items)
-	return &oaV1.ListAttendanceRecordsResponse{Items: items, Total: uint64(len(items))}, nil
+	return &oaV1.ListAttendanceRecordsResponse{Items: items, Total: uint64(total)}, nil
 }
 
 func (s *AttendanceService) GetAttendanceSetting(ctx context.Context, _ *emptypb.Empty) (*oaV1.AttendanceSetting, error) {

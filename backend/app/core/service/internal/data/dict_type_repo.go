@@ -45,10 +45,10 @@ func NewDictTypeRepo(
 	dictEntryRepo *DictEntryRepo,
 ) *DictTypeRepo {
 	repo := &DictTypeRepo{
-		log:       ctx.NewLoggerHelper("dict-type/repo/admin-service"),
-		entClient: entClient,
+		log:           ctx.NewLoggerHelper("dict-type/repo/admin-service"),
+		entClient:     entClient,
 		dictEntryRepo: dictEntryRepo,
-		mapper:    mapper.NewCopierMapper[dictV1.DictType, ent.DictType](),
+		mapper:        mapper.NewCopierMapper[dictV1.DictType, ent.DictType](),
 	}
 
 	repo.init()

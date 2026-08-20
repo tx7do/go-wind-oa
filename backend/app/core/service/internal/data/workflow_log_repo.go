@@ -77,17 +77,28 @@ func (r *WorkflowLogRepo) Create(
 }
 
 // ListByActor “已办”列表。按操作者+租户查询日志，WithInstance 取实例 ID。
-func (r *WorkflowLogRepo) ListByActor(ctx context.Context, tenantID uint32, actorUserID uint32) ([]*oaV1.MyTaskItem, error) {
-	entities, err := r.entClient.Client().WorkflowLog.Query().
+// pageSize>0 时分页并返回真实总数。
+func (r *WorkflowLogRepo) ListByActor(ctx context.Context, tenantID uint32, actorUserID uint32, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {
+	query := r.entClient.Client().WorkflowLog.Query().
 		Where(
 			workflowlog.CreatedByEQ(actorUserID),
 			workflowlog.TenantIDEQ(tenantID),
-		).
-		WithInstance().
-		All(ctx)
+		)
+	total, err := query.Clone().Count(ctx)
+	if err != nil {
+		r.log.Errorf("count logs by actor failed: %s", err.Error())
+		return nil, 0, oaV1.ErrorInternalServerError("count logs failed")
+	}
+	if pageSize > 0 {
+		if page < 1 {
+			page = 1
+		}
+		query = query.Offset((int(page) - 1) * int(pageSize)).Limit(int(pageSize))
+	}
+	entities, err := query.Order(ent.Desc(workflowlog.FieldID)).WithInstance().All(ctx)
 	if err != nil {
 		r.log.Errorf("list logs by actor failed: %s", err.Error())
-		return nil, oaV1.ErrorInternalServerError("list logs failed")
+		return nil, 0, oaV1.ErrorInternalServerError("list logs failed")
 	}
 
 	items := make([]*oaV1.MyTaskItem, 0, len(entities))
@@ -107,7 +118,7 @@ func (r *WorkflowLogRepo) ListByActor(ctx context.Context, tenantID uint32, acto
 		}
 		items = append(items, item)
 	}
-	return items, nil
+	return items, total, nil
 }
 
 // ListByInstance 审批历史。经 instance→logs 边遍历（WithLogs）取该实例的全部日志。

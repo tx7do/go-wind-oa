@@ -149,18 +149,29 @@ func (r *WorkflowTaskRepo) UpdateAssignee(
 }
 
 // ListPendingByAssignee “待办”列表。三重谓词：指派审批人 + 任务状态=PENDING + 租户。
-func (r *WorkflowTaskRepo) ListPendingByAssignee(ctx context.Context, tenantID uint32, assigneeUserID uint32) ([]*oaV1.MyTaskItem, error) {
-	entities, err := r.entClient.Client().WorkflowTask.Query().
+// pageSize>0 时分页并返回真实总数。
+func (r *WorkflowTaskRepo) ListPendingByAssignee(ctx context.Context, tenantID uint32, assigneeUserID uint32, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {
+	query := r.entClient.Client().WorkflowTask.Query().
 		Where(
 			workflowtask.AssigneeUserIDEQ(assigneeUserID),
 			workflowtask.TaskStatusEQ(workflowtask.TaskStatusPending),
 			workflowtask.TenantIDEQ(tenantID),
-		).
-		WithInstance().
-		All(ctx)
+		)
+	total, err := query.Clone().Count(ctx)
+	if err != nil {
+		r.log.Errorf("count pending tasks failed: %s", err.Error())
+		return nil, 0, oaV1.ErrorInternalServerError("count pending tasks failed")
+	}
+	if pageSize > 0 {
+		if page < 1 {
+			page = 1
+		}
+		query = query.Offset((int(page) - 1) * int(pageSize)).Limit(int(pageSize))
+	}
+	entities, err := query.Order(ent.Desc(workflowtask.FieldID)).WithInstance().All(ctx)
 	if err != nil {
 		r.log.Errorf("list pending tasks failed: %s", err.Error())
-		return nil, oaV1.ErrorInternalServerError("list pending tasks failed")
+		return nil, 0, oaV1.ErrorInternalServerError("list pending tasks failed")
 	}
 
 	items := make([]*oaV1.MyTaskItem, 0, len(entities))
@@ -178,7 +189,7 @@ func (r *WorkflowTaskRepo) ListPendingByAssignee(ctx context.Context, tenantID u
 		}
 		items = append(items, item)
 	}
-	return items, nil
+	return items, total, nil
 }
 
 // GetDetailByAssignee 任务详情。三重谓词 + IDEQ。返回 task DTO（经 mapper）+ 父实例 ID

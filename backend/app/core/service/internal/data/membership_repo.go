@@ -360,7 +360,7 @@ func (r *MembershipRepo) SetUserRoleID(ctx context.Context, userID uint32, roleI
 
 	if _, err := up.SetRoleID(roleID).Save(ctx); err != nil {
 		r.log.Errorf("update membership role_id failed: %s", err.Error())
-			return identityV1.ErrorInternalServerError("update membership role_id failed")
+		return identityV1.ErrorInternalServerError("update membership role_id failed")
 	}
 	return nil
 }

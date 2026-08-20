@@ -440,6 +440,8 @@ type ListExpenseApplicationsRequest struct {
 	state         protoimpl.MessageState           `protogen:"open.v1"`
 	UserId        uint32                           `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                       // 申请人用户ID
 	Status        ExpenseApplication_ExpenseStatus `protobuf:"varint,2,opt,name=status,proto3,enum=oa.service.v1.ExpenseApplication_ExpenseStatus" json:"status,omitempty"` // 状态过滤
+	Page          *int32                           `protobuf:"varint,3,opt,name=page,proto3,oneof" json:"page,omitempty"`                                                   // 页码
+	PageSize      *int32                           `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`                           // 每页条数
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -486,6 +488,20 @@ func (x *ListExpenseApplicationsRequest) GetStatus() ExpenseApplication_ExpenseS
 		return x.Status
 	}
 	return ExpenseApplication_PENDING
+}
+
+func (x *ListExpenseApplicationsRequest) GetPage() int32 {
+	if x != nil && x.Page != nil {
+		return *x.Page
+	}
+	return 0
+}
+
+func (x *ListExpenseApplicationsRequest) GetPageSize() int32 {
+	if x != nil && x.PageSize != nil {
+		return *x.PageSize
+	}
+	return 0
 }
 
 // 查询报销申请 - 回应
@@ -659,10 +675,15 @@ const file_oa_service_v1_expense_proto_rawDesc = "" +
 	" SubmitExpenseApplicationResponse\x12!\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xbaG\x0e\x92\x02\v申请单IDR\x02id\x128\n" +
 	"\vinstance_id\x18\x02 \x01(\rB\x17\xbaG\x14\x92\x02\x11工作流实例IDR\n" +
-	"instanceId\"\xf2\x01\n" +
+	"instanceId\"\x9e\x03\n" +
 	"\x1eListExpenseApplicationsRequest\x12c\n" +
 	"\auser_id\x18\x01 \x01(\rBJ\xbaGG\x92\x02D申请人用户ID，0=全部（app 端忽略此字段按本人查）R\x06userId\x12k\n" +
-	"\x06status\x18\x02 \x01(\x0e2/.oa.service.v1.ExpenseApplication.ExpenseStatusB\"\xbaG\x1f\x92\x02\x1c状态过滤，不传=全部R\x06status\"p\n" +
+	"\x06status\x18\x02 \x01(\x0e2/.oa.service.v1.ExpenseApplication.ExpenseStatusB\"\xbaG\x1f\x92\x02\x1c状态过滤，不传=全部R\x06status\x12G\n" +
+	"\x04page\x18\x03 \x01(\x05B.\xbaG+\x92\x02(页码（从 1 起，不传=不限页）H\x00R\x04page\x88\x01\x01\x12J\n" +
+	"\tpage_size\x18\x04 \x01(\x05B(\xbaG%\x92\x02\"每页条数（不传=不限页）H\x01R\bpageSize\x88\x01\x01B\a\n" +
+	"\x05_pageB\f\n" +
+	"\n" +
+	"_page_size\"p\n" +
 	"\x1fListExpenseApplicationsResponse\x127\n" +
 	"\x05items\x18\x01 \x03(\v2!.oa.service.v1.ExpenseApplicationR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"A\n" +
@@ -730,6 +751,7 @@ func file_oa_service_v1_expense_proto_init() {
 	}
 	file_oa_service_v1_expense_proto_msgTypes[0].OneofWrappers = []any{}
 	file_oa_service_v1_expense_proto_msgTypes[1].OneofWrappers = []any{}
+	file_oa_service_v1_expense_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

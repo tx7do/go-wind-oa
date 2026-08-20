@@ -350,9 +350,9 @@ func (r *PageRepo) Update(ctx context.Context, req *contentV1.UpdatePageRequest)
 				SetNillableRedirectURL(req.Data.RedirectUrl).
 				SetNillableShowInNavigation(req.Data.ShowInNavigation).
 				SetNillableSortOrder(req.Data.SortOrder).
-			SetNillableTemplate(req.Data.Template).
-			SetNillableIsCustomTemplate(req.Data.IsCustomTemplate).
-			SetNillableParentID(req.Data.ParentId).
+				SetNillableTemplate(req.Data.Template).
+				SetNillableIsCustomTemplate(req.Data.IsCustomTemplate).
+				SetNillableParentID(req.Data.ParentId).
 				SetNillableDepth(req.Data.Depth).
 				SetNillablePath(req.Data.Path).
 				SetUpdatedAt(time.Now())

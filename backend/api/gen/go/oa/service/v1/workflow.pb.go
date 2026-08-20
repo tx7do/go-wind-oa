@@ -1430,6 +1430,8 @@ func (x *AuditTaskRequest) GetComment() string {
 type GetMyTasksRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ListType      ListType               `protobuf:"varint,1,opt,name=list_type,json=listType,proto3,enum=oa.service.v1.ListType" json:"list_type,omitempty"` // 列表类型
+	Page          *int32                 `protobuf:"varint,2,opt,name=page,proto3,oneof" json:"page,omitempty"`                                               // 页码
+	PageSize      *int32                 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`                       // 每页条数
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1469,6 +1471,20 @@ func (x *GetMyTasksRequest) GetListType() ListType {
 		return x.ListType
 	}
 	return ListType_PENDING
+}
+
+func (x *GetMyTasksRequest) GetPage() int32 {
+	if x != nil && x.Page != nil {
+		return *x.Page
+	}
+	return 0
+}
+
+func (x *GetMyTasksRequest) GetPageSize() int32 {
+	if x != nil && x.PageSize != nil {
+		return *x.PageSize
+	}
+	return 0
 }
 
 // 查询我的任务 - 回应
@@ -1878,9 +1894,14 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\x06action\x18\x02 \x01(\x0e2\x1a.oa.service.v1.AuditActionB\x12\xbaG\x0f\x92\x02\f审批动作R\x06action\x129\n" +
 	"\n" +
 	"forward_to\x18\x03 \x01(\rB\x1a\xbaG\x17\x92\x02\x14转办目标用户IDR\tforwardTo\x12,\n" +
-	"\acomment\x18\x04 \x01(\tB\x12\xbaG\x0f\x92\x02\f审批意见R\acomment\"]\n" +
+	"\acomment\x18\x04 \x01(\tB\x12\xbaG\x0f\x92\x02\f审批意见R\acomment\"\x89\x02\n" +
 	"\x11GetMyTasksRequest\x12H\n" +
-	"\tlist_type\x18\x01 \x01(\x0e2\x17.oa.service.v1.ListTypeB\x12\xbaG\x0f\x92\x02\f列表类型R\blistType\"[\n" +
+	"\tlist_type\x18\x01 \x01(\x0e2\x17.oa.service.v1.ListTypeB\x12\xbaG\x0f\x92\x02\f列表类型R\blistType\x12G\n" +
+	"\x04page\x18\x02 \x01(\x05B.\xbaG+\x92\x02(页码（从 1 起，不传=不限页）H\x00R\x04page\x88\x01\x01\x12J\n" +
+	"\tpage_size\x18\x03 \x01(\x05B(\xbaG%\x92\x02\"每页条数（不传=不限页）H\x01R\bpageSize\x88\x01\x01B\a\n" +
+	"\x05_pageB\f\n" +
+	"\n" +
+	"_page_size\"[\n" +
 	"\x12GetMyTasksResponse\x12/\n" +
 	"\x05items\x18\x01 \x03(\v2\x19.oa.service.v1.MyTaskItemR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\":\n" +
@@ -2029,6 +2050,7 @@ func file_oa_service_v1_workflow_proto_init() {
 	}
 	file_oa_service_v1_workflow_proto_msgTypes[8].OneofWrappers = []any{}
 	file_oa_service_v1_workflow_proto_msgTypes[9].OneofWrappers = []any{}
+	file_oa_service_v1_workflow_proto_msgTypes[13].OneofWrappers = []any{}
 	file_oa_service_v1_workflow_proto_msgTypes[15].OneofWrappers = []any{
 		(*GetTaskRequest_Id)(nil),
 	}

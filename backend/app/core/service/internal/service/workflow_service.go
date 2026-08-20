@@ -494,21 +494,22 @@ func (s *WorkflowService) GetMyTasks(ctx context.Context, req *oaV1.GetMyTasksRe
 	}
 
 	var items []*oaV1.MyTaskItem
+	var total int
 	var err error
 	switch req.GetListType() {
 	case oaV1.ListType_PENDING:
-		items, err = s.taskRepo.ListPendingByAssignee(ctx, tid, uid)
+		items, total, err = s.taskRepo.ListPendingByAssignee(ctx, tid, uid, req.GetPage(), req.GetPageSize())
 	case oaV1.ListType_DONE:
-		items, err = s.logRepo.ListByActor(ctx, tid, uid)
+		items, total, err = s.logRepo.ListByActor(ctx, tid, uid, req.GetPage(), req.GetPageSize())
 	case oaV1.ListType_SUBMITTED:
-		items, err = s.instanceRepo.ListByCreator(ctx, tid, uid)
+		items, total, err = s.instanceRepo.ListByCreator(ctx, tid, uid, req.GetPage(), req.GetPageSize())
 	default:
 		return nil, oaV1.ErrorBadRequest("invalid list type")
 	}
 	if err != nil {
 		return nil, err
 	}
-	return &oaV1.GetMyTasksResponse{Items: items, Total: uint64(len(items))}, nil
+	return &oaV1.GetMyTasksResponse{Items: items, Total: uint64(total)}, nil
 }
 
 func (s *WorkflowService) GetTask(ctx context.Context, req *oaV1.GetTaskRequest) (*oaV1.GetTaskResponse, error) {
