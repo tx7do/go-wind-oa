@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_app/generated/l10n.dart';
@@ -221,17 +223,7 @@ class _DetailContent extends StatelessWidget {
         Text(loc.oaTaskDetailFormDataTitle,
             style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: SelectableText(
-            detail.formData ?? '-',
-            style: theme.textTheme.bodySmall,
-          ),
-        ),
+        _FormDataView(raw: detail.formData ?? '-', theme: theme),
         const SizedBox(height: 16),
         Text(loc.oaTaskDetailHistoryTitle,
             style: theme.textTheme.titleSmall),
@@ -264,6 +256,69 @@ class _HistoryRow extends StatelessWidget {
         subtitle: Text(
             '${ts}\n${entry.comment ?? '-'}',
             style: theme.textTheme.bodySmall),
+      ),
+    );
+  }
+}
+
+
+/// 申请表单数据展示：可解析为 JSON 对象时按 key-value 渲染，否则原文。
+class _FormDataView extends StatelessWidget {
+  final String raw;
+  final ThemeData theme;
+
+  const _FormDataView({required this.raw, required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    Map<String, dynamic> data;
+    try {
+      final parsed = jsonDecode(raw);
+      if (parsed is Map<String, dynamic>) {
+        data = parsed;
+      } else {
+        data = const {};
+      }
+    } catch (_) {
+      data = const {};
+    }
+    if (data.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: SelectableText(raw.isEmpty ? '-' : raw,
+            style: theme.textTheme.bodySmall),
+      );
+    }
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final entry in data.entries)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${entry.key}: ',
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(fontWeight: FontWeight.w600)),
+                  Expanded(
+                    child: SelectableText('${entry.value}',
+                        style: theme.textTheme.bodySmall),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

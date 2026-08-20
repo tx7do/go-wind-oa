@@ -11701,6 +11701,27 @@ class WorkflowServiceClient {
     ), headers: headers);
     return OaServiceV1GetTaskResponse.fromJson(result as Map<String, dynamic>);
   }
+
+  /// 获取申请表单定义（提交页动态渲染表单用）
+  Future<OaServiceV1GetApplyFormResponse> getApplyForm(OaServiceV1GetApplyFormRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/workflow/apply-form';
+    final queryParams = <String>[];
+    if (request.code != null) {
+      queryParams.add('code=${Uri.encodeComponent(request.code!.toString())}');
+    }
+    if (request.version != null) {
+      queryParams.add('version=${Uri.encodeComponent(request.version!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'WorkflowService',
+      method: 'GetApplyForm',
+    ), headers: headers);
+    return OaServiceV1GetApplyFormResponse.fromJson(result as Map<String, dynamic>);
+  }
 }
 
 /// 提交申请 - 请求
@@ -12565,6 +12586,108 @@ enum OaServiceV1WorkflowLog$LogAction {
     values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1WorkflowLog\$LogAction value: ' + v));
   @override
   String toString() => value;
+}
+
+/// 获取申请表单定义 - 请求
+class OaServiceV1GetApplyFormRequest {
+  String? code;
+  int? version;
+
+  OaServiceV1GetApplyFormRequest({
+    this.code,
+    this.version,
+  });
+
+  factory OaServiceV1GetApplyFormRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1GetApplyFormRequest(
+      code: json['code'] as String?,
+      version: json['version'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (code != null) json['code'] = code;
+    if (version != null) json['version'] = version;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1GetApplyFormRequest(code: $code, version: $version)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1GetApplyFormRequest &&
+      runtimeType == other.runtimeType
+      && code == other.code
+      && version == other.version
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    code,
+    version,
+  ]);
+
+  OaServiceV1GetApplyFormRequest copyWith({
+    String? code,
+    int? version,
+  }) {
+    return OaServiceV1GetApplyFormRequest(
+      code: code ?? this.code,
+      version: version ?? this.version,
+    );
+  }
+}
+
+/// 获取申请表单定义 - 回应
+class OaServiceV1GetApplyFormResponse {
+  String? formSchema;
+
+  OaServiceV1GetApplyFormResponse({
+    this.formSchema,
+  });
+
+  factory OaServiceV1GetApplyFormResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1GetApplyFormResponse(
+      formSchema: json['formSchema'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (formSchema != null) json['formSchema'] = formSchema;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1GetApplyFormResponse(formSchema: $formSchema)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1GetApplyFormResponse &&
+      runtimeType == other.runtimeType
+      && formSchema == other.formSchema
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    formSchema,
+  ]);
+
+  OaServiceV1GetApplyFormResponse copyWith({
+    String? formSchema,
+  }) {
+    return OaServiceV1GetApplyFormResponse(
+      formSchema: formSchema ?? this.formSchema,
+    );
+  }
 }
 
 class ApiClient {

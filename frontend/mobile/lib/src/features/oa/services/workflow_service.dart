@@ -162,6 +162,17 @@ class WorkflowService extends BaseService {
     }
   }
 
+  /// 获取申请表单定义（按流程 code+version，仅 ENABLED 定义）。
+  /// 返回 form_schema JSON 字段描述数组；空串表示无表单定义（调用方回退自由 JSON）。
+  Future<dynamic> fetchApplyForm({required String code, required int version}) async {
+    try {
+      return await _api.getApplyForm(
+          oaApi.OaServiceV1GetApplyFormRequest(code: code, version: version));
+    } on DioException catch (e) {
+      return handleDioError(e);
+    }
+  }
+
   /// 获取单个待办任务详情（含申请表单与审批历史）。
   Future<dynamic> getTaskDetail({required int taskId}) async {
     try {

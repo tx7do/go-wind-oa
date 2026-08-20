@@ -114,7 +114,7 @@ export function useUpdateWorkflowDefinitionStatus(
         data: {
           definitionStatus: status,
         },
-        updateMask: "definition_status",
+        updateMask: "definitionStatus",
       };
       return apiClient.workflowService.UpdateWorkflowDefinition(req);
     },

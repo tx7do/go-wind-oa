@@ -94,6 +94,37 @@ const formRules: FormRules = {
   name: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   code: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   version: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
+  form_schema: [
+    {
+      validator: (_rule: unknown, value: string, callback: (err?: Error) => void) => {
+        if (!value) return callback(); // 允许为空（无表单定义的流程）
+        let fields: any[];
+        try {
+          const parsed = JSON.parse(value);
+          fields = Array.isArray(parsed) ? parsed : [parsed];
+        } catch {
+          callback(new Error("form_schema 必须是合法的 JSON"));
+          return;
+        }
+        for (const f of fields) {
+          if (!f.key || !f.label) {
+            callback(new Error("每个字段需要 key 与 label"));
+            return;
+          }
+          if (!["text", "textarea", "number", "date", "select"].includes(f.type || "text")) {
+            callback(new Error(`字段 ${f.key} 的 type 仅支持 text/textarea/number/date/select`));
+            return;
+          }
+          if ((f.type === "select") && (!Array.isArray(f.options) || f.options.length === 0)) {
+            callback(new Error(`字段 ${f.key} 为 select 类型，必须提供非空 options 数组`));
+            return;
+          }
+        }
+        callback();
+      },
+      trigger: "blur",
+    },
+  ],
   node_config: [
     { required: true, message: $t("common.validation.required"), trigger: "blur" },
     {

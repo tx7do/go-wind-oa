@@ -12,7 +12,12 @@
       </ElDescriptions>
 
       <div class="section-title">申请表单数据</div>
-      <ElInput :model-value="detail.formData ?? '-'" type="textarea" :rows="6" readonly />
+      <ElDescriptions v-if="formEntries.length" :column="1" border size="small">
+        <ElDescriptionsItem v-for="e in formEntries" :key="e[0]" :label="e[0]">
+          {{ e[1] }}
+        </ElDescriptionsItem>
+      </ElDescriptions>
+      <ElInput v-else :model-value="detail.formData ?? '-'" type="textarea" :rows="6" readonly />
 
       <div class="section-title">审批历史</div>
       <ElTable :data="detail.logs ?? []" border size="small">
@@ -43,7 +48,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import {
   ElButton,
   ElDescriptions,
@@ -69,6 +74,21 @@ const acting = ref(false);
 const taskId = ref(0);
 const detail = ref<oaservicev1_GetTaskResponse | null>(null);
 const comment = ref("");
+
+// formData 可解析为 JSON 对象时按 key-value 展示，否则原文。
+const formEntries = computed<[string, string][]>(() => {
+  const raw = detail.value?.formData;
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return Object.entries(parsed).map(([k, v]) => [k, String(v)] as [string, string]);
+    }
+  } catch {
+    /* 原文展示 */
+  }
+  return [];
+});
 
 const auditMutation = useAuditTask({
   onSuccess: () => {
