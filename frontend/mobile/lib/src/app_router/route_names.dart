@@ -17,7 +17,8 @@ class RouteNames {
   static const String oaNotifications = 'oa_notifications';
   static const String oaAttendance = 'oa_attendance';
 
-  // OA 行政单据（请假 / 报销）
+  // OA 行政单据（请假 / 报销 / 出差）
   static const String oaLeave = 'oa_leave';
   static const String oaExpense = 'oa_expense';
+  static const String oaBusinessTrip = 'oa_business_trip';
 }

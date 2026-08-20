@@ -10,6 +10,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/apiauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancesetting"
+	"go-wind-oa/app/core/service/internal/data/ent/businesstripapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/category"
 	"go-wind-oa/app/core/service/internal/data/ent/categorytranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/comment"
@@ -149,6 +150,7 @@ func checkColumn(t, c string) error {
 			apiauditlog.Table:              apiauditlog.ValidColumn,
 			attendancerecord.Table:         attendancerecord.ValidColumn,
 			attendancesetting.Table:        attendancesetting.ValidColumn,
+			businesstripapplication.Table:  businesstripapplication.ValidColumn,
 			category.Table:                 category.ValidColumn,
 			categorytranslation.Table:      categorytranslation.ValidColumn,
 			comment.Table:                  comment.ValidColumn,

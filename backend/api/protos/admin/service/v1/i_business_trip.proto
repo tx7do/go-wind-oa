@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+
+import "oa/service/v1/business_trip.proto";
+
+// OA 出差申请管理服务（admin 边端）
+service BusinessTripService {
+  // 查询出差申请列表
+  rpc ListBusinessTripApplications(oa.service.v1.ListBusinessTripApplicationsRequest) returns (oa.service.v1.ListBusinessTripApplicationsResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/business-trip/applications"
+    };
+  }
+
+  // 查询出差申请详情
+  rpc GetBusinessTripApplication(oa.service.v1.GetBusinessTripApplicationRequest) returns (oa.service.v1.BusinessTripApplication) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/business-trip/applications/{id}"
+    };
+  }
+}

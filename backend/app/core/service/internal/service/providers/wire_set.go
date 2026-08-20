@@ -39,6 +39,7 @@ var ProviderSet = wire.NewSet(
 	service.NewWorkflowEventRegistry,
 	service.NewLeaveService,
 	service.NewExpenseService,
+	service.NewBusinessTripService,
 	service.NewAttendanceService,
 	service.NewAttendanceScheduler,
 	service.NewLoginPolicyService,

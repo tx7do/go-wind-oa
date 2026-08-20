@@ -91,6 +91,16 @@ const oa: RouteRecordRaw[] = [
         },
         component: () => import("@/pages/app/oa/expense/index.vue"),
       },
+      {
+        path: "business-trip",
+        name: "OaBusinessTripManagement",
+        meta: {
+          order: 6,
+          icon: "lucide:suitcase",
+          title: "routes.oa.businessTrip",
+        },
+        component: () => import("@/pages/app/oa/business_trip/index.vue"),
+      },
     ],
   },
 ];

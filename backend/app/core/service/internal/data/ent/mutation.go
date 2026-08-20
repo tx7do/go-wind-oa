@@ -14,6 +14,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/apiauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancesetting"
+	"go-wind-oa/app/core/service/internal/data/ent/businesstripapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/category"
 	"go-wind-oa/app/core/service/internal/data/ent/categorytranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/comment"
@@ -104,6 +105,7 @@ const (
 	TypeApiAuditLog              = "ApiAuditLog"
 	TypeAttendanceRecord         = "AttendanceRecord"
 	TypeAttendanceSetting        = "AttendanceSetting"
+	TypeBusinessTripApplication  = "BusinessTripApplication"
 	TypeCategory                 = "Category"
 	TypeCategoryTranslation      = "CategoryTranslation"
 	TypeComment                  = "Comment"
@@ -6964,6 +6966,1387 @@ func (m *AttendanceSettingMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *AttendanceSettingMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown AttendanceSetting edge %s", name)
+}
+
+// BusinessTripApplicationMutation represents an operation that mutates the BusinessTripApplication nodes in the graph.
+type BusinessTripApplicationMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *uint32
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	created_by     *uint32
+	addcreated_by  *int32
+	updated_by     *uint32
+	addupdated_by  *int32
+	deleted_by     *uint32
+	adddeleted_by  *int32
+	tenant_id      *uint32
+	addtenant_id   *int32
+	title          *string
+	destination    *string
+	start_date     *time.Time
+	end_date       *time.Time
+	itinerary      *string
+	trip_status    *businesstripapplication.TripStatus
+	instance_id    *uint32
+	addinstance_id *int32
+	clearedFields  map[string]struct{}
+	done           bool
+	oldValue       func(context.Context) (*BusinessTripApplication, error)
+	predicates     []predicate.BusinessTripApplication
+}
+
+var _ ent.Mutation = (*BusinessTripApplicationMutation)(nil)
+
+// businesstripapplicationOption allows management of the mutation configuration using functional options.
+type businesstripapplicationOption func(*BusinessTripApplicationMutation)
+
+// newBusinessTripApplicationMutation creates new mutation for the BusinessTripApplication entity.
+func newBusinessTripApplicationMutation(c config, op Op, opts ...businesstripapplicationOption) *BusinessTripApplicationMutation {
+	m := &BusinessTripApplicationMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeBusinessTripApplication,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withBusinessTripApplicationID sets the ID field of the mutation.
+func withBusinessTripApplicationID(id uint32) businesstripapplicationOption {
+	return func(m *BusinessTripApplicationMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *BusinessTripApplication
+		)
+		m.oldValue = func(ctx context.Context) (*BusinessTripApplication, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().BusinessTripApplication.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withBusinessTripApplication sets the old BusinessTripApplication of the mutation.
+func withBusinessTripApplication(node *BusinessTripApplication) businesstripapplicationOption {
+	return func(m *BusinessTripApplicationMutation) {
+		m.oldValue = func(context.Context) (*BusinessTripApplication, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m BusinessTripApplicationMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m BusinessTripApplicationMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of BusinessTripApplication entities.
+func (m *BusinessTripApplicationMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *BusinessTripApplicationMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *BusinessTripApplicationMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().BusinessTripApplication.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *BusinessTripApplicationMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *BusinessTripApplicationMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *BusinessTripApplicationMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[businesstripapplication.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *BusinessTripApplicationMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[businesstripapplication.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *BusinessTripApplicationMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, businesstripapplication.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *BusinessTripApplicationMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *BusinessTripApplicationMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *BusinessTripApplicationMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[businesstripapplication.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *BusinessTripApplicationMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[businesstripapplication.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *BusinessTripApplicationMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, businesstripapplication.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *BusinessTripApplicationMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *BusinessTripApplicationMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *BusinessTripApplicationMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[businesstripapplication.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *BusinessTripApplicationMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[businesstripapplication.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *BusinessTripApplicationMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, businesstripapplication.FieldDeletedAt)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *BusinessTripApplicationMutation) SetCreatedBy(u uint32) {
+	m.created_by = &u
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *BusinessTripApplicationMutation) CreatedBy() (r uint32, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds u to the "created_by" field.
+func (m *BusinessTripApplicationMutation) AddCreatedBy(u int32) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += u
+	} else {
+		m.addcreated_by = &u
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *BusinessTripApplicationMutation) AddedCreatedBy() (r int32, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *BusinessTripApplicationMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[businesstripapplication.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *BusinessTripApplicationMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[businesstripapplication.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *BusinessTripApplicationMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, businesstripapplication.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *BusinessTripApplicationMutation) SetUpdatedBy(u uint32) {
+	m.updated_by = &u
+	m.addupdated_by = nil
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *BusinessTripApplicationMutation) UpdatedBy() (r uint32, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// AddUpdatedBy adds u to the "updated_by" field.
+func (m *BusinessTripApplicationMutation) AddUpdatedBy(u int32) {
+	if m.addupdated_by != nil {
+		*m.addupdated_by += u
+	} else {
+		m.addupdated_by = &u
+	}
+}
+
+// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
+func (m *BusinessTripApplicationMutation) AddedUpdatedBy() (r int32, exists bool) {
+	v := m.addupdated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *BusinessTripApplicationMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	m.clearedFields[businesstripapplication.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *BusinessTripApplicationMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[businesstripapplication.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *BusinessTripApplicationMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	delete(m.clearedFields, businesstripapplication.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "deleted_by" field.
+func (m *BusinessTripApplicationMutation) SetDeletedBy(u uint32) {
+	m.deleted_by = &u
+	m.adddeleted_by = nil
+}
+
+// DeletedBy returns the value of the "deleted_by" field in the mutation.
+func (m *BusinessTripApplicationMutation) DeletedBy() (r uint32, exists bool) {
+	v := m.deleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "deleted_by" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// AddDeletedBy adds u to the "deleted_by" field.
+func (m *BusinessTripApplicationMutation) AddDeletedBy(u int32) {
+	if m.adddeleted_by != nil {
+		*m.adddeleted_by += u
+	} else {
+		m.adddeleted_by = &u
+	}
+}
+
+// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
+func (m *BusinessTripApplicationMutation) AddedDeletedBy() (r int32, exists bool) {
+	v := m.adddeleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (m *BusinessTripApplicationMutation) ClearDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	m.clearedFields[businesstripapplication.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
+func (m *BusinessTripApplicationMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[businesstripapplication.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" field.
+func (m *BusinessTripApplicationMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	delete(m.clearedFields, businesstripapplication.FieldDeletedBy)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *BusinessTripApplicationMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *BusinessTripApplicationMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *BusinessTripApplicationMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *BusinessTripApplicationMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *BusinessTripApplicationMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[businesstripapplication.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *BusinessTripApplicationMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[businesstripapplication.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *BusinessTripApplicationMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, businesstripapplication.FieldTenantID)
+}
+
+// SetTitle sets the "title" field.
+func (m *BusinessTripApplicationMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *BusinessTripApplicationMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *BusinessTripApplicationMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetDestination sets the "destination" field.
+func (m *BusinessTripApplicationMutation) SetDestination(s string) {
+	m.destination = &s
+}
+
+// Destination returns the value of the "destination" field in the mutation.
+func (m *BusinessTripApplicationMutation) Destination() (r string, exists bool) {
+	v := m.destination
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDestination returns the old "destination" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldDestination(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDestination is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDestination requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDestination: %w", err)
+	}
+	return oldValue.Destination, nil
+}
+
+// ResetDestination resets all changes to the "destination" field.
+func (m *BusinessTripApplicationMutation) ResetDestination() {
+	m.destination = nil
+}
+
+// SetStartDate sets the "start_date" field.
+func (m *BusinessTripApplicationMutation) SetStartDate(t time.Time) {
+	m.start_date = &t
+}
+
+// StartDate returns the value of the "start_date" field in the mutation.
+func (m *BusinessTripApplicationMutation) StartDate() (r time.Time, exists bool) {
+	v := m.start_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStartDate returns the old "start_date" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldStartDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStartDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStartDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStartDate: %w", err)
+	}
+	return oldValue.StartDate, nil
+}
+
+// ResetStartDate resets all changes to the "start_date" field.
+func (m *BusinessTripApplicationMutation) ResetStartDate() {
+	m.start_date = nil
+}
+
+// SetEndDate sets the "end_date" field.
+func (m *BusinessTripApplicationMutation) SetEndDate(t time.Time) {
+	m.end_date = &t
+}
+
+// EndDate returns the value of the "end_date" field in the mutation.
+func (m *BusinessTripApplicationMutation) EndDate() (r time.Time, exists bool) {
+	v := m.end_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEndDate returns the old "end_date" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldEndDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEndDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEndDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEndDate: %w", err)
+	}
+	return oldValue.EndDate, nil
+}
+
+// ResetEndDate resets all changes to the "end_date" field.
+func (m *BusinessTripApplicationMutation) ResetEndDate() {
+	m.end_date = nil
+}
+
+// SetItinerary sets the "itinerary" field.
+func (m *BusinessTripApplicationMutation) SetItinerary(s string) {
+	m.itinerary = &s
+}
+
+// Itinerary returns the value of the "itinerary" field in the mutation.
+func (m *BusinessTripApplicationMutation) Itinerary() (r string, exists bool) {
+	v := m.itinerary
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldItinerary returns the old "itinerary" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldItinerary(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldItinerary is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldItinerary requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldItinerary: %w", err)
+	}
+	return oldValue.Itinerary, nil
+}
+
+// ResetItinerary resets all changes to the "itinerary" field.
+func (m *BusinessTripApplicationMutation) ResetItinerary() {
+	m.itinerary = nil
+}
+
+// SetTripStatus sets the "trip_status" field.
+func (m *BusinessTripApplicationMutation) SetTripStatus(bs businesstripapplication.TripStatus) {
+	m.trip_status = &bs
+}
+
+// TripStatus returns the value of the "trip_status" field in the mutation.
+func (m *BusinessTripApplicationMutation) TripStatus() (r businesstripapplication.TripStatus, exists bool) {
+	v := m.trip_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTripStatus returns the old "trip_status" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldTripStatus(ctx context.Context) (v *businesstripapplication.TripStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTripStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTripStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTripStatus: %w", err)
+	}
+	return oldValue.TripStatus, nil
+}
+
+// ClearTripStatus clears the value of the "trip_status" field.
+func (m *BusinessTripApplicationMutation) ClearTripStatus() {
+	m.trip_status = nil
+	m.clearedFields[businesstripapplication.FieldTripStatus] = struct{}{}
+}
+
+// TripStatusCleared returns if the "trip_status" field was cleared in this mutation.
+func (m *BusinessTripApplicationMutation) TripStatusCleared() bool {
+	_, ok := m.clearedFields[businesstripapplication.FieldTripStatus]
+	return ok
+}
+
+// ResetTripStatus resets all changes to the "trip_status" field.
+func (m *BusinessTripApplicationMutation) ResetTripStatus() {
+	m.trip_status = nil
+	delete(m.clearedFields, businesstripapplication.FieldTripStatus)
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (m *BusinessTripApplicationMutation) SetInstanceID(u uint32) {
+	m.instance_id = &u
+	m.addinstance_id = nil
+}
+
+// InstanceID returns the value of the "instance_id" field in the mutation.
+func (m *BusinessTripApplicationMutation) InstanceID() (r uint32, exists bool) {
+	v := m.instance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInstanceID returns the old "instance_id" field's value of the BusinessTripApplication entity.
+// If the BusinessTripApplication object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessTripApplicationMutation) OldInstanceID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInstanceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInstanceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInstanceID: %w", err)
+	}
+	return oldValue.InstanceID, nil
+}
+
+// AddInstanceID adds u to the "instance_id" field.
+func (m *BusinessTripApplicationMutation) AddInstanceID(u int32) {
+	if m.addinstance_id != nil {
+		*m.addinstance_id += u
+	} else {
+		m.addinstance_id = &u
+	}
+}
+
+// AddedInstanceID returns the value that was added to the "instance_id" field in this mutation.
+func (m *BusinessTripApplicationMutation) AddedInstanceID() (r int32, exists bool) {
+	v := m.addinstance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearInstanceID clears the value of the "instance_id" field.
+func (m *BusinessTripApplicationMutation) ClearInstanceID() {
+	m.instance_id = nil
+	m.addinstance_id = nil
+	m.clearedFields[businesstripapplication.FieldInstanceID] = struct{}{}
+}
+
+// InstanceIDCleared returns if the "instance_id" field was cleared in this mutation.
+func (m *BusinessTripApplicationMutation) InstanceIDCleared() bool {
+	_, ok := m.clearedFields[businesstripapplication.FieldInstanceID]
+	return ok
+}
+
+// ResetInstanceID resets all changes to the "instance_id" field.
+func (m *BusinessTripApplicationMutation) ResetInstanceID() {
+	m.instance_id = nil
+	m.addinstance_id = nil
+	delete(m.clearedFields, businesstripapplication.FieldInstanceID)
+}
+
+// Where appends a list predicates to the BusinessTripApplicationMutation builder.
+func (m *BusinessTripApplicationMutation) Where(ps ...predicate.BusinessTripApplication) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the BusinessTripApplicationMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *BusinessTripApplicationMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.BusinessTripApplication, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *BusinessTripApplicationMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *BusinessTripApplicationMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (BusinessTripApplication).
+func (m *BusinessTripApplicationMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *BusinessTripApplicationMutation) Fields() []string {
+	fields := make([]string, 0, 14)
+	if m.created_at != nil {
+		fields = append(fields, businesstripapplication.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, businesstripapplication.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, businesstripapplication.FieldDeletedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, businesstripapplication.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, businesstripapplication.FieldUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		fields = append(fields, businesstripapplication.FieldDeletedBy)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, businesstripapplication.FieldTenantID)
+	}
+	if m.title != nil {
+		fields = append(fields, businesstripapplication.FieldTitle)
+	}
+	if m.destination != nil {
+		fields = append(fields, businesstripapplication.FieldDestination)
+	}
+	if m.start_date != nil {
+		fields = append(fields, businesstripapplication.FieldStartDate)
+	}
+	if m.end_date != nil {
+		fields = append(fields, businesstripapplication.FieldEndDate)
+	}
+	if m.itinerary != nil {
+		fields = append(fields, businesstripapplication.FieldItinerary)
+	}
+	if m.trip_status != nil {
+		fields = append(fields, businesstripapplication.FieldTripStatus)
+	}
+	if m.instance_id != nil {
+		fields = append(fields, businesstripapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *BusinessTripApplicationMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case businesstripapplication.FieldCreatedAt:
+		return m.CreatedAt()
+	case businesstripapplication.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case businesstripapplication.FieldDeletedAt:
+		return m.DeletedAt()
+	case businesstripapplication.FieldCreatedBy:
+		return m.CreatedBy()
+	case businesstripapplication.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case businesstripapplication.FieldDeletedBy:
+		return m.DeletedBy()
+	case businesstripapplication.FieldTenantID:
+		return m.TenantID()
+	case businesstripapplication.FieldTitle:
+		return m.Title()
+	case businesstripapplication.FieldDestination:
+		return m.Destination()
+	case businesstripapplication.FieldStartDate:
+		return m.StartDate()
+	case businesstripapplication.FieldEndDate:
+		return m.EndDate()
+	case businesstripapplication.FieldItinerary:
+		return m.Itinerary()
+	case businesstripapplication.FieldTripStatus:
+		return m.TripStatus()
+	case businesstripapplication.FieldInstanceID:
+		return m.InstanceID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *BusinessTripApplicationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case businesstripapplication.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case businesstripapplication.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case businesstripapplication.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case businesstripapplication.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case businesstripapplication.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case businesstripapplication.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case businesstripapplication.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case businesstripapplication.FieldTitle:
+		return m.OldTitle(ctx)
+	case businesstripapplication.FieldDestination:
+		return m.OldDestination(ctx)
+	case businesstripapplication.FieldStartDate:
+		return m.OldStartDate(ctx)
+	case businesstripapplication.FieldEndDate:
+		return m.OldEndDate(ctx)
+	case businesstripapplication.FieldItinerary:
+		return m.OldItinerary(ctx)
+	case businesstripapplication.FieldTripStatus:
+		return m.OldTripStatus(ctx)
+	case businesstripapplication.FieldInstanceID:
+		return m.OldInstanceID(ctx)
+	}
+	return nil, fmt.Errorf("unknown BusinessTripApplication field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BusinessTripApplicationMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case businesstripapplication.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case businesstripapplication.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case businesstripapplication.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case businesstripapplication.FieldCreatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case businesstripapplication.FieldUpdatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case businesstripapplication.FieldDeletedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case businesstripapplication.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case businesstripapplication.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case businesstripapplication.FieldDestination:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDestination(v)
+		return nil
+	case businesstripapplication.FieldStartDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStartDate(v)
+		return nil
+	case businesstripapplication.FieldEndDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEndDate(v)
+		return nil
+	case businesstripapplication.FieldItinerary:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetItinerary(v)
+		return nil
+	case businesstripapplication.FieldTripStatus:
+		v, ok := value.(businesstripapplication.TripStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTripStatus(v)
+		return nil
+	case businesstripapplication.FieldInstanceID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInstanceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown BusinessTripApplication field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *BusinessTripApplicationMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_by != nil {
+		fields = append(fields, businesstripapplication.FieldCreatedBy)
+	}
+	if m.addupdated_by != nil {
+		fields = append(fields, businesstripapplication.FieldUpdatedBy)
+	}
+	if m.adddeleted_by != nil {
+		fields = append(fields, businesstripapplication.FieldDeletedBy)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, businesstripapplication.FieldTenantID)
+	}
+	if m.addinstance_id != nil {
+		fields = append(fields, businesstripapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *BusinessTripApplicationMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case businesstripapplication.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case businesstripapplication.FieldUpdatedBy:
+		return m.AddedUpdatedBy()
+	case businesstripapplication.FieldDeletedBy:
+		return m.AddedDeletedBy()
+	case businesstripapplication.FieldTenantID:
+		return m.AddedTenantID()
+	case businesstripapplication.FieldInstanceID:
+		return m.AddedInstanceID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BusinessTripApplicationMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case businesstripapplication.FieldCreatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case businesstripapplication.FieldUpdatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedBy(v)
+		return nil
+	case businesstripapplication.FieldDeletedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedBy(v)
+		return nil
+	case businesstripapplication.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	case businesstripapplication.FieldInstanceID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddInstanceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown BusinessTripApplication numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *BusinessTripApplicationMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(businesstripapplication.FieldCreatedAt) {
+		fields = append(fields, businesstripapplication.FieldCreatedAt)
+	}
+	if m.FieldCleared(businesstripapplication.FieldUpdatedAt) {
+		fields = append(fields, businesstripapplication.FieldUpdatedAt)
+	}
+	if m.FieldCleared(businesstripapplication.FieldDeletedAt) {
+		fields = append(fields, businesstripapplication.FieldDeletedAt)
+	}
+	if m.FieldCleared(businesstripapplication.FieldCreatedBy) {
+		fields = append(fields, businesstripapplication.FieldCreatedBy)
+	}
+	if m.FieldCleared(businesstripapplication.FieldUpdatedBy) {
+		fields = append(fields, businesstripapplication.FieldUpdatedBy)
+	}
+	if m.FieldCleared(businesstripapplication.FieldDeletedBy) {
+		fields = append(fields, businesstripapplication.FieldDeletedBy)
+	}
+	if m.FieldCleared(businesstripapplication.FieldTenantID) {
+		fields = append(fields, businesstripapplication.FieldTenantID)
+	}
+	if m.FieldCleared(businesstripapplication.FieldTripStatus) {
+		fields = append(fields, businesstripapplication.FieldTripStatus)
+	}
+	if m.FieldCleared(businesstripapplication.FieldInstanceID) {
+		fields = append(fields, businesstripapplication.FieldInstanceID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *BusinessTripApplicationMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *BusinessTripApplicationMutation) ClearField(name string) error {
+	switch name {
+	case businesstripapplication.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case businesstripapplication.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case businesstripapplication.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case businesstripapplication.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case businesstripapplication.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case businesstripapplication.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case businesstripapplication.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case businesstripapplication.FieldTripStatus:
+		m.ClearTripStatus()
+		return nil
+	case businesstripapplication.FieldInstanceID:
+		m.ClearInstanceID()
+		return nil
+	}
+	return fmt.Errorf("unknown BusinessTripApplication nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *BusinessTripApplicationMutation) ResetField(name string) error {
+	switch name {
+	case businesstripapplication.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case businesstripapplication.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case businesstripapplication.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case businesstripapplication.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case businesstripapplication.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case businesstripapplication.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case businesstripapplication.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case businesstripapplication.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case businesstripapplication.FieldDestination:
+		m.ResetDestination()
+		return nil
+	case businesstripapplication.FieldStartDate:
+		m.ResetStartDate()
+		return nil
+	case businesstripapplication.FieldEndDate:
+		m.ResetEndDate()
+		return nil
+	case businesstripapplication.FieldItinerary:
+		m.ResetItinerary()
+		return nil
+	case businesstripapplication.FieldTripStatus:
+		m.ResetTripStatus()
+		return nil
+	case businesstripapplication.FieldInstanceID:
+		m.ResetInstanceID()
+		return nil
+	}
+	return fmt.Errorf("unknown BusinessTripApplication field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *BusinessTripApplicationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *BusinessTripApplicationMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *BusinessTripApplicationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *BusinessTripApplicationMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *BusinessTripApplicationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *BusinessTripApplicationMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *BusinessTripApplicationMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown BusinessTripApplication unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *BusinessTripApplicationMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown BusinessTripApplication edge %s", name)
 }
 
 // CategoryMutation represents an operation that mutates the Category nodes in the graph.

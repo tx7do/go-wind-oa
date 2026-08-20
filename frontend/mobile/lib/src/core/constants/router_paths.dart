@@ -17,4 +17,5 @@ class AppRoutePath {
   static const oaAttendance = '/oa/attendance';
   static const oaLeave = '/oa/leave';
   static const oaExpense = '/oa/expense';
+  static const oaBusinessTrip = '/oa/business-trip';
 }

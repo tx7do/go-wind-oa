@@ -134,6 +134,7 @@ class _OaTaskListPageState extends State<OaTaskListPage>
             itemBuilder: (ctx) => const [
               PopupMenuItem(value: RouteNames.oaLeave, child: Text('请假申请')),
               PopupMenuItem(value: RouteNames.oaExpense, child: Text('费用报销')),
+              PopupMenuItem(value: RouteNames.oaBusinessTrip, child: Text('出差申请')),
               PopupMenuItem(value: RouteNames.oaSubmitApply, child: Text('通用申请')),
             ],
           ),

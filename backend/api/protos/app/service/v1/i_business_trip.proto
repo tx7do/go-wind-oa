@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package app.service.v1;
+
+import "google/api/annotations.proto";
+
+import "oa/service/v1/business_trip.proto";
+
+// OA 出差申请参与服务（app 边端，移动端）
+service BusinessTripService {
+  // 提交出差申请
+  rpc SubmitBusinessTripApplication(oa.service.v1.SubmitBusinessTripApplicationRequest) returns (oa.service.v1.SubmitBusinessTripApplicationResponse) {
+    option (google.api.http) = {
+      post: "/app/v1/oa/business-trip/applications"
+      body: "*"
+    };
+  }
+
+  // 查询我的出差申请
+  rpc ListBusinessTripApplications(oa.service.v1.ListBusinessTripApplicationsRequest) returns (oa.service.v1.ListBusinessTripApplicationsResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/business-trip/applications"
+    };
+  }
+
+  // 查询出差申请详情
+  rpc GetBusinessTripApplication(oa.service.v1.GetBusinessTripApplicationRequest) returns (oa.service.v1.BusinessTripApplication) {
+    option (google.api.http) = {
+      get: "/app/v1/oa/business-trip/applications/{id}"
+    };
+  }
+}

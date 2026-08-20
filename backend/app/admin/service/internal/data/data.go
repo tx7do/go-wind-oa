@@ -221,6 +221,15 @@ func NewExpenseServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1.
 	return oaV1.NewExpenseServiceClient(cli)
 }
 
+func NewBusinessTripServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1.BusinessTripServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return oaV1.NewBusinessTripServiceClient(cli)
+}
+
 func NewAttendanceServiceClient(ctx *bootstrap.Context, r registry.Discovery) oaV1.AttendanceServiceClient {
 	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
 	if err != nil {

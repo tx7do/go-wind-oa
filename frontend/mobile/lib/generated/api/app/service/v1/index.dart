@@ -843,6 +843,556 @@ enum AuthenticationServiceV1TokenType {
 ///
 /// Maps to Dart: `Map<String, dynamic>`.
 
+/// OA 出差申请参与服务（app 边端，移动端）
+class BusinessTripServiceClient {
+  final ClientTransport _transport;
+
+  BusinessTripServiceClient(this._transport);
+
+  /// 提交出差申请
+  Future<OaServiceV1SubmitBusinessTripApplicationResponse> submitBusinessTripApplication(OaServiceV1SubmitBusinessTripApplicationRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/business-trip/applications';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'BusinessTripService',
+      method: 'SubmitBusinessTripApplication',
+    ), headers: headers);
+    return OaServiceV1SubmitBusinessTripApplicationResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询我的出差申请
+  Future<OaServiceV1ListBusinessTripApplicationsResponse> listBusinessTripApplications(OaServiceV1ListBusinessTripApplicationsRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/oa/business-trip/applications';
+    final queryParams = <String>[];
+    if (request.userId != null) {
+      queryParams.add('userId=${Uri.encodeComponent(request.userId!.toString())}');
+    }
+    if (request.status != null) {
+      queryParams.add('status=${Uri.encodeComponent(request.status!.toString())}');
+    }
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'BusinessTripService',
+      method: 'ListBusinessTripApplications',
+    ), headers: headers);
+    return OaServiceV1ListBusinessTripApplicationsResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询出差申请详情
+  Future<OaServiceV1BusinessTripApplication> getBusinessTripApplication(OaServiceV1GetBusinessTripApplicationRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/oa/business-trip/applications/${request.id}';
+    final result = await _transport.unary(path, 'GET', null, TransportMeta(
+      service: 'BusinessTripService',
+      method: 'GetBusinessTripApplication',
+    ), headers: headers);
+    return OaServiceV1BusinessTripApplication.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 提交出差申请 - 请求
+class OaServiceV1SubmitBusinessTripApplicationRequest {
+  String? destination;
+  String? endDate;
+  String? itinerary;
+  String? startDate;
+  String? title;
+
+  OaServiceV1SubmitBusinessTripApplicationRequest({
+    this.destination,
+    this.endDate,
+    this.itinerary,
+    this.startDate,
+    this.title,
+  });
+
+  factory OaServiceV1SubmitBusinessTripApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitBusinessTripApplicationRequest(
+      destination: json['destination'] as String?,
+      endDate: json['endDate'] as String?,
+      itinerary: json['itinerary'] as String?,
+      startDate: json['startDate'] as String?,
+      title: json['title'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (destination != null) json['destination'] = destination;
+    if (endDate != null) json['endDate'] = endDate;
+    if (itinerary != null) json['itinerary'] = itinerary;
+    if (startDate != null) json['startDate'] = startDate;
+    if (title != null) json['title'] = title;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitBusinessTripApplicationRequest(destination: $destination, endDate: $endDate, itinerary: $itinerary, startDate: $startDate, title: $title)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitBusinessTripApplicationRequest &&
+      runtimeType == other.runtimeType
+      && destination == other.destination
+      && endDate == other.endDate
+      && itinerary == other.itinerary
+      && startDate == other.startDate
+      && title == other.title
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    destination,
+    endDate,
+    itinerary,
+    startDate,
+    title,
+  ]);
+
+  OaServiceV1SubmitBusinessTripApplicationRequest copyWith({
+    String? destination,
+    String? endDate,
+    String? itinerary,
+    String? startDate,
+    String? title,
+  }) {
+    return OaServiceV1SubmitBusinessTripApplicationRequest(
+      destination: destination ?? this.destination,
+      endDate: endDate ?? this.endDate,
+      itinerary: itinerary ?? this.itinerary,
+      startDate: startDate ?? this.startDate,
+      title: title ?? this.title,
+    );
+  }
+}
+
+/// 提交出差申请 - 回应
+class OaServiceV1SubmitBusinessTripApplicationResponse {
+  int? id;
+  int? instanceId;
+
+  OaServiceV1SubmitBusinessTripApplicationResponse({
+    this.id,
+    this.instanceId,
+  });
+
+  factory OaServiceV1SubmitBusinessTripApplicationResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1SubmitBusinessTripApplicationResponse(
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1SubmitBusinessTripApplicationResponse(id: $id, instanceId: $instanceId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1SubmitBusinessTripApplicationResponse &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && instanceId == other.instanceId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    instanceId,
+  ]);
+
+  OaServiceV1SubmitBusinessTripApplicationResponse copyWith({
+    int? id,
+    int? instanceId,
+  }) {
+    return OaServiceV1SubmitBusinessTripApplicationResponse(
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+    );
+  }
+}
+
+/// 查询出差申请 - 请求
+class OaServiceV1ListBusinessTripApplicationsRequest {
+  int? page;
+  int? pageSize;
+  OaServiceV1BusinessTripApplication$BusinessTripStatus? status;
+  int? userId;
+
+  OaServiceV1ListBusinessTripApplicationsRequest({
+    this.page,
+    this.pageSize,
+    this.status,
+    this.userId,
+  });
+
+  factory OaServiceV1ListBusinessTripApplicationsRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListBusinessTripApplicationsRequest(
+      page: json['page'] as int?,
+      pageSize: json['pageSize'] as int?,
+      status: json['status'] != null ? OaServiceV1BusinessTripApplication$BusinessTripStatus.fromString(json['status'] as String) : null,
+      userId: json['userId'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (page != null) json['page'] = page;
+    if (pageSize != null) json['pageSize'] = pageSize;
+    if (status != null) json['status'] = status!.value;
+    if (userId != null) json['userId'] = userId;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListBusinessTripApplicationsRequest(page: $page, pageSize: $pageSize, status: $status, userId: $userId)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListBusinessTripApplicationsRequest &&
+      runtimeType == other.runtimeType
+      && page == other.page
+      && pageSize == other.pageSize
+      && status == other.status
+      && userId == other.userId
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    page,
+    pageSize,
+    status,
+    userId,
+  ]);
+
+  OaServiceV1ListBusinessTripApplicationsRequest copyWith({
+    int? page,
+    int? pageSize,
+    OaServiceV1BusinessTripApplication$BusinessTripStatus? status,
+    int? userId,
+  }) {
+    return OaServiceV1ListBusinessTripApplicationsRequest(
+      page: page ?? this.page,
+      pageSize: pageSize ?? this.pageSize,
+      status: status ?? this.status,
+      userId: userId ?? this.userId,
+    );
+  }
+}
+
+/// 申请单状态（与工作流实例终态同步）
+enum OaServiceV1BusinessTripApplication$BusinessTripStatus {
+  approved('APPROVED'),
+  pending('PENDING'),
+  rejected('REJECTED'),
+  withdrawn('WITHDRAWN');
+
+  final String value;
+  const OaServiceV1BusinessTripApplication$BusinessTripStatus(this.value);
+
+  static OaServiceV1BusinessTripApplication$BusinessTripStatus fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown OaServiceV1BusinessTripApplication\$BusinessTripStatus value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 查询出差申请 - 回应
+class OaServiceV1ListBusinessTripApplicationsResponse {
+  List<OaServiceV1BusinessTripApplication>? items;
+  int? total;
+
+  OaServiceV1ListBusinessTripApplicationsResponse({
+    this.items,
+    this.total,
+  });
+
+  factory OaServiceV1ListBusinessTripApplicationsResponse.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1ListBusinessTripApplicationsResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1BusinessTripApplication.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1ListBusinessTripApplicationsResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1ListBusinessTripApplicationsResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  OaServiceV1ListBusinessTripApplicationsResponse copyWith({
+    List<OaServiceV1BusinessTripApplication>? items,
+    int? total,
+  }) {
+    return OaServiceV1ListBusinessTripApplicationsResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 出差申请单
+class OaServiceV1BusinessTripApplication {
+  String? applicantName;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? destination;
+  String? endDate;
+  ///
+  /// Behaviors: OPTIONAL
+  int? id;
+  int? instanceId;
+  String? itinerary;
+  String? startDate;
+  int? tenantId;
+  String? title;
+  OaServiceV1BusinessTripApplication$BusinessTripStatus? tripStatus;
+  String? updatedAt;
+  int? updatedBy;
+
+  OaServiceV1BusinessTripApplication({
+    this.applicantName,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.destination,
+    this.endDate,
+    this.id,
+    this.instanceId,
+    this.itinerary,
+    this.startDate,
+    this.tenantId,
+    this.title,
+    this.tripStatus,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory OaServiceV1BusinessTripApplication.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1BusinessTripApplication(
+      applicantName: json['applicantName'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      destination: json['destination'] as String?,
+      endDate: json['endDate'] as String?,
+      id: json['id'] as int?,
+      instanceId: json['instanceId'] as int?,
+      itinerary: json['itinerary'] as String?,
+      startDate: json['startDate'] as String?,
+      tenantId: json['tenantId'] as int?,
+      title: json['title'] as String?,
+      tripStatus: json['tripStatus'] != null ? OaServiceV1BusinessTripApplication$BusinessTripStatus.fromString(json['tripStatus'] as String) : null,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (applicantName != null) json['applicantName'] = applicantName;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (destination != null) json['destination'] = destination;
+    if (endDate != null) json['endDate'] = endDate;
+    if (id != null) json['id'] = id;
+    if (instanceId != null) json['instanceId'] = instanceId;
+    if (itinerary != null) json['itinerary'] = itinerary;
+    if (startDate != null) json['startDate'] = startDate;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (title != null) json['title'] = title;
+    if (tripStatus != null) json['tripStatus'] = tripStatus!.value;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1BusinessTripApplication(applicantName: $applicantName, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, destination: $destination, endDate: $endDate, id: $id, instanceId: $instanceId, itinerary: $itinerary, startDate: $startDate, tenantId: $tenantId, title: $title, tripStatus: $tripStatus, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1BusinessTripApplication &&
+      runtimeType == other.runtimeType
+      && applicantName == other.applicantName
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && destination == other.destination
+      && endDate == other.endDate
+      && id == other.id
+      && instanceId == other.instanceId
+      && itinerary == other.itinerary
+      && startDate == other.startDate
+      && tenantId == other.tenantId
+      && title == other.title
+      && tripStatus == other.tripStatus
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    applicantName,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    destination,
+    endDate,
+    id,
+    instanceId,
+    itinerary,
+    startDate,
+    tenantId,
+    title,
+    tripStatus,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  OaServiceV1BusinessTripApplication copyWith({
+    String? applicantName,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? destination,
+    String? endDate,
+    int? id,
+    int? instanceId,
+    String? itinerary,
+    String? startDate,
+    int? tenantId,
+    String? title,
+    OaServiceV1BusinessTripApplication$BusinessTripStatus? tripStatus,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return OaServiceV1BusinessTripApplication(
+      applicantName: applicantName ?? this.applicantName,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      destination: destination ?? this.destination,
+      endDate: endDate ?? this.endDate,
+      id: id ?? this.id,
+      instanceId: instanceId ?? this.instanceId,
+      itinerary: itinerary ?? this.itinerary,
+      startDate: startDate ?? this.startDate,
+      tenantId: tenantId ?? this.tenantId,
+      title: title ?? this.title,
+      tripStatus: tripStatus ?? this.tripStatus,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 查询出差申请详情 - 请求
+class OaServiceV1GetBusinessTripApplicationRequest {
+  int? id;
+
+  OaServiceV1GetBusinessTripApplicationRequest({
+    this.id,
+  });
+
+  factory OaServiceV1GetBusinessTripApplicationRequest.fromJson(Map<String, dynamic> json) {
+    return OaServiceV1GetBusinessTripApplicationRequest(
+      id: json['id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'OaServiceV1GetBusinessTripApplicationRequest(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is OaServiceV1GetBusinessTripApplicationRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+  ]);
+
+  OaServiceV1GetBusinessTripApplicationRequest copyWith({
+    int? id,
+  }) {
+    return OaServiceV1GetBusinessTripApplicationRequest(
+      id: id ?? this.id,
+    );
+  }
+}
+
 /// 类别服务
 class CategoryServiceClient {
   final ClientTransport _transport;
@@ -12695,6 +13245,7 @@ class ApiClient {
 
   AttendanceServiceClient? _attendanceService;
   AuthenticationServiceClient? _authenticationService;
+  BusinessTripServiceClient? _businessTripService;
   CategoryServiceClient? _categoryService;
   CommentServiceClient? _commentService;
   ExpenseServiceClient? _expenseService;
@@ -12720,6 +13271,11 @@ class ApiClient {
   AuthenticationServiceClient get authenticationService {
     _authenticationService ??= AuthenticationServiceClient(_transport);
     return _authenticationService!;
+  }
+
+  BusinessTripServiceClient get businessTripService {
+    _businessTripService ??= BusinessTripServiceClient(_transport);
+    return _businessTripService!;
   }
 
   CategoryServiceClient get categoryService {
@@ -12796,6 +13352,7 @@ class ApiClient {
   void dispose() {
     _attendanceService = null;
     _authenticationService = null;
+    _businessTripService = null;
     _categoryService = null;
     _commentService = null;
     _expenseService = null;

@@ -20,6 +20,8 @@ type Tx struct {
 	AttendanceRecord *AttendanceRecordClient
 	// AttendanceSetting is the client for interacting with the AttendanceSetting builders.
 	AttendanceSetting *AttendanceSettingClient
+	// BusinessTripApplication is the client for interacting with the BusinessTripApplication builders.
+	BusinessTripApplication *BusinessTripApplicationClient
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
 	// CategoryTranslation is the client for interacting with the CategoryTranslation builders.
@@ -293,6 +295,7 @@ func (tx *Tx) init() {
 	tx.ApiAuditLog = NewApiAuditLogClient(tx.config)
 	tx.AttendanceRecord = NewAttendanceRecordClient(tx.config)
 	tx.AttendanceSetting = NewAttendanceSettingClient(tx.config)
+	tx.BusinessTripApplication = NewBusinessTripApplicationClient(tx.config)
 	tx.Category = NewCategoryClient(tx.config)
 	tx.CategoryTranslation = NewCategoryTranslationClient(tx.config)
 	tx.Comment = NewCommentClient(tx.config)

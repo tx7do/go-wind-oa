@@ -56,6 +56,18 @@ func (f AttendanceSettingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AttendanceSettingMutation", m)
 }
 
+// The BusinessTripApplicationFunc type is an adapter to allow the use of ordinary
+// function as BusinessTripApplication mutator.
+type BusinessTripApplicationFunc func(context.Context, *ent.BusinessTripApplicationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BusinessTripApplicationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.BusinessTripApplicationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessTripApplicationMutation", m)
+}
+
 // The CategoryFunc type is an adapter to allow the use of ordinary
 // function as Category mutator.
 type CategoryFunc func(context.Context, *ent.CategoryMutation) (ent.Value, error)

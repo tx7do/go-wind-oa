@@ -9,6 +9,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/apiauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancesetting"
+	"go-wind-oa/app/core/service/internal/data/ent/businesstripapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/category"
 	"go-wind-oa/app/core/service/internal/data/ent/categorytranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/comment"
@@ -206,6 +207,48 @@ func init() {
 	attendancesettingDescID := attendancesettingMixinFields0[0].Descriptor()
 	// attendancesetting.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	attendancesetting.IDValidator = attendancesettingDescID.Validators[0].(func(uint32) error)
+	businesstripapplicationMixin := schema.BusinessTripApplication{}.Mixin()
+	businesstripapplication.Policy = privacy.NewPolicies(businesstripapplicationMixin[3], schema.BusinessTripApplication{})
+	businesstripapplication.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := businesstripapplication.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	businesstripapplicationMixinFields0 := businesstripapplicationMixin[0].Fields()
+	_ = businesstripapplicationMixinFields0
+	businesstripapplicationMixinFields3 := businesstripapplicationMixin[3].Fields()
+	_ = businesstripapplicationMixinFields3
+	businesstripapplicationFields := schema.BusinessTripApplication{}.Fields()
+	_ = businesstripapplicationFields
+	// businesstripapplicationDescTenantID is the schema descriptor for tenant_id field.
+	businesstripapplicationDescTenantID := businesstripapplicationMixinFields3[0].Descriptor()
+	// businesstripapplication.DefaultTenantID holds the default value on creation for the tenant_id field.
+	businesstripapplication.DefaultTenantID = businesstripapplicationDescTenantID.Default.(uint32)
+	// businesstripapplicationDescTitle is the schema descriptor for title field.
+	businesstripapplicationDescTitle := businesstripapplicationFields[0].Descriptor()
+	// businesstripapplication.DefaultTitle holds the default value on creation for the title field.
+	businesstripapplication.DefaultTitle = businesstripapplicationDescTitle.Default.(string)
+	// businesstripapplication.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	businesstripapplication.TitleValidator = businesstripapplicationDescTitle.Validators[0].(func(string) error)
+	// businesstripapplicationDescDestination is the schema descriptor for destination field.
+	businesstripapplicationDescDestination := businesstripapplicationFields[1].Descriptor()
+	// businesstripapplication.DefaultDestination holds the default value on creation for the destination field.
+	businesstripapplication.DefaultDestination = businesstripapplicationDescDestination.Default.(string)
+	// businesstripapplication.DestinationValidator is a validator for the "destination" field. It is called by the builders before save.
+	businesstripapplication.DestinationValidator = businesstripapplicationDescDestination.Validators[0].(func(string) error)
+	// businesstripapplicationDescItinerary is the schema descriptor for itinerary field.
+	businesstripapplicationDescItinerary := businesstripapplicationFields[4].Descriptor()
+	// businesstripapplication.DefaultItinerary holds the default value on creation for the itinerary field.
+	businesstripapplication.DefaultItinerary = businesstripapplicationDescItinerary.Default.(string)
+	// businesstripapplication.ItineraryValidator is a validator for the "itinerary" field. It is called by the builders before save.
+	businesstripapplication.ItineraryValidator = businesstripapplicationDescItinerary.Validators[0].(func(string) error)
+	// businesstripapplicationDescID is the schema descriptor for id field.
+	businesstripapplicationDescID := businesstripapplicationMixinFields0[0].Descriptor()
+	// businesstripapplication.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	businesstripapplication.IDValidator = businesstripapplicationDescID.Validators[0].(func(uint32) error)
 	categoryMixin := schema.Category{}.Mixin()
 	category.Policy = privacy.NewPolicies(categoryMixin[6], schema.Category{})
 	category.Hooks[0] = func(next ent.Mutator) ent.Mutator {

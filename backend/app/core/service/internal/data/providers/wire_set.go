@@ -94,6 +94,7 @@ var ProviderSet = wire.NewSet(
 	data.NewLeaveBalanceRepo,
 	data.NewLeaveApplicationRepo,
 	data.NewExpenseApplicationRepo,
+	data.NewBusinessTripApplicationRepo,
 	data.NewAttendanceRepo,
 
 	data.NewCategoryRepo,

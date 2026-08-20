@@ -18,6 +18,9 @@ type AttendanceRecord func(*sql.Selector)
 // AttendanceSetting is the predicate function for attendancesetting builders.
 type AttendanceSetting func(*sql.Selector)
 
+// BusinessTripApplication is the predicate function for businesstripapplication builders.
+type BusinessTripApplication func(*sql.Selector)
+
 // Category is the predicate function for category builders.
 type Category func(*sql.Selector)
 

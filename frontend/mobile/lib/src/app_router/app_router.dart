@@ -17,6 +17,7 @@ import 'package:flutter_app/src/features/oa/pages/notifications/oa_notifications
 import 'package:flutter_app/src/features/oa/pages/attendance/oa_attendance_page.dart';
 import 'package:flutter_app/src/features/oa/pages/leave/oa_leave_page.dart';
 import 'package:flutter_app/src/features/oa/pages/expense/oa_expense_page.dart';
+import 'package:flutter_app/src/features/oa/pages/business_trip/oa_business_trip_page.dart';
 
 /// OA 移动端路由。
 ///
@@ -96,6 +97,13 @@ class AppRouter {
         path: constants.AppRoutePath.oaExpense,
         builder: (context, state) {
           return const OaExpensePage();
+        },
+      ),
+      GoRoute(
+        name: RouteNames.oaBusinessTrip,
+        path: constants.AppRoutePath.oaBusinessTrip,
+        builder: (context, state) {
+          return const OaBusinessTripPage();
         },
       ),
       // ── 登录（非 Shell） ────────────────────────────

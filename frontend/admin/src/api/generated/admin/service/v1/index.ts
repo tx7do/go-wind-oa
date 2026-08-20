@@ -1341,6 +1341,115 @@ export type authenticationservicev1_VerifyCaptchaResponse = {
   valid: boolean | undefined;
 };
 
+// OA 出差申请管理服务（admin 边端）
+export interface BusinessTripService {
+  // 查询出差申请列表
+  ListBusinessTripApplications(
+    request: oaservicev1_ListBusinessTripApplicationsRequest,
+  ): Promise<oaservicev1_ListBusinessTripApplicationsResponse>;
+  // 查询出差申请详情
+  GetBusinessTripApplication(
+    request: oaservicev1_GetBusinessTripApplicationRequest,
+  ): Promise<oaservicev1_BusinessTripApplication>;
+}
+
+export function createBusinessTripServiceClient(
+  transport: ClientTransport,
+): BusinessTripService {
+  return {
+    ListBusinessTripApplications(request) {
+      const path = `admin/v1/oa/business-trip/applications`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.userId) {
+        queryParams.push(
+          `userId=${encodeURIComponent(request.userId.toString())}`,
+        );
+      }
+      if (request.status) {
+        queryParams.push(
+          `status=${encodeURIComponent(request.status.toString())}`,
+        );
+      }
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'BusinessTripService',
+        method: 'ListBusinessTripApplications',
+      }) as Promise<oaservicev1_ListBusinessTripApplicationsResponse>;
+    },
+    GetBusinessTripApplication(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/business-trip/applications/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'BusinessTripService',
+        method: 'GetBusinessTripApplication',
+      }) as Promise<oaservicev1_BusinessTripApplication>;
+    },
+  };
+}
+// 查询出差申请 - 请求
+export type oaservicev1_ListBusinessTripApplicationsRequest = {
+  page?: number;
+  pageSize?: number;
+  status: oaservicev1_BusinessTripApplication_BusinessTripStatus | undefined;
+  userId: number | undefined;
+};
+
+// 申请单状态（与工作流实例终态同步）
+export type oaservicev1_BusinessTripApplication_BusinessTripStatus =
+  | 'APPROVED'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'WITHDRAWN';
+// 查询出差申请 - 回应
+export type oaservicev1_ListBusinessTripApplicationsResponse = {
+  items: oaservicev1_BusinessTripApplication[] | undefined;
+  total: number | undefined;
+};
+
+// 出差申请单
+export type oaservicev1_BusinessTripApplication = {
+  applicantName?: string;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  destination?: string;
+  endDate?: wellKnownTimestamp;
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  instanceId?: number;
+  itinerary?: string;
+  startDate?: wellKnownTimestamp;
+  tenantId?: number;
+  title?: string;
+  tripStatus?: oaservicev1_BusinessTripApplication_BusinessTripStatus;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// 查询出差申请详情 - 请求
+export type oaservicev1_GetBusinessTripApplicationRequest = {
+  id: number | undefined;
+};
+
 // 类别服务
 export interface CategoryService {
   // 获取类别列表
@@ -11614,6 +11723,7 @@ export class ApiClient {
   private _apiService?: ApiService;
   private _attendanceService?: AttendanceService;
   private _authenticationService?: AuthenticationService;
+  private _businessTripService?: BusinessTripService;
   private _categoryService?: CategoryService;
   private _commentService?: CommentService;
   private _dataAccessAuditLogService?: DataAccessAuditLogService;
@@ -11678,6 +11788,10 @@ export class ApiClient {
 
   get authenticationService(): AuthenticationService {
     return this._authenticationService ??= createAuthenticationServiceClient(this._transport);
+  }
+
+  get businessTripService(): BusinessTripService {
+    return this._businessTripService ??= createBusinessTripServiceClient(this._transport);
   }
 
   get categoryService(): CategoryService {

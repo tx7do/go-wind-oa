@@ -1,0 +1,169 @@
+syntax = "proto3";
+
+package oa.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/field_behavior.proto";
+
+import "google/protobuf/timestamp.proto";
+
+// OA 出差申请服务（申请挂工作流审批，终态仅同步单据状态，无额度副作用）
+service BusinessTripService {
+  // 提交出差申请（自动创建 BUSINESS_TRIP 工作流实例）
+  rpc SubmitBusinessTripApplication(SubmitBusinessTripApplicationRequest) returns (SubmitBusinessTripApplicationResponse) {}
+
+  // 查询出差申请列表（user_id==0 时查全部，admin 用）
+  rpc ListBusinessTripApplications(ListBusinessTripApplicationsRequest) returns (ListBusinessTripApplicationsResponse) {}
+
+  // 查询出差申请详情（申请人本人或 admin）
+  rpc GetBusinessTripApplication(GetBusinessTripApplicationRequest) returns (BusinessTripApplication) {}
+}
+
+// 出差申请单
+message BusinessTripApplication {
+  // 申请单状态（与工作流实例终态同步）
+  enum BusinessTripStatus {
+    PENDING = 0;    // 审批中
+    APPROVED = 1;   // 已通过
+    REJECTED = 2;   // 已驳回
+    WITHDRAWN = 3;  // 已撤回
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "申请单ID" }
+  ]; // 申请单ID
+
+  optional string title = 2 [
+    json_name = "title",
+    (gnostic.openapi.v3.property) = { description: "出差事由标题" }
+  ]; // 出差事由标题
+
+  optional string destination = 3 [
+    json_name = "destination",
+    (gnostic.openapi.v3.property) = { description: "出差目的地" }
+  ]; // 出差目的地
+
+  optional google.protobuf.Timestamp start_date = 4 [
+    json_name = "startDate",
+    (gnostic.openapi.v3.property) = { description: "开始日期" }
+  ]; // 开始日期
+
+  optional google.protobuf.Timestamp end_date = 5 [
+    json_name = "endDate",
+    (gnostic.openapi.v3.property) = { description: "结束日期（含）" }
+  ]; // 结束日期
+
+  optional string itinerary = 6 [
+    json_name = "itinerary",
+    (gnostic.openapi.v3.property) = { description: "行程安排说明" }
+  ]; // 行程安排说明
+
+  optional string applicant_name = 10 [
+    json_name = "applicantName",
+    (gnostic.openapi.v3.property) = { description: "申请人姓名（服务端回填）" }
+  ]; // 申请人姓名
+
+  optional BusinessTripStatus trip_status = 7 [
+    json_name = "tripStatus",
+    (gnostic.openapi.v3.property) = { description: "申请单状态" }
+  ]; // 申请单状态
+
+  optional uint32 instance_id = 8 [
+    json_name = "instanceId",
+    (gnostic.openapi.v3.property) = { description: "关联工作流实例ID" }
+  ]; // 关联工作流实例ID
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
+  ];  // 租户ID
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "申请人用户ID"}];
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}];
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}];
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];
+}
+
+// 查询出差申请 - 请求
+message ListBusinessTripApplicationsRequest {
+  uint32 user_id = 1 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = { description: "申请人用户ID，0=全部（app 端忽略此字段按本人查）" }
+  ]; // 申请人用户ID
+
+  BusinessTripApplication.BusinessTripStatus status = 2 [
+    json_name = "status",
+    (gnostic.openapi.v3.property) = { description: "状态过滤，不传=全部" }
+  ]; // 状态过滤
+
+  optional int32 page = 3 [
+    json_name = "page",
+    (gnostic.openapi.v3.property) = { description: "页码（从 1 起，不传=不限页）" }
+  ]; // 页码
+
+  optional int32 page_size = 4 [
+    json_name = "pageSize",
+    (gnostic.openapi.v3.property) = { description: "每页条数（不传=不限页）" }
+  ]; // 每页条数
+}
+
+// 查询出差申请 - 回应
+message ListBusinessTripApplicationsResponse {
+  repeated BusinessTripApplication items = 1;
+  uint64 total = 2;
+}
+
+// 查询出差申请详情 - 请求
+message GetBusinessTripApplicationRequest {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "申请单ID" }
+  ]; // 申请单ID
+}
+
+// 提交出差申请 - 请求
+message SubmitBusinessTripApplicationRequest {
+  string title = 1 [
+    json_name = "title",
+    (gnostic.openapi.v3.property) = { description: "出差事由标题" }
+  ]; // 出差事由标题
+
+  string destination = 2 [
+    json_name = "destination",
+    (gnostic.openapi.v3.property) = { description: "出差目的地" }
+  ]; // 出差目的地
+
+  google.protobuf.Timestamp start_date = 3 [
+    json_name = "startDate",
+    (gnostic.openapi.v3.property) = { description: "开始日期" }
+  ]; // 开始日期
+
+  google.protobuf.Timestamp end_date = 4 [
+    json_name = "endDate",
+    (gnostic.openapi.v3.property) = { description: "结束日期（含）" }
+  ]; // 结束日期
+
+  string itinerary = 5 [
+    json_name = "itinerary",
+    (gnostic.openapi.v3.property) = { description: "行程安排说明" }
+  ]; // 行程安排说明
+}
+
+// 提交出差申请 - 回应
+message SubmitBusinessTripApplicationResponse {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "申请单ID" }
+  ]; // 申请单ID
+
+  uint32 instance_id = 2 [
+    json_name = "instanceId",
+    (gnostic.openapi.v3.property) = { description: "工作流实例ID" }
+  ]; // 工作流实例ID
+}

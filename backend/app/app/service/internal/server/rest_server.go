@@ -109,6 +109,7 @@ func NewRestServer(
 	workflowService *service.WorkflowService,
 	leaveService *service.LeaveService,
 	expenseService *service.ExpenseService,
+	businessTripService *service.BusinessTripService,
 	attendanceService *service.AttendanceService,
 	internalMessageService *service.InternalMessageService,
 	fileTransferService *service.FileTransferService,
@@ -138,6 +139,7 @@ func NewRestServer(
 	appV1.RegisterWorkflowServiceHTTPServer(srv, workflowService)
 	appV1.RegisterLeaveServiceHTTPServer(srv, leaveService)
 	appV1.RegisterExpenseServiceHTTPServer(srv, expenseService)
+	appV1.RegisterBusinessTripServiceHTTPServer(srv, businessTripService)
 	appV1.RegisterAttendanceServiceHTTPServer(srv, attendanceService)
 	appV1.RegisterInternalMessageServiceHTTPServer(srv, internalMessageService)
 	// 文件上传为 multipart 流式处理，走手改的 registerFileTransferServiceHandler

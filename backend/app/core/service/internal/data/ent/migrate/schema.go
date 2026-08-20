@@ -235,6 +235,43 @@ var (
 			},
 		},
 	}
+	// OaBusinessTripApplicationColumns holds the columns for the "oa_business_trip_application" table.
+	OaBusinessTripApplicationColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "title", Type: field.TypeString, Size: 256, Comment: "出差事由标题", Default: ""},
+		{Name: "destination", Type: field.TypeString, Size: 256, Comment: "出差目的地", Default: ""},
+		{Name: "start_date", Type: field.TypeTime, Comment: "开始日期"},
+		{Name: "end_date", Type: field.TypeTime, Comment: "结束日期（含）"},
+		{Name: "itinerary", Type: field.TypeString, Size: 1024, Comment: "行程安排说明", Default: ""},
+		{Name: "trip_status", Type: field.TypeEnum, Nullable: true, Comment: "申请单状态", Enums: []string{"PENDING", "APPROVED", "REJECTED", "WITHDRAWN"}, Default: "PENDING"},
+		{Name: "instance_id", Type: field.TypeUint32, Nullable: true, Comment: "关联工作流实例ID"},
+	}
+	// OaBusinessTripApplicationTable holds the schema information for the "oa_business_trip_application" table.
+	OaBusinessTripApplicationTable = &schema.Table{
+		Name:       "oa_business_trip_application",
+		Comment:    "OA 出差申请单表",
+		Columns:    OaBusinessTripApplicationColumns,
+		PrimaryKey: []*schema.Column{OaBusinessTripApplicationColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_biz_trip_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaBusinessTripApplicationColumns[7]},
+			},
+			{
+				Name:    "idx_oa_biz_trip_tenant_created_by",
+				Unique:  false,
+				Columns: []*schema.Column{OaBusinessTripApplicationColumns[7], OaBusinessTripApplicationColumns[4]},
+			},
+		},
+	}
 	// CategoriesColumns holds the columns for the "categories" table.
 	CategoriesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -4433,6 +4470,7 @@ var (
 		SysAPIAuditLogsTable,
 		OaAttendanceRecordTable,
 		OaAttendanceSettingTable,
+		OaBusinessTripApplicationTable,
 		CategoriesTable,
 		CategoryTranslationsTable,
 		CommentsTable,
@@ -4523,6 +4561,11 @@ func init() {
 	}
 	OaAttendanceSettingTable.Annotation = &entsql.Annotation{
 		Table:     "oa_attendance_setting",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaBusinessTripApplicationTable.Annotation = &entsql.Annotation{
+		Table:     "oa_business_trip_application",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

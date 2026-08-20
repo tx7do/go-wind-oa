@@ -15,6 +15,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/apiauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancesetting"
+	"go-wind-oa/app/core/service/internal/data/ent/businesstripapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/category"
 	"go-wind-oa/app/core/service/internal/data/ent/categorytranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/comment"
@@ -104,6 +105,8 @@ type Client struct {
 	AttendanceRecord *AttendanceRecordClient
 	// AttendanceSetting is the client for interacting with the AttendanceSetting builders.
 	AttendanceSetting *AttendanceSettingClient
+	// BusinessTripApplication is the client for interacting with the BusinessTripApplication builders.
+	BusinessTripApplication *BusinessTripApplicationClient
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
 	// CategoryTranslation is the client for interacting with the CategoryTranslation builders.
@@ -257,6 +260,7 @@ func (c *Client) init() {
 	c.ApiAuditLog = NewApiAuditLogClient(c.config)
 	c.AttendanceRecord = NewAttendanceRecordClient(c.config)
 	c.AttendanceSetting = NewAttendanceSettingClient(c.config)
+	c.BusinessTripApplication = NewBusinessTripApplicationClient(c.config)
 	c.Category = NewCategoryClient(c.config)
 	c.CategoryTranslation = NewCategoryTranslationClient(c.config)
 	c.Comment = NewCommentClient(c.config)
@@ -422,6 +426,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ApiAuditLog:              NewApiAuditLogClient(cfg),
 		AttendanceRecord:         NewAttendanceRecordClient(cfg),
 		AttendanceSetting:        NewAttendanceSettingClient(cfg),
+		BusinessTripApplication:  NewBusinessTripApplicationClient(cfg),
 		Category:                 NewCategoryClient(cfg),
 		CategoryTranslation:      NewCategoryTranslationClient(cfg),
 		Comment:                  NewCommentClient(cfg),
@@ -514,6 +519,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ApiAuditLog:              NewApiAuditLogClient(cfg),
 		AttendanceRecord:         NewAttendanceRecordClient(cfg),
 		AttendanceSetting:        NewAttendanceSettingClient(cfg),
+		BusinessTripApplication:  NewBusinessTripApplicationClient(cfg),
 		Category:                 NewCategoryClient(cfg),
 		CategoryTranslation:      NewCategoryTranslationClient(cfg),
 		Comment:                  NewCommentClient(cfg),
@@ -612,12 +618,12 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Api, c.ApiAuditLog, c.AttendanceRecord, c.AttendanceSetting, c.Category,
-		c.CategoryTranslation, c.Comment, c.CommentLike, c.DataAccessAuditLog,
-		c.DictEntry, c.DictEntryI18n, c.DictType, c.ExpenseApplication, c.ExpenseItem,
-		c.File, c.Holiday, c.InteractionCounter, c.InternalMessage,
-		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
-		c.LeaveApplication, c.LeaveBalance, c.LeaveType, c.LoginAuditLog,
+		c.Api, c.ApiAuditLog, c.AttendanceRecord, c.AttendanceSetting,
+		c.BusinessTripApplication, c.Category, c.CategoryTranslation, c.Comment,
+		c.CommentLike, c.DataAccessAuditLog, c.DictEntry, c.DictEntryI18n, c.DictType,
+		c.ExpenseApplication, c.ExpenseItem, c.File, c.Holiday, c.InteractionCounter,
+		c.InternalMessage, c.InternalMessageCategory, c.InternalMessageRecipient,
+		c.Language, c.LeaveApplication, c.LeaveBalance, c.LeaveType, c.LoginAuditLog,
 		c.LoginPolicy, c.MediaAsset, c.MediaVariant, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.Navigation, c.NavigationItem,
 		c.OperationAuditLog, c.OrgUnit, c.Page, c.PageTranslation, c.Permission,
@@ -637,12 +643,12 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Api, c.ApiAuditLog, c.AttendanceRecord, c.AttendanceSetting, c.Category,
-		c.CategoryTranslation, c.Comment, c.CommentLike, c.DataAccessAuditLog,
-		c.DictEntry, c.DictEntryI18n, c.DictType, c.ExpenseApplication, c.ExpenseItem,
-		c.File, c.Holiday, c.InteractionCounter, c.InternalMessage,
-		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
-		c.LeaveApplication, c.LeaveBalance, c.LeaveType, c.LoginAuditLog,
+		c.Api, c.ApiAuditLog, c.AttendanceRecord, c.AttendanceSetting,
+		c.BusinessTripApplication, c.Category, c.CategoryTranslation, c.Comment,
+		c.CommentLike, c.DataAccessAuditLog, c.DictEntry, c.DictEntryI18n, c.DictType,
+		c.ExpenseApplication, c.ExpenseItem, c.File, c.Holiday, c.InteractionCounter,
+		c.InternalMessage, c.InternalMessageCategory, c.InternalMessageRecipient,
+		c.Language, c.LeaveApplication, c.LeaveBalance, c.LeaveType, c.LoginAuditLog,
 		c.LoginPolicy, c.MediaAsset, c.MediaVariant, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.Navigation, c.NavigationItem,
 		c.OperationAuditLog, c.OrgUnit, c.Page, c.PageTranslation, c.Permission,
@@ -669,6 +675,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AttendanceRecord.mutate(ctx, m)
 	case *AttendanceSettingMutation:
 		return c.AttendanceSetting.mutate(ctx, m)
+	case *BusinessTripApplicationMutation:
+		return c.BusinessTripApplication.mutate(ctx, m)
 	case *CategoryMutation:
 		return c.Category.mutate(ctx, m)
 	case *CategoryTranslationMutation:
@@ -1345,6 +1353,140 @@ func (c *AttendanceSettingClient) mutate(ctx context.Context, m *AttendanceSetti
 		return (&AttendanceSettingDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AttendanceSetting mutation op: %q", m.Op())
+	}
+}
+
+// BusinessTripApplicationClient is a client for the BusinessTripApplication schema.
+type BusinessTripApplicationClient struct {
+	config
+}
+
+// NewBusinessTripApplicationClient returns a client for the BusinessTripApplication from the given config.
+func NewBusinessTripApplicationClient(c config) *BusinessTripApplicationClient {
+	return &BusinessTripApplicationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `businesstripapplication.Hooks(f(g(h())))`.
+func (c *BusinessTripApplicationClient) Use(hooks ...Hook) {
+	c.hooks.BusinessTripApplication = append(c.hooks.BusinessTripApplication, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `businesstripapplication.Intercept(f(g(h())))`.
+func (c *BusinessTripApplicationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BusinessTripApplication = append(c.inters.BusinessTripApplication, interceptors...)
+}
+
+// Create returns a builder for creating a BusinessTripApplication entity.
+func (c *BusinessTripApplicationClient) Create() *BusinessTripApplicationCreate {
+	mutation := newBusinessTripApplicationMutation(c.config, OpCreate)
+	return &BusinessTripApplicationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BusinessTripApplication entities.
+func (c *BusinessTripApplicationClient) CreateBulk(builders ...*BusinessTripApplicationCreate) *BusinessTripApplicationCreateBulk {
+	return &BusinessTripApplicationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *BusinessTripApplicationClient) MapCreateBulk(slice any, setFunc func(*BusinessTripApplicationCreate, int)) *BusinessTripApplicationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &BusinessTripApplicationCreateBulk{err: fmt.Errorf("calling to BusinessTripApplicationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*BusinessTripApplicationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &BusinessTripApplicationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BusinessTripApplication.
+func (c *BusinessTripApplicationClient) Update() *BusinessTripApplicationUpdate {
+	mutation := newBusinessTripApplicationMutation(c.config, OpUpdate)
+	return &BusinessTripApplicationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BusinessTripApplicationClient) UpdateOne(_m *BusinessTripApplication) *BusinessTripApplicationUpdateOne {
+	mutation := newBusinessTripApplicationMutation(c.config, OpUpdateOne, withBusinessTripApplication(_m))
+	return &BusinessTripApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BusinessTripApplicationClient) UpdateOneID(id uint32) *BusinessTripApplicationUpdateOne {
+	mutation := newBusinessTripApplicationMutation(c.config, OpUpdateOne, withBusinessTripApplicationID(id))
+	return &BusinessTripApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BusinessTripApplication.
+func (c *BusinessTripApplicationClient) Delete() *BusinessTripApplicationDelete {
+	mutation := newBusinessTripApplicationMutation(c.config, OpDelete)
+	return &BusinessTripApplicationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BusinessTripApplicationClient) DeleteOne(_m *BusinessTripApplication) *BusinessTripApplicationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BusinessTripApplicationClient) DeleteOneID(id uint32) *BusinessTripApplicationDeleteOne {
+	builder := c.Delete().Where(businesstripapplication.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BusinessTripApplicationDeleteOne{builder}
+}
+
+// Query returns a query builder for BusinessTripApplication.
+func (c *BusinessTripApplicationClient) Query() *BusinessTripApplicationQuery {
+	return &BusinessTripApplicationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBusinessTripApplication},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a BusinessTripApplication entity by its id.
+func (c *BusinessTripApplicationClient) Get(ctx context.Context, id uint32) (*BusinessTripApplication, error) {
+	return c.Query().Where(businesstripapplication.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BusinessTripApplicationClient) GetX(ctx context.Context, id uint32) *BusinessTripApplication {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *BusinessTripApplicationClient) Hooks() []Hook {
+	hooks := c.hooks.BusinessTripApplication
+	return append(hooks[:len(hooks):len(hooks)], businesstripapplication.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *BusinessTripApplicationClient) Interceptors() []Interceptor {
+	return c.inters.BusinessTripApplication
+}
+
+func (c *BusinessTripApplicationClient) mutate(ctx context.Context, m *BusinessTripApplicationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BusinessTripApplicationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BusinessTripApplicationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BusinessTripApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BusinessTripApplicationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BusinessTripApplication mutation op: %q", m.Op())
 	}
 }
 
@@ -11011,10 +11153,10 @@ func (c *WorkflowTaskClient) mutate(ctx context.Context, m *WorkflowTaskMutation
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, Category,
-		CategoryTranslation, Comment, CommentLike, DataAccessAuditLog, DictEntry,
-		DictEntryI18n, DictType, ExpenseApplication, ExpenseItem, File, Holiday,
-		InteractionCounter, InternalMessage, InternalMessageCategory,
+		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, BusinessTripApplication,
+		Category, CategoryTranslation, Comment, CommentLike, DataAccessAuditLog,
+		DictEntry, DictEntryI18n, DictType, ExpenseApplication, ExpenseItem, File,
+		Holiday, InteractionCounter, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LeaveApplication, LeaveBalance, LeaveType,
 		LoginAuditLog, LoginPolicy, MediaAsset, MediaVariant, Membership,
 		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu, Navigation,
@@ -11027,10 +11169,10 @@ type (
 		WorkflowDefinition, WorkflowInstance, WorkflowLog, WorkflowTask []ent.Hook
 	}
 	inters struct {
-		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, Category,
-		CategoryTranslation, Comment, CommentLike, DataAccessAuditLog, DictEntry,
-		DictEntryI18n, DictType, ExpenseApplication, ExpenseItem, File, Holiday,
-		InteractionCounter, InternalMessage, InternalMessageCategory,
+		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, BusinessTripApplication,
+		Category, CategoryTranslation, Comment, CommentLike, DataAccessAuditLog,
+		DictEntry, DictEntryI18n, DictType, ExpenseApplication, ExpenseItem, File,
+		Holiday, InteractionCounter, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LeaveApplication, LeaveBalance, LeaveType,
 		LoginAuditLog, LoginPolicy, MediaAsset, MediaVariant, Membership,
 		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu, Navigation,

@@ -252,6 +252,26 @@ export function useListExpenseApplications(
 }
 
 // ==============================
+// 出差申请单
+// ==============================
+
+import type {
+  oaservicev1_ListBusinessTripApplicationsRequest,
+  oaservicev1_ListBusinessTripApplicationsResponse,
+} from "@/api/generated/admin/service/v1";
+
+export function useListBusinessTripApplications(
+  req: oaservicev1_ListBusinessTripApplicationsRequest,
+  options?: Omit<UseQueryOptions<oaservicev1_ListBusinessTripApplicationsResponse, Error>, "queryKey">
+) {
+  return useQuery({
+    queryKey: ["listBusinessTripApplications", req],
+    queryFn: () => apiClient.businessTripService.ListBusinessTripApplications(req),
+    ...options,
+  });
+}
+
+// ==============================
 // 考勤记录 / 设置 / 结算
 // ==============================
 

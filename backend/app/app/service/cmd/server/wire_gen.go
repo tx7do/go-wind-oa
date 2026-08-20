@@ -39,6 +39,8 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	leaveService := service.NewLeaveService(context, leaveServiceClient)
 	expenseServiceClient := data.NewExpenseServiceClient(context, discovery)
 	expenseService := service.NewExpenseService(context, expenseServiceClient)
+	businessTripServiceClient := data.NewBusinessTripServiceClient(context, discovery)
+	businessTripService := service.NewBusinessTripService(context, businessTripServiceClient)
 	attendanceServiceClient := data.NewAttendanceServiceClient(context, discovery)
 	attendanceService := service.NewAttendanceService(context, attendanceServiceClient)
 	internalMessageServiceClient := data.NewInternalMessageServiceClient(context, discovery)
@@ -68,7 +70,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	sectionService := service.NewSectionService(context, sectionServiceClient)
 	navigationServiceClient := data.NewNavigationServiceClient(context, discovery)
 	navigationService := service.NewNavigationService(context, navigationServiceClient)
-	httpServer := server.NewRestServer(context, v, authenticationService, workflowService, leaveService, expenseService, attendanceService, internalMessageService, fileTransferService, userProfileService, postService, categoryService, commentService, interactionService, tagService, pageService, sectionService, navigationService)
+	httpServer := server.NewRestServer(context, v, authenticationService, workflowService, leaveService, expenseService, businessTripService, attendanceService, internalMessageService, fileTransferService, userProfileService, postService, categoryService, commentService, interactionService, tagService, pageService, sectionService, navigationService)
 	grpcMiddlewares := server.NewGrpcMiddleware(context)
 	grpcServer, err := server.NewGrpcServer(context, grpcMiddlewares)
 	if err != nil {

@@ -207,6 +207,30 @@ func (f AttendanceSettingMutationRuleFunc) EvalMutation(ctx context.Context, m e
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AttendanceSettingMutation", m)
 }
 
+// The BusinessTripApplicationQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type BusinessTripApplicationQueryRuleFunc func(context.Context, *ent.BusinessTripApplicationQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f BusinessTripApplicationQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.BusinessTripApplicationQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.BusinessTripApplicationQuery", q)
+}
+
+// The BusinessTripApplicationMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type BusinessTripApplicationMutationRuleFunc func(context.Context, *ent.BusinessTripApplicationMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f BusinessTripApplicationMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.BusinessTripApplicationMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.BusinessTripApplicationMutation", m)
+}
+
 // The CategoryQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type CategoryQueryRuleFunc func(context.Context, *ent.CategoryQuery) error
@@ -1906,6 +1930,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.AttendanceSettingQuery:
 		return q.Filter(), nil
+	case *ent.BusinessTripApplicationQuery:
+		return q.Filter(), nil
 	case *ent.CategoryQuery:
 		return q.Filter(), nil
 	case *ent.CategoryTranslationQuery:
@@ -2058,6 +2084,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.AttendanceRecordMutation:
 		return m.Filter(), nil
 	case *ent.AttendanceSettingMutation:
+		return m.Filter(), nil
+	case *ent.BusinessTripApplicationMutation:
 		return m.Filter(), nil
 	case *ent.CategoryMutation:
 		return m.Filter(), nil

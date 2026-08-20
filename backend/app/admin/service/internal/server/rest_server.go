@@ -122,6 +122,7 @@ func NewRestServer(
 	workflowService *service.WorkflowService,
 	leaveService *service.LeaveService,
 	expenseService *service.ExpenseService,
+	businessTripService *service.BusinessTripService,
 	attendanceService *service.AttendanceService,
 
 	apiAuditLogService *service.ApiAuditLogService,
@@ -193,6 +194,7 @@ func NewRestServer(
 	adminV1.RegisterWorkflowServiceHTTPServer(srv, workflowService)
 	adminV1.RegisterLeaveServiceHTTPServer(srv, leaveService)
 	adminV1.RegisterExpenseServiceHTTPServer(srv, expenseService)
+	adminV1.RegisterBusinessTripServiceHTTPServer(srv, businessTripService)
 	adminV1.RegisterAttendanceServiceHTTPServer(srv, attendanceService)
 
 	adminV1.RegisterTranslatorServiceHTTPServer(srv, translatorService)
