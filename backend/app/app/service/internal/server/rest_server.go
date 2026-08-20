@@ -23,8 +23,8 @@ import (
 	auditV1 "go-wind-oa/api/gen/go/audit/service/v1"
 
 	"go-wind-oa/pkg/middleware/auth"
-	applogging "go-wind-oa/pkg/middleware/logging"
 	entmiddleware "go-wind-oa/pkg/middleware/ent"
+	applogging "go-wind-oa/pkg/middleware/logging"
 )
 
 // NewRestMiddleware 创建中间件
@@ -140,7 +140,9 @@ func NewRestServer(
 	appV1.RegisterExpenseServiceHTTPServer(srv, expenseService)
 	appV1.RegisterAttendanceServiceHTTPServer(srv, attendanceService)
 	appV1.RegisterInternalMessageServiceHTTPServer(srv, internalMessageService)
-	appV1.RegisterFileTransferServiceHTTPServer(srv, fileTransferService)
+	// 文件上传为 multipart 流式处理，走手改的 registerFileTransferServiceHandler
+	// （同路径的生成版会对 multipart 做 ctx.Bind 报 CODEC 400）。
+	registerFileTransferServiceHandler(srv, fileTransferService)
 	appV1.RegisterUserProfileServiceHTTPServer(srv, userProfileService)
 
 	appV1.RegisterNavigationServiceHTTPServer(srv, navigationService)

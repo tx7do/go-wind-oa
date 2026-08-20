@@ -74,7 +74,6 @@ func (ExpenseApplication) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 正向：申请单→明细。外键列 expense_application_id 在此侧声明，级联删除。
 		edge.To("items", ExpenseItem.Type).
-			Required().
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}).

@@ -277,9 +277,6 @@ func (_c *ExpenseApplicationCreate) check() error {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "ExpenseApplication.id": %w`, err)}
 		}
 	}
-	if len(_c.mutation.ItemsIDs()) == 0 {
-		return &ValidationError{Name: "items", err: errors.New(`ent: missing required edge "ExpenseApplication.items"`)}
-	}
 	return nil
 }
 

@@ -439,6 +439,7 @@ type UploadFileResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ObjectName    *string                `protobuf:"bytes,1,opt,name=object_name,json=objectName,proto3,oneof" json:"object_name,omitempty"`       // OSS 对象键
 	PresignedUrl  *string                `protobuf:"bytes,2,opt,name=presigned_url,json=presignedUrl,proto3,oneof" json:"presigned_url,omitempty"` // 预签名上传链接
+	FileId        *uint32                `protobuf:"varint,3,opt,name=file_id,json=fileId,proto3,oneof" json:"file_id,omitempty"`                  // 文件记录ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -485,6 +486,13 @@ func (x *UploadFileResponse) GetPresignedUrl() string {
 		return *x.PresignedUrl
 	}
 	return ""
+}
+
+func (x *UploadFileResponse) GetFileId() uint32 {
+	if x != nil && x.FileId != nil {
+		return *x.FileId
+	}
+	return 0
 }
 
 type UploadMediaAssetRequest struct {
@@ -651,13 +659,16 @@ const file_storage_service_v1_file_transfer_proto_rawDesc = "" +
 	"\n" +
 	"_tenant_idB\n" +
 	"\n" +
-	"\b_user_id\"\xb8\x01\n" +
+	"\b_user_id\"\xb0\x02\n" +
 	"\x12UploadFileResponse\x129\n" +
 	"\vobject_name\x18\x01 \x01(\tB\x13\xbaG\x10\x92\x02\rOSS 对象键H\x00R\n" +
 	"objectName\x88\x01\x01\x12E\n" +
-	"\rpresigned_url\x18\x02 \x01(\tB\x1b\xbaG\x18\x92\x02\x15预签名上传链接H\x01R\fpresignedUrl\x88\x01\x01B\x0e\n" +
+	"\rpresigned_url\x18\x02 \x01(\tB\x1b\xbaG\x18\x92\x02\x15预签名上传链接H\x01R\fpresignedUrl\x88\x01\x01\x12j\n" +
+	"\afile_id\x18\x03 \x01(\rBL\xbaGI\x92\x02F落库的文件记录ID（业务单据引用此ID，如报销发票）H\x02R\x06fileId\x88\x01\x01B\x0e\n" +
 	"\f_object_nameB\x10\n" +
-	"\x0e_presigned_url\"\xd5\x06\n" +
+	"\x0e_presigned_urlB\n" +
+	"\n" +
+	"\b_file_id\"\xd5\x06\n" +
 	"\x17UploadMediaAssetRequest\x12+\n" +
 	"\x04file\x18\x01 \x01(\fB\x12\xbaG\x0f\x92\x02\f文件内容H\x00R\x04file\x88\x01\x01\x12G\n" +
 	"\x10source_file_name\x18\x02 \x01(\tB\x18\xbaG\x15\x92\x02\x12原文件文件名H\x01R\x0esourceFileName\x88\x01\x01\x12;\n" +

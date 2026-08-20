@@ -12386,6 +12386,10 @@ components:
                 presignedUrl:
                     type: string
                     description: 预签名上传链接
+                fileId:
+                    type: integer
+                    description: 落库的文件记录ID（业务单据引用此ID，如报销发票）
+                    format: uint32
         storage.service.v1.UploadMediaAssetRequest:
             type: object
             properties:

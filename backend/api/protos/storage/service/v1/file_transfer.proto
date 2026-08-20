@@ -169,6 +169,11 @@ message UploadFileResponse {
     json_name = "presignedUrl",
     (gnostic.openapi.v3.property) = { description: "预签名上传链接" }
   ]; // 预签名上传链接
+
+  optional uint32 file_id = 3 [
+    json_name = "fileId",
+    (gnostic.openapi.v3.property) = { description: "落库的文件记录ID（业务单据引用此ID，如报销发票）" }
+  ]; // 文件记录ID
 }
 
 message UploadMediaAssetRequest {

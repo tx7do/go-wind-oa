@@ -96,11 +96,11 @@ func (s *FileTransferService) recordFile(
 	sourceFileName string,
 	info minio.UploadInfo,
 	downloadUrl string,
-) error {
+) (uint32, error) {
 
 	dir, fileName, ext := parseKey(info.Key)
 
-	if _, err := s.fileRepo.Create(ctx, &storageV1.CreateFileRequest{
+	file, err := s.fileRepo.Create(ctx, &storageV1.CreateFileRequest{
 		Data: &storageV1.File{
 			Provider:      trans.Ptr(storageV1.OSSProvider_MINIO),
 			BucketName:    trans.Ptr(info.Bucket),
@@ -114,11 +114,12 @@ func (s *FileTransferService) recordFile(
 			CreatedBy:     trans.Ptr(userID),
 			TenantId:      trans.Ptr(tenantID),
 		},
-	}); err != nil {
+	})
+	if err != nil {
 		s.log.Errorf("Failed to create file record: %v", err)
-		return err
+		return 0, err
 	}
-	return nil
+	return file.GetId(), nil
 }
 
 // directUploadFile 直接上传文件
@@ -181,16 +182,18 @@ func (s *FileTransferService) directUploadFile(ctx context.Context, req *storage
 		return nil, storageV1.ErrorUploadFailed("missing operator identity")
 	}
 
-	if err = s.recordFile(
+	fileID, err := s.recordFile(
 		ctx,
 		tid, uid,
 		req.GetSourceFileName(),
-		info, downloadUrl); err != nil {
+		info, downloadUrl)
+	if err != nil {
 		return nil, err
 	}
 
 	return &storageV1.UploadFileResponse{
 		ObjectName: trans.Ptr(downloadUrl),
+		FileId:     trans.Ptr(fileID),
 	}, nil
 }
 

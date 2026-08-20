@@ -48,6 +48,14 @@ func _FileTransferService_PostUploadFile_HTTP_Handler(svc *service.FileTransferS
 		if err == nil {
 			defer file.Close()
 
+			// multipart 请求的 Content-Type 无注册编解码器，kratos 响应编码按
+			// Accept 回退 Content-Type 会报 CODEC 400——显式声明 Accept JSON。
+			ctx.Request().Header.Set("Accept", "application/json")
+
+			// 标记 oneof 走直传分支（文件内容经 context reader 流式注入，
+			// 不经 proto 字段），否则 UploadFile 的 Source switch 落 default。
+			in.Source = &storageV1.UploadFileRequest_File{}
+
 			// 流式上传：multipart.File 作为 io.Reader 通过 context 注入，
 			// service 侧取出后直接喂给 minio-go PutObject（内部按 size 自动
 			// 分片），避免整文件载入 []byte 导致 OOM。
@@ -83,6 +91,9 @@ func _FileTransferService_PostUploadFile_HTTP_Handler(svc *service.FileTransferS
 					log.Errorf("Unmarshal upload file storageObject error: %v", err)
 					return err
 				}
+			} else {
+				// 缺省给空对象：service 侧按 mime 自动定桶、UUID 自动定对象名。
+				in.StorageObject = &storageV1.StorageObject{}
 			}
 
 			h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
@@ -137,6 +148,14 @@ func _FileTransferService_PutUploadFile_HTTP_Handler(svc *service.FileTransferSe
 		if err == nil {
 			defer file.Close()
 
+			// multipart 请求的 Content-Type 无注册编解码器，kratos 响应编码按
+			// Accept 回退 Content-Type 会报 CODEC 400——显式声明 Accept JSON。
+			ctx.Request().Header.Set("Accept", "application/json")
+
+			// 标记 oneof 走直传分支（文件内容经 context reader 流式注入，
+			// 不经 proto 字段），否则 UploadFile 的 Source switch 落 default。
+			in.Source = &storageV1.UploadFileRequest_File{}
+
 			// 流式上传：multipart.File 作为 io.Reader 通过 context 注入，
 			// service 侧取出后直接喂给 minio-go PutObject（内部按 size 自动
 			// 分片），避免整文件载入 []byte 导致 OOM。
@@ -172,6 +191,9 @@ func _FileTransferService_PutUploadFile_HTTP_Handler(svc *service.FileTransferSe
 					log.Errorf("Unmarshal upload file storageObject error: %v", err)
 					return err
 				}
+			} else {
+				// 缺省给空对象：service 侧按 mime 自动定桶、UUID 自动定对象名。
+				in.StorageObject = &storageV1.StorageObject{}
 			}
 
 			h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {

@@ -644,6 +644,10 @@ func (m *UploadFileResponse) validate(all bool) error {
 		// no validation rules for PresignedUrl
 	}
 
+	if m.FileId != nil {
+		// no validation rules for FileId
+	}
+
 	if len(errors) > 0 {
 		return UploadFileResponseMultiError(errors)
 	}

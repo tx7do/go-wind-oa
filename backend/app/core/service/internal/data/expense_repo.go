@@ -213,7 +213,8 @@ func (r *ExpenseApplicationRepo) List(
 	if status != 0 {
 		query = query.Where(expenseapplication.ExpenseStatusEQ(expenseStatusToEntity(status)))
 	}
-	entities, err := query.All(ctx)
+	// WithItems 预载明细（列表 DTO 读取 Edges.Items）。
+	entities, err := query.WithItems().All(ctx)
 	if err != nil {
 		r.log.Errorf("list expense applications failed: %s", err.Error())
 		return nil, oaV1.ErrorInternalServerError("list expense applications failed")

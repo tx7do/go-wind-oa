@@ -83,18 +83,18 @@ func parseKey(key string) (folder, filename, ext string) {
 	return dir, name, ext
 }
 
-// recordFile 记录文件元数据到数据库
+// recordFile 记录文件元数据到数据库，返回落库的文件记录 ID
 func (s *FileTransferService) recordFile(
 	ctx context.Context,
 	tenantID, userID uint32,
 	sourceFileName string,
 	info minio.UploadInfo,
 	downloadUrl string,
-) error {
+) (uint32, error) {
 
 	dir, fileName, ext := parseKey(info.Key)
 
-	if _, err := s.fileServiceClient.Create(ctx, &storageV1.CreateFileRequest{
+	file, err := s.fileServiceClient.Create(ctx, &storageV1.CreateFileRequest{
 		Data: &storageV1.File{
 			Provider:      trans.Ptr(storageV1.OSSProvider_MINIO),
 			BucketName:    trans.Ptr(info.Bucket),
@@ -108,11 +108,12 @@ func (s *FileTransferService) recordFile(
 			CreatedBy:     trans.Ptr(userID),
 			TenantId:      trans.Ptr(tenantID),
 		},
-	}); err != nil {
+	})
+	if err != nil {
 		s.log.Errorf("Failed to create file record: %v", err)
-		return err
+		return 0, err
 	}
-	return nil
+	return file.GetId(), nil
 }
 
 // directUploadFile 直接上传文件
@@ -167,11 +168,12 @@ func (s *FileTransferService) directUploadFile(ctx context.Context, req *storage
 		return nil, err
 	}
 
-	if err = s.recordFile(
+	fileID, err := s.recordFile(
 		ctx,
 		operator.GetTenantId(), operator.GetUserId(),
 		req.GetSourceFileName(),
-		info, downloadUrl); err != nil {
+		info, downloadUrl)
+	if err != nil {
 		// 元数据写入失败，回滚已上传的对象，避免孤儿文件
 		if delErr := s.mc.DeleteFile(ctx, req.GetStorageObject().GetBucketName(), req.GetStorageObject().GetObjectName()); delErr != nil {
 			s.log.Errorf("cleanup orphaned object after recordFile failure failed: %s", delErr.Error())
@@ -181,6 +183,7 @@ func (s *FileTransferService) directUploadFile(ctx context.Context, req *storage
 
 	return &storageV1.UploadFileResponse{
 		ObjectName: trans.Ptr(downloadUrl),
+		FileId:     trans.Ptr(fileID),
 	}, nil
 }
 
