@@ -130,5 +130,4 @@ cd frontend/mobile && flutter run
 
 ## 7. 已知边界
 
-- 列表接口不分页（items+total 直返）。
 - 通知仅文本，无富媒体附件。
