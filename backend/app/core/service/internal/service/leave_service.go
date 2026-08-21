@@ -36,6 +36,7 @@ type LeaveService struct {
 	definitionRepo *data.WorkflowDefinitionRepo
 	resolverRepo   *data.WorkflowResolverRepo
 
+	attendance     *AttendanceService
 	workflowService *WorkflowService
 }
 
@@ -46,6 +47,7 @@ func NewLeaveService(
 	appRepo *data.LeaveApplicationRepo,
 	definitionRepo *data.WorkflowDefinitionRepo,
 	resolverRepo *data.WorkflowResolverRepo,
+	attendance *AttendanceService,
 	workflowService *WorkflowService,
 	eventRegistry *WorkflowEventRegistry,
 ) *LeaveService {
@@ -56,6 +58,7 @@ func NewLeaveService(
 		appRepo:         appRepo,
 		definitionRepo:  definitionRepo,
 		resolverRepo:    resolverRepo,
+		attendance:      attendance,
 		workflowService: workflowService,
 	}
 	// 注册工作流终结回调：审批通过扣减额度，驳回/撤回同步状态。
@@ -165,7 +168,10 @@ func (s *LeaveService) SubmitLeaveApplication(ctx context.Context, req *oaV1.Sub
 	if req.EndHalf == nil {
 		endHalf = oaV1.HalfOfDay_PM
 	}
-	days := computeLeaveDays(start, end, startHalf, endHalf)
+	days, err := s.countLeaveWorkdays(ctx, tid, start, end, startHalf, endHalf)
+	if err != nil {
+		return nil, err
+	}
 	if days <= 0 {
 		return nil, oaV1.ErrorBadRequest("invalid half-day range")
 	}
@@ -236,6 +242,32 @@ func computeLeaveDays(start, end time.Time, startHalf, endHalf oaV1.HalfOfDay) f
 		endHalves = 1
 	}
 	return float64((diff-1)*2+startHalves+endHalves) / 2
+}
+
+// countLeaveWorkdays 在 computeLeaveDays 的日历半日计数基础上，扣除区间内的休息日。
+// 休息日判定委托 AttendanceService.isRestDay（节假日表优先，否则按周末），与考勤
+// 结算的休息日判定保持一致。每遇休息日，该日贡献的半日数清零。
+func (s *LeaveService) countLeaveWorkdays(ctx context.Context, tid uint32, start, end time.Time, startHalf, endHalf oaV1.HalfOfDay) (float64, error) {
+	total := 0.0
+	dayStep := 24 * time.Hour
+	for cur := start; !cur.After(end); cur = cur.Add(dayStep) {
+		rest, err := s.attendance.isRestDay(ctx, tid, cur)
+		if err != nil {
+			return 0, err
+		}
+		if rest {
+			continue
+		}
+		dayHalves := 2
+		if cur.Equal(start) && startHalf == oaV1.HalfOfDay_PM {
+			dayHalves = 1
+		}
+		if cur.Equal(end) && endHalf == oaV1.HalfOfDay_AM {
+			dayHalves = 1
+		}
+		total += float64(dayHalves) / 2
+	}
+	return total, nil
 }
 
 func halfDayValues(startHalf, endHalf oaV1.HalfOfDay) (uint8, uint8) {

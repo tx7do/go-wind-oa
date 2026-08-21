@@ -326,6 +326,11 @@ func (s *WorkflowService) handleReject(
 			}
 		}
 		if hasPending || hasApproved {
+			// 或签部分驳回停留：实例未终结，但已有审批人驳回。通知申请人知晓。
+			applicant, _, _, _ := s.instanceRepo.GetMeta(ctx, instanceID, tid)
+			if applicant != 0 {
+				s.notifyManyAsync(ctx, []uint32{applicant}, "您的申请收到驳回意见", "流程仍在进行中，请登录系统查看")
+			}
 			return &emptypb.Empty{}, nil
 		}
 	}
@@ -355,6 +360,13 @@ func (s *WorkflowService) handleForward(
 ) (*emptypb.Empty, error) {
 	if forwardTo == 0 || forwardTo == uid {
 		return nil, oaV1.ErrorBadRequest("invalid forward target")
+	}
+	active, err := s.resolverRepo.UserIsActive(ctx, tid, forwardTo)
+	if err != nil {
+		return nil, err
+	}
+	if !active {
+		return nil, oaV1.ErrorBadRequest("forward target user is unavailable")
 	}
 	if err := s.taskRepo.UpdateAssignee(ctx, taskID, tid, forwardTo); err != nil {
 		return nil, err

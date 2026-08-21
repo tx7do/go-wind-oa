@@ -311,9 +311,8 @@ multipart 三要点（修复记录）：请求头补 `Accept: application/json`�
 
 ## 12. 已知边界与后续工作
 
-- **无事务多步写入**（状态机/建单链）——与既有风险面一致。
-- **请假天数按自然日**（含周末），未做工作日扣减；半天粒度已支持但额度过期/结转无。
-- **转办不校验目标用户存在性**；或签部分驳回停留时无提醒。
+- **无事务多步写入**（状态机/建单链）——与既有风险面一致。task 关闭与 instance 状态推进分两步写、无事务边界，并发下可能出现状态不一致。引入事务需 repo 层重构，单独排期。
+- **请假额度无过期/结转机制**：半天粒度已支持；天数计算已扣除休息日（委托 `AttendanceService.isRestDay`，节假日表优先否则按周末，与考勤结算一致）。但额度按年度 total/used 无过期清理、无跨年结转。
 - **工作流通知无 SSE 实时投递**。经 §5.5 所述，工作流引擎经 core 进程内 `SendMessage` 落库的通知不会触发 SSE（SSE publisher 只存在于 admin-service 且只对 admin 自身 HTTP `SendMessage` 路径生效）。各端实际表现：
   - **移动端**：app-service 的 `internal_message_service.go` 无 SSE publisher，也无 `SendMessage`；通知页经 REST `GET /app/v1/internal-message/my-messages` 轮询拉取收件箱。core 落库的工作流通知因此**延迟可见、不丢失**（取决于下次轮询时机），但无实时推送。
   - **管理后台**：`NoticeDropdown/useNotice.ts` 经 `InternalMessageRecipientService.ListUserInbox`（admin BFF 端点，收件人过滤在 core 按 viewer 强制）拉取收件箱，并订阅 `globalSSEClient` 的 `"notification"` 事件以在 admin 自身 `SendMessage` 产生新收件行时刷新列表。因此 admin 自身发出的消息（如公告）可实时到达管理员通知组件。但工作流引擎经 core `SendMessage` 落库的通知不触发 SSE，需等管理员手动重载或下次页面拉取才可见——存在可见性延迟。

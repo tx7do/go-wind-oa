@@ -96,6 +96,26 @@ func (r *WorkflowResolverRepo) ResolveUsernames(ctx context.Context, tenantID ui
 	return names, nil
 }
 
+// UserIsActive 校验目标用户存在且处于 Normal 状态（非禁用/过期/关闭）。
+// 用于转办目标校验，防止把待办转给不存在或不可用账号。
+func (r *WorkflowResolverRepo) UserIsActive(ctx context.Context, tenantID uint32, userID uint32) (bool, error) {
+	if userID == 0 {
+		return false, nil
+	}
+	count, err := r.entClient.Client().User.Query().
+		Where(
+			user.IDEQ(userID),
+			user.TenantIDEQ(tenantID),
+			user.StatusEQ(user.StatusNormal),
+		).
+		Count(ctx)
+	if err != nil {
+		r.log.Errorf("check user active failed: %s", err.Error())
+		return false, oaV1.ErrorInternalServerError("check user active failed")
+	}
+	return count > 0, nil
+}
+
 // ResolvePositionHolders 解析指定职位的在职持有者（POSITION 审批人类型，可解析出多人，
 // 用于会签/或签的多人节点）。
 func (r *WorkflowResolverRepo) ResolvePositionHolders(ctx context.Context, tenantID uint32, positionID uint32) ([]uint32, error) {
