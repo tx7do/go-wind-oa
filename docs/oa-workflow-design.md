@@ -314,7 +314,7 @@ multipart 三要点（修复记录）：请求头补 `Accept: application/json`�
 - **无事务多步写入**（状态机/建单链）——与既有风险面一致。
 - **请假天数按自然日**（含周末），未做工作日扣减；半天粒度已支持但额度过期/结转无。
 - **转办不校验目标用户存在性**；或签部分驳回停留时无提醒。
-- **工作流通知无 SSE 实时投递，且管理后台通知组件为空桩**。经 §5.5 所述，工作流引擎经 core 进程内 `SendMessage` 落库的通知不会触发 SSE（SSE publisher 只存在于 admin-service 且只对 admin 自身 HTTP `SendMessage` 路径生效）。各端实际表现：
+- **工作流通知无 SSE 实时投递**。经 §5.5 所述，工作流引擎经 core 进程内 `SendMessage` 落库的通知不会触发 SSE（SSE publisher 只存在于 admin-service 且只对 admin 自身 HTTP `SendMessage` 路径生效）。各端实际表现：
   - **移动端**：app-service 的 `internal_message_service.go` 无 SSE publisher，也无 `SendMessage`；通知页经 REST `GET /app/v1/internal-message/my-messages` 轮询拉取收件箱。core 落库的工作流通知因此**延迟可见、不丢失**（取决于下次轮询时机），但无实时推送。
-  - **管理后台**：`src/components/NoticeDropdown/useNotice.ts` 为 no-op 桩——`list`/`unreadTotal` 恒空，`fetchList` 恒置空，且其注释误称「OA 后端无 internal_message 收件箱接口」（实为过期描述，OA 保留了该服务）。该桩既不消费 SSE 也不轮询收件箱接口。因此**任何站内信在管理后台通知组件均不显示**——后端 DB 写入与 admin SSE 推送链路虽在，接收端 UI 断开。这条对管理员侧的通知可见性是实质缺口，待修复。
+  - **管理后台**：`NoticeDropdown/useNotice.ts` 经 `InternalMessageRecipientService.ListUserInbox`（admin BFF 端点，收件人过滤在 core 按 viewer 强制）拉取收件箱，并订阅 `globalSSEClient` 的 `"notification"` 事件以在 admin 自身 `SendMessage` 产生新收件行时刷新列表。因此 admin 自身发出的消息（如公告）可实时到达管理员通知组件。但工作流引擎经 core `SendMessage` 落库的通知不触发 SSE，需等管理员手动重载或下次页面拉取才可见——存在可见性延迟。
 - **通讯录无 DataScope 授权收敛**：app 只读通讯录 wrapper（`i_org_unit`/`i_user`）与 admin 侧 user/org_unit 端点均按租户隔离暴露，但未做按数据范围（DataScope）的可见性收敛。目录页展示全体租户用户及其部门标注，未做按部门过滤。留后续。
