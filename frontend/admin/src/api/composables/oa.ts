@@ -332,6 +332,16 @@ export function useListAttendanceRecords(
   });
 }
 
+export function useGetAttendanceSetting(
+  options?: Omit<UseQueryOptions<oaservicev1_AttendanceSetting, Error>, "queryKey">
+) {
+  return useQuery({
+    queryKey: ["getAttendanceSetting"],
+    queryFn: () => apiClient.attendanceService.GetAttendanceSetting({}),
+    ...options,
+  });
+}
+
 export function useUpdateAttendanceSetting(
   options?: UseMutationOptions<
     Record<never, never>,

@@ -12,11 +12,8 @@ import { Layout } from "@/layouts";
  * 不设 meta.authority：OA v1 后端无角色/权限表（authz 为 noop），登录即视为
  * 可访问后台；待 identity/permission 域落地后再恢复 authority 过滤。
  *
- * 页面：
- *   - 流程定义管理
- *   - 考勤记录 / 设置 / 结算
- *   - 请假管理（类型 / 额度 / 申请单）
- *   - 报销申请管理
+ * 页面：流程定义管理、审批中心、考勤记录、考勤设置、节假日设置、
+ *   请假管理、报销管理、出差/加班/用印/外出申请管理、公告发布、通讯录。
  */
 const oa: RouteRecordRaw[] = [
   {
@@ -60,6 +57,16 @@ const oa: RouteRecordRaw[] = [
           title: "routes.oa.attendanceRecords",
         },
         component: () => import("@/pages/app/oa/attendance/records.vue"),
+      },
+      {
+        path: "attendance-setting",
+        name: "OaAttendanceSetting",
+        meta: {
+          order: 3,
+          icon: "lucide:settings",
+          title: "routes.oa.attendanceSetting",
+        },
+        component: () => import("@/pages/app/oa/attendance/setting.vue"),
       },
       {
         path: "holidays",

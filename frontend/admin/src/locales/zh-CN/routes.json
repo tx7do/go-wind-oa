@@ -3,6 +3,7 @@
     "moduleName": "OA 工作流",
     "definition": "流程定义",
     "attendanceRecords": "考勤记录",
+    "attendanceSetting": "考勤设置",
     "leave": "请假管理",
     "expense": "报销管理",
     "approval": "审批中心",

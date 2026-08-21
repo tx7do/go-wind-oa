@@ -3,6 +3,7 @@
     "moduleName": "OA Workflow",
     "definition": "Workflow Definition",
     "attendanceRecords": "Attendance Records",
+    "attendanceSetting": "Attendance Settings",
     "leave": "Leave Management",
     "expense": "Expense Management",
     "approval": "Approval Center",
