@@ -282,7 +282,91 @@ func (r *WorkflowTaskRepo) CancelPendingByInstanceNode(
 	return nil
 }
 
-// ListPendingAssigneesByInstance 实例当前全部待办审批人（撤回时通知）。
+// CreateWithTx 事务内建任务。builder 源自 tx。
+func (r *WorkflowTaskRepo) CreateWithTx(
+	ctx context.Context, tx *ent.Tx,
+	tenantID uint32, creatorUserID uint32, instanceID uint32, nodeIndex int, assigneeUserID uint32,
+) (uint32, error) {
+	builder := tx.WorkflowTask.Create().
+		SetInstanceID(instanceID).
+		SetNodeIndex(nodeIndex).
+		SetAssigneeUserID(assigneeUserID).
+		SetTaskStatus(workflowtask.TaskStatusPending).
+		SetTenantID(tenantID).
+		SetCreatedBy(creatorUserID).
+		SetCreatedAt(time.Now())
+
+	entity, err := builder.Save(ctx)
+	if err != nil {
+		r.log.Errorf("insert workflow task failed: %s", err.Error())
+		return 0, oaV1.ErrorInternalServerError("insert workflow task failed")
+	}
+	return entity.ID, nil
+}
+
+// UpdateStatusWithTx 事务内更新任务状态。
+func (r *WorkflowTaskRepo) UpdateStatusWithTx(
+	ctx context.Context, tx *ent.Tx, id uint32, tenantID uint32, newStatus *oaV1.WorkflowTask_TaskStatus,
+) error {
+	builder := tx.WorkflowTask.Update()
+	builder.Where(
+		workflowtask.IDEQ(id),
+		workflowtask.TenantIDEQ(tenantID),
+	)
+	builder.SetNillableTaskStatus(r.taskStatusConverter.ToEntity(newStatus))
+	builder.SetUpdatedAt(time.Now())
+
+	if _, err := builder.Save(ctx); err != nil {
+		r.log.Errorf("update task status failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("update task status failed")
+	}
+	return nil
+}
+
+// UpdateAssigneeWithTx 事务内更新任务指派人（转办）。
+func (r *WorkflowTaskRepo) UpdateAssigneeWithTx(
+	ctx context.Context, tx *ent.Tx, id uint32, tenantID uint32, newAssignee uint32,
+) error {
+	builder := tx.WorkflowTask.Update()
+	builder.Where(
+		workflowtask.IDEQ(id),
+		workflowtask.TenantIDEQ(tenantID),
+	)
+	builder.SetAssigneeUserID(newAssignee)
+	builder.SetUpdatedAt(time.Now())
+
+	if _, err := builder.Save(ctx); err != nil {
+		r.log.Errorf("update task assignee failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("update task assignee failed")
+	}
+	return nil
+}
+
+// CancelPendingByInstanceNodeWithTx 事务内取消同实例同节点 PENDING 任务。
+func (r *WorkflowTaskRepo) CancelPendingByInstanceNodeWithTx(
+	ctx context.Context, tx *ent.Tx, tenantID uint32, instanceID uint32, nodeIndex int, excludeTaskID uint32,
+) error {
+	predicates := []predicate.WorkflowTask{
+		workflowtask.HasInstanceWith(workflowinstance.IDEQ(instanceID)),
+		workflowtask.NodeIndexEQ(nodeIndex),
+		workflowtask.TaskStatusEQ(workflowtask.TaskStatusPending),
+		workflowtask.TenantIDEQ(tenantID),
+	}
+	if excludeTaskID != 0 {
+		predicates = append(predicates, workflowtask.IDNEQ(excludeTaskID))
+	}
+
+	builder := tx.WorkflowTask.Update()
+	builder.Where(predicates...)
+	builder.SetTaskStatus(workflowtask.TaskStatusCancelled)
+	builder.SetUpdatedAt(time.Now())
+
+	if _, err := builder.Save(ctx); err != nil {
+		r.log.Errorf("cancel pending tasks failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("cancel pending tasks failed")
+	}
+	return nil
+}
 func (r *WorkflowTaskRepo) ListPendingAssigneesByInstance(
 	ctx context.Context,
 	tenantID uint32,
@@ -315,6 +399,26 @@ func (r *WorkflowTaskRepo) CancelAllPendingByInstance(
 	instanceID uint32,
 ) error {
 	builder := r.entClient.Client().WorkflowTask.Update()
+	builder.Where(
+		workflowtask.HasInstanceWith(workflowinstance.IDEQ(instanceID)),
+		workflowtask.TaskStatusEQ(workflowtask.TaskStatusPending),
+		workflowtask.TenantIDEQ(tenantID),
+	)
+	builder.SetTaskStatus(workflowtask.TaskStatusCancelled)
+	builder.SetUpdatedAt(time.Now())
+
+	if _, err := builder.Save(ctx); err != nil {
+		r.log.Errorf("cancel all pending tasks failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("cancel all pending tasks failed")
+	}
+	return nil
+}
+
+// CancelAllPendingByInstanceWithTx 事务内取消实例全部待办任务。
+func (r *WorkflowTaskRepo) CancelAllPendingByInstanceWithTx(
+	ctx context.Context, tx *ent.Tx, tenantID uint32, instanceID uint32,
+) error {
+	builder := tx.WorkflowTask.Update()
 	builder.Where(
 		workflowtask.HasInstanceWith(workflowinstance.IDEQ(instanceID)),
 		workflowtask.TaskStatusEQ(workflowtask.TaskStatusPending),

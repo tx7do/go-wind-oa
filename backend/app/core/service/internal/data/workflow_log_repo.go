@@ -76,6 +76,29 @@ func (r *WorkflowLogRepo) Create(
 	return entity.ID, nil
 }
 
+// CreateWithTx 事务内写日志。builder 源自 tx。
+func (r *WorkflowLogRepo) CreateWithTx(
+	ctx context.Context, tx *ent.Tx,
+	tenantID uint32, creatorUserID uint32, instanceID uint32, nodeIndex int,
+	action *oaV1.WorkflowLog_LogAction, comment string,
+) (uint32, error) {
+	builder := tx.WorkflowLog.Create().
+		SetInstanceID(instanceID).
+		SetNodeIndex(nodeIndex).
+		SetNillableLogAction(r.logActionConverter.ToEntity(action)).
+		SetNillableComment(&comment).
+		SetTenantID(tenantID).
+		SetCreatedBy(creatorUserID).
+		SetCreatedAt(time.Now())
+
+	entity, err := builder.Save(ctx)
+	if err != nil {
+		r.log.Errorf("insert workflow log failed: %s", err.Error())
+		return 0, oaV1.ErrorInternalServerError("insert workflow log failed")
+	}
+	return entity.ID, nil
+}
+
 // ListByActor “已办”列表。按操作者+租户查询日志，WithInstance 取实例 ID。
 // pageSize>0 时分页并返回真实总数。
 func (r *WorkflowLogRepo) ListByActor(ctx context.Context, tenantID uint32, actorUserID uint32, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {

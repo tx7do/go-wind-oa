@@ -131,8 +131,54 @@ func (r *WorkflowInstanceRepo) UpdateStatus(
 	return nil
 }
 
-// GetMeta 读取实例创建者（申请人）与业务单据关联。推进时解析 LEADER/POSITION 审批人
-// 需以申请人身份为寻人基准；审批终结时按 business_type 回调业务模块。
+// Txn 开启事务，fn 内的跨 repo 写入原子提交/回滚。状态机推进路径专用。
+func (r *WorkflowInstanceRepo) Txn(ctx context.Context, fn func(tx *ent.Tx) error) (err error) {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = oaV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+	return fn(tx)
+}
+
+// UpdateStatusWithTx 事务内推进实例状态。builder 源自 tx 而非 client。
+func (r *WorkflowInstanceRepo) UpdateStatusWithTx(
+	ctx context.Context, tx *ent.Tx,
+	id uint32, tenantID uint32,
+	newStatus *oaV1.WorkflowInstance_InstanceStatus, newNodeIndex *int,
+) error {
+	builder := tx.WorkflowInstance.Update()
+	builder.Where(
+		workflowinstance.IDEQ(id),
+		workflowinstance.TenantIDEQ(tenantID),
+	)
+	builder.SetNillableInstanceStatus(r.instanceStatusConverter.ToEntity(newStatus))
+	if newNodeIndex == nil {
+		builder.ClearCurrentNodeIndex()
+	} else {
+		builder.SetNillableCurrentNodeIndex(newNodeIndex)
+	}
+	builder.SetUpdatedAt(time.Now())
+
+	if _, err := builder.Save(ctx); err != nil {
+		r.log.Errorf("update instance state failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("update instance state failed")
+	}
+	return nil
+}
 func (r *WorkflowInstanceRepo) GetMeta(ctx context.Context, id uint32, tenantID uint32) (uint32, string, uint32, error) {
 	entity, err := r.entClient.Client().WorkflowInstance.Query().
 		Where(

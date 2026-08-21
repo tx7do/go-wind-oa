@@ -42,6 +42,7 @@ export function useNotice() {
   const unreadTotal = ref(0);
   const detail = ref<NoticeDetail | null>(null);
   const dialogVisible = ref(false);
+  let pollTimer: ReturnType<typeof setInterval> | null = null;
 
   async function fetchList() {
     try {
@@ -142,10 +143,15 @@ export function useNotice() {
   onMounted(() => {
     fetchList();
     globalSSEClient.on("notification", onNotification);
+    pollTimer = setInterval(() => fetchList(), 30000);
   });
 
   onUnmounted(() => {
     globalSSEClient.off("notification", onNotification);
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
   });
 
   return {

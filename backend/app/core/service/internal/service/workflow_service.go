@@ -15,6 +15,7 @@ import (
 	"github.com/tx7do/go-crud/viewer"
 
 	"go-wind-oa/app/core/service/internal/data"
+	"go-wind-oa/app/core/service/internal/data/ent"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowtask"
 
 	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
@@ -249,16 +250,23 @@ func (s *WorkflowService) handleApprove(
 	ctx context.Context, tid, uid uint32, taskID, instanceID uint32,
 	currentNodeIndex *int, comment string,
 ) (*emptypb.Empty, error) {
-	// 关闭当前任务。
-	if err := s.taskRepo.UpdateStatus(ctx, taskID, tid, oaV1.WorkflowTask_APPROVED.Enum()); err != nil {
-		return nil, err
-	}
-	// 写 APPROVE 日志。
 	nodeIdx := -1
 	if currentNodeIndex != nil {
 		nodeIdx = *currentNodeIndex
 	}
-	_, _ = s.logRepo.Create(ctx, tid, uid, instanceID, nodeIdx, oaV1.WorkflowLog_APPROVE.Enum(), comment)
+	ni := nodeIdx
+	// 关闭当前任务 + 写 APPROVE 日志：原子提交。
+	if err := s.instanceRepo.Txn(ctx, func(tx *ent.Tx) error {
+		if err := s.taskRepo.UpdateStatusWithTx(ctx, tx, taskID, tid, oaV1.WorkflowTask_APPROVED.Enum()); err != nil {
+			return err
+		}
+		if _, err := s.logRepo.CreateWithTx(ctx, tx, tid, uid, instanceID, ni, oaV1.WorkflowLog_APPROVE.Enum(), comment); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
 
 	// 取定义节点配置与当前节点策略。
 	nodes, err := s.nodesOfInstance(ctx, instanceID, tid)
@@ -299,12 +307,18 @@ func (s *WorkflowService) handleReject(
 		nodeIdx = *currentNodeIndex
 	}
 
-	// 关闭任务（REJECTED）。
-	if err := s.taskRepo.UpdateStatus(ctx, taskID, tid, oaV1.WorkflowTask_REJECTED.Enum()); err != nil {
+	// 关闭任务（REJECTED）+ 写 REJECT 日志：原子提交。
+	if err := s.instanceRepo.Txn(ctx, func(tx *ent.Tx) error {
+		if err := s.taskRepo.UpdateStatusWithTx(ctx, tx, taskID, tid, oaV1.WorkflowTask_REJECTED.Enum()); err != nil {
+			return err
+		}
+		if _, err := s.logRepo.CreateWithTx(ctx, tx, tid, uid, instanceID, nodeIdx, oaV1.WorkflowLog_REJECT.Enum(), comment); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
 		return nil, err
 	}
-	// 写 REJECT 日志（记录真实节点索引，保留驳回位置的可审计性）。
-	_, _ = s.logRepo.Create(ctx, tid, uid, instanceID, nodeIdx, oaV1.WorkflowLog_REJECT.Enum(), comment)
 
 	// 或签：仍有待办或已有人通过则等待他人，不终结实例。
 	nodes, err := s.nodesOfInstance(ctx, instanceID, tid)
@@ -335,13 +349,18 @@ func (s *WorkflowService) handleReject(
 		}
 	}
 
-	// 会签任一驳回即驳回；或签全员驳回亦驳回。取消其余待办，实例终结。
-	if nodeIdx >= 0 {
-		if err := s.taskRepo.CancelPendingByInstanceNode(ctx, tid, instanceID, nodeIdx, taskID); err != nil {
-			return nil, err
+	// 会签任一驳回即驳回；或签全员驳回亦驳回。取消其余待办 + 实例终结：原子提交。
+	if err := s.instanceRepo.Txn(ctx, func(tx *ent.Tx) error {
+		if nodeIdx >= 0 {
+			if err := s.taskRepo.CancelPendingByInstanceNodeWithTx(ctx, tx, tid, instanceID, nodeIdx, taskID); err != nil {
+				return err
+			}
 		}
-	}
-	if err := s.instanceRepo.UpdateStatus(ctx, instanceID, tid, oaV1.WorkflowInstance_REJECTED.Enum(), nil); err != nil {
+		if err := s.instanceRepo.UpdateStatusWithTx(ctx, tx, instanceID, tid, oaV1.WorkflowInstance_REJECTED.Enum(), nil); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
 		return nil, err
 	}
 
@@ -368,14 +387,22 @@ func (s *WorkflowService) handleForward(
 	if !active {
 		return nil, oaV1.ErrorBadRequest("forward target user is unavailable")
 	}
-	if err := s.taskRepo.UpdateAssignee(ctx, taskID, tid, forwardTo); err != nil {
-		return nil, err
-	}
 	nodeIdx := -1
 	if currentNodeIndex != nil {
 		nodeIdx = *currentNodeIndex
 	}
-	_, _ = s.logRepo.Create(ctx, tid, uid, instanceID, nodeIdx, oaV1.WorkflowLog_FORWARD.Enum(), "")
+	ni := nodeIdx
+	if err := s.instanceRepo.Txn(ctx, func(tx *ent.Tx) error {
+		if err := s.taskRepo.UpdateAssigneeWithTx(ctx, tx, taskID, tid, forwardTo); err != nil {
+			return err
+		}
+		if _, err := s.logRepo.CreateWithTx(ctx, tx, tid, uid, instanceID, ni, oaV1.WorkflowLog_FORWARD.Enum(), ""); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
 	s.notifyManyAsync(ctx, []uint32{forwardTo}, "您有被转办的任务", "请登录系统查看待审批事项")
 	return &emptypb.Empty{}, nil
 }
@@ -393,7 +420,8 @@ func (s *WorkflowService) advanceInstance(
 // launchFromNode 从指定节点启动流程：解析审批人并排除申请人本人（申请人对自己的
 // 申请视为自动同意）；全部审批人都是申请人的节点整节点自动通过（写 APPROVE 日志
 // 留痕）并继续推进，直到出现有效审批人的节点（建任务+通知）或越界终结 APPROVED。
-// 返回错误时状态机处于中间态（与既有无事务多步写入的风险面一致）。
+// 推进路径的跨 repo 多步写（instance 状态 + task 创建 + 日志）经 WorkflowInstanceRepo.Txn
+// 包入单一事务原子提交；事务内任一步失败则整体回滚，返回错误。单步写路径不包事务。
 func (s *WorkflowService) launchFromNode(
 	ctx context.Context, tid, uid uint32, instanceID uint32, startIdx int,
 ) error {
@@ -434,13 +462,18 @@ func (s *WorkflowService) launchFromNode(
 		}
 
 		ni := idx
-		if err := s.instanceRepo.UpdateStatus(ctx, instanceID, tid, oaV1.WorkflowInstance_PENDING.Enum(), &ni); err != nil {
-			return err
-		}
-		for _, approver := range others {
-			if _, err := s.taskRepo.Create(ctx, tid, uid, instanceID, idx, approver); err != nil {
+		if err := s.instanceRepo.Txn(ctx, func(tx *ent.Tx) error {
+			if err := s.instanceRepo.UpdateStatusWithTx(ctx, tx, instanceID, tid, oaV1.WorkflowInstance_PENDING.Enum(), &ni); err != nil {
 				return err
 			}
+			for _, approver := range others {
+				if _, err := s.taskRepo.CreateWithTx(ctx, tx, tid, uid, instanceID, idx, approver); err != nil {
+					return err
+				}
+			}
+			return nil
+		}); err != nil {
+			return err
 		}
 		s.notifyManyAsync(ctx, others, "您有新的待办任务", "请登录系统查看待审批事项")
 		return nil
@@ -483,15 +516,21 @@ func (s *WorkflowService) WithdrawApply(ctx context.Context, req *oaV1.WithdrawA
 	if err != nil {
 		return nil, err
 	}
-	if err := s.taskRepo.CancelAllPendingByInstance(ctx, tid, instanceID); err != nil {
-		return nil, err
-	}
-	if err := s.instanceRepo.UpdateStatus(ctx, instanceID, tid, oaV1.WorkflowInstance_WITHDRAWN.Enum(), nil); err != nil {
+	if err := s.instanceRepo.Txn(ctx, func(tx *ent.Tx) error {
+		if err := s.taskRepo.CancelAllPendingByInstanceWithTx(ctx, tx, tid, instanceID); err != nil {
+			return err
+		}
+		if err := s.instanceRepo.UpdateStatusWithTx(ctx, tx, instanceID, tid, oaV1.WorkflowInstance_WITHDRAWN.Enum(), nil); err != nil {
+			return err
+		}
+		if _, err := s.logRepo.CreateWithTx(ctx, tx, tid, uid, instanceID, -1, oaV1.WorkflowLog_WITHDRAW.Enum(), ""); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
 		return nil, err
 	}
 
-	// 撤回是实例级动作，不对应具体节点，node_index 记 -1。
-	_, _ = s.logRepo.Create(ctx, tid, uid, instanceID, -1, oaV1.WorkflowLog_WITHDRAW.Enum(), "")
 	s.notifyManyAsync(ctx, pendingAssignees, "待审批申请已被撤回", "申请人已撤回该申请，无需继续处理")
 	s.fireBusinessEvent(ctx, tid, instanceID, businessID, businessType, oaV1.WorkflowInstance_WITHDRAWN)
 	return &emptypb.Empty{}, nil
