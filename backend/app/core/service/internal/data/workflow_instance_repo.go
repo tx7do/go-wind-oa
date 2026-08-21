@@ -81,6 +81,34 @@ func (r *WorkflowInstanceRepo) Create(
 	return entity.ID, nil
 }
 
+// CreateWithTx 事务内建实例。builder 源自 tx。
+func (r *WorkflowInstanceRepo) CreateWithTx(
+	ctx context.Context, tx *ent.Tx,
+	tenantID uint32, creatorUserID uint32, definitionID uint32, formData string, businessType string, businessID uint32,
+) (uint32, error) {
+	builder := tx.WorkflowInstance.Create().
+		SetDefinitionID(definitionID).
+		SetInstanceStatus(workflowinstance.InstanceStatusPending).
+		SetCurrentNodeIndex(0).
+		SetNillableFormData(&formData).
+		SetTenantID(tenantID).
+		SetCreatedBy(creatorUserID).
+		SetCreatedAt(time.Now())
+	if businessType != "" {
+		builder.SetNillableBusinessType(&businessType)
+	}
+	if businessID != 0 {
+		builder.SetNillableBusinessID(&businessID)
+	}
+
+	entity, err := builder.Save(ctx)
+	if err != nil {
+		r.log.Errorf("insert workflow instance failed: %s", err.Error())
+		return 0, oaV1.ErrorInternalServerError("insert workflow instance failed")
+	}
+	return entity.ID, nil
+}
+
 // GetState 直读 entity 的 InstanceStatus 字段（绕过 mapper）。
 // 仅返回是否处于 PENDING（活跃），供状态机校验。终结态（APPROVED/REJECTED）返回 false。
 func (r *WorkflowInstanceRepo) GetState(ctx context.Context, id uint32, tenantID uint32) (bool, error) {

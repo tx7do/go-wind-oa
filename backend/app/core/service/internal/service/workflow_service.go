@@ -190,14 +190,22 @@ func (s *WorkflowService) SubmitApply(ctx context.Context, req *oaV1.SubmitApply
 		return nil, oaV1.ErrorBadRequest("definition has no nodes")
 	}
 
-	// 3. 创建实例（PENDING, idx=0，携带业务单据关联）。
-	instanceID, err := s.instanceRepo.Create(ctx, tid, uid, def.GetId(), req.GetFormData(), req.GetBusinessType(), req.GetBusinessId())
-	if err != nil {
+	// 3+4. 创建实例 + 写 SUBMIT 日志：原子提交。建单链的跨 repo 两步写包入
+	// 单一事务，任一步失败整体回滚，避免孤儿实例或日志指向不存在的实例。
+	var instanceID uint32
+	if err := s.instanceRepo.Txn(ctx, func(tx *ent.Tx) error {
+		id, err := s.instanceRepo.CreateWithTx(ctx, tx, tid, uid, def.GetId(), req.GetFormData(), req.GetBusinessType(), req.GetBusinessId())
+		if err != nil {
+			return err
+		}
+		instanceID = id
+		if _, err := s.logRepo.CreateWithTx(ctx, tx, tid, uid, instanceID, 0, oaV1.WorkflowLog_SUBMIT.Enum(), ""); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
 		return nil, err
 	}
-
-	// 4. 写 SUBMIT 日志。
-	_, _ = s.logRepo.Create(ctx, tid, uid, instanceID, 0, oaV1.WorkflowLog_SUBMIT.Enum(), "")
 
 	// 5. 从首节点启动（申请人为审批人的节点自动通过）。
 	if err := s.launchFromNode(ctx, tid, uid, instanceID, 0); err != nil {
