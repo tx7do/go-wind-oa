@@ -43,18 +43,24 @@ frontend/mobile/lib/generated/api/app/service/v1/index.dart
 cd backend/api && buf generate --template buf.app.dart.gen.yaml
 ```
 
-**生成产物**：`lib/generated/api/app/service/v1/index.dart`，含聚合 `ApiClient`，按服务名暴露懒加载属性：
+**生成产物**：`lib/generated/api/app/service/v1/index.dart`，含聚合 `ApiClient`，按服务名暴露懒加载属性。按域归类，当前属性集合如下：
 
-| 属性 | 服务 | 方法 |
-|------|------|------|
-| `apiClient.workflowService` | 工作流 | SubmitApply / AuditTask / GetMyTasks / GetTask / WithdrawApply |
-| `apiClient.authenticationService` | 鉴权 | Login / Logout / RefreshToken / GenerateCaptcha / VerifyCaptcha |
+| 域 | 属性 | 说明 |
+|---|---|---|
+| OA 审批/业务 | `workflowService` / `attendanceService` / `leaveService` / `expenseService` / `businessTripService` / `overtimeService` / `sealApplicationService` / `outingService` | 工作流引擎 + 七类业务单据（请假/报销/出差/加班/用印/外出 + 考勤）的提交、审批、查询、撤回 |
+| 站内信 | `internalMessageService` | `listMyMessages` 收件箱查询（app-service 无 `SendMessage`，仅读） |
+| 通讯录（只读） | `orgUnitService` / `userService` | app 侧只读 wrapper，仅 List/Get，引用 `identity.service.v1`，带 `redact` 脱敏 |
+| 用户资料 | `userProfileService` | 个人资料 |
+| 鉴权 | `authenticationService` | Login / Logout / RefreshToken / GenerateCaptcha / VerifyCaptcha |
+| CMS 保留域 | `categoryService` / `commentService` / `fileTransferService` / `interactionService` / `navigationService` / `pageService` / `postService` / `sectionService` / `tagService` | 继承自 go-wind-cms 的内容/文件/导航等只读或有限端点，与 OA 无关 |
+
+> 上表是 `ApiClient` 当前暴露的**全集**（见 `index.dart` line 15594-15699 的 `*ServiceClient get` 属性块）。OA 相关属性随 `protos/app/service/v1` 下 OA wrapper proto 增减而变，CMS 保留域属性与 OA 无关。
 
 **关键约定**：
 
-- `buf.app.dart.gen.yaml` 的 `inputs` 仅覆盖 `protos/app/service/v1`（即 `i_authentication.proto` + `i_workflow.proto` wrapper proto）。这些 wrapper 的 `google.api.http` 注解定义了 `/app/v1/oa/workflow/...` 与 `/app/v1/login` 等路径，Dart 生成器据此产生带路径的 client 方法。消息类型引用 `oa.service.v1` / `authentication.service.v1`，生成器自动跟随 import 解析。
+- `buf.app.dart.gen.yaml` 的 `inputs` 覆盖 `protos/app/service/v1` 全目录（OA wrapper + 鉴权 wrapper + 只读通讯录 wrapper + CMS 保留域 wrapper）。各 wrapper 的 `google.api.http` 注解定义了 `/app/v1/...` 路径，Dart 生成器据此产生带路径的 client 方法。消息类型引用 `oa.service.v1` / `internal_message.service.v1` / `authentication.service.v1` / `identity.service.v1`，生成器自动跟随 import 解析。
 - 生成的客户端经 `lib/src/core/transport/http/dio_client_transport.dart` 适配为 `ClientTransport`，复用基座的 Dio + 鉴权拦截器（自动注入 `Authorization: Bearer <token>`）。
-- 类型名带包前缀（`OaServiceV1*`），枚举成员为小写（`pending` / `submitted` / `approve` / `reject` / `forward`），与生成器的命名约定一致。
+- 类型名带包前缀（`OaServiceV1*` / `Internal_messageServiceV1*` / `IdentityServiceV1*` 等），枚举成员为小写，与生成器的命名约定一致。
 
 > 与旧链路对比：旧设计（已废弃）经 protoc-gen-openapi 生成 openapi.yaml，再由 swagger_parser 消费生成 Dart 客户端。现改为 buf 模板直接生成，无中间层，路径为 `app/service/v1`（非 `oa/v1`）。
 
@@ -66,7 +72,7 @@ cd backend/api && buf generate --template buf.app.dart.gen.yaml
 
 - **ShellRoute**（`OaShellPage`，`lib/src/features/oa/pages/shell/oa_shell_page.dart`）：底部导航三 Tab——`/oa/tasks`（审批）/ `/oa/notifications`（通知）/ `/oa/attendance`（考勤）。`OaShellPage` 为 `StatelessWidget`，据 `currentRoute` 高亮 Tab，`_onTap` 点击切路由；不持有业务状态。
 - **子路由**：`/oa/tasks/detail/:id`（任务详情），挂在 `/oa/tasks` 下，进同一 Shell（高亮审批 Tab）。
-- **非 Shell 路由**：`/oa/apply`（提交申请，全屏表单）、`/login`（登录）。
+- **非 Shell 路由**（全屏，路径常量定义于 `lib/src/core/constants/router_paths.dart`）：`/oa/apply`（通用申请表单）、`/login`（登录），以及下列 OA 业务单据提交页——`/oa/leave`、`/oa/expense`、`/oa/business-trip`、`/oa/overtime`、`/oa/seal-application`、`/oa/outing`、`/oa/directory`（通讯录）。这些业务页的入口在 `task_list/oa_task_list_page.dart` 的 AppBar `PopupMenuButton` 中（与"通用申请"并列）。
 - **守卫 `_guard`**：依 `GetIt.instance<UserAuthCache>().hasLogin` 判定；未登录访问任意路由 → `/login`；已登录访问 `/login` → `/`（审批 Tab）。
 
 ---
@@ -82,8 +88,8 @@ cd backend/api && buf generate --template buf.app.dart.gen.yaml
 
 ### 4.2 站内信通知 ✅
 
-- 通知列表页从后端 `GET /app/v1/internal-message/my-messages` 拉取收件箱（core `ListMyMessages`，收件人过滤、排除已删除/已撤销）。
-- SSE 实时推送：app-service 的 `sse_server.go` 持 `AuthenticationServiceClient` 验 token 后允许订阅，事件投递到通知 stream。
+- 通知列表页从后端 `GET /app/v1/internal-message/my-messages` 拉取收件箱（core `ListMyMessages`，收件人过滤、排除已删除/已撤销）。`NotificationService`（`services/notification_service.dart`）封装 `listMessages`，页面轮询拉取。
+- **无 SSE 实时推送**：app-service 的 `sse_server.go` 虽存在（持 `AuthenticationServiceClient` 验 token 后允许订阅），但 `InternalMessagePublisher` 只在 admin-service 注册、且仅对 admin 自身 HTTP `SendMessage` 路径触发。core 是 gRPC-only 无 SSE server，工作流通知经 core 进程内 `SendMessage` 落库后**不会**推 SSE。故移动端通知无实时推送，仅靠上述 REST 轮询延迟可见。详见 [oa-workflow-design.md](./oa-workflow-design.md) §5.5 与 §12。
 
 ### 4.3 考勤打卡 ✅
 
@@ -100,6 +106,17 @@ cd backend/api && buf generate --template buf.app.dart.gen.yaml
 - `ExpenseService`：提交报销申请（多行明细 + 发票文件 ID）。
 - `FileUploadService`：multipart `POST /app/v1/file/upload` 拍照/相册（image_picker）→ 压缩 → Dio multipart → 返回 file_id 自动回填明细 invoiceFileId。
 - 报销页收集明细行与发票附件，调服务提交，挂 EXPENSE v1 流程。
+
+### 4.6 出差 / 加班 / 用印 / 外出 ✅
+
+- 四类同型审批单据，各对应一个 service（`business_trip_service.dart` / `overtime_service.dart` / `seal_application_service.dart` / `outing_service.dart`）与提交页（`business_trip/` / `overtime/` / `seal_application/` / `outing/`）。
+- 提交链路同构：建单 → 进程内直调引擎 SubmitApply 挂对应 v1 流程（`BUSINESS_TRIP` / `OVERTIME` / `SEAL_APPLICATION` / `OUTING`）。流程定义均经 `ensureWorkflowDefinition` 兜底自动创建（默认 LEADER 会签）。审批终态仅同步单据状态，无额度副作用（与报销同构，区别于请假）。
+- 枚举类型名采用生成器的嵌套命名（如 `OaServiceV1SealApplication$SealStatus`），成员小写。
+
+### 4.7 通讯录 ✅
+
+- `DirectoryService`（`services/directory_service.dart`）：经 `apiClient.orgUnitService.list` 与 `apiClient.userService.list`（app 侧只读 wrapper，带 `redact` 脱敏）取组织树与成员。
+- 通讯录页（`directory/oa_directory_page.dart`）：`ExpansionTile` 递归组织树 + 成员 `ListTile`（昵称/真名/部门标注）。仅浏览，无 CRUD。
 
 > 撤回、自动跳过申请人节点等引擎能力详见 [oa-workflow-design.md](./oa-workflow-design.md) §5。
 
@@ -131,3 +148,4 @@ cd frontend/mobile && flutter run
 ## 7. 已知边界
 
 - 通知仅文本，无富媒体附件。
+- **移动端通知无 SSE 实时推送**：`InternalMessagePublisher`（SSE 推送）只在 admin-service 注册且仅对 admin 自身 `SendMessage` 路径生效；core gRPC-only 无 SSE server，app-service 的 `internal_message_service.go` 无 publisher。故工作流审批通知经 core 落库后不触发任何 SSE，移动端仅靠 REST 轮询 `listMyMessages` 延迟可见。机制与跨端影响详见 [oa-workflow-design.md](./oa-workflow-design.md) §5.5 与 §12。

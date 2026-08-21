@@ -33,7 +33,10 @@ GoWind OA 是一套面向企业的**协同办公系统**，覆盖日常办公场
 | 人事考勤 | GPS/WiFi 打卡、迟到/早退/旷工/请假联动结算、节假日表、每日定时结算 | ✅ |
 | 请假管理 | 类型与额度、半日粒度、审批通过自动扣减额度、流程定义自动引导 | ✅ |
 | 报销管理 | 多行明细、发票凭证拍照直传、流程定义自动引导 | ✅ |
-| 站内信 | 审批通知落库、收件箱查询、SSE 推送 | ✅ |
+| 出差 / 加班 / 用印 / 外出 | 四类同型审批单据，建单挂对应 v1 流程（流程定义自动引导），审批终态仅同步状态、无额度副作用 | ✅ |
+| 站内信 | 审批通知落库、收件箱查询；SSE 推送仅 admin 自身 SendMessage 路径生效，工作流通知经 core 落库后不触发 SSE | ✅ |
+| 公告发布 | 复用站内信 SendMessage 扇出（全员 target_all / 按部门 ListUserIDsByOrgUnitIDs 展开 target_user_ids），无独立表 | ✅ |
+| 通讯录 | app 侧只读 wrapper（带 redact 脱敏）+ admin/mobile 双端组织树浏览与成员列表 | ✅ |
 | 表单引擎 | 基于字段描述的动态表单渲染（移动端生成、审批端键值对展示） | ✅ |
 
 > 工作流引擎是协同办公系统的一个子系统，用于驱动各类审批流程，并非系统定位本身。
@@ -104,7 +107,7 @@ Vue3 + Vite + TypeScript + Element Plus + Pinia + TanStack Query。OA 模块代�
 
 - `src/api/composables/oa.ts` — TanStack Query hooks，封装生成的 `apiClient` 各业务服务。
 - `src/api/generated/admin/service/v1/index.ts` — 由 `backend/api/buf.admin.typescript.gen.yaml` 生成。
-- `src/pages/app/oa/` — 审批中心、考勤记录、节假日设置、请假管理、报销管理、流程定义编辑器。
+- `src/pages/app/oa/` — 审批中心、考勤记录、节假日设置、请假/报销管理、出差/加班/用印/外出等同型单据管理、公告发布、通讯录、流程定义编辑器。
 - `src/router/routes/modules/app/oa.ts` — 前端路由模块（自动 glob 注册）。
 
 ```bash
@@ -116,8 +119,8 @@ cd frontend/admin && pnpm i && pnpm dev
 
 Flutter + Dio + GetIt。OA feature：
 
-- `lib/src/features/oa/services/` — 各业务服务（workflow / attendance / leave / expense / file_upload / notification）。
-- `lib/src/features/oa/pages/` — 登录、审批任务列表与详情、提交申请（动态表单）、考勤打卡、请假、报销、通知。
+- `lib/src/features/oa/services/` — 各业务服务（工作流、考勤、请假、报销、出差/加班/用印/外出等同型单据、站内信通知、通讯录、文件上传）。完整清单见 [docs/oa-mobile-design.md](./docs/oa-mobile-design.md) §2/§4。
+- `lib/src/features/oa/pages/` — 登录、审批任务列表与详情、通用申请（动态表单）、各业务单据提交页、考勤打卡、通知、通讯录。详见同上文档 §3/§4。
 - `lib/generated/api/app/service/v1/index.dart` — 由 `backend/api/buf.app.dart.gen.yaml` 生成。
 
 ```bash

@@ -18,11 +18,21 @@
 |------|----|----------|------|
 | 工作流引擎 | workflow_definition / workflow_instance / workflow_task / workflow_log | — | 已实现 |
 | 请假 | oa_leave_type / oa_leave_balance / oa_leave_application | LEAVE v1 流程，审批通过扣额度 | 已实现 |
-| 报销 | oa_expense_application / oa_expense_item | EXPENSE v1 流程 | 已实现 |
+| 报销 | oa_expense_application / oa_expense_item | EXPENSE v1 流程，审批终态仅同步状态 | 已实现 |
+| 出差 | oa_business_trip_application | BUSINESS_TRIP v1 流程，审批终态仅同步状态 | 已实现 |
+| 加班 | oa_overtime_application | OVERTIME v1 流程，审批终态仅同步状态 | 已实现 |
+| 用印 | oa_seal_application | SEAL_APPLICATION v1 流程，审批终态仅同步状态 | 已实现 |
+| 外出 | oa_outing_application | OUTING v1 流程，审批终态仅同步状态 | 已实现 |
 | 考勤 | oa_attendance_record / oa_attendance_setting / oa_holiday | — | 已实现 |
 | 站内信 | internal_message / internal_message_category / internal_message_recipient | — | 已实现 |
+| 公告发布 | （复用 internal_message，无独立表） | — | 已实现 |
+| 通讯录 | （复用 identity.org_unit/user，无独立表） | — | 已实现（app 侧只读 wrapper，带 redact 脱敏） |
 
-> 工作流引擎的寻人、状态机、事件回调机制是请假与报销审批链的共享底座。
+> 工作流引擎的寻人、状态机、事件回调机制是请假、报销及出差/加班/用印/外出等审批单据的共享底座。
+>
+> 公告发布复用站内信 `SendMessage` 的扇出机制：`target_all` 全员广播，`target_user_ids` 多播；按部门发布时经 `UserService.ListUserIDsByOrgUnitIDs`（core 实现，强制 `excludeExpired=true`）将 org_unit_ids 展开为 user_ids。无独立表。
+>
+> 通讯录为 app 侧新增只读 wrapper（`i_org_unit`/`i_user`，仅 List/Get，带 `redact` 脱敏），引用 `identity.service.v1` 消息类型，无 CRUD。admin 与 mobile 双端 UI 提供组织树浏览 + 成员列表。
 
 ---
 
@@ -83,14 +93,14 @@
 
 | 域 | 包名 | 内容 | 性质 |
 |---|---|---|---|
-| `oa/service/v1/` | `oa.service.v1` | `workflow.proto` + `attendance.proto` + `leave.proto` + `expense.proto` + `oa_error.proto` | core 纯 gRPC，**无 http annotation** |
-| `admin/service/v1/` | `admin.service.v1` | `i_authentication.proto` + `i_internal_message*.proto` + `i_workflow.proto` + `admin_doc.proto` + `admin_error.proto` | HTTP wrapper，引用 oa.service.v1 / internal_message.service.v1 / authentication.service.v1 消息类型 |
-| `app/service/v1/` | `app.service.v1` | `i_authentication.proto` + `i_workflow.proto` + `app_doc.proto` + `app_error.proto` | HTTP wrapper，引用 oa.service.v1 / authentication.service.v1 消息类型 |
+| `oa/service/v1/` | `oa.service.v1` | `attendance.proto` + `business_trip.proto` + `expense.proto` + `leave.proto` + `oa_error.proto` + `outing.proto` + `overtime.proto` + `seal_application.proto` + `workflow.proto` | core 纯 gRPC，**无 http annotation** |
+| `admin/service/v1/` | `admin.service.v1` | OA 业务 wrapper（`i_attendance`/`i_business_trip`/`i_expense`/`i_leave`/`i_outing`/`i_overtime`/`i_seal_application`/`i_workflow`）+ 站内信 wrapper（`i_internal_message`/`i_internal_message_category`/`i_internal_message_recipient`）+ 鉴权 wrapper（`i_authentication`）+ CMS 保留域 wrapper（`admin_doc`/`admin_error` 及继承自 CMS 的 `api`/`category`/`comment`/`dict_*`/`file*`/`language`/`media_asset`/`menu`/`navigation*`/`org_unit`/`page`/`permission*`/`position`/`post`/`role`/`section`/`site*`/`tag`/`task`/`tenant`/`translator`/`user`/`user_profile`/`admin_portal`/`*_audit_log` 等，完整清单见仓内 `protos/admin/service/v1`） | HTTP wrapper，引用 oa.service.v1 / internal_message.service.v1 / authentication.service.v1 / identity.service.v1 消息类型 |
+| `app/service/v1/` | `app.service.v1` | OA 业务 wrapper（`i_attendance`/`i_business_trip`/`i_expense`/`i_leave`/`i_outing`/`i_overtime`/`i_seal_application`/`i_workflow`）+ 站内信 wrapper（`i_internal_message`）+ 鉴权 wrapper（`i_authentication`）+ 只读通讯录 wrapper（`i_org_unit`/`i_user`，带 `redact` 脱敏）+ `i_user_profile` + CMS 保留域 wrapper（`app_doc`/`app_error` 及 `category`/`comment`/`file_transfer`/`interaction`/`navigation`/`page`/`post`/`section`/`tag` 等，完整清单见仓内 `protos/app/service/v1`） | HTTP wrapper，引用 oa.service.v1 / internal_message.service.v1 / authentication.service.v1 / identity.service.v1 消息类型 |
 | `internal_message/service/v1/` | `internal_message.service.v1` | 4 档（CMS 原样保留） | 站内信消息类型，core 注册 gRPC |
 | `authentication/service/v1/` | `authentication.service.v1` | 9 档（CMS 原样保留） | 鉴权消息类型，admin/app wrapper 引用 |
 | `identity/service/v1/` | `identity.service.v1` | `user.proto` + `types.proto`（CMS 原样保留） | authentication 的传递闭包依赖 |
 
-**核心分离原则**：core 的 `oa/service/v1/*.proto` 已剥离所有 `google.api.http` annotation，为纯 gRPC。HTTP 路由注解定义在 `admin/service/v1/i_workflow.proto` 与 `app/service/v1/i_workflow.proto` wrapper proto，这两者 `import "oa/service/v1/workflow.proto"` 仅引用消息类型，自身定义带 http annotation 的 service。鉴权同理：`i_authentication.proto` 引用 CMS `authentication.service.v1` 消息类型。
+**核心分离原则**：core 的 `oa/service/v1/*.proto` 已剥离所有 `google.api.http` annotation，为纯 gRPC。HTTP 路由注解定义在 `admin/service/v1/` 与 `app/service/v1/` 下各 `i_*` wrapper proto（如 `i_workflow`、`i_attendance`、`i_business_trip` 等）——这些 wrapper `import` 上表 core 域 proto 仅引用消息类型，自身定义带 http annotation 的 service。鉴权、站内信、通讯录同理：`i_authentication.proto` 引用 `authentication.service.v1`，`i_internal_message*.proto` 引用 `internal_message.service.v1`，`i_org_unit`/`i_user`（app 只读通讯录）引用 `identity.service.v1`。
 
 ---
 
@@ -170,14 +180,24 @@ AuditTask(FORWARD) → Task.assignee ← forwardTo（状态保持 PENDING，idx 
 
 ### 5.4 业务事件挂钩
 
-实例携带 `business_type`/`business_id`；`WorkflowEventRegistry`（进程内 map）在三个终态（APPROVED / REJECTED / WITHDRAWN）同步回调业务模块。回调须校验单据.instance_id 关联（防伪造）且仅处理 PENDING 单据（幂等）。
+实例携带 `business_type`/`business_id`；`WorkflowEventRegistry`（进程内 map）在三个终态（APPROVED / REJECTED / WITHDRAWN）同步回调业务模块。回调须校验单据.instance_id 关联（防伪造）且仅处理 PENDING 单据（幂等）。已注册挂钩的业务类型：
 
-- **请假**：审批通过回调扣减额度（`AddUsedDays`，半日 0.5 步进）；驳回/撤回仅同步状态。
-- **报销**：审批终态仅同步单据状态（额度无关）。
+| business_type | 模块 | 终态回调行为 |
+|---|---|---|
+| `LEAVE` | 请假 | 审批通过扣减额度（`AddUsedDays`，半日 0.5 步进）；驳回/撤回仅同步状态 |
+| `EXPENSE` | 报销 | 审批终态仅同步单据状态（额度无关） |
+| `BUSINESS_TRIP` | 出差 | 同上报销：仅同步状态，无额度副作用 |
+| `OVERTIME` | 加班 | 同上 |
+| `SEAL_APPLICATION` | 用印 | 同上 |
+| `OUTING` | 外出 | 同上 |
+
+> 出差/加班/用印/外出四类同型审批单据，其业务表仅含四态状态枚举 + `instance_id` 关联 + `form_schema`，与报销同构；引擎通过 `ensureWorkflowDefinition` 在租户缺定义时按默认模板（提交给申请人主管 LEADER，会签）自动创建并启用。
 
 ### 5.5 异步通知
 
-`notifyManyAsync` 用 `context.WithoutCancel(ctx)` + 5s 超时 + `recover`，fire-and-forget 调用同进程 `InternalMessageService` 的 `SendMessage`。`context.WithoutCancel` 保留 viewer（SendMessage 从 viewer 推导发送者，防伪造），脱离已返回的 gRPC 请求生命周期。通知落 `internal_message_recipient` 表，并由 `InternalMessagePublisher` SSE 推送给在线客户端。通知失败不回滚状态机。
+`notifyManyAsync` 用 `context.WithoutCancel(ctx)` + 5s 超时 + `recover`，fire-and-forget 调用同进程 `InternalMessageService` 的 `SendMessage`。`context.WithoutCancel` 保留 viewer（SendMessage 从 viewer 推导发送者，防伪造），脱离已返回的 gRPC 请求生命周期。通知落 `internal_message_recipient` 表。
+
+> **SSE 投递的局限**：`InternalMessagePublisher`（SSE 推送）只在 admin-service 的 `internal_message_service.go` 里注册，且仅 admin-service 自身经 HTTP 暴露的 `SendMessage` 路径会触发它（写 recipient 后查收件人的 admin 会话 access token 并 Publish）。core 是 gRPC-only、无 SSE server；工作流通知走的是 core 进程内 `SendMessage`，因此**不会触发任何 SSE 推送**。该限制的接收端影响见 §12。通知失败不回滚状态机。
 
 ---
 
@@ -294,3 +314,7 @@ multipart 三要点（修复记录）：请求头补 `Accept: application/json`�
 - **无事务多步写入**（状态机/建单链）——与既有风险面一致。
 - **请假天数按自然日**（含周末），未做工作日扣减；半天粒度已支持但额度过期/结转无。
 - **转办不校验目标用户存在性**；或签部分驳回停留时无提醒。
+- **工作流通知无 SSE 实时投递，且管理后台通知组件为空桩**。经 §5.5 所述，工作流引擎经 core 进程内 `SendMessage` 落库的通知不会触发 SSE（SSE publisher 只存在于 admin-service 且只对 admin 自身 HTTP `SendMessage` 路径生效）。各端实际表现：
+  - **移动端**：app-service 的 `internal_message_service.go` 无 SSE publisher，也无 `SendMessage`；通知页经 REST `GET /app/v1/internal-message/my-messages` 轮询拉取收件箱。core 落库的工作流通知因此**延迟可见、不丢失**（取决于下次轮询时机），但无实时推送。
+  - **管理后台**：`src/components/NoticeDropdown/useNotice.ts` 为 no-op 桩——`list`/`unreadTotal` 恒空，`fetchList` 恒置空，且其注释误称「OA 后端无 internal_message 收件箱接口」（实为过期描述，OA 保留了该服务）。该桩既不消费 SSE 也不轮询收件箱接口。因此**任何站内信在管理后台通知组件均不显示**——后端 DB 写入与 admin SSE 推送链路虽在，接收端 UI 断开。这条对管理员侧的通知可见性是实质缺口，待修复。
+- **通讯录无 DataScope 授权收敛**：app 只读通讯录 wrapper（`i_org_unit`/`i_user`）与 admin 侧 user/org_unit 端点均按租户隔离暴露，但未做按数据范围（DataScope）的可见性收敛。目录页展示全体租户用户及其部门标注，未做按部门过滤。留后续。

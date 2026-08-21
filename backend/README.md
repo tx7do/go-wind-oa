@@ -68,7 +68,7 @@
 backend/
 ├── api/                            # Protobuf 定义与代码生成巷道
 │   ├── protos/                     # 各业务域 proto 定义
-│   │   ├── oa/service/v1/          # 协同办公域：workflow / attendance / leave / expense / oa_error
+│   │   ├── oa/service/v1/          # 协同办公域：workflow / attendance / leave / expense / business_trip / overtime / seal_application / outing / oa_error
 │   │   ├── admin/service/v1/       # 管理后台 HTTP wrapper proto
 │   │   ├── app/service/v1/         # 移动端 HTTP wrapper proto
 │   │   ├── authentication/         # 认证域
