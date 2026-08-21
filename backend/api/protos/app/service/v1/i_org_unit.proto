@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package app.service.v1;
+
+import "google/api/annotations.proto";
+
+import "pagination/v1/pagination.proto";
+import "identity/service/v1/org_unit.proto";
+
+// 组织单元查询服务（app 边端，移动端通讯录用，只读）
+service OrgUnitService {
+  // 查询组织单元列表（组织树）
+  rpc List (pagination.PagingRequest) returns (identity.service.v1.ListOrgUnitResponse) {
+    option (google.api.http) = {
+      get: "/app/v1/org-units"
+    };
+  }
+
+  // 查询组织单元详情
+  rpc Get (identity.service.v1.GetOrgUnitRequest) returns (identity.service.v1.OrgUnit) {
+    option (google.api.http) = {
+      get: "/app/v1/org-units/{id}"
+    };
+  }
+}

@@ -117,6 +117,8 @@ func NewRestServer(
 	internalMessageService *service.InternalMessageService,
 	fileTransferService *service.FileTransferService,
 	userProfileService *service.UserProfileService,
+	orgUnitService *service.OrgUnitService,
+	userService *service.UserService,
 
 	postService *service.PostService,
 	categoryService *service.CategoryService,
@@ -152,6 +154,8 @@ func NewRestServer(
 	// （同路径的生成版会对 multipart 做 ctx.Bind 报 CODEC 400）。
 	registerFileTransferServiceHandler(srv, fileTransferService)
 	appV1.RegisterUserProfileServiceHTTPServer(srv, userProfileService)
+	appV1.RegisterOrgUnitServiceHTTPServer(srv, orgUnitService)
+	appV1.RegisterUserServiceHTTPServer(srv, userService)
 
 	appV1.RegisterNavigationServiceHTTPServer(srv, navigationService)
 

@@ -20,6 +20,14 @@ service UserService {
     };
   }
 
+  // 按组织单元 ID 列表查询关联用户 ID（公告按部门发布的成员展开）
+  rpc ListUserIDsByOrgUnitIDs (identity.service.v1.ListUserIDsByOrgUnitIDsRequest) returns (identity.service.v1.ListUserIDsResponse) {
+    option (redact.internal_method) = true;
+    option (google.api.http) = {
+      get: "/admin/v1/users:by-org-unit-ids"
+    };
+  }
+
   // 获取用户数据
   rpc Get (identity.service.v1.GetUserRequest) returns (identity.service.v1.User) {
     option (redact.internal_method) = true;

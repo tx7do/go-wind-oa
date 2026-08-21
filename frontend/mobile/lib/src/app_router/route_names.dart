@@ -24,4 +24,5 @@ class RouteNames {
   static const String oaOvertime = 'oa_overtime';
   static const String oaSealApplication = 'oa_seal_application';
   static const String oaOuting = 'oa_outing';
+  static const String oaDirectory = 'oa_directory';
 }

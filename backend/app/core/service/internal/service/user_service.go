@@ -406,6 +406,27 @@ func (s *UserService) Count(ctx context.Context, req *paginationV1.PagingRequest
 	}, nil
 }
 
+// ListUserIDsByOrgUnitIDs 按组织单元 ID 列表查询关联用户 ID。强制排除过期关联
+// （忽略客户端 exclude_expired），用于公告按部门发布的成员展开。
+func (s *UserService) ListUserIDsByOrgUnitIDs(ctx context.Context, req *identityV1.ListUserIDsByOrgUnitIDsRequest) (*identityV1.ListUserIDsResponse, error) {
+	ids, err := s.userRepo.ListUserIDsByOrgUnitIDs(ctx, req.GetOrgUnitIds(), true)
+	if err != nil {
+		s.log.Errorf("ListUserIDsByOrgUnitIDs failed: %s", err.Error())
+		return nil, err
+	}
+	return &identityV1.ListUserIDsResponse{UserIds: ids}, nil
+}
+
+// ListUserIDsByPositionIDs 按职位 ID 列表查询关联用户 ID。强制排除过期关联。
+func (s *UserService) ListUserIDsByPositionIDs(ctx context.Context, req *identityV1.ListUserIDsByPositionIDsRequest) (*identityV1.ListUserIDsResponse, error) {
+	ids, err := s.userRepo.ListUserIDsByPositionIDs(ctx, req.GetPositionIds(), true)
+	if err != nil {
+		s.log.Errorf("ListUserIDsByPositionIDs failed: %s", err.Error())
+		return nil, err
+	}
+	return &identityV1.ListUserIDsResponse{UserIds: ids}, nil
+}
+
 func (s *UserService) Get(ctx context.Context, req *identityV1.GetUserRequest) (*identityV1.User, error) {
 	resp, err := s.userRepo.Get(ctx, req)
 	if err != nil {

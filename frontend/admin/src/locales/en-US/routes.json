@@ -10,6 +10,8 @@
     "businessTrip": "Business Trip Applications",
     "overtime": "Overtime Applications",
     "sealApplication": "Seal Applications",
-    "outing": "Outing Applications"
+    "outing": "Outing Applications",
+    "announcement": "Announcement",
+    "directory": "Directory"
   }
 }

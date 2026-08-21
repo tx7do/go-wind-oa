@@ -11210,6 +11210,10 @@ export interface UserService {
   List(
     request: pagination_PagingRequest,
   ): Promise<identityservicev1_ListUserResponse>;
+  // 按组织单元 ID 列表查询关联用户 ID（公告按部门发布的成员展开）
+  ListUserIDsByOrgUnitIDs(
+    request: identityservicev1_ListUserIDsByOrgUnitIDsRequest,
+  ): Promise<identityservicev1_ListUserIDsResponse>;
   // 获取用户数据
   Get(
     request: identityservicev1_GetUserRequest,
@@ -11355,6 +11359,31 @@ export function createUserServiceClient(
         method: 'List',
       }) as Promise<identityservicev1_ListUserResponse>;
     },
+    ListUserIDsByOrgUnitIDs(request) {
+      const path = `admin/v1/users:by-org-unit-ids`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.orgUnitIds) {
+        request.orgUnitIds.forEach((x) => {
+          queryParams.push(
+            `orgUnitIds=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.excludeExpired) {
+        queryParams.push(
+          `excludeExpired=${encodeURIComponent(request.excludeExpired.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'UserService',
+        method: 'ListUserIDsByOrgUnitIDs',
+      }) as Promise<identityservicev1_ListUserIDsResponse>;
+    },
     Get(request) {
       if (request.id === undefined || request.id === null) {
         throw new Error('missing required field request.id');
@@ -11466,6 +11495,15 @@ export function createUserServiceClient(
 export type identityservicev1_ListUserResponse = {
   items: identityservicev1_User[] | undefined;
   total: number | undefined;
+};
+
+export type identityservicev1_ListUserIDsByOrgUnitIDsRequest = {
+  excludeExpired?: boolean;
+  orgUnitIds: number[] | undefined;
+};
+
+export type identityservicev1_ListUserIDsResponse = {
+  userIds: number[] | undefined;
 };
 
 // 获取用户数据 - 请求

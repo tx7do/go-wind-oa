@@ -46,15 +46,15 @@ type PageServiceHTTPServer interface {
 
 func RegisterPageServiceHTTPServer(s *http.Server, srv PageServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/app/v1/pages", _PageService_List3_HTTP_Handler(srv))
-	r.GET("/app/v1/pages/{id}", _PageService_Get3_HTTP_Handler(srv))
+	r.GET("/app/v1/pages", _PageService_List4_HTTP_Handler(srv))
+	r.GET("/app/v1/pages/{id}", _PageService_Get4_HTTP_Handler(srv))
 	r.POST("/app/v1/pages", _PageService_Create3_HTTP_Handler(srv))
 	r.PUT("/app/v1/pages/{id}", _PageService_Update3_HTTP_Handler(srv))
 	r.DELETE("/app/v1/pages/{id}", _PageService_Delete3_HTTP_Handler(srv))
 	r.GET("/app/v1/pages/{id}/translation", _PageService_GetTranslation1_HTTP_Handler(srv))
 }
 
-func _PageService_List3_HTTP_Handler(srv PageServiceHTTPServer) func(ctx http.Context) error {
+func _PageService_List4_HTTP_Handler(srv PageServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -73,7 +73,7 @@ func _PageService_List3_HTTP_Handler(srv PageServiceHTTPServer) func(ctx http.Co
 	}
 }
 
-func _PageService_Get3_HTTP_Handler(srv PageServiceHTTPServer) func(ctx http.Context) error {
+func _PageService_Get4_HTTP_Handler(srv PageServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetPageRequest
 		if err := ctx.BindQuery(&in); err != nil {

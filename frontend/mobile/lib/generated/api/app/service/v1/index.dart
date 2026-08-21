@@ -8109,6 +8109,587 @@ class SiteServiceV1DeleteNavigationRequest {
   }
 }
 
+/// 组织单元查询服务（app 边端，移动端通讯录用，只读）
+class OrgUnitServiceClient {
+  final ClientTransport _transport;
+
+  OrgUnitServiceClient(this._transport);
+
+  /// 查询组织单元列表（组织树）
+  Future<IdentityServiceV1ListOrgUnitResponse> list(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/org-units';
+    final queryParams = <String>[];
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
+    }
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
+    }
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
+    }
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
+    }
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
+    }
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
+    }
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'OrgUnitService',
+      method: 'List',
+    ), headers: headers);
+    return IdentityServiceV1ListOrgUnitResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 查询组织单元详情
+  Future<IdentityServiceV1OrgUnit> get(IdentityServiceV1GetOrgUnitRequest request, {Map<String, String>? headers}) async {
+    if (request.id == null) {
+      throw ArgumentError('missing required field request.id');
+    }
+    final path = '/app/v1/org-units/${request.id}';
+    final queryParams = <String>[];
+    if (request.viewMask != null) {
+      queryParams.add('viewMask=${Uri.encodeComponent(request.viewMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'OrgUnitService',
+      method: 'Get',
+    ), headers: headers);
+    return IdentityServiceV1OrgUnit.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 获取组织单元列表 - 答复
+class IdentityServiceV1ListOrgUnitResponse {
+  List<IdentityServiceV1OrgUnit>? items;
+  int? total;
+
+  IdentityServiceV1ListOrgUnitResponse({
+    this.items,
+    this.total,
+  });
+
+  factory IdentityServiceV1ListOrgUnitResponse.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1ListOrgUnitResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => IdentityServiceV1OrgUnit.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1ListOrgUnitResponse(items: $items, total: $total)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1ListOrgUnitResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
+
+  IdentityServiceV1ListOrgUnitResponse copyWith({
+    List<IdentityServiceV1OrgUnit>? items,
+    int? total,
+  }) {
+    return IdentityServiceV1ListOrgUnitResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
+  }
+}
+
+/// 组织单元
+class IdentityServiceV1OrgUnit {
+  String? address;
+  Map<String, String>? attributes;
+  List<String>? businessScopes;
+  List<IdentityServiceV1OrgUnit>? children;
+  String? code;
+  int? contactUserId;
+  String? contactUserName;
+  String? country;
+  String? createdAt;
+  int? createdBy;
+  String? deletedAt;
+  int? deletedBy;
+  String? description;
+  String? email;
+  String? endAt;
+  String? externalId;
+  int? id;
+  bool? isLegalEntity;
+  double? latitude;
+  int? leaderId;
+  String? leaderName;
+  int? legalEntityOrgId;
+  double? longitude;
+  String? name;
+  int? parentId;
+  String? path;
+  List<String>? permissionTags;
+  String? phone;
+  String? registrationNumber;
+  String? remark;
+  int? sortOrder;
+  String? startAt;
+  IdentityServiceV1OrgUnit$Status? status;
+  String? taxId;
+  int? tenantId;
+  String? tenantName;
+  String? timezone;
+  IdentityServiceV1OrgUnit$Type? type;
+  String? updatedAt;
+  int? updatedBy;
+
+  IdentityServiceV1OrgUnit({
+    this.address,
+    this.attributes,
+    this.businessScopes,
+    this.children,
+    this.code,
+    this.contactUserId,
+    this.contactUserName,
+    this.country,
+    this.createdAt,
+    this.createdBy,
+    this.deletedAt,
+    this.deletedBy,
+    this.description,
+    this.email,
+    this.endAt,
+    this.externalId,
+    this.id,
+    this.isLegalEntity,
+    this.latitude,
+    this.leaderId,
+    this.leaderName,
+    this.legalEntityOrgId,
+    this.longitude,
+    this.name,
+    this.parentId,
+    this.path,
+    this.permissionTags,
+    this.phone,
+    this.registrationNumber,
+    this.remark,
+    this.sortOrder,
+    this.startAt,
+    this.status,
+    this.taxId,
+    this.tenantId,
+    this.tenantName,
+    this.timezone,
+    this.type,
+    this.updatedAt,
+    this.updatedBy,
+  });
+
+  factory IdentityServiceV1OrgUnit.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1OrgUnit(
+      address: json['address'] as String?,
+      attributes: (json['attributes'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as String)),
+      businessScopes: (json['businessScopes'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      children: (json['children'] as List<dynamic>?)?.map((e) => IdentityServiceV1OrgUnit.fromJson(e as Map<String, dynamic>)).toList(),
+      code: json['code'] as String?,
+      contactUserId: json['contactUserId'] as int?,
+      contactUserName: json['contactUserName'] as String?,
+      country: json['country'] as String?,
+      createdAt: json['createdAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      deletedAt: json['deletedAt'] as String?,
+      deletedBy: json['deletedBy'] as int?,
+      description: json['description'] as String?,
+      email: json['email'] as String?,
+      endAt: json['endAt'] as String?,
+      externalId: json['externalId'] as String?,
+      id: json['id'] as int?,
+      isLegalEntity: json['isLegalEntity'] as bool?,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      leaderId: json['leaderId'] as int?,
+      leaderName: json['leaderName'] as String?,
+      legalEntityOrgId: json['legalEntityOrgId'] as int?,
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      name: json['name'] as String?,
+      parentId: json['parentId'] as int?,
+      path: json['path'] as String?,
+      permissionTags: (json['permissionTags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      phone: json['phone'] as String?,
+      registrationNumber: json['registrationNumber'] as String?,
+      remark: json['remark'] as String?,
+      sortOrder: json['sortOrder'] as int?,
+      startAt: json['startAt'] as String?,
+      status: json['status'] != null ? IdentityServiceV1OrgUnit$Status.fromString(json['status'] as String) : null,
+      taxId: json['taxId'] as String?,
+      tenantId: json['tenantId'] as int?,
+      tenantName: json['tenantName'] as String?,
+      timezone: json['timezone'] as String?,
+      type: json['type'] != null ? IdentityServiceV1OrgUnit$Type.fromString(json['type'] as String) : null,
+      updatedAt: json['updatedAt'] as String?,
+      updatedBy: json['updatedBy'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (address != null) json['address'] = address;
+    if (attributes != null) json['attributes'] = attributes;
+    if (businessScopes != null) json['businessScopes'] = businessScopes;
+    if (children != null) json['children'] = children!.map((e) => e.toJson()).toList();
+    if (code != null) json['code'] = code;
+    if (contactUserId != null) json['contactUserId'] = contactUserId;
+    if (contactUserName != null) json['contactUserName'] = contactUserName;
+    if (country != null) json['country'] = country;
+    if (createdAt != null) json['createdAt'] = createdAt;
+    if (createdBy != null) json['createdBy'] = createdBy;
+    if (deletedAt != null) json['deletedAt'] = deletedAt;
+    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (description != null) json['description'] = description;
+    if (email != null) json['email'] = email;
+    if (endAt != null) json['endAt'] = endAt;
+    if (externalId != null) json['externalId'] = externalId;
+    if (id != null) json['id'] = id;
+    if (isLegalEntity != null) json['isLegalEntity'] = isLegalEntity;
+    if (latitude != null) json['latitude'] = latitude;
+    if (leaderId != null) json['leaderId'] = leaderId;
+    if (leaderName != null) json['leaderName'] = leaderName;
+    if (legalEntityOrgId != null) json['legalEntityOrgId'] = legalEntityOrgId;
+    if (longitude != null) json['longitude'] = longitude;
+    if (name != null) json['name'] = name;
+    if (parentId != null) json['parentId'] = parentId;
+    if (path != null) json['path'] = path;
+    if (permissionTags != null) json['permissionTags'] = permissionTags;
+    if (phone != null) json['phone'] = phone;
+    if (registrationNumber != null) json['registrationNumber'] = registrationNumber;
+    if (remark != null) json['remark'] = remark;
+    if (sortOrder != null) json['sortOrder'] = sortOrder;
+    if (startAt != null) json['startAt'] = startAt;
+    if (status != null) json['status'] = status!.value;
+    if (taxId != null) json['taxId'] = taxId;
+    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantName != null) json['tenantName'] = tenantName;
+    if (timezone != null) json['timezone'] = timezone;
+    if (type != null) json['type'] = type!.value;
+    if (updatedAt != null) json['updatedAt'] = updatedAt;
+    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1OrgUnit(address: $address, attributes: $attributes, businessScopes: $businessScopes, children: $children, code: $code, contactUserId: $contactUserId, contactUserName: $contactUserName, country: $country, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, description: $description, email: $email, endAt: $endAt, externalId: $externalId, id: $id, isLegalEntity: $isLegalEntity, latitude: $latitude, leaderId: $leaderId, leaderName: $leaderName, legalEntityOrgId: $legalEntityOrgId, longitude: $longitude, name: $name, parentId: $parentId, path: $path, permissionTags: $permissionTags, phone: $phone, registrationNumber: $registrationNumber, remark: $remark, sortOrder: $sortOrder, startAt: $startAt, status: $status, taxId: $taxId, tenantId: $tenantId, tenantName: $tenantName, timezone: $timezone, type: $type, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1OrgUnit &&
+      runtimeType == other.runtimeType
+      && address == other.address
+      && attributes == other.attributes
+      && businessScopes == other.businessScopes
+      && children == other.children
+      && code == other.code
+      && contactUserId == other.contactUserId
+      && contactUserName == other.contactUserName
+      && country == other.country
+      && createdAt == other.createdAt
+      && createdBy == other.createdBy
+      && deletedAt == other.deletedAt
+      && deletedBy == other.deletedBy
+      && description == other.description
+      && email == other.email
+      && endAt == other.endAt
+      && externalId == other.externalId
+      && id == other.id
+      && isLegalEntity == other.isLegalEntity
+      && latitude == other.latitude
+      && leaderId == other.leaderId
+      && leaderName == other.leaderName
+      && legalEntityOrgId == other.legalEntityOrgId
+      && longitude == other.longitude
+      && name == other.name
+      && parentId == other.parentId
+      && path == other.path
+      && permissionTags == other.permissionTags
+      && phone == other.phone
+      && registrationNumber == other.registrationNumber
+      && remark == other.remark
+      && sortOrder == other.sortOrder
+      && startAt == other.startAt
+      && status == other.status
+      && taxId == other.taxId
+      && tenantId == other.tenantId
+      && tenantName == other.tenantName
+      && timezone == other.timezone
+      && type == other.type
+      && updatedAt == other.updatedAt
+      && updatedBy == other.updatedBy
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    address,
+    attributes,
+    businessScopes,
+    children,
+    code,
+    contactUserId,
+    contactUserName,
+    country,
+    createdAt,
+    createdBy,
+    deletedAt,
+    deletedBy,
+    description,
+    email,
+    endAt,
+    externalId,
+    id,
+    isLegalEntity,
+    latitude,
+    leaderId,
+    leaderName,
+    legalEntityOrgId,
+    longitude,
+    name,
+    parentId,
+    path,
+    permissionTags,
+    phone,
+    registrationNumber,
+    remark,
+    sortOrder,
+    startAt,
+    status,
+    taxId,
+    tenantId,
+    tenantName,
+    timezone,
+    type,
+    updatedAt,
+    updatedBy,
+  ]);
+
+  IdentityServiceV1OrgUnit copyWith({
+    String? address,
+    Map<String, String>? attributes,
+    List<String>? businessScopes,
+    List<IdentityServiceV1OrgUnit>? children,
+    String? code,
+    int? contactUserId,
+    String? contactUserName,
+    String? country,
+    String? createdAt,
+    int? createdBy,
+    String? deletedAt,
+    int? deletedBy,
+    String? description,
+    String? email,
+    String? endAt,
+    String? externalId,
+    int? id,
+    bool? isLegalEntity,
+    double? latitude,
+    int? leaderId,
+    String? leaderName,
+    int? legalEntityOrgId,
+    double? longitude,
+    String? name,
+    int? parentId,
+    String? path,
+    List<String>? permissionTags,
+    String? phone,
+    String? registrationNumber,
+    String? remark,
+    int? sortOrder,
+    String? startAt,
+    IdentityServiceV1OrgUnit$Status? status,
+    String? taxId,
+    int? tenantId,
+    String? tenantName,
+    String? timezone,
+    IdentityServiceV1OrgUnit$Type? type,
+    String? updatedAt,
+    int? updatedBy,
+  }) {
+    return IdentityServiceV1OrgUnit(
+      address: address ?? this.address,
+      attributes: attributes ?? this.attributes,
+      businessScopes: businessScopes ?? this.businessScopes,
+      children: children ?? this.children,
+      code: code ?? this.code,
+      contactUserId: contactUserId ?? this.contactUserId,
+      contactUserName: contactUserName ?? this.contactUserName,
+      country: country ?? this.country,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
+      description: description ?? this.description,
+      email: email ?? this.email,
+      endAt: endAt ?? this.endAt,
+      externalId: externalId ?? this.externalId,
+      id: id ?? this.id,
+      isLegalEntity: isLegalEntity ?? this.isLegalEntity,
+      latitude: latitude ?? this.latitude,
+      leaderId: leaderId ?? this.leaderId,
+      leaderName: leaderName ?? this.leaderName,
+      legalEntityOrgId: legalEntityOrgId ?? this.legalEntityOrgId,
+      longitude: longitude ?? this.longitude,
+      name: name ?? this.name,
+      parentId: parentId ?? this.parentId,
+      path: path ?? this.path,
+      permissionTags: permissionTags ?? this.permissionTags,
+      phone: phone ?? this.phone,
+      registrationNumber: registrationNumber ?? this.registrationNumber,
+      remark: remark ?? this.remark,
+      sortOrder: sortOrder ?? this.sortOrder,
+      startAt: startAt ?? this.startAt,
+      status: status ?? this.status,
+      taxId: taxId ?? this.taxId,
+      tenantId: tenantId ?? this.tenantId,
+      tenantName: tenantName ?? this.tenantName,
+      timezone: timezone ?? this.timezone,
+      type: type ?? this.type,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+}
+
+/// 组织单元类型
+enum IdentityServiceV1OrgUnit$Type {
+  branch('BRANCH'),
+  committee('COMMITTEE'),
+  company('COMPANY'),
+  department('DEPARTMENT'),
+  division('DIVISION'),
+  other('OTHER'),
+  project('PROJECT'),
+  region('REGION'),
+  subsidiary('SUBSIDIARY'),
+  team('TEAM');
+
+  final String value;
+  const IdentityServiceV1OrgUnit$Type(this.value);
+
+  static IdentityServiceV1OrgUnit$Type fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown IdentityServiceV1OrgUnit\$Type value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 组织单元状态
+enum IdentityServiceV1OrgUnit$Status {
+  off('OFF'),
+  on('ON');
+
+  final String value;
+  const IdentityServiceV1OrgUnit$Status(this.value);
+
+  static IdentityServiceV1OrgUnit$Status fromString(String v) =>
+    values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown IdentityServiceV1OrgUnit\$Status value: ' + v));
+  @override
+  String toString() => value;
+}
+
+/// 获取组织单元数据 - 请求
+class IdentityServiceV1GetOrgUnitRequest {
+  int? id;
+  String? viewMask;
+
+  IdentityServiceV1GetOrgUnitRequest({
+    this.id,
+    this.viewMask,
+  });
+
+  factory IdentityServiceV1GetOrgUnitRequest.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1GetOrgUnitRequest(
+      id: json['id'] as int?,
+      viewMask: json['viewMask'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (id != null) json['id'] = id;
+    if (viewMask != null) json['viewMask'] = viewMask;
+    return json;
+  }
+
+  @override
+  String toString() {
+    return 'IdentityServiceV1GetOrgUnitRequest(id: $id, viewMask: $viewMask)';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1GetOrgUnitRequest &&
+      runtimeType == other.runtimeType
+      && id == other.id
+      && viewMask == other.viewMask
+    ;
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    viewMask,
+  ]);
+
+  IdentityServiceV1GetOrgUnitRequest copyWith({
+    int? id,
+    String? viewMask,
+  }) {
+    return IdentityServiceV1GetOrgUnitRequest(
+      id: id ?? this.id,
+      viewMask: viewMask ?? this.viewMask,
+    );
+  }
+}
+
 /// OA 外出申请参与服务（app 边端，移动端）
 class OutingServiceClient {
   final ClientTransport _transport;
@@ -12743,85 +13324,113 @@ class ContentServiceV1DeleteTagRequest {
   }
 }
 
-/// 用户个人资料服务
-class UserProfileServiceClient {
+/// 通讯录用户查询服务（app 边端，移动端通讯录用，只读，带脱敏）
+class UserServiceClient {
   final ClientTransport _transport;
 
-  UserProfileServiceClient(this._transport);
+  UserServiceClient(this._transport);
 
-  /// 获取用户资料
-  Future<IdentityServiceV1User> getUser(Map<String, dynamic> _request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/me';
-    final result = await _transport.unary(path, 'GET', null, TransportMeta(
-      service: 'UserProfileService',
-      method: 'GetUser',
+  /// 通讯录用户列表（按组织过滤，敏感字段脱敏）
+  Future<IdentityServiceV1ListUserResponse> list(PaginationPagingRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/directory/users';
+    final queryParams = <String>[];
+    if (request.page != null) {
+      queryParams.add('page=${Uri.encodeComponent(request.page!.toString())}');
+    }
+    if (request.pageSize != null) {
+      queryParams.add('pageSize=${Uri.encodeComponent(request.pageSize!.toString())}');
+    }
+    if (request.offset != null) {
+      queryParams.add('offset=${Uri.encodeComponent(request.offset!.toString())}');
+    }
+    if (request.limit != null) {
+      queryParams.add('limit=${Uri.encodeComponent(request.limit!.toString())}');
+    }
+    if (request.token != null) {
+      queryParams.add('token=${Uri.encodeComponent(request.token!.toString())}');
+    }
+    if (request.noPaging != null) {
+      queryParams.add('noPaging=${Uri.encodeComponent(request.noPaging!.toString())}');
+    }
+    if (request.query != null) {
+      queryParams.add('query=${Uri.encodeComponent(request.query!.toString())}');
+    }
+    if (request.filter != null) {
+      queryParams.add('filter=${Uri.encodeComponent(request.filter!.toString())}');
+    }
+    if (request.filterExpr?.type != null) {
+      queryParams.add('filterExpr.type=${Uri.encodeComponent(request.filterExpr!.type!.toString())}');
+    }
+    if (request.orderBy != null) {
+      queryParams.add('orderBy=${Uri.encodeComponent(request.orderBy!.toString())}');
+    }
+    if (request.fieldMask != null) {
+      queryParams.add('fieldMask=${Uri.encodeComponent(request.fieldMask!.toString())}');
+    }
+    var uri = path;
+    if (queryParams.isNotEmpty) {
+      uri += '?${queryParams.join("&")}';
+    }
+    final result = await _transport.unary(uri, 'GET', null, TransportMeta(
+      service: 'UserService',
+      method: 'List',
     ), headers: headers);
-    return IdentityServiceV1User.fromJson(result as Map<String, dynamic>);
+    return IdentityServiceV1ListUserResponse.fromJson(result as Map<String, dynamic>);
+  }
+}
+
+/// 获取用户列表 - 答复
+class IdentityServiceV1ListUserResponse {
+  List<IdentityServiceV1User>? items;
+  int? total;
+
+  IdentityServiceV1ListUserResponse({
+    this.items,
+    this.total,
+  });
+
+  factory IdentityServiceV1ListUserResponse.fromJson(Map<String, dynamic> json) {
+    return IdentityServiceV1ListUserResponse(
+      items: (json['items'] as List<dynamic>?)?.map((e) => IdentityServiceV1User.fromJson(e as Map<String, dynamic>)).toList(),
+      total: json['total'] != null ? int.parse(json['total'].toString()) : null,
+    );
   }
 
-  /// 更新用户资料
-  Future<Map<String, dynamic>> updateUser(IdentityServiceV1UpdateUserRequest request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/me';
-    final body = jsonEncode(request.toJson());
-    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
-      service: 'UserProfileService',
-      method: 'UpdateUser',
-    ), headers: headers);
-    return result as Map<String, dynamic>;
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
+    if (total != null) json['total'] = total.toString();
+    return json;
   }
 
-  /// 修改用户密码
-  Future<Map<String, dynamic>> changePassword(IdentityServiceV1ChangePasswordRequest request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/me/password';
-    final body = jsonEncode(request.toJson());
-    final result = await _transport.unary(path, 'POST', body, TransportMeta(
-      service: 'UserProfileService',
-      method: 'ChangePassword',
-    ), headers: headers);
-    return result as Map<String, dynamic>;
+  @override
+  String toString() {
+    return 'IdentityServiceV1ListUserResponse(items: $items, total: $total)';
   }
 
-  /// 上传头像
-  Future<IdentityServiceV1UploadAvatarResponse> uploadAvatar(IdentityServiceV1UploadAvatarRequest request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/me/avatar';
-    final body = jsonEncode(request.toJson());
-    final result = await _transport.unary(path, 'POST', body, TransportMeta(
-      service: 'UserProfileService',
-      method: 'UploadAvatar',
-    ), headers: headers);
-    return IdentityServiceV1UploadAvatarResponse.fromJson(result as Map<String, dynamic>);
-  }
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is IdentityServiceV1ListUserResponse &&
+      runtimeType == other.runtimeType
+      && items == other.items
+      && total == other.total
+    ;
 
-  /// 删除头像
-  Future<Map<String, dynamic>> deleteAvatar(Map<String, dynamic> _request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/me/avatar';
-    final result = await _transport.unary(path, 'DELETE', null, TransportMeta(
-      service: 'UserProfileService',
-      method: 'DeleteAvatar',
-    ), headers: headers);
-    return result as Map<String, dynamic>;
-  }
+  @override
+  int get hashCode => Object.hashAll([
+    items,
+    total,
+  ]);
 
-  /// 绑定手机号码/邮箱
-  Future<Map<String, dynamic>> bindContact(IdentityServiceV1BindContactRequest request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/me/contact';
-    final body = jsonEncode(request.toJson());
-    final result = await _transport.unary(path, 'POST', body, TransportMeta(
-      service: 'UserProfileService',
-      method: 'BindContact',
-    ), headers: headers);
-    return result as Map<String, dynamic>;
-  }
-
-  /// 验证手机号码/邮箱
-  Future<Map<String, dynamic>> verifyContact(IdentityServiceV1VerifyContactRequest request, {Map<String, String>? headers}) async {
-    final path = '/app/v1/me/contact/verify';
-    final body = jsonEncode(request.toJson());
-    final result = await _transport.unary(path, 'POST', body, TransportMeta(
-      service: 'UserProfileService',
-      method: 'VerifyContact',
-    ), headers: headers);
-    return result as Map<String, dynamic>;
+  IdentityServiceV1ListUserResponse copyWith({
+    List<IdentityServiceV1User>? items,
+    int? total,
+  }) {
+    return IdentityServiceV1ListUserResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+    );
   }
 }
 
@@ -13231,6 +13840,88 @@ enum IdentityServiceV1User$Status {
     values.firstWhere((e) => e.value == v, orElse: () => throw ArgumentError('Unknown IdentityServiceV1User\$Status value: ' + v));
   @override
   String toString() => value;
+}
+
+/// 用户个人资料服务
+class UserProfileServiceClient {
+  final ClientTransport _transport;
+
+  UserProfileServiceClient(this._transport);
+
+  /// 获取用户资料
+  Future<IdentityServiceV1User> getUser(Map<String, dynamic> _request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me';
+    final result = await _transport.unary(path, 'GET', null, TransportMeta(
+      service: 'UserProfileService',
+      method: 'GetUser',
+    ), headers: headers);
+    return IdentityServiceV1User.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 更新用户资料
+  Future<Map<String, dynamic>> updateUser(IdentityServiceV1UpdateUserRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'PUT', body, TransportMeta(
+      service: 'UserProfileService',
+      method: 'UpdateUser',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 修改用户密码
+  Future<Map<String, dynamic>> changePassword(IdentityServiceV1ChangePasswordRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me/password';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'UserProfileService',
+      method: 'ChangePassword',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 上传头像
+  Future<IdentityServiceV1UploadAvatarResponse> uploadAvatar(IdentityServiceV1UploadAvatarRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me/avatar';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'UserProfileService',
+      method: 'UploadAvatar',
+    ), headers: headers);
+    return IdentityServiceV1UploadAvatarResponse.fromJson(result as Map<String, dynamic>);
+  }
+
+  /// 删除头像
+  Future<Map<String, dynamic>> deleteAvatar(Map<String, dynamic> _request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me/avatar';
+    final result = await _transport.unary(path, 'DELETE', null, TransportMeta(
+      service: 'UserProfileService',
+      method: 'DeleteAvatar',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 绑定手机号码/邮箱
+  Future<Map<String, dynamic>> bindContact(IdentityServiceV1BindContactRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me/contact';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'UserProfileService',
+      method: 'BindContact',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
+
+  /// 验证手机号码/邮箱
+  Future<Map<String, dynamic>> verifyContact(IdentityServiceV1VerifyContactRequest request, {Map<String, String>? headers}) async {
+    final path = '/app/v1/me/contact/verify';
+    final body = jsonEncode(request.toJson());
+    final result = await _transport.unary(path, 'POST', body, TransportMeta(
+      service: 'UserProfileService',
+      method: 'VerifyContact',
+    ), headers: headers);
+    return result as Map<String, dynamic>;
+  }
 }
 
 /// 更新用户 - 请求
@@ -14886,6 +15577,7 @@ class ApiClient {
   InternalMessageServiceClient? _internalMessageService;
   LeaveServiceClient? _leaveService;
   NavigationServiceClient? _navigationService;
+  OrgUnitServiceClient? _orgUnitService;
   OutingServiceClient? _outingService;
   OvertimeServiceClient? _overtimeService;
   PageServiceClient? _pageService;
@@ -14894,6 +15586,7 @@ class ApiClient {
   SectionServiceClient? _sectionService;
   TagServiceClient? _tagService;
   UserProfileServiceClient? _userProfileService;
+  UserServiceClient? _userService;
   WorkflowServiceClient? _workflowService;
 
   ApiClient(this._transport);
@@ -14953,6 +15646,11 @@ class ApiClient {
     return _navigationService!;
   }
 
+  OrgUnitServiceClient get orgUnitService {
+    _orgUnitService ??= OrgUnitServiceClient(_transport);
+    return _orgUnitService!;
+  }
+
   OutingServiceClient get outingService {
     _outingService ??= OutingServiceClient(_transport);
     return _outingService!;
@@ -14993,6 +15691,11 @@ class ApiClient {
     return _userProfileService!;
   }
 
+  UserServiceClient get userService {
+    _userService ??= UserServiceClient(_transport);
+    return _userService!;
+  }
+
   WorkflowServiceClient get workflowService {
     _workflowService ??= WorkflowServiceClient(_transport);
     return _workflowService!;
@@ -15011,6 +15714,7 @@ class ApiClient {
     _internalMessageService = null;
     _leaveService = null;
     _navigationService = null;
+    _orgUnitService = null;
     _outingService = null;
     _overtimeService = null;
     _pageService = null;
@@ -15019,6 +15723,7 @@ class ApiClient {
     _sectionService = null;
     _tagService = null;
     _userProfileService = null;
+    _userService = null;
     _workflowService = null;
   }
 }

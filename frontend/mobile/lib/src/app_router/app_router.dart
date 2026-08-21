@@ -21,6 +21,7 @@ import 'package:flutter_app/src/features/oa/pages/business_trip/oa_business_trip
 import 'package:flutter_app/src/features/oa/pages/overtime/oa_overtime_page.dart';
 import 'package:flutter_app/src/features/oa/pages/seal_application/oa_seal_application_page.dart';
 import 'package:flutter_app/src/features/oa/pages/outing/oa_outing_page.dart';
+import 'package:flutter_app/src/features/oa/pages/directory/oa_directory_page.dart';
 
 /// OA 移动端路由。
 ///
@@ -128,6 +129,13 @@ class AppRouter {
         path: constants.AppRoutePath.oaOuting,
         builder: (context, state) {
           return const OaOutingPage();
+        },
+      ),
+      GoRoute(
+        name: RouteNames.oaDirectory,
+        path: constants.AppRoutePath.oaDirectory,
+        builder: (context, state) {
+          return const OaDirectoryPage();
         },
       ),
       // ── 登录（非 Shell） ────────────────────────────

@@ -27,6 +27,7 @@ const OperationUserServiceDelete = "/admin.service.v1.UserService/Delete"
 const OperationUserServiceEditUserPassword = "/admin.service.v1.UserService/EditUserPassword"
 const OperationUserServiceGet = "/admin.service.v1.UserService/Get"
 const OperationUserServiceList = "/admin.service.v1.UserService/List"
+const OperationUserServiceListUserIDsByOrgUnitIDs = "/admin.service.v1.UserService/ListUserIDsByOrgUnitIDs"
 const OperationUserServiceUpdate = "/admin.service.v1.UserService/Update"
 const OperationUserServiceUserExists = "/admin.service.v1.UserService/UserExists"
 
@@ -41,6 +42,8 @@ type UserServiceHTTPServer interface {
 	Get(context.Context, *v11.GetUserRequest) (*v11.User, error)
 	// List 获取用户列表
 	List(context.Context, *v1.PagingRequest) (*v11.ListUserResponse, error)
+	// ListUserIDsByOrgUnitIDs 按组织单元 ID 列表查询关联用户 ID（公告按部门发布的成员展开）
+	ListUserIDsByOrgUnitIDs(context.Context, *v11.ListUserIDsByOrgUnitIDsRequest) (*v11.ListUserIDsResponse, error)
 	// Update 更新用户
 	Update(context.Context, *v11.UpdateUserRequest) (*emptypb.Empty, error)
 	// UserExists 用户是否存在
@@ -50,6 +53,7 @@ type UserServiceHTTPServer interface {
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r := s.Route("/")
 	r.GET("/admin/v1/users", _UserService_List32_HTTP_Handler(srv))
+	r.GET("/admin/v1/users:by-org-unit-ids", _UserService_ListUserIDsByOrgUnitIDs0_HTTP_Handler(srv))
 	r.GET("/admin/v1/users/username/{username}", _UserService_Get33_HTTP_Handler(srv))
 	r.GET("/admin/v1/users/{id}", _UserService_Get34_HTTP_Handler(srv))
 	r.POST("/admin/v1/users", _UserService_Create26_HTTP_Handler(srv))
@@ -75,6 +79,25 @@ func _UserService_List32_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.C
 			return err
 		}
 		reply := out.(*v11.ListUserResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserService_ListUserIDsByOrgUnitIDs0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.ListUserIDsByOrgUnitIDsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceListUserIDsByOrgUnitIDs)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListUserIDsByOrgUnitIDs(ctx, req.(*v11.ListUserIDsByOrgUnitIDsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.ListUserIDsResponse)
 		return ctx.Result(200, reply)
 	}
 }
@@ -269,6 +292,8 @@ type UserServiceHTTPClient interface {
 	Get(ctx context.Context, req *v11.GetUserRequest, opts ...http.CallOption) (rsp *v11.User, err error)
 	// List 获取用户列表
 	List(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListUserResponse, err error)
+	// ListUserIDsByOrgUnitIDs 按组织单元 ID 列表查询关联用户 ID（公告按部门发布的成员展开）
+	ListUserIDsByOrgUnitIDs(ctx context.Context, req *v11.ListUserIDsByOrgUnitIDsRequest, opts ...http.CallOption) (rsp *v11.ListUserIDsResponse, err error)
 	// Update 更新用户
 	Update(ctx context.Context, req *v11.UpdateUserRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// UserExists 用户是否存在
@@ -345,6 +370,20 @@ func (c *UserServiceHTTPClientImpl) List(ctx context.Context, in *v1.PagingReque
 	pattern := "/admin/v1/users"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationUserServiceList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// ListUserIDsByOrgUnitIDs 按组织单元 ID 列表查询关联用户 ID（公告按部门发布的成员展开）
+func (c *UserServiceHTTPClientImpl) ListUserIDsByOrgUnitIDs(ctx context.Context, in *v11.ListUserIDsByOrgUnitIDsRequest, opts ...http.CallOption) (*v11.ListUserIDsResponse, error) {
+	var out v11.ListUserIDsResponse
+	pattern := "/admin/v1/users:by-org-unit-ids"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceListUserIDsByOrgUnitIDs))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

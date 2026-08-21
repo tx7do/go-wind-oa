@@ -69,6 +69,10 @@ func (s *UserService) Count(ctx context.Context, req *paginationV1.PagingRequest
 	return s.userServiceClient.Count(ctx, req)
 }
 
+func (s *UserService) ListUserIDsByOrgUnitIDs(ctx context.Context, req *identityV1.ListUserIDsByOrgUnitIDsRequest) (*identityV1.ListUserIDsResponse, error) {
+	return s.userServiceClient.ListUserIDsByOrgUnitIDs(ctx, req)
+}
+
 func (s *UserService) Get(ctx context.Context, req *identityV1.GetUserRequest) (*identityV1.User, error) {
 	resp, err := s.userServiceClient.Get(ctx, req)
 	if err != nil {

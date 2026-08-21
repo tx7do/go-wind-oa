@@ -138,6 +138,7 @@ class _OaTaskListPageState extends State<OaTaskListPage>
               PopupMenuItem(value: RouteNames.oaOvertime, child: Text('加班申请')),
               PopupMenuItem(value: RouteNames.oaSealApplication, child: Text('用印申请')),
               PopupMenuItem(value: RouteNames.oaOuting, child: Text('外出申请')),
+              PopupMenuItem(value: RouteNames.oaDirectory, child: Text('通讯录')),
               PopupMenuItem(value: RouteNames.oaSubmitApply, child: Text('通用申请')),
             ],
           ),

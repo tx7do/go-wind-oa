@@ -10,6 +10,8 @@
     "businessTrip": "出差申请",
     "overtime": "加班申请",
     "sealApplication": "用印申请",
-    "outing": "外出申请"
+    "outing": "外出申请",
+    "announcement": "公告发布",
+    "directory": "通讯录"
   }
 }

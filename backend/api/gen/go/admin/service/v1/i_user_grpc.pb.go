@@ -22,13 +22,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_List_FullMethodName             = "/admin.service.v1.UserService/List"
-	UserService_Get_FullMethodName              = "/admin.service.v1.UserService/Get"
-	UserService_Create_FullMethodName           = "/admin.service.v1.UserService/Create"
-	UserService_Update_FullMethodName           = "/admin.service.v1.UserService/Update"
-	UserService_Delete_FullMethodName           = "/admin.service.v1.UserService/Delete"
-	UserService_UserExists_FullMethodName       = "/admin.service.v1.UserService/UserExists"
-	UserService_EditUserPassword_FullMethodName = "/admin.service.v1.UserService/EditUserPassword"
+	UserService_List_FullMethodName                    = "/admin.service.v1.UserService/List"
+	UserService_ListUserIDsByOrgUnitIDs_FullMethodName = "/admin.service.v1.UserService/ListUserIDsByOrgUnitIDs"
+	UserService_Get_FullMethodName                     = "/admin.service.v1.UserService/Get"
+	UserService_Create_FullMethodName                  = "/admin.service.v1.UserService/Create"
+	UserService_Update_FullMethodName                  = "/admin.service.v1.UserService/Update"
+	UserService_Delete_FullMethodName                  = "/admin.service.v1.UserService/Delete"
+	UserService_UserExists_FullMethodName              = "/admin.service.v1.UserService/UserExists"
+	UserService_EditUserPassword_FullMethodName        = "/admin.service.v1.UserService/EditUserPassword"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -39,6 +40,8 @@ const (
 type UserServiceClient interface {
 	// 获取用户列表
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListUserResponse, error)
+	// 按组织单元 ID 列表查询关联用户 ID（公告按部门发布的成员展开）
+	ListUserIDsByOrgUnitIDs(ctx context.Context, in *v11.ListUserIDsByOrgUnitIDsRequest, opts ...grpc.CallOption) (*v11.ListUserIDsResponse, error)
 	// 获取用户数据
 	Get(ctx context.Context, in *v11.GetUserRequest, opts ...grpc.CallOption) (*v11.User, error)
 	// 创建用户
@@ -65,6 +68,16 @@ func (c *userServiceClient) List(ctx context.Context, in *v1.PagingRequest, opts
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(v11.ListUserResponse)
 	err := c.cc.Invoke(ctx, UserService_List_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ListUserIDsByOrgUnitIDs(ctx context.Context, in *v11.ListUserIDsByOrgUnitIDsRequest, opts ...grpc.CallOption) (*v11.ListUserIDsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v11.ListUserIDsResponse)
+	err := c.cc.Invoke(ctx, UserService_ListUserIDsByOrgUnitIDs_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -139,6 +152,8 @@ func (c *userServiceClient) EditUserPassword(ctx context.Context, in *v11.EditUs
 type UserServiceServer interface {
 	// 获取用户列表
 	List(context.Context, *v1.PagingRequest) (*v11.ListUserResponse, error)
+	// 按组织单元 ID 列表查询关联用户 ID（公告按部门发布的成员展开）
+	ListUserIDsByOrgUnitIDs(context.Context, *v11.ListUserIDsByOrgUnitIDsRequest) (*v11.ListUserIDsResponse, error)
 	// 获取用户数据
 	Get(context.Context, *v11.GetUserRequest) (*v11.User, error)
 	// 创建用户
@@ -163,6 +178,9 @@ type UnimplementedUserServiceServer struct{}
 
 func (UnimplementedUserServiceServer) List(context.Context, *v1.PagingRequest) (*v11.ListUserResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedUserServiceServer) ListUserIDsByOrgUnitIDs(context.Context, *v11.ListUserIDsByOrgUnitIDsRequest) (*v11.ListUserIDsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListUserIDsByOrgUnitIDs not implemented")
 }
 func (UnimplementedUserServiceServer) Get(context.Context, *v11.GetUserRequest) (*v11.User, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
@@ -217,6 +235,24 @@ func _UserService_List_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).List(ctx, req.(*v1.PagingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ListUserIDsByOrgUnitIDs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v11.ListUserIDsByOrgUnitIDsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListUserIDsByOrgUnitIDs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListUserIDsByOrgUnitIDs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListUserIDsByOrgUnitIDs(ctx, req.(*v11.ListUserIDsByOrgUnitIDsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -339,6 +375,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _UserService_List_Handler,
+		},
+		{
+			MethodName: "ListUserIDsByOrgUnitIDs",
+			Handler:    _UserService_ListUserIDsByOrgUnitIDs_Handler,
 		},
 		{
 			MethodName: "Get",

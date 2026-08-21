@@ -60,6 +60,8 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	roleServiceClient := data.NewRoleServiceClient(context, discovery)
 	userCredentialServiceClient := data.NewUserCredentialServiceClient(context, discovery)
 	userProfileService := service.NewUserProfileService(context, userServiceClient, tenantServiceClient, orgUnitServiceClient, positionServiceClient, roleServiceClient, userCredentialServiceClient)
+	orgUnitService := service.NewOrgUnitService(context, orgUnitServiceClient)
+	userService := service.NewUserService(context, userServiceClient)
 	postServiceClient := data.NewPostServiceClient(context, discovery)
 	postService := service.NewPostService(context, postServiceClient)
 	categoryServiceClient := data.NewCategoryServiceClient(context, discovery)
@@ -76,7 +78,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	sectionService := service.NewSectionService(context, sectionServiceClient)
 	navigationServiceClient := data.NewNavigationServiceClient(context, discovery)
 	navigationService := service.NewNavigationService(context, navigationServiceClient)
-	httpServer := server.NewRestServer(context, v, authenticationService, workflowService, leaveService, expenseService, businessTripService, overtimeService, sealApplicationService, outingService, attendanceService, internalMessageService, fileTransferService, userProfileService, postService, categoryService, commentService, interactionService, tagService, pageService, sectionService, navigationService)
+	httpServer := server.NewRestServer(context, v, authenticationService, workflowService, leaveService, expenseService, businessTripService, overtimeService, sealApplicationService, outingService, attendanceService, internalMessageService, fileTransferService, userProfileService, orgUnitService, userService, postService, categoryService, commentService, interactionService, tagService, pageService, sectionService, navigationService)
 	grpcMiddlewares := server.NewGrpcMiddleware(context)
 	grpcServer, err := server.NewGrpcServer(context, grpcMiddlewares)
 	if err != nil {

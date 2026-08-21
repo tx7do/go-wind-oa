@@ -131,6 +131,26 @@ const oa: RouteRecordRaw[] = [
         },
         component: () => import("@/pages/app/oa/outing/index.vue"),
       },
+      {
+        path: "announcement",
+        name: "OaAnnouncementManagement",
+        meta: {
+          order: 10,
+          icon: "lucide:megaphone",
+          title: "routes.oa.announcement",
+        },
+        component: () => import("@/pages/app/oa/announcement/index.vue"),
+      },
+      {
+        path: "directory",
+        name: "OaDirectoryManagement",
+        meta: {
+          order: 11,
+          icon: "lucide:address-book",
+          title: "routes.oa.directory",
+        },
+        component: () => import("@/pages/app/oa/directory/index.vue"),
+      },
     ],
   },
 ];

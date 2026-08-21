@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package app.service.v1;
+
+import "google/api/annotations.proto";
+
+import "pagination/v1/pagination.proto";
+import "redact/v1/redact.proto";
+import "identity/service/v1/user.proto";
+
+// 通讯录用户查询服务（app 边端，移动端通讯录用，只读，带脱敏）
+service UserService {
+  // 通讯录用户列表（按组织过滤，敏感字段脱敏）
+  rpc List (pagination.PagingRequest) returns (identity.service.v1.ListUserResponse) {
+    option (redact.internal_method) = true;
+    option (google.api.http) = {
+      get: "/app/v1/directory/users"
+    };
+  }
+}

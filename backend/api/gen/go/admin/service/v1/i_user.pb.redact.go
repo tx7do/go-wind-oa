@@ -54,6 +54,15 @@ func (s *redactedUserServiceServer) List(ctx context.Context, in *pagination.Pag
 	return nil, status.Error(codes.PermissionDenied, `Permission Denied. Method: "UserServiceServer.List" has been redacted`)
 }
 
+// ListUserIDsByOrgUnitIDs is the redacted wrapper for the actual UserServiceServer.ListUserIDsByOrgUnitIDs method
+// Unary RPC
+func (s *redactedUserServiceServer) ListUserIDsByOrgUnitIDs(ctx context.Context, in *identitypb.ListUserIDsByOrgUnitIDsRequest) (*identitypb.ListUserIDsResponse, error) {
+	if s.bypass.CheckInternal(ctx) {
+		return s.srv.ListUserIDsByOrgUnitIDs(ctx, in)
+	}
+	return nil, status.Error(codes.PermissionDenied, `Permission Denied. Method: "UserServiceServer.ListUserIDsByOrgUnitIDs" has been redacted`)
+}
+
 // Get is the redacted wrapper for the actual UserServiceServer.Get method
 // Unary RPC
 func (s *redactedUserServiceServer) Get(ctx context.Context, in *identitypb.GetUserRequest) (*identitypb.User, error) {

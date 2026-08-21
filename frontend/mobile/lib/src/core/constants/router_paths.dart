@@ -21,4 +21,5 @@ class AppRoutePath {
   static const oaOvertime = '/oa/overtime';
   static const oaSealApplication = '/oa/seal-application';
   static const oaOuting = '/oa/outing';
+  static const oaDirectory = '/oa/directory';
 }
