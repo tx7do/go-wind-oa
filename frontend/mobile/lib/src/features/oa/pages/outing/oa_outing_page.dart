@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/outing_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
@@ -116,7 +117,10 @@ class _OaOutingPageState extends State<OaOutingPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('外出申请')),
+      appBar: AppBar(
+        leading: const AppBackButton(),
+        title: const Text('外出申请'),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(

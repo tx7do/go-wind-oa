@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_app/generated/l10n.dart';
+import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/workflow_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 
@@ -231,7 +232,10 @@ class _OaSubmitApplyPageState extends State<OaSubmitApplyPage> {
   Widget build(BuildContext context) {
     final loc = S.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(loc.oaSubmitApplyTitle)),
+      appBar: AppBar(
+        leading: const AppBackButton(),
+        title: Text(loc.oaSubmitApplyTitle),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

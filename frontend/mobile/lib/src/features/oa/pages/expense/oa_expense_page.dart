@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/expense_service.dart';
 import 'package:flutter_app/src/features/oa/services/file_upload_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
@@ -137,7 +138,10 @@ class _OaExpensePageState extends State<OaExpensePage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('费用报销')),
+      appBar: AppBar(
+        leading: const AppBackButton(),
+        title: const Text('费用报销'),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(

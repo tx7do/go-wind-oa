@@ -130,7 +130,7 @@ class _OaTaskListPageState extends State<OaTaskListPage>
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) =>
-                GoRouter.of(context).goNamed(value),
+                GoRouter.of(context).pushNamed(value),
             itemBuilder: (ctx) => const [
               PopupMenuItem(value: RouteNames.oaLeave, child: Text('请假申请')),
               PopupMenuItem(value: RouteNames.oaExpense, child: Text('费用报销')),
@@ -153,7 +153,7 @@ class _OaTaskListPageState extends State<OaTaskListPage>
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => GoRouter.of(context).goNamed(RouteNames.oaSubmitApply),
+        onPressed: () => GoRouter.of(context).pushNamed(RouteNames.oaSubmitApply),
         icon: const Icon(Icons.add),
         label: Text(loc.oaTaskListFabApply),
       ),

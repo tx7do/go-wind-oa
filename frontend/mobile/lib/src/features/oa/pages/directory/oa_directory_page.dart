@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/directory_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
@@ -44,7 +45,10 @@ class _OaDirectoryPageState extends State<OaDirectoryPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('通讯录')),
+      appBar: AppBar(
+        leading: const AppBackButton(),
+        title: const Text('通讯录'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
