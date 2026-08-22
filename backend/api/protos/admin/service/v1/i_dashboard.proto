@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "dashboard/service/v1/i_dashboard.proto";
+
+// 后台首页分析概览服务（HTTP BFF，转发 core DashboardService）
+service DashboardService {
+  // 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
+  rpc GetOverview (google.protobuf.Empty) returns (dashboard.service.v1.DashboardOverviewResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/dashboard/overview"
+    };
+  }
+
+  // 获取近 N 天每日登录次数趋势
+  rpc GetLoginTrend (dashboard.service.v1.GetLoginTrendRequest) returns (dashboard.service.v1.LoginTrendResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/dashboard/login-trend"
+    };
+  }
+
+  // 操作审计按 action 分布
+  rpc GetOperationActionDistribution (google.protobuf.Empty) returns (dashboard.service.v1.ActionDistributionResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/dashboard/operation-action-distribution"
+    };
+  }
+
+  // 登录审计按 status 分布
+  rpc GetLoginStatusDistribution (google.protobuf.Empty) returns (dashboard.service.v1.StatusDistributionResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/dashboard/login-status-distribution"
+    };
+  }
+}

@@ -23,6 +23,7 @@ type TenantService struct {
 	log *log.Helper
 
 	tenantRepo          *data.TenantRepo
+	tenantUsageRepo      *data.TenantUsageRepo
 	userRepo            data.UserRepo
 	userCredentialsRepo *data.UserCredentialRepo
 	roleRepo            *data.RoleRepo
@@ -34,6 +35,7 @@ func NewTenantService(
 	userRepo data.UserRepo,
 	userCredentialsRepo *data.UserCredentialRepo,
 	roleRepo *data.RoleRepo,
+	tenantUsageRepo *data.TenantUsageRepo,
 ) *TenantService {
 	return &TenantService{
 		log:                 ctx.NewLoggerHelper("tenant/service/core-service"),
@@ -41,6 +43,7 @@ func NewTenantService(
 		userRepo:            userRepo,
 		userCredentialsRepo: userCredentialsRepo,
 		roleRepo:            roleRepo,
+		tenantUsageRepo:     tenantUsageRepo,
 	}
 }
 
@@ -271,5 +274,24 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 		return nil, err
 	}
 
+	return &emptypb.Empty{}, nil
+}
+
+// GetUsage 查询租户用量与配额
+func (s *TenantService) GetUsage(ctx context.Context, req *identityV1.GetTenantUsageRequest) (*identityV1.TenantUsage, error) {
+	if req == nil || req.GetId() == 0 {
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
+	}
+	return s.tenantUsageRepo.GetUsage(ctx, req.GetId())
+}
+
+// CleanupData 清理租户数据（保留租户记录，状态改为 OFF）
+func (s *TenantService) CleanupData(ctx context.Context, req *identityV1.CleanupTenantDataRequest) (*emptypb.Empty, error) {
+	if req == nil || req.GetId() == 0 {
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
+	}
+	if err := s.tenantUsageRepo.CleanupTenantData(ctx, req.GetId()); err != nil {
+		return nil, err
+	}
 	return &emptypb.Empty{}, nil
 }

@@ -22,15 +22,19 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationTenantServiceCleanupData = "/admin.service.v1.TenantService/CleanupData"
 const OperationTenantServiceCreate = "/admin.service.v1.TenantService/Create"
 const OperationTenantServiceCreateTenantWithAdminUser = "/admin.service.v1.TenantService/CreateTenantWithAdminUser"
 const OperationTenantServiceDelete = "/admin.service.v1.TenantService/Delete"
 const OperationTenantServiceGet = "/admin.service.v1.TenantService/Get"
+const OperationTenantServiceGetUsage = "/admin.service.v1.TenantService/GetUsage"
 const OperationTenantServiceList = "/admin.service.v1.TenantService/List"
 const OperationTenantServiceTenantExists = "/admin.service.v1.TenantService/TenantExists"
 const OperationTenantServiceUpdate = "/admin.service.v1.TenantService/Update"
 
 type TenantServiceHTTPServer interface {
+	// CleanupData 清理租户数据
+	CleanupData(context.Context, *v11.CleanupTenantDataRequest) (*emptypb.Empty, error)
 	// Create 创建租户
 	Create(context.Context, *v11.CreateTenantRequest) (*emptypb.Empty, error)
 	// CreateTenantWithAdminUser 创建租户及管理员用户
@@ -39,6 +43,8 @@ type TenantServiceHTTPServer interface {
 	Delete(context.Context, *v11.DeleteTenantRequest) (*emptypb.Empty, error)
 	// Get 获取租户数据
 	Get(context.Context, *v11.GetTenantRequest) (*v11.Tenant, error)
+	// GetUsage 查询租户用量与配额
+	GetUsage(context.Context, *v11.GetTenantUsageRequest) (*v11.TenantUsage, error)
 	// List 获取租户列表
 	List(context.Context, *v1.PagingRequest) (*v11.ListTenantResponse, error)
 	// TenantExists 租户是否存在
@@ -49,16 +55,18 @@ type TenantServiceHTTPServer interface {
 
 func RegisterTenantServiceHTTPServer(s *http.Server, srv TenantServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/tenants", _TenantService_List20_HTTP_Handler(srv))
-	r.GET("/admin/v1/tenants/{id}", _TenantService_Get21_HTTP_Handler(srv))
-	r.POST("/admin/v1/tenants", _TenantService_Create14_HTTP_Handler(srv))
-	r.PUT("/admin/v1/tenants/{id}", _TenantService_Update14_HTTP_Handler(srv))
-	r.DELETE("/admin/v1/tenants/{id}", _TenantService_Delete14_HTTP_Handler(srv))
+	r.GET("/admin/v1/tenants", _TenantService_List23_HTTP_Handler(srv))
+	r.GET("/admin/v1/tenants/{id}", _TenantService_Get24_HTTP_Handler(srv))
+	r.POST("/admin/v1/tenants", _TenantService_Create17_HTTP_Handler(srv))
+	r.PUT("/admin/v1/tenants/{id}", _TenantService_Update17_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/tenants/{id}", _TenantService_Delete17_HTTP_Handler(srv))
 	r.POST("/admin/v1/tenants:with-admin", _TenantService_CreateTenantWithAdminUser0_HTTP_Handler(srv))
 	r.GET("/admin/v1/tenants:exists", _TenantService_TenantExists0_HTTP_Handler(srv))
+	r.GET("/admin/v1/tenants/{id}/usage", _TenantService_GetUsage0_HTTP_Handler(srv))
+	r.POST("/admin/v1/tenants/{id}/cleanup", _TenantService_CleanupData0_HTTP_Handler(srv))
 }
 
-func _TenantService_List20_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
+func _TenantService_List23_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -77,7 +85,7 @@ func _TenantService_List20_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx ht
 	}
 }
 
-func _TenantService_Get21_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
+func _TenantService_Get24_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetTenantRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -99,7 +107,7 @@ func _TenantService_Get21_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx htt
 	}
 }
 
-func _TenantService_Create14_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
+func _TenantService_Create17_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.CreateTenantRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -121,7 +129,7 @@ func _TenantService_Create14_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx 
 	}
 }
 
-func _TenantService_Update14_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
+func _TenantService_Update17_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.UpdateTenantRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -146,7 +154,7 @@ func _TenantService_Update14_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx 
 	}
 }
 
-func _TenantService_Delete14_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
+func _TenantService_Delete17_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.DeleteTenantRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -209,7 +217,56 @@ func _TenantService_TenantExists0_HTTP_Handler(srv TenantServiceHTTPServer) func
 	}
 }
 
+func _TenantService_GetUsage0_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.GetTenantUsageRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationTenantServiceGetUsage)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetUsage(ctx, req.(*v11.GetTenantUsageRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.TenantUsage)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _TenantService_CleanupData0_HTTP_Handler(srv TenantServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.CleanupTenantDataRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationTenantServiceCleanupData)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CleanupData(ctx, req.(*v11.CleanupTenantDataRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type TenantServiceHTTPClient interface {
+	// CleanupData 清理租户数据
+	CleanupData(ctx context.Context, req *v11.CleanupTenantDataRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// Create 创建租户
 	Create(ctx context.Context, req *v11.CreateTenantRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// CreateTenantWithAdminUser 创建租户及管理员用户
@@ -218,6 +275,8 @@ type TenantServiceHTTPClient interface {
 	Delete(ctx context.Context, req *v11.DeleteTenantRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// Get 获取租户数据
 	Get(ctx context.Context, req *v11.GetTenantRequest, opts ...http.CallOption) (rsp *v11.Tenant, err error)
+	// GetUsage 查询租户用量与配额
+	GetUsage(ctx context.Context, req *v11.GetTenantUsageRequest, opts ...http.CallOption) (rsp *v11.TenantUsage, err error)
 	// List 获取租户列表
 	List(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListTenantResponse, err error)
 	// TenantExists 租户是否存在
@@ -232,6 +291,20 @@ type TenantServiceHTTPClientImpl struct {
 
 func NewTenantServiceHTTPClient(client *http.Client) TenantServiceHTTPClient {
 	return &TenantServiceHTTPClientImpl{client}
+}
+
+// CleanupData 清理租户数据
+func (c *TenantServiceHTTPClientImpl) CleanupData(ctx context.Context, in *v11.CleanupTenantDataRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/tenants/{id}/cleanup"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationTenantServiceCleanupData))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 // Create 创建租户
@@ -282,6 +355,20 @@ func (c *TenantServiceHTTPClientImpl) Get(ctx context.Context, in *v11.GetTenant
 	pattern := "/admin/v1/tenants/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationTenantServiceGet))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetUsage 查询租户用量与配额
+func (c *TenantServiceHTTPClientImpl) GetUsage(ctx context.Context, in *v11.GetTenantUsageRequest, opts ...http.CallOption) (*v11.TenantUsage, error) {
+	var out v11.TenantUsage
+	pattern := "/admin/v1/tenants/{id}/usage"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationTenantServiceGetUsage))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

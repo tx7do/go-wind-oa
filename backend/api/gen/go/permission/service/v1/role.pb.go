@@ -2872,7 +2872,7 @@ const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\a_reason\"\x8e\x02\n" +
 	"\x1dUnassignUsersFromRoleResponse\x12b\n" +
 	"\x10removed_user_ids\x18\x01 \x03(\rB8\xbaG5\x92\x022成功被移除的用户ID列表（可能为空）R\x0eremovedUserIds\x12\x88\x01\n" +
-	"\x12not_found_user_ids\x18\x02 \x03(\rB[\xbaGX\x92\x02U部分失败时返回每个失败项的详细信息（如 DB 锁、权限不足等）R\x0fnotFoundUserIds2\xe2\x0e\n" +
+	"\x12not_found_user_ids\x18\x02 \x03(\rB[\xbaGX\x92\x02U部分失败时返回每个失败项的详细信息（如 DB 锁、权限不足等）R\x0fnotFoundUserIds2\xcf\x11\n" +
 	"\vRoleService\x12L\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a'.permission.service.v1.ListRoleResponse\"\x00\x12N\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1a(.permission.service.v1.CountRoleResponse\"\x00\x12K\n" +
@@ -2881,7 +2881,10 @@ const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\vBatchCreate\x12..permission.service.v1.BatchCreateRolesRequest\x1a/.permission.service.v1.BatchCreateRolesResponse\"\x00\x12L\n" +
 	"\x06Update\x12(.permission.service.v1.UpdateRoleRequest\x1a\x16.google.protobuf.Empty\"\x00\x12L\n" +
 	"\x06Delete\x12(.permission.service.v1.DeleteRoleRequest\x1a\x16.google.protobuf.Empty\"\x00\x12y\n" +
-	"\x1cCreateTenantRoleFromTemplate\x12:.permission.service.v1.CreateTenantRoleFromTemplateRequest\x1a\x1b.permission.service.v1.Role\"\x00\x12x\n" +
+	"\x1cCreateTenantRoleFromTemplate\x12:.permission.service.v1.CreateTenantRoleFromTemplateRequest\x1a\x1b.permission.service.v1.Role\"\x00\x12\x84\x01\n" +
+	"\x15GetRoleCodesByRoleIds\x123.permission.service.v1.GetRoleCodesByRoleIdsRequest\x1a4.permission.service.v1.GetRoleCodesByRoleIdsResponse\"\x00\x12s\n" +
+	"\x13GetRolesByRoleCodes\x121.permission.service.v1.GetRolesByRoleCodesRequest\x1a'.permission.service.v1.ListRoleResponse\"\x00\x12o\n" +
+	"\x11GetRolesByRoleIds\x12/.permission.service.v1.GetRolesByRoleIdsRequest\x1a'.permission.service.v1.ListRoleResponse\"\x00\x12x\n" +
 	"\x11ListPermissionIds\x12/.permission.service.v1.ListPermissionIdsRequest\x1a0.permission.service.v1.ListPermissionIdsResponse\"\x00\x12{\n" +
 	"\x12ListRoleCodesByIds\x120.permission.service.v1.ListRoleCodesByIdsRequest\x1a1.permission.service.v1.ListRoleCodesByIdsResponse\"\x00\x12{\n" +
 	"\x12ListRoleIdsByCodes\x120.permission.service.v1.ListRoleIdsByCodesRequest\x1a1.permission.service.v1.ListRoleIdsByCodesResponse\"\x00\x12p\n" +
@@ -2989,36 +2992,42 @@ var file_permission_service_v1_role_proto_depIdxs = []int32{
 	10, // 29: permission.service.v1.RoleService.Update:input_type -> permission.service.v1.UpdateRoleRequest
 	11, // 30: permission.service.v1.RoleService.Delete:input_type -> permission.service.v1.DeleteRoleRequest
 	25, // 31: permission.service.v1.RoleService.CreateTenantRoleFromTemplate:input_type -> permission.service.v1.CreateTenantRoleFromTemplateRequest
-	23, // 32: permission.service.v1.RoleService.ListPermissionIds:input_type -> permission.service.v1.ListPermissionIdsRequest
-	19, // 33: permission.service.v1.RoleService.ListRoleCodesByIds:input_type -> permission.service.v1.ListRoleCodesByIdsRequest
-	21, // 34: permission.service.v1.RoleService.ListRoleIdsByCodes:input_type -> permission.service.v1.ListRoleIdsByCodesRequest
-	30, // 35: permission.service.v1.RoleService.ListUserRoleIDs:input_type -> permission.service.v1.ListUserRoleIDsRequest
-	32, // 36: permission.service.v1.RoleService.ListUserIDsByRoleIDs:input_type -> permission.service.v1.ListUserIDsByRoleIDsRequest
-	28, // 37: permission.service.v1.RoleService.GetUserRoles:input_type -> permission.service.v1.GetUserRolesRequest
-	26, // 38: permission.service.v1.RoleService.AssignRolesToUser:input_type -> permission.service.v1.AssignRolesToUserRequest
-	34, // 39: permission.service.v1.RoleService.UnassignRolesFromUser:input_type -> permission.service.v1.UnassignRolesFromUserRequest
-	27, // 40: permission.service.v1.RoleService.AssignUsersToRole:input_type -> permission.service.v1.AssignUsersToRoleRequest
-	36, // 41: permission.service.v1.RoleService.UnassignUsersFromRole:input_type -> permission.service.v1.UnassignUsersFromRoleRequest
-	7,  // 42: permission.service.v1.RoleService.List:output_type -> permission.service.v1.ListRoleResponse
-	18, // 43: permission.service.v1.RoleService.Count:output_type -> permission.service.v1.CountRoleResponse
-	4,  // 44: permission.service.v1.RoleService.Get:output_type -> permission.service.v1.Role
-	45, // 45: permission.service.v1.RoleService.Create:output_type -> google.protobuf.Empty
-	13, // 46: permission.service.v1.RoleService.BatchCreate:output_type -> permission.service.v1.BatchCreateRolesResponse
-	45, // 47: permission.service.v1.RoleService.Update:output_type -> google.protobuf.Empty
-	45, // 48: permission.service.v1.RoleService.Delete:output_type -> google.protobuf.Empty
-	4,  // 49: permission.service.v1.RoleService.CreateTenantRoleFromTemplate:output_type -> permission.service.v1.Role
-	24, // 50: permission.service.v1.RoleService.ListPermissionIds:output_type -> permission.service.v1.ListPermissionIdsResponse
-	20, // 51: permission.service.v1.RoleService.ListRoleCodesByIds:output_type -> permission.service.v1.ListRoleCodesByIdsResponse
-	22, // 52: permission.service.v1.RoleService.ListRoleIdsByCodes:output_type -> permission.service.v1.ListRoleIdsByCodesResponse
-	31, // 53: permission.service.v1.RoleService.ListUserRoleIDs:output_type -> permission.service.v1.ListUserRoleIDsResponse
-	33, // 54: permission.service.v1.RoleService.ListUserIDsByRoleIDs:output_type -> permission.service.v1.ListUserIDsResponse
-	29, // 55: permission.service.v1.RoleService.GetUserRoles:output_type -> permission.service.v1.GetUserRolesResponse
-	45, // 56: permission.service.v1.RoleService.AssignRolesToUser:output_type -> google.protobuf.Empty
-	35, // 57: permission.service.v1.RoleService.UnassignRolesFromUser:output_type -> permission.service.v1.UnassignRolesFromUserResponse
-	45, // 58: permission.service.v1.RoleService.AssignUsersToRole:output_type -> google.protobuf.Empty
-	37, // 59: permission.service.v1.RoleService.UnassignUsersFromRole:output_type -> permission.service.v1.UnassignUsersFromRoleResponse
-	42, // [42:60] is the sub-list for method output_type
-	24, // [24:42] is the sub-list for method input_type
+	14, // 32: permission.service.v1.RoleService.GetRoleCodesByRoleIds:input_type -> permission.service.v1.GetRoleCodesByRoleIdsRequest
+	16, // 33: permission.service.v1.RoleService.GetRolesByRoleCodes:input_type -> permission.service.v1.GetRolesByRoleCodesRequest
+	17, // 34: permission.service.v1.RoleService.GetRolesByRoleIds:input_type -> permission.service.v1.GetRolesByRoleIdsRequest
+	23, // 35: permission.service.v1.RoleService.ListPermissionIds:input_type -> permission.service.v1.ListPermissionIdsRequest
+	19, // 36: permission.service.v1.RoleService.ListRoleCodesByIds:input_type -> permission.service.v1.ListRoleCodesByIdsRequest
+	21, // 37: permission.service.v1.RoleService.ListRoleIdsByCodes:input_type -> permission.service.v1.ListRoleIdsByCodesRequest
+	30, // 38: permission.service.v1.RoleService.ListUserRoleIDs:input_type -> permission.service.v1.ListUserRoleIDsRequest
+	32, // 39: permission.service.v1.RoleService.ListUserIDsByRoleIDs:input_type -> permission.service.v1.ListUserIDsByRoleIDsRequest
+	28, // 40: permission.service.v1.RoleService.GetUserRoles:input_type -> permission.service.v1.GetUserRolesRequest
+	26, // 41: permission.service.v1.RoleService.AssignRolesToUser:input_type -> permission.service.v1.AssignRolesToUserRequest
+	34, // 42: permission.service.v1.RoleService.UnassignRolesFromUser:input_type -> permission.service.v1.UnassignRolesFromUserRequest
+	27, // 43: permission.service.v1.RoleService.AssignUsersToRole:input_type -> permission.service.v1.AssignUsersToRoleRequest
+	36, // 44: permission.service.v1.RoleService.UnassignUsersFromRole:input_type -> permission.service.v1.UnassignUsersFromRoleRequest
+	7,  // 45: permission.service.v1.RoleService.List:output_type -> permission.service.v1.ListRoleResponse
+	18, // 46: permission.service.v1.RoleService.Count:output_type -> permission.service.v1.CountRoleResponse
+	4,  // 47: permission.service.v1.RoleService.Get:output_type -> permission.service.v1.Role
+	45, // 48: permission.service.v1.RoleService.Create:output_type -> google.protobuf.Empty
+	13, // 49: permission.service.v1.RoleService.BatchCreate:output_type -> permission.service.v1.BatchCreateRolesResponse
+	45, // 50: permission.service.v1.RoleService.Update:output_type -> google.protobuf.Empty
+	45, // 51: permission.service.v1.RoleService.Delete:output_type -> google.protobuf.Empty
+	4,  // 52: permission.service.v1.RoleService.CreateTenantRoleFromTemplate:output_type -> permission.service.v1.Role
+	15, // 53: permission.service.v1.RoleService.GetRoleCodesByRoleIds:output_type -> permission.service.v1.GetRoleCodesByRoleIdsResponse
+	7,  // 54: permission.service.v1.RoleService.GetRolesByRoleCodes:output_type -> permission.service.v1.ListRoleResponse
+	7,  // 55: permission.service.v1.RoleService.GetRolesByRoleIds:output_type -> permission.service.v1.ListRoleResponse
+	24, // 56: permission.service.v1.RoleService.ListPermissionIds:output_type -> permission.service.v1.ListPermissionIdsResponse
+	20, // 57: permission.service.v1.RoleService.ListRoleCodesByIds:output_type -> permission.service.v1.ListRoleCodesByIdsResponse
+	22, // 58: permission.service.v1.RoleService.ListRoleIdsByCodes:output_type -> permission.service.v1.ListRoleIdsByCodesResponse
+	31, // 59: permission.service.v1.RoleService.ListUserRoleIDs:output_type -> permission.service.v1.ListUserRoleIDsResponse
+	33, // 60: permission.service.v1.RoleService.ListUserIDsByRoleIDs:output_type -> permission.service.v1.ListUserIDsResponse
+	29, // 61: permission.service.v1.RoleService.GetUserRoles:output_type -> permission.service.v1.GetUserRolesResponse
+	45, // 62: permission.service.v1.RoleService.AssignRolesToUser:output_type -> google.protobuf.Empty
+	35, // 63: permission.service.v1.RoleService.UnassignRolesFromUser:output_type -> permission.service.v1.UnassignRolesFromUserResponse
+	45, // 64: permission.service.v1.RoleService.AssignUsersToRole:output_type -> google.protobuf.Empty
+	37, // 65: permission.service.v1.RoleService.UnassignUsersFromRole:output_type -> permission.service.v1.UnassignUsersFromRoleResponse
+	45, // [45:66] is the sub-list for method output_type
+	24, // [24:45] is the sub-list for method input_type
 	24, // [24:24] is the sub-list for extension type_name
 	24, // [24:24] is the sub-list for extension extendee
 	0,  // [0:24] is the sub-list for field type_name

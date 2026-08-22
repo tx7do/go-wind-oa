@@ -241,6 +241,8 @@ func (x *LoginResponse) Redact() {
 	// Safe field: RefreshExpiresIn
 
 	// Safe field: IdToken
+
+	// Safe field: MfaOperationId
 }
 
 // Ensure LogoutRequest implements the Redactor interface at compile time.

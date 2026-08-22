@@ -1320,6 +1320,9 @@ components:
                 id_token:
                     type: string
                     description: ID 令牌，OpenID Connect 扩展中定义的 JWT 格式令牌
+                mfa_operation_id:
+                    type: string
+                    description: MFA 挑战操作标识。非空表示登录需二次验证，此时 access_token 为空。
             description: 用户登录 - 回应
         identity.service.v1.BindContactRequest:
             type: object

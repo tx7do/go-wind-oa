@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package identity.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+import "pagination/v1/pagination.proto";
+import "identity/service/v1/module.proto";
+
+// 套餐模块白名单服务
+service PlanModuleService {
+  // 查询套餐模块列表
+  rpc List (pagination.PagingRequest) returns (ListPlanModuleResponse) {}
+
+  // 统计套餐模块数量
+  rpc Count (pagination.PagingRequest) returns (CountPlanModuleResponse) {}
+
+  // 查询套餐模块详情
+  rpc Get (GetPlanModuleRequest) returns (PlanModule) {}
+
+  // 创建套餐模块
+  rpc Create (CreatePlanModuleRequest) returns (google.protobuf.Empty) {}
+
+  // 更新套餐模块
+  rpc Update (UpdatePlanModuleRequest) returns (google.protobuf.Empty) {}
+
+  // 删除套餐模块
+  rpc Delete (DeletePlanModuleRequest) returns (google.protobuf.Empty) {}
+}
+
+// 套餐模块
+message PlanModule {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {
+      description: "白名单项ID"
+    }
+  ]; // 白名单项ID
+
+  optional uint32 plan_id = 2 [
+    json_name = "planId",
+    (gnostic.openapi.v3.property) = {
+      description: "所属套餐ID"
+    }
+  ]; // 所属套餐ID
+
+  optional Module module = 3 [
+    json_name = "module",
+    (gnostic.openapi.v3.property) = {description: "功能模块"}
+  ]; // 功能模块
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
+}
+
+// 套餐模块列表 - 答复
+message ListPlanModuleResponse {
+  repeated PlanModule items = 1;
+  uint64 total = 2;
+}
+
+// 套餐模块数据 - 请求
+message GetPlanModuleRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建套餐模块 - 请求
+message CreatePlanModuleRequest {
+  PlanModule data = 1;
+}
+
+// 更新套餐模块 -请求
+message UpdatePlanModuleRequest {
+  uint32 id = 1;
+
+  PlanModule data = 2;
+
+  google.protobuf.FieldMask update_mask = 3 [
+    (gnostic.openapi.v3.property) = {
+      description: "要更新的字段列表",
+      example: {yaml : "id,realname,username"}
+    },
+    json_name = "updateMask"
+  ]; // 要更新的字段列表
+
+  optional bool allow_missing = 4 [
+    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"},
+    json_name = "allowMissing"
+  ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+}
+
+// 删除套餐模块 - 请求
+message DeletePlanModuleRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+}
+
+message CountPlanModuleResponse {
+  uint64 count = 1;
+}

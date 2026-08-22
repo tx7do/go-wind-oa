@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+
+import "redis_cache/service/v1/redis_cache_monitor.proto";
+
+// Redis缓存监控管理服务（只读）
+service RedisCacheMonitorService {
+  // 查询Redis缓存监控信息
+  rpc Get (redis_cache.service.v1.GetRedisCacheMonitorRequest) returns (redis_cache.service.v1.RedisCacheMonitorInfo) {
+    option (google.api.http) = {
+      get: "/admin/v1/redis-cache-monitor"
+    };
+  }
+}

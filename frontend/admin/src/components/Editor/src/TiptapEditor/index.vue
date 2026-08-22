@@ -53,7 +53,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="handleLinkCancel">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleLinkOk">{{ $t('common.confirm') }}</el-button>
+          <el-button type="primary" @click="handleLinkOk">{{ $t('common.button.confirm') }}</el-button>
         </div>
       </template>
     </ElDialog>
@@ -100,7 +100,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="handleCodeBlockCancel">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleCodeBlockOk">{{ $t('common.confirm') }}</el-button>
+          <el-button type="primary" @click="handleCodeBlockOk">{{ $t('common.button.confirm') }}</el-button>
         </div>
       </template>
     </ElDialog>
@@ -141,7 +141,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="handleVideoCancel">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleVideoOk">{{ $t('common.confirm') }}</el-button>
+          <el-button type="primary" @click="handleVideoOk">{{ $t('common.button.confirm') }}</el-button>
         </div>
       </template>
     </ElDialog>
@@ -215,7 +215,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="handleIframeCancel">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="handleIframeOk">{{ $t('common.confirm') }}</el-button>
+          <el-button type="primary" @click="handleIframeOk">{{ $t('common.button.confirm') }}</el-button>
         </div>
       </template>
     </ElDialog>

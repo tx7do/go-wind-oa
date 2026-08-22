@@ -12,7 +12,10 @@ import (
 
 	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
 
+	"github.com/tx7do/go-utils/trans"
+
 	"go-wind-oa/pkg/constants"
+	"go-wind-oa/pkg/metadata"
 	appViewer "go-wind-oa/pkg/entgo/viewer"
 )
 
@@ -112,4 +115,72 @@ func (s *MenuService) createDefaultMenus(ctx context.Context) error {
 		}
 	}
 	return nil
+}
+
+// SyncMenus 同步菜单（将前端传入的树形菜单递归插入数据库，先清空后重建）
+func (s *MenuService) SyncMenus(ctx context.Context, req *permissionV1.SyncMenusRequest) (*emptypb.Empty, error) {
+	if req == nil {
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
+	}
+
+	// 获取操作人信息
+	operator, err := metadata.FromServerContext(ctx)
+	if err != nil {
+		return nil, permissionV1.ErrorUnauthorized("operator context missing")
+	}
+
+	// 清空现有菜单数据
+	if err = s.menuRepo.Truncate(ctx); err != nil {
+		return nil, err
+	}
+
+	// 递归插入树形菜单
+	count, err := s.syncMenuTree(ctx, req.Items, nil, uint32(operator.GetUserId()))
+	if err != nil {
+		return nil, err
+	}
+
+	s.log.Infof("sync menus success, total: %d", count)
+
+	return &emptypb.Empty{}, nil
+}
+
+// syncMenuTree 递归插入菜单树：先插入父节点拿到 ID，再设置子节点的 parent_id
+func (s *MenuService) syncMenuTree(ctx context.Context, menus []*permissionV1.Menu, parentId *uint32, operatorId uint32) (int, error) {
+	count := 0
+	for _, m := range menus {
+		if m == nil {
+			continue
+		}
+
+		// 保存子节点引用后清除，避免写入
+		children := m.Children
+		m.Children = nil
+
+		// 清除前端可能传入的 ID，由数据库自增生成
+		m.Id = nil
+		m.ParentId = parentId
+		m.Module = trans.Ptr(constants.ComponentToModule(m.GetComponent()))
+		m.CreatedBy = trans.Ptr(operatorId)
+		m.UpdatedBy = nil
+
+		// 插入当前节点，获取数据库生成的 ID
+		created, err := s.menuRepo.CreateReturn(ctx, &permissionV1.CreateMenuRequest{Data: m})
+		if err != nil {
+			s.log.Errorf("sync menu failed, name: %s, err: %v", m.GetName(), err)
+			return count, err
+		}
+		count++
+
+		// 递归插入子节点
+		if len(children) > 0 {
+			n, err := s.syncMenuTree(ctx, children, created.Id, operatorId)
+			if err != nil {
+				return count, err
+			}
+			count += n
+		}
+	}
+
+	return count, nil
 }

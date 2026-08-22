@@ -48,6 +48,9 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/permissiongroup"
 	"go-wind-oa/app/core/service/internal/data/ent/permissionmenu"
 	"go-wind-oa/app/core/service/internal/data/ent/permissionpolicy"
+	"go-wind-oa/app/core/service/internal/data/ent/plan"
+	"go-wind-oa/app/core/service/internal/data/ent/planmodule"
+	"go-wind-oa/app/core/service/internal/data/ent/planquota"
 	"go-wind-oa/app/core/service/internal/data/ent/policyevaluationlog"
 	"go-wind-oa/app/core/service/internal/data/ent/position"
 	"go-wind-oa/app/core/service/internal/data/ent/role"
@@ -58,6 +61,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/tenant"
 	"go-wind-oa/app/core/service/internal/data/ent/user"
 	"go-wind-oa/app/core/service/internal/data/ent/usercredential"
+	"go-wind-oa/app/core/service/internal/data/ent/usermfafactor"
 	"go-wind-oa/app/core/service/internal/data/ent/userorgunit"
 	"go-wind-oa/app/core/service/internal/data/ent/userposition"
 	"go-wind-oa/app/core/service/internal/data/ent/userrole"
@@ -151,6 +155,12 @@ type Client struct {
 	PermissionMenu *PermissionMenuClient
 	// PermissionPolicy is the client for interacting with the PermissionPolicy builders.
 	PermissionPolicy *PermissionPolicyClient
+	// Plan is the client for interacting with the Plan builders.
+	Plan *PlanClient
+	// PlanModule is the client for interacting with the PlanModule builders.
+	PlanModule *PlanModuleClient
+	// PlanQuota is the client for interacting with the PlanQuota builders.
+	PlanQuota *PlanQuotaClient
 	// PolicyEvaluationLog is the client for interacting with the PolicyEvaluationLog builders.
 	PolicyEvaluationLog *PolicyEvaluationLogClient
 	// Position is the client for interacting with the Position builders.
@@ -171,6 +181,8 @@ type Client struct {
 	User *UserClient
 	// UserCredential is the client for interacting with the UserCredential builders.
 	UserCredential *UserCredentialClient
+	// UserMfaFactor is the client for interacting with the UserMfaFactor builders.
+	UserMfaFactor *UserMfaFactorClient
 	// UserOrgUnit is the client for interacting with the UserOrgUnit builders.
 	UserOrgUnit *UserOrgUnitClient
 	// UserPosition is the client for interacting with the UserPosition builders.
@@ -233,6 +245,9 @@ func (c *Client) init() {
 	c.PermissionGroup = NewPermissionGroupClient(c.config)
 	c.PermissionMenu = NewPermissionMenuClient(c.config)
 	c.PermissionPolicy = NewPermissionPolicyClient(c.config)
+	c.Plan = NewPlanClient(c.config)
+	c.PlanModule = NewPlanModuleClient(c.config)
+	c.PlanQuota = NewPlanQuotaClient(c.config)
 	c.PolicyEvaluationLog = NewPolicyEvaluationLogClient(c.config)
 	c.Position = NewPositionClient(c.config)
 	c.Role = NewRoleClient(c.config)
@@ -243,6 +258,7 @@ func (c *Client) init() {
 	c.Tenant = NewTenantClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserCredential = NewUserCredentialClient(c.config)
+	c.UserMfaFactor = NewUserMfaFactorClient(c.config)
 	c.UserOrgUnit = NewUserOrgUnitClient(c.config)
 	c.UserPosition = NewUserPositionClient(c.config)
 	c.UserRole = NewUserRoleClient(c.config)
@@ -379,6 +395,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PermissionGroup:          NewPermissionGroupClient(cfg),
 		PermissionMenu:           NewPermissionMenuClient(cfg),
 		PermissionPolicy:         NewPermissionPolicyClient(cfg),
+		Plan:                     NewPlanClient(cfg),
+		PlanModule:               NewPlanModuleClient(cfg),
+		PlanQuota:                NewPlanQuotaClient(cfg),
 		PolicyEvaluationLog:      NewPolicyEvaluationLogClient(cfg),
 		Position:                 NewPositionClient(cfg),
 		Role:                     NewRoleClient(cfg),
@@ -389,6 +408,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Tenant:                   NewTenantClient(cfg),
 		User:                     NewUserClient(cfg),
 		UserCredential:           NewUserCredentialClient(cfg),
+		UserMfaFactor:            NewUserMfaFactorClient(cfg),
 		UserOrgUnit:              NewUserOrgUnitClient(cfg),
 		UserPosition:             NewUserPositionClient(cfg),
 		UserRole:                 NewUserRoleClient(cfg),
@@ -452,6 +472,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PermissionGroup:          NewPermissionGroupClient(cfg),
 		PermissionMenu:           NewPermissionMenuClient(cfg),
 		PermissionPolicy:         NewPermissionPolicyClient(cfg),
+		Plan:                     NewPlanClient(cfg),
+		PlanModule:               NewPlanModuleClient(cfg),
+		PlanQuota:                NewPlanQuotaClient(cfg),
 		PolicyEvaluationLog:      NewPolicyEvaluationLogClient(cfg),
 		Position:                 NewPositionClient(cfg),
 		Role:                     NewRoleClient(cfg),
@@ -462,6 +485,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Tenant:                   NewTenantClient(cfg),
 		User:                     NewUserClient(cfg),
 		UserCredential:           NewUserCredentialClient(cfg),
+		UserMfaFactor:            NewUserMfaFactorClient(cfg),
 		UserOrgUnit:              NewUserOrgUnitClient(cfg),
 		UserPosition:             NewUserPositionClient(cfg),
 		UserRole:                 NewUserRoleClient(cfg),
@@ -506,11 +530,11 @@ func (c *Client) Use(hooks ...Hook) {
 		c.LoginPolicy, c.Membership, c.MembershipOrgUnit, c.MembershipPosition,
 		c.MembershipRole, c.Menu, c.OperationAuditLog, c.OrgUnit, c.OutingApplication,
 		c.OvertimeApplication, c.Permission, c.PermissionApi, c.PermissionAuditLog,
-		c.PermissionGroup, c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog,
-		c.Position, c.Role, c.RoleMetadata, c.RolePermission, c.SealApplication,
-		c.Task, c.Tenant, c.User, c.UserCredential, c.UserOrgUnit, c.UserPosition,
-		c.UserRole, c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog,
-		c.WorkflowTask,
+		c.PermissionGroup, c.PermissionMenu, c.PermissionPolicy, c.Plan, c.PlanModule,
+		c.PlanQuota, c.PolicyEvaluationLog, c.Position, c.Role, c.RoleMetadata,
+		c.RolePermission, c.SealApplication, c.Task, c.Tenant, c.User,
+		c.UserCredential, c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
+		c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
 	} {
 		n.Use(hooks...)
 	}
@@ -528,11 +552,11 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.LoginPolicy, c.Membership, c.MembershipOrgUnit, c.MembershipPosition,
 		c.MembershipRole, c.Menu, c.OperationAuditLog, c.OrgUnit, c.OutingApplication,
 		c.OvertimeApplication, c.Permission, c.PermissionApi, c.PermissionAuditLog,
-		c.PermissionGroup, c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog,
-		c.Position, c.Role, c.RoleMetadata, c.RolePermission, c.SealApplication,
-		c.Task, c.Tenant, c.User, c.UserCredential, c.UserOrgUnit, c.UserPosition,
-		c.UserRole, c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog,
-		c.WorkflowTask,
+		c.PermissionGroup, c.PermissionMenu, c.PermissionPolicy, c.Plan, c.PlanModule,
+		c.PlanQuota, c.PolicyEvaluationLog, c.Position, c.Role, c.RoleMetadata,
+		c.RolePermission, c.SealApplication, c.Task, c.Tenant, c.User,
+		c.UserCredential, c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
+		c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -615,6 +639,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PermissionMenu.mutate(ctx, m)
 	case *PermissionPolicyMutation:
 		return c.PermissionPolicy.mutate(ctx, m)
+	case *PlanMutation:
+		return c.Plan.mutate(ctx, m)
+	case *PlanModuleMutation:
+		return c.PlanModule.mutate(ctx, m)
+	case *PlanQuotaMutation:
+		return c.PlanQuota.mutate(ctx, m)
 	case *PolicyEvaluationLogMutation:
 		return c.PolicyEvaluationLog.mutate(ctx, m)
 	case *PositionMutation:
@@ -635,6 +665,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.User.mutate(ctx, m)
 	case *UserCredentialMutation:
 		return c.UserCredential.mutate(ctx, m)
+	case *UserMfaFactorMutation:
+		return c.UserMfaFactor.mutate(ctx, m)
 	case *UserOrgUnitMutation:
 		return c.UserOrgUnit.mutate(ctx, m)
 	case *UserPositionMutation:
@@ -5803,6 +5835,485 @@ func (c *PermissionPolicyClient) mutate(ctx context.Context, m *PermissionPolicy
 	}
 }
 
+// PlanClient is a client for the Plan schema.
+type PlanClient struct {
+	config
+}
+
+// NewPlanClient returns a client for the Plan from the given config.
+func NewPlanClient(c config) *PlanClient {
+	return &PlanClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `plan.Hooks(f(g(h())))`.
+func (c *PlanClient) Use(hooks ...Hook) {
+	c.hooks.Plan = append(c.hooks.Plan, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `plan.Intercept(f(g(h())))`.
+func (c *PlanClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Plan = append(c.inters.Plan, interceptors...)
+}
+
+// Create returns a builder for creating a Plan entity.
+func (c *PlanClient) Create() *PlanCreate {
+	mutation := newPlanMutation(c.config, OpCreate)
+	return &PlanCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Plan entities.
+func (c *PlanClient) CreateBulk(builders ...*PlanCreate) *PlanCreateBulk {
+	return &PlanCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PlanClient) MapCreateBulk(slice any, setFunc func(*PlanCreate, int)) *PlanCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PlanCreateBulk{err: fmt.Errorf("calling to PlanClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PlanCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PlanCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Plan.
+func (c *PlanClient) Update() *PlanUpdate {
+	mutation := newPlanMutation(c.config, OpUpdate)
+	return &PlanUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlanClient) UpdateOne(_m *Plan) *PlanUpdateOne {
+	mutation := newPlanMutation(c.config, OpUpdateOne, withPlan(_m))
+	return &PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlanClient) UpdateOneID(id uint32) *PlanUpdateOne {
+	mutation := newPlanMutation(c.config, OpUpdateOne, withPlanID(id))
+	return &PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Plan.
+func (c *PlanClient) Delete() *PlanDelete {
+	mutation := newPlanMutation(c.config, OpDelete)
+	return &PlanDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PlanClient) DeleteOne(_m *Plan) *PlanDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PlanClient) DeleteOneID(id uint32) *PlanDeleteOne {
+	builder := c.Delete().Where(plan.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlanDeleteOne{builder}
+}
+
+// Query returns a query builder for Plan.
+func (c *PlanClient) Query() *PlanQuery {
+	return &PlanQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePlan},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Plan entity by its id.
+func (c *PlanClient) Get(ctx context.Context, id uint32) (*Plan, error) {
+	return c.Query().Where(plan.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlanClient) GetX(ctx context.Context, id uint32) *Plan {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTenants queries the tenants edge of a Plan.
+func (c *PlanClient) QueryTenants(_m *Plan) *TenantQuery {
+	query := (&TenantClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(tenant.Table, tenant.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.TenantsTable, plan.TenantsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryQuotas queries the quotas edge of a Plan.
+func (c *PlanClient) QueryQuotas(_m *Plan) *PlanQuotaQuery {
+	query := (&PlanQuotaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(planquota.Table, planquota.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.QuotasTable, plan.QuotasColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryModules queries the modules edge of a Plan.
+func (c *PlanClient) QueryModules(_m *Plan) *PlanModuleQuery {
+	query := (&PlanModuleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(planmodule.Table, planmodule.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.ModulesTable, plan.ModulesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlanClient) Hooks() []Hook {
+	return c.hooks.Plan
+}
+
+// Interceptors returns the client interceptors.
+func (c *PlanClient) Interceptors() []Interceptor {
+	return c.inters.Plan
+}
+
+func (c *PlanClient) mutate(ctx context.Context, m *PlanMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlanCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlanUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlanDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Plan mutation op: %q", m.Op())
+	}
+}
+
+// PlanModuleClient is a client for the PlanModule schema.
+type PlanModuleClient struct {
+	config
+}
+
+// NewPlanModuleClient returns a client for the PlanModule from the given config.
+func NewPlanModuleClient(c config) *PlanModuleClient {
+	return &PlanModuleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `planmodule.Hooks(f(g(h())))`.
+func (c *PlanModuleClient) Use(hooks ...Hook) {
+	c.hooks.PlanModule = append(c.hooks.PlanModule, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `planmodule.Intercept(f(g(h())))`.
+func (c *PlanModuleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PlanModule = append(c.inters.PlanModule, interceptors...)
+}
+
+// Create returns a builder for creating a PlanModule entity.
+func (c *PlanModuleClient) Create() *PlanModuleCreate {
+	mutation := newPlanModuleMutation(c.config, OpCreate)
+	return &PlanModuleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PlanModule entities.
+func (c *PlanModuleClient) CreateBulk(builders ...*PlanModuleCreate) *PlanModuleCreateBulk {
+	return &PlanModuleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PlanModuleClient) MapCreateBulk(slice any, setFunc func(*PlanModuleCreate, int)) *PlanModuleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PlanModuleCreateBulk{err: fmt.Errorf("calling to PlanModuleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PlanModuleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PlanModuleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PlanModule.
+func (c *PlanModuleClient) Update() *PlanModuleUpdate {
+	mutation := newPlanModuleMutation(c.config, OpUpdate)
+	return &PlanModuleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlanModuleClient) UpdateOne(_m *PlanModule) *PlanModuleUpdateOne {
+	mutation := newPlanModuleMutation(c.config, OpUpdateOne, withPlanModule(_m))
+	return &PlanModuleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlanModuleClient) UpdateOneID(id uint32) *PlanModuleUpdateOne {
+	mutation := newPlanModuleMutation(c.config, OpUpdateOne, withPlanModuleID(id))
+	return &PlanModuleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PlanModule.
+func (c *PlanModuleClient) Delete() *PlanModuleDelete {
+	mutation := newPlanModuleMutation(c.config, OpDelete)
+	return &PlanModuleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PlanModuleClient) DeleteOne(_m *PlanModule) *PlanModuleDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PlanModuleClient) DeleteOneID(id uint32) *PlanModuleDeleteOne {
+	builder := c.Delete().Where(planmodule.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlanModuleDeleteOne{builder}
+}
+
+// Query returns a query builder for PlanModule.
+func (c *PlanModuleClient) Query() *PlanModuleQuery {
+	return &PlanModuleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePlanModule},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PlanModule entity by its id.
+func (c *PlanModuleClient) Get(ctx context.Context, id uint32) (*PlanModule, error) {
+	return c.Query().Where(planmodule.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlanModuleClient) GetX(ctx context.Context, id uint32) *PlanModule {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPlan queries the plan edge of a PlanModule.
+func (c *PlanModuleClient) QueryPlan(_m *PlanModule) *PlanQuery {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(planmodule.Table, planmodule.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, planmodule.PlanTable, planmodule.PlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlanModuleClient) Hooks() []Hook {
+	return c.hooks.PlanModule
+}
+
+// Interceptors returns the client interceptors.
+func (c *PlanModuleClient) Interceptors() []Interceptor {
+	return c.inters.PlanModule
+}
+
+func (c *PlanModuleClient) mutate(ctx context.Context, m *PlanModuleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlanModuleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlanModuleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlanModuleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlanModuleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PlanModule mutation op: %q", m.Op())
+	}
+}
+
+// PlanQuotaClient is a client for the PlanQuota schema.
+type PlanQuotaClient struct {
+	config
+}
+
+// NewPlanQuotaClient returns a client for the PlanQuota from the given config.
+func NewPlanQuotaClient(c config) *PlanQuotaClient {
+	return &PlanQuotaClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `planquota.Hooks(f(g(h())))`.
+func (c *PlanQuotaClient) Use(hooks ...Hook) {
+	c.hooks.PlanQuota = append(c.hooks.PlanQuota, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `planquota.Intercept(f(g(h())))`.
+func (c *PlanQuotaClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PlanQuota = append(c.inters.PlanQuota, interceptors...)
+}
+
+// Create returns a builder for creating a PlanQuota entity.
+func (c *PlanQuotaClient) Create() *PlanQuotaCreate {
+	mutation := newPlanQuotaMutation(c.config, OpCreate)
+	return &PlanQuotaCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PlanQuota entities.
+func (c *PlanQuotaClient) CreateBulk(builders ...*PlanQuotaCreate) *PlanQuotaCreateBulk {
+	return &PlanQuotaCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PlanQuotaClient) MapCreateBulk(slice any, setFunc func(*PlanQuotaCreate, int)) *PlanQuotaCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PlanQuotaCreateBulk{err: fmt.Errorf("calling to PlanQuotaClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PlanQuotaCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PlanQuotaCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PlanQuota.
+func (c *PlanQuotaClient) Update() *PlanQuotaUpdate {
+	mutation := newPlanQuotaMutation(c.config, OpUpdate)
+	return &PlanQuotaUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlanQuotaClient) UpdateOne(_m *PlanQuota) *PlanQuotaUpdateOne {
+	mutation := newPlanQuotaMutation(c.config, OpUpdateOne, withPlanQuota(_m))
+	return &PlanQuotaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlanQuotaClient) UpdateOneID(id uint32) *PlanQuotaUpdateOne {
+	mutation := newPlanQuotaMutation(c.config, OpUpdateOne, withPlanQuotaID(id))
+	return &PlanQuotaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PlanQuota.
+func (c *PlanQuotaClient) Delete() *PlanQuotaDelete {
+	mutation := newPlanQuotaMutation(c.config, OpDelete)
+	return &PlanQuotaDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PlanQuotaClient) DeleteOne(_m *PlanQuota) *PlanQuotaDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PlanQuotaClient) DeleteOneID(id uint32) *PlanQuotaDeleteOne {
+	builder := c.Delete().Where(planquota.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlanQuotaDeleteOne{builder}
+}
+
+// Query returns a query builder for PlanQuota.
+func (c *PlanQuotaClient) Query() *PlanQuotaQuery {
+	return &PlanQuotaQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePlanQuota},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PlanQuota entity by its id.
+func (c *PlanQuotaClient) Get(ctx context.Context, id uint32) (*PlanQuota, error) {
+	return c.Query().Where(planquota.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlanQuotaClient) GetX(ctx context.Context, id uint32) *PlanQuota {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPlan queries the plan edge of a PlanQuota.
+func (c *PlanQuotaClient) QueryPlan(_m *PlanQuota) *PlanQuery {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(planquota.Table, planquota.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, planquota.PlanTable, planquota.PlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlanQuotaClient) Hooks() []Hook {
+	return c.hooks.PlanQuota
+}
+
+// Interceptors returns the client interceptors.
+func (c *PlanQuotaClient) Interceptors() []Interceptor {
+	return c.inters.PlanQuota
+}
+
+func (c *PlanQuotaClient) mutate(ctx context.Context, m *PlanQuotaMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlanQuotaCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlanQuotaUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlanQuotaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlanQuotaDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PlanQuota mutation op: %q", m.Op())
+	}
+}
+
 // PolicyEvaluationLogClient is a client for the PolicyEvaluationLog schema.
 type PolicyEvaluationLogClient struct {
 	config
@@ -6849,6 +7360,22 @@ func (c *TenantClient) GetX(ctx context.Context, id uint32) *Tenant {
 	return obj
 }
 
+// QueryPlan queries the plan edge of a Tenant.
+func (c *TenantClient) QueryPlan(_m *Tenant) *PlanQuery {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tenant.Table, tenant.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tenant.PlanTable, tenant.PlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TenantClient) Hooks() []Hook {
 	return c.hooks.Tenant
@@ -7139,6 +7666,140 @@ func (c *UserCredentialClient) mutate(ctx context.Context, m *UserCredentialMuta
 		return (&UserCredentialDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown UserCredential mutation op: %q", m.Op())
+	}
+}
+
+// UserMfaFactorClient is a client for the UserMfaFactor schema.
+type UserMfaFactorClient struct {
+	config
+}
+
+// NewUserMfaFactorClient returns a client for the UserMfaFactor from the given config.
+func NewUserMfaFactorClient(c config) *UserMfaFactorClient {
+	return &UserMfaFactorClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `usermfafactor.Hooks(f(g(h())))`.
+func (c *UserMfaFactorClient) Use(hooks ...Hook) {
+	c.hooks.UserMfaFactor = append(c.hooks.UserMfaFactor, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `usermfafactor.Intercept(f(g(h())))`.
+func (c *UserMfaFactorClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserMfaFactor = append(c.inters.UserMfaFactor, interceptors...)
+}
+
+// Create returns a builder for creating a UserMfaFactor entity.
+func (c *UserMfaFactorClient) Create() *UserMfaFactorCreate {
+	mutation := newUserMfaFactorMutation(c.config, OpCreate)
+	return &UserMfaFactorCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserMfaFactor entities.
+func (c *UserMfaFactorClient) CreateBulk(builders ...*UserMfaFactorCreate) *UserMfaFactorCreateBulk {
+	return &UserMfaFactorCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserMfaFactorClient) MapCreateBulk(slice any, setFunc func(*UserMfaFactorCreate, int)) *UserMfaFactorCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserMfaFactorCreateBulk{err: fmt.Errorf("calling to UserMfaFactorClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserMfaFactorCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserMfaFactorCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserMfaFactor.
+func (c *UserMfaFactorClient) Update() *UserMfaFactorUpdate {
+	mutation := newUserMfaFactorMutation(c.config, OpUpdate)
+	return &UserMfaFactorUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserMfaFactorClient) UpdateOne(_m *UserMfaFactor) *UserMfaFactorUpdateOne {
+	mutation := newUserMfaFactorMutation(c.config, OpUpdateOne, withUserMfaFactor(_m))
+	return &UserMfaFactorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserMfaFactorClient) UpdateOneID(id uint32) *UserMfaFactorUpdateOne {
+	mutation := newUserMfaFactorMutation(c.config, OpUpdateOne, withUserMfaFactorID(id))
+	return &UserMfaFactorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserMfaFactor.
+func (c *UserMfaFactorClient) Delete() *UserMfaFactorDelete {
+	mutation := newUserMfaFactorMutation(c.config, OpDelete)
+	return &UserMfaFactorDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserMfaFactorClient) DeleteOne(_m *UserMfaFactor) *UserMfaFactorDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserMfaFactorClient) DeleteOneID(id uint32) *UserMfaFactorDeleteOne {
+	builder := c.Delete().Where(usermfafactor.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserMfaFactorDeleteOne{builder}
+}
+
+// Query returns a query builder for UserMfaFactor.
+func (c *UserMfaFactorClient) Query() *UserMfaFactorQuery {
+	return &UserMfaFactorQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserMfaFactor},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserMfaFactor entity by its id.
+func (c *UserMfaFactorClient) Get(ctx context.Context, id uint32) (*UserMfaFactor, error) {
+	return c.Query().Where(usermfafactor.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserMfaFactorClient) GetX(ctx context.Context, id uint32) *UserMfaFactor {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *UserMfaFactorClient) Hooks() []Hook {
+	hooks := c.hooks.UserMfaFactor
+	return append(hooks[:len(hooks):len(hooks)], usermfafactor.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserMfaFactorClient) Interceptors() []Interceptor {
+	return c.inters.UserMfaFactor
+}
+
+func (c *UserMfaFactorClient) mutate(ctx context.Context, m *UserMfaFactorMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserMfaFactorCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserMfaFactorUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserMfaFactorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserMfaFactorDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserMfaFactor mutation op: %q", m.Op())
 	}
 }
 
@@ -8186,10 +8847,11 @@ type (
 		LoginAuditLog, LoginPolicy, Membership, MembershipOrgUnit, MembershipPosition,
 		MembershipRole, Menu, OperationAuditLog, OrgUnit, OutingApplication,
 		OvertimeApplication, Permission, PermissionApi, PermissionAuditLog,
-		PermissionGroup, PermissionMenu, PermissionPolicy, PolicyEvaluationLog,
-		Position, Role, RoleMetadata, RolePermission, SealApplication, Task, Tenant,
-		User, UserCredential, UserOrgUnit, UserPosition, UserRole, WorkflowDefinition,
-		WorkflowInstance, WorkflowLog, WorkflowTask []ent.Hook
+		PermissionGroup, PermissionMenu, PermissionPolicy, Plan, PlanModule, PlanQuota,
+		PolicyEvaluationLog, Position, Role, RoleMetadata, RolePermission,
+		SealApplication, Task, Tenant, User, UserCredential, UserMfaFactor,
+		UserOrgUnit, UserPosition, UserRole, WorkflowDefinition, WorkflowInstance,
+		WorkflowLog, WorkflowTask []ent.Hook
 	}
 	inters struct {
 		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, BusinessTripApplication,
@@ -8199,9 +8861,10 @@ type (
 		LoginAuditLog, LoginPolicy, Membership, MembershipOrgUnit, MembershipPosition,
 		MembershipRole, Menu, OperationAuditLog, OrgUnit, OutingApplication,
 		OvertimeApplication, Permission, PermissionApi, PermissionAuditLog,
-		PermissionGroup, PermissionMenu, PermissionPolicy, PolicyEvaluationLog,
-		Position, Role, RoleMetadata, RolePermission, SealApplication, Task, Tenant,
-		User, UserCredential, UserOrgUnit, UserPosition, UserRole, WorkflowDefinition,
-		WorkflowInstance, WorkflowLog, WorkflowTask []ent.Interceptor
+		PermissionGroup, PermissionMenu, PermissionPolicy, Plan, PlanModule, PlanQuota,
+		PolicyEvaluationLog, Position, Role, RoleMetadata, RolePermission,
+		SealApplication, Task, Tenant, User, UserCredential, UserMfaFactor,
+		UserOrgUnit, UserPosition, UserRole, WorkflowDefinition, WorkflowInstance,
+		WorkflowLog, WorkflowTask []ent.Interceptor
 	}
 )

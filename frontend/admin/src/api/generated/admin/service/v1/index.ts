@@ -1219,6 +1219,9 @@ export interface AuthenticationService {
   Logout(
     request: wellKnownEmpty,
   ): Promise<wellKnownEmpty>;
+  RegisterUser(
+    request: authenticationservicev1_RegisterUserRequest,
+  ): Promise<authenticationservicev1_RegisterUserResponse>;
   // 刷新认证令牌
   RefreshToken(
     request: authenticationservicev1_LoginRequest,
@@ -1252,6 +1255,14 @@ export function createAuthenticationServiceClient(
         service: 'AuthenticationService',
         method: 'Logout',
       }) as Promise<wellKnownEmpty>;
+    },
+    RegisterUser(request) {
+      const path = `admin/v1/register`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'AuthenticationService',
+        method: 'RegisterUser',
+      }) as Promise<authenticationservicev1_RegisterUserResponse>;
     },
     RefreshToken(request) {
       const path = `admin/v1/refresh-token`;
@@ -1317,6 +1328,10 @@ export type authenticationservicev1_LoginResponse = {
   access_token: string | undefined;
   expires_in: number | undefined;
   id_token?: string;
+  // MFA 挑战操作标识：当用户绑定了 MFA 因子且密码校验通过时，服务端不签发 access_token，
+  // 而是返回此 operation_id。前端据此跳转 MFA 挑战页，提交 TOTP 验证码到 MFAService.VerifyMFAChallenge。
+  // 该字段非空时 access_token 必为空字符串；验证通过后由 VerifyMFAChallenge 返回真 token。
+  mfa_operation_id?: string;
   refresh_expires_in?: number;
   refresh_token?: string;
   scope?: string;
@@ -1327,6 +1342,18 @@ export type authenticationservicev1_LoginResponse = {
 export type authenticationservicev1_TokenType =
   | 'bearer'
   | 'mac';
+export type authenticationservicev1_RegisterUserRequest = {
+  client_type?: authenticationservicev1_ClientType;
+  email?: string;
+  password: string | undefined;
+  tenantCode: string | undefined;
+  username: string | undefined;
+};
+
+export type authenticationservicev1_RegisterUserResponse = {
+  userId: number | undefined;
+};
+
 export type authenticationservicev1_GenerateCaptchaResponse = {
   captchaId: string | undefined;
   imageBase64: string | undefined;
@@ -1448,6 +1475,114 @@ export type oaservicev1_BusinessTripApplication = {
 // 查询出差申请详情 - 请求
 export type oaservicev1_GetBusinessTripApplicationRequest = {
   id: number | undefined;
+};
+
+// 后台首页分析概览服务（HTTP BFF，转发 core DashboardService）
+export interface DashboardService {
+  // 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
+  GetOverview(
+    request: wellKnownEmpty,
+  ): Promise<dashboardservicev1_DashboardOverviewResponse>;
+  // 获取近 N 天每日登录次数趋势
+  GetLoginTrend(
+    request: dashboardservicev1_GetLoginTrendRequest,
+  ): Promise<dashboardservicev1_LoginTrendResponse>;
+  // 操作审计按 action 分布
+  GetOperationActionDistribution(
+    request: wellKnownEmpty,
+  ): Promise<dashboardservicev1_ActionDistributionResponse>;
+  // 登录审计按 status 分布
+  GetLoginStatusDistribution(
+    request: wellKnownEmpty,
+  ): Promise<dashboardservicev1_StatusDistributionResponse>;
+}
+
+export function createDashboardServiceClient(
+  transport: ClientTransport,
+): DashboardService {
+  return {
+    GetOverview(_request) {
+      const path = `admin/v1/dashboard/overview`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'DashboardService',
+        method: 'GetOverview',
+      }) as Promise<dashboardservicev1_DashboardOverviewResponse>;
+    },
+    GetLoginTrend(request) {
+      const path = `admin/v1/dashboard/login-trend`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.days) {
+        queryParams.push(
+          `days=${encodeURIComponent(request.days.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'DashboardService',
+        method: 'GetLoginTrend',
+      }) as Promise<dashboardservicev1_LoginTrendResponse>;
+    },
+    GetOperationActionDistribution(_request) {
+      const path = `admin/v1/dashboard/operation-action-distribution`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'DashboardService',
+        method: 'GetOperationActionDistribution',
+      }) as Promise<dashboardservicev1_ActionDistributionResponse>;
+    },
+    GetLoginStatusDistribution(_request) {
+      const path = `admin/v1/dashboard/login-status-distribution`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'DashboardService',
+        method: 'GetLoginStatusDistribution',
+      }) as Promise<dashboardservicev1_StatusDistributionResponse>;
+    },
+  };
+}
+// 概览统计卡片
+export type dashboardservicev1_DashboardOverviewResponse = {
+  roleCount?: number;
+  todayLoginCount?: number;
+  todayOperationCount?: number;
+  userCount?: number;
+};
+
+// 登录趋势查询参数
+export type dashboardservicev1_GetLoginTrendRequest = {
+  days?: number;
+};
+
+// 登录趋势响应
+export type dashboardservicev1_LoginTrendResponse = {
+  points: dashboardservicev1_TrendPoint[] | undefined;
+};
+
+// 单日趋势点
+export type dashboardservicev1_TrendPoint = {
+  count?: number;
+  date?: string;
+};
+
+// 操作审计 action 分布响应
+export type dashboardservicev1_ActionDistributionResponse = {
+  items: dashboardservicev1_DistributionItem[] | undefined;
+};
+
+// 通用分布项
+export type dashboardservicev1_DistributionItem = {
+  count?: number;
+  label?: string;
+};
+
+// 登录审计 status 分布响应
+export type dashboardservicev1_StatusDistributionResponse = {
+  items: dashboardservicev1_DistributionItem[] | undefined;
 };
 
 // 数据访问审计日志管理服务
@@ -4616,6 +4751,10 @@ export interface MenuService {
   Delete(
     request: permissionservicev1_DeleteMenuRequest,
   ): Promise<wellKnownEmpty>;
+  // 同步菜单
+  SyncMenus(
+    request: permissionservicev1_SyncMenusRequest,
+  ): Promise<wellKnownEmpty>;
 }
 
 export function createMenuServiceClient(
@@ -4798,6 +4937,14 @@ export function createMenuServiceClient(
         method: 'Delete',
       }) as Promise<wellKnownEmpty>;
     },
+    SyncMenus(request) {
+      const path = `admin/v1/menus/sync`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'MenuService',
+        method: 'SyncMenus',
+      }) as Promise<wellKnownEmpty>;
+    },
   };
 }
 // 查询菜单列表 - 回应
@@ -4827,6 +4974,9 @@ export type permissionservicev1_Menu = {
   meta?: permissionservicev1_MenuMeta;
   //
   // Behaviors: OPTIONAL
+  module?: identityservicev1_Module;
+  //
+  // Behaviors: OPTIONAL
   name?: string;
   parentId?: number;
   //
@@ -4852,6 +5002,19 @@ export type permissionservicev1_Menu_Type =
   | 'EMBEDDED'
   | 'LINK'
   | 'MENU';
+// 业务功能模块
+export type identityservicev1_Module =
+  | 'DASHBOARD'
+  | 'DICT'
+  | 'FILE'
+  | 'INTERNAL_MESSAGE'
+  | 'LOG'
+  | 'MODULE_UNSPECIFIED'
+  | 'OPM'
+  | 'PERMISSION'
+  | 'SYSTEM'
+  | 'TASK'
+  | 'TENANT';
 // 查询菜单详情 - 请求
 export type permissionservicev1_GetMenuRequest = {
   id?: number;
@@ -4875,6 +5038,272 @@ export type permissionservicev1_UpdateMenuRequest = {
 export type permissionservicev1_DeleteMenuRequest = {
   id?: number;
   operatorId?: number;
+};
+
+export type permissionservicev1_SyncMenusRequest = {
+  items: permissionservicev1_Menu[] | undefined;
+};
+
+// MFA（多因素认证）服务 HTTP 桥接。
+// 管理侧 RPC（GetMFAStatus/ListEnrolledMethods/StartEnrollMethod/ConfirmEnrollMethod/
+// DisableMFA/RevokeMFADevice）需登录态，走正常 auth+authz 中间件，不加 security:{}。
+// 登录挑战侧 RPC（VerifyMFAChallenge）免鉴权，加 security:{} 并加入 rest_server 白名单。
+export interface MfaService {
+  // 查询当前登录用户 MFA 总览
+  GetMFAStatus(
+    request: authenticationservicev1_GetMFAStatusRequest,
+  ): Promise<authenticationservicev1_GetMFAStatusResponse>;
+  // 列出已注册的 MFA 凭证
+  ListEnrolledMethods(
+    request: authenticationservicev1_ListEnrolledMethodsRequest,
+  ): Promise<authenticationservicev1_ListEnrolledMethodsResponse>;
+  // 开始注册 MFA 方法（返回 secret/QR，仅 TOTP 本轮实现）
+  StartEnrollMethod(
+    request: authenticationservicev1_StartEnrollMethodRequest,
+  ): Promise<authenticationservicev1_StartEnrollMethodResponse>;
+  // 确认注册 MFA 方法（提交首码完成绑定）
+  ConfirmEnrollMethod(
+    request: authenticationservicev1_ConfirmEnrollMethodRequest,
+  ): Promise<authenticationservicev1_ConfirmEnrollMethodResponse>;
+  // 禁用/移除已注册 MFA 凭证。
+  // 注意：kratos http 生成器不支持 DELETE 请求体（handler 只 BindQuery），
+  // 而 TS 生成器默认把 message 序列化为 body——为两端一致改用 POST + body。
+  DisableMFA(
+    request: authenticationservicev1_DisableMFARequest,
+  ): Promise<wellKnownEmpty>;
+  // 撤销指定 MFA 凭证（按 id）。
+  // ⚠️ 当前无前端调用方：DELETE 请求体在 Go 生成器（恒 BindQuery）与 TS 生成器
+  // （发 body）之间不一致，贸然对接会静默丢参——需要时应改 POST（参见 DisableMFA）。
+  RevokeMFADevice(
+    request: authenticationservicev1_RevokeMFADeviceRequest,
+  ): Promise<wellKnownEmpty>;
+  // 验证登录 MFA 挑战。通过则返回 LoginResponse（含真 access_token）。
+  // 免鉴权：登录流程在密码校验通过、待二次验证阶段调用。
+  VerifyMFAChallenge(
+    request: authenticationservicev1_VerifyMFAChallengeRequest,
+  ): Promise<authenticationservicev1_LoginResponse>;
+}
+
+export function createMfaServiceClient(
+  transport: ClientTransport,
+): MfaService {
+  return {
+    GetMFAStatus(request) {
+      const path = `admin/v1/mfa/status`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.userId) {
+        queryParams.push(
+          `userId=${encodeURIComponent(request.userId.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'MfaService',
+        method: 'GetMFAStatus',
+      }) as Promise<authenticationservicev1_GetMFAStatusResponse>;
+    },
+    ListEnrolledMethods(request) {
+      const path = `admin/v1/mfa/methods`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.userId) {
+        queryParams.push(
+          `userId=${encodeURIComponent(request.userId.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'MfaService',
+        method: 'ListEnrolledMethods',
+      }) as Promise<authenticationservicev1_ListEnrolledMethodsResponse>;
+    },
+    StartEnrollMethod(request) {
+      const path = `admin/v1/mfa/enroll/start`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'MfaService',
+        method: 'StartEnrollMethod',
+      }) as Promise<authenticationservicev1_StartEnrollMethodResponse>;
+    },
+    ConfirmEnrollMethod(request) {
+      const path = `admin/v1/mfa/enroll/confirm`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'MfaService',
+        method: 'ConfirmEnrollMethod',
+      }) as Promise<authenticationservicev1_ConfirmEnrollMethodResponse>;
+    },
+    DisableMFA(request) {
+      const path = `admin/v1/mfa/disable`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'MfaService',
+        method: 'DisableMFA',
+      }) as Promise<wellKnownEmpty>;
+    },
+    RevokeMFADevice(request) {
+      if (request.credentialId === undefined || request.credentialId === null) {
+        throw new Error('missing required field request.credential_id');
+      }
+      const path = `admin/v1/mfa/${request.credentialId}`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'MfaService',
+        method: 'RevokeMFADevice',
+      }) as Promise<wellKnownEmpty>;
+    },
+    VerifyMFAChallenge(request) {
+      const path = `admin/v1/mfa/verify`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'MfaService',
+        method: 'VerifyMFAChallenge',
+      }) as Promise<authenticationservicev1_LoginResponse>;
+    },
+  };
+}
+export type authenticationservicev1_GetMFAStatusRequest = {
+  // 可选：若服务端通过上下文识别用户，可不传 user_id
+  userId?: string;
+};
+
+export type authenticationservicev1_GetMFAStatusResponse = {
+  enabled: boolean | undefined;
+  enforcement: authenticationservicev1_MFAEnforcement | undefined;
+  enrolled: authenticationservicev1_EnrolledMethod[] | undefined;
+};
+
+export type authenticationservicev1_EnrolledMethod = {
+  createdAt?: wellKnownTimestamp;
+  display: string | undefined;
+  enabled: boolean | undefined;
+  id: string | undefined;
+  lastUsedAt?: wellKnownTimestamp;
+  method: authenticationservicev1_MFAMethod | undefined;
+};
+
+// 多因素认证方法
+export type authenticationservicev1_MFAMethod =
+  | 'BACKUP_CODE'
+  | 'EMAIL'
+  | 'MFA_METHOD_UNSPECIFIED'
+  | 'OTHER'
+  | 'SMS'
+  | 'TOTP'
+  | 'U2F'
+  | 'WEBAUTHN';
+export type authenticationservicev1_MFAEnforcement =
+  | 'MFA_NOT_REQUIRED'
+  | 'MFA_OPTIONAL'
+  | 'MFA_REQUIRED';
+// 列表已注册凭证
+export type authenticationservicev1_ListEnrolledMethodsRequest = {
+  userId?: string;
+};
+
+export type authenticationservicev1_ListEnrolledMethodsResponse = {
+  items: authenticationservicev1_EnrolledMethod[] | undefined;
+};
+
+// Start enroll
+export type authenticationservicev1_StartEnrollMethodRequest = {
+  email?: string;
+  method: authenticationservicev1_MFAMethod | undefined;
+  // 根据 method 可能需要额外参数（例如 SMS 需要 phone）
+  phone?: string;
+};
+
+export type authenticationservicev1_StartEnrollMethodResponse = {
+  expiresAt?: wellKnownTimestamp;
+  // 临时操作 id，用于 ConfirmEnrollMethod / 后续验证
+  operationId: string | undefined;
+  sms?: authenticationservicev1_SMSResult;
+  totp?: authenticationservicev1_TOTPResult;
+  webauthn?: authenticationservicev1_WebAuthnResult;
+};
+
+export type authenticationservicev1_TOTPResult = {
+  otpAuthUrl: string | undefined;
+  qrCodeDataUri: string | undefined;
+  // base32 secret：仅在注册时返回一次，服务端应只存哈希/引用
+  secret: string | undefined;
+};
+
+export type authenticationservicev1_SMSResult = {
+  maskedPhone: string | undefined;
+  smsSent: boolean | undefined;
+  verificationId: string | undefined;
+};
+
+export type authenticationservicev1_WebAuthnResult = {
+  challenge: string | undefined;
+  optionsJson: string | undefined;
+  rpId: string | undefined;
+};
+
+// Confirm enroll
+export type authenticationservicev1_ConfirmEnrollMethodRequest = {
+  backupCode?: string;
+  // 可选：设备/显示名
+  display?: string;
+  method: authenticationservicev1_MFAMethod | undefined;
+  operationId: string | undefined;
+  sms?: authenticationservicev1_SMSVerification;
+  totpCode?: string;
+  webauthn?: authenticationservicev1_WebAuthnAssertion;
+};
+
+export type authenticationservicev1_SMSVerification = {
+  code: string | undefined;
+  verificationId: string | undefined;
+};
+
+export type authenticationservicev1_WebAuthnAssertion = {
+  authenticatorData: string | undefined;
+  clientDataJson: string | undefined;
+  id: string | undefined;
+  signature: string | undefined;
+  userHandle?: string;
+};
+
+export type authenticationservicev1_ConfirmEnrollMethodResponse = {
+  credentialId: string | undefined;
+  success: boolean | undefined;
+};
+
+// Disable / remove
+export type authenticationservicev1_DisableMFARequest = {
+  // 指定凭证 id 或仅按方法禁用全部
+  credentialId?: string;
+  method?: authenticationservicev1_MFAMethod;
+  password?: string;
+  reason?: string;
+  sms?: authenticationservicev1_SMSVerification;
+  totpCode?: string;
+  // 管理端重置：指定目标用户（不传=操作当前登录用户）。
+  // 仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。
+  userId?: number;
+  webauthn?: authenticationservicev1_WebAuthnAssertion;
+};
+
+// 撤销设备/凭证
+export type authenticationservicev1_RevokeMFADeviceRequest = {
+  credentialId: string | undefined;
+};
+
+export type authenticationservicev1_VerifyMFAChallengeRequest = {
+  backupCode?: string;
+  operationId: string | undefined;
+  sms?: authenticationservicev1_SMSVerification;
+  totpCode?: string;
+  webauthn?: authenticationservicev1_WebAuthnAssertion;
 };
 
 // 操作审计日志管理服务
@@ -6322,6 +6751,736 @@ export type permissionservicev1_DeletePermissionGroupRequest = {
   id?: number;
 };
 
+// 套餐管理服务
+export interface PlanService {
+  // 分页查询套餐列表
+  List(
+    request: pagination_PagingRequest,
+  ): Promise<identityservicev1_ListPlanResponse>;
+  // 查询套餐详情
+  Get(
+    request: identityservicev1_GetPlanRequest,
+  ): Promise<identityservicev1_Plan>;
+  // 创建套餐
+  Create(
+    request: identityservicev1_CreatePlanRequest,
+  ): Promise<wellKnownEmpty>;
+  // 更新套餐
+  Update(
+    request: identityservicev1_UpdatePlanRequest,
+  ): Promise<wellKnownEmpty>;
+  // 删除套餐
+  Delete(
+    request: identityservicev1_DeletePlanRequest,
+  ): Promise<wellKnownEmpty>;
+}
+
+export function createPlanServiceClient(
+  transport: ClientTransport,
+): PlanService {
+  return {
+    List(request) {
+      const path = `admin/v1/plans`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      if (request.offset) {
+        queryParams.push(
+          `offset=${encodeURIComponent(request.offset.toString())}`,
+        );
+      }
+      if (request.limit) {
+        queryParams.push(
+          `limit=${encodeURIComponent(request.limit.toString())}`,
+        );
+      }
+      if (request.token) {
+        queryParams.push(
+          `token=${encodeURIComponent(request.token.toString())}`,
+        );
+      }
+      if (request.noPaging) {
+        queryParams.push(
+          `noPaging=${encodeURIComponent(request.noPaging.toString())}`,
+        );
+      }
+      if (request.query) {
+        queryParams.push(
+          `query=${encodeURIComponent(request.query.toString())}`,
+        );
+      }
+      if (request.filter) {
+        queryParams.push(
+          `filter=${encodeURIComponent(request.filter.toString())}`,
+        );
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(
+          `filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.orderBy) {
+        queryParams.push(
+          `orderBy=${encodeURIComponent(request.orderBy.toString())}`,
+        );
+      }
+      if (request.sorting?.field) {
+        queryParams.push(
+          `sorting.field=${encodeURIComponent(request.sorting.field.toString())}`,
+        );
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(
+          `sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`,
+        );
+      }
+      if (request.fieldMask) {
+        queryParams.push(
+          `fieldMask=${encodeURIComponent(request.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'PlanService',
+        method: 'List',
+      }) as Promise<identityservicev1_ListPlanResponse>;
+    },
+    Get(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/plans/${request.id}`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(
+          `viewMask=${encodeURIComponent(request.viewMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'PlanService',
+        method: 'Get',
+      }) as Promise<identityservicev1_Plan>;
+    },
+    Create(request) {
+      const path = `admin/v1/plans`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'PlanService',
+        method: 'Create',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Update(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/plans/${request.id}`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'PUT', body, {
+        service: 'PlanService',
+        method: 'Update',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Delete(request) {
+      const path = `admin/v1/plans`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.id) {
+        queryParams.push(
+          `id=${encodeURIComponent(request.id.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'DELETE', body, {
+        service: 'PlanService',
+        method: 'Delete',
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// 套餐列表 - 答复
+export type identityservicev1_ListPlanResponse = {
+  items: identityservicev1_Plan[] | undefined;
+  total: number | undefined;
+};
+
+// 套餐
+export type identityservicev1_Plan = {
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  dataRetentionDays?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  description?: string;
+  expiryPolicy?: identityservicev1_Plan_ExpiryPolicy;
+  id?: number;
+  name?: string;
+  remark?: string;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+  version?: identityservicev1_Plan_Version;
+};
+
+// 套餐版本
+export type identityservicev1_Plan_Version =
+  | 'ENTERPRISE'
+  | 'FREE'
+  | 'PLAN_VERSION_UNSPECIFIED'
+  | 'STANDARD';
+// 到期处置策略
+export type identityservicev1_Plan_ExpiryPolicy =
+  | 'BLOCK_LOGIN'
+  | 'FREEZE'
+  | 'PLAN_EXPIRY_POLICY_UNSPECIFIED'
+  | 'READONLY';
+// 套餐数据 - 请求
+export type identityservicev1_GetPlanRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建套餐 - 请求
+export type identityservicev1_CreatePlanRequest = {
+  data: identityservicev1_Plan | undefined;
+};
+
+// 更新套餐 -请求
+export type identityservicev1_UpdatePlanRequest = {
+  allowMissing?: boolean;
+  data: identityservicev1_Plan | undefined;
+  id: number | undefined;
+  updateMask: undefined | wellKnownFieldMask;
+};
+
+// 删除套餐 - 请求
+export type identityservicev1_DeletePlanRequest = {
+  id?: number;
+};
+
+// 套餐模块白名单管理服务
+export interface PlanModuleService {
+  // 分页查询套餐模块列表
+  List(
+    request: pagination_PagingRequest,
+  ): Promise<identityservicev1_ListPlanModuleResponse>;
+  // 查询套餐模块详情
+  Get(
+    request: identityservicev1_GetPlanModuleRequest,
+  ): Promise<identityservicev1_PlanModule>;
+  // 创建套餐模块
+  Create(
+    request: identityservicev1_CreatePlanModuleRequest,
+  ): Promise<wellKnownEmpty>;
+  // 更新套餐模块
+  Update(
+    request: identityservicev1_UpdatePlanModuleRequest,
+  ): Promise<wellKnownEmpty>;
+  // 删除套餐模块
+  Delete(
+    request: identityservicev1_DeletePlanModuleRequest,
+  ): Promise<wellKnownEmpty>;
+}
+
+export function createPlanModuleServiceClient(
+  transport: ClientTransport,
+): PlanModuleService {
+  return {
+    List(request) {
+      const path = `admin/v1/plan-modules`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      if (request.offset) {
+        queryParams.push(
+          `offset=${encodeURIComponent(request.offset.toString())}`,
+        );
+      }
+      if (request.limit) {
+        queryParams.push(
+          `limit=${encodeURIComponent(request.limit.toString())}`,
+        );
+      }
+      if (request.token) {
+        queryParams.push(
+          `token=${encodeURIComponent(request.token.toString())}`,
+        );
+      }
+      if (request.noPaging) {
+        queryParams.push(
+          `noPaging=${encodeURIComponent(request.noPaging.toString())}`,
+        );
+      }
+      if (request.query) {
+        queryParams.push(
+          `query=${encodeURIComponent(request.query.toString())}`,
+        );
+      }
+      if (request.filter) {
+        queryParams.push(
+          `filter=${encodeURIComponent(request.filter.toString())}`,
+        );
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(
+          `filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.orderBy) {
+        queryParams.push(
+          `orderBy=${encodeURIComponent(request.orderBy.toString())}`,
+        );
+      }
+      if (request.sorting?.field) {
+        queryParams.push(
+          `sorting.field=${encodeURIComponent(request.sorting.field.toString())}`,
+        );
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(
+          `sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`,
+        );
+      }
+      if (request.fieldMask) {
+        queryParams.push(
+          `fieldMask=${encodeURIComponent(request.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'PlanModuleService',
+        method: 'List',
+      }) as Promise<identityservicev1_ListPlanModuleResponse>;
+    },
+    Get(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/plan-modules/${request.id}`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(
+          `viewMask=${encodeURIComponent(request.viewMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'PlanModuleService',
+        method: 'Get',
+      }) as Promise<identityservicev1_PlanModule>;
+    },
+    Create(request) {
+      const path = `admin/v1/plan-modules`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'PlanModuleService',
+        method: 'Create',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Update(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/plan-modules/${request.id}`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'PUT', body, {
+        service: 'PlanModuleService',
+        method: 'Update',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Delete(request) {
+      const path = `admin/v1/plan-modules`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.id) {
+        queryParams.push(
+          `id=${encodeURIComponent(request.id.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'DELETE', body, {
+        service: 'PlanModuleService',
+        method: 'Delete',
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// 套餐模块列表 - 答复
+export type identityservicev1_ListPlanModuleResponse = {
+  items: identityservicev1_PlanModule[] | undefined;
+  total: number | undefined;
+};
+
+// 套餐模块
+export type identityservicev1_PlanModule = {
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  id?: number;
+  module?: identityservicev1_Module;
+  planId?: number;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// 套餐模块数据 - 请求
+export type identityservicev1_GetPlanModuleRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建套餐模块 - 请求
+export type identityservicev1_CreatePlanModuleRequest = {
+  data: identityservicev1_PlanModule | undefined;
+};
+
+// 更新套餐模块 -请求
+export type identityservicev1_UpdatePlanModuleRequest = {
+  allowMissing?: boolean;
+  data: identityservicev1_PlanModule | undefined;
+  id: number | undefined;
+  updateMask: undefined | wellKnownFieldMask;
+};
+
+// 删除套餐模块 - 请求
+export type identityservicev1_DeletePlanModuleRequest = {
+  id?: number;
+};
+
+// 套餐配额管理服务
+export interface PlanQuotaService {
+  // 分页查询套餐配额列表
+  List(
+    request: pagination_PagingRequest,
+  ): Promise<identityservicev1_ListPlanQuotaResponse>;
+  // 创建套餐配额
+  Create(
+    request: identityservicev1_CreatePlanQuotaRequest,
+  ): Promise<wellKnownEmpty>;
+  // 更新套餐配额
+  Update(
+    request: identityservicev1_UpdatePlanQuotaRequest,
+  ): Promise<wellKnownEmpty>;
+  // 删除套餐配额
+  Delete(
+    request: identityservicev1_DeletePlanQuotaRequest,
+  ): Promise<wellKnownEmpty>;
+}
+
+export function createPlanQuotaServiceClient(
+  transport: ClientTransport,
+): PlanQuotaService {
+  return {
+    List(request) {
+      const path = `admin/v1/plan-quotas`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      if (request.offset) {
+        queryParams.push(
+          `offset=${encodeURIComponent(request.offset.toString())}`,
+        );
+      }
+      if (request.limit) {
+        queryParams.push(
+          `limit=${encodeURIComponent(request.limit.toString())}`,
+        );
+      }
+      if (request.token) {
+        queryParams.push(
+          `token=${encodeURIComponent(request.token.toString())}`,
+        );
+      }
+      if (request.noPaging) {
+        queryParams.push(
+          `noPaging=${encodeURIComponent(request.noPaging.toString())}`,
+        );
+      }
+      if (request.query) {
+        queryParams.push(
+          `query=${encodeURIComponent(request.query.toString())}`,
+        );
+      }
+      if (request.filter) {
+        queryParams.push(
+          `filter=${encodeURIComponent(request.filter.toString())}`,
+        );
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(
+          `filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.orderBy) {
+        queryParams.push(
+          `orderBy=${encodeURIComponent(request.orderBy.toString())}`,
+        );
+      }
+      if (request.sorting?.field) {
+        queryParams.push(
+          `sorting.field=${encodeURIComponent(request.sorting.field.toString())}`,
+        );
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(
+          `sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`,
+        );
+      }
+      if (request.fieldMask) {
+        queryParams.push(
+          `fieldMask=${encodeURIComponent(request.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'PlanQuotaService',
+        method: 'List',
+      }) as Promise<identityservicev1_ListPlanQuotaResponse>;
+    },
+    Create(request) {
+      const path = `admin/v1/plan-quotas`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'PlanQuotaService',
+        method: 'Create',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Update(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/plan-quotas/${request.id}`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'PUT', body, {
+        service: 'PlanQuotaService',
+        method: 'Update',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Delete(request) {
+      const path = `admin/v1/plan-quotas`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.id) {
+        queryParams.push(
+          `id=${encodeURIComponent(request.id.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'DELETE', body, {
+        service: 'PlanQuotaService',
+        method: 'Delete',
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// 套餐配额列表 - 答复
+export type identityservicev1_ListPlanQuotaResponse = {
+  items: identityservicev1_PlanQuota[] | undefined;
+  total: number | undefined;
+};
+
+// 套餐配额
+export type identityservicev1_PlanQuota = {
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  id?: number;
+  planId?: number;
+  quotaType?: identityservicev1_PlanQuota_QuotaType;
+  quotaValue?: number;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// 配额类型
+export type identityservicev1_PlanQuota_QuotaType =
+  | 'API_CALL'
+  | 'PLAN_QUOTA_TYPE_UNSPECIFIED'
+  | 'STORAGE'
+  | 'USER_LIMIT';
+// 创建套餐配额 - 请求
+export type identityservicev1_CreatePlanQuotaRequest = {
+  data: identityservicev1_PlanQuota | undefined;
+};
+
+// 更新套餐配额 -请求
+export type identityservicev1_UpdatePlanQuotaRequest = {
+  allowMissing?: boolean;
+  data: identityservicev1_PlanQuota | undefined;
+  id: number | undefined;
+  updateMask: undefined | wellKnownFieldMask;
+};
+
+// 删除套餐配额 - 请求
+export type identityservicev1_DeletePlanQuotaRequest = {
+  id?: number;
+};
+
 // 策略评估日志服务
 export interface PolicyEvaluationLogService {
   // 查询策略评估日志列表
@@ -6788,6 +7947,61 @@ export type identityservicev1_UpdatePositionRequest = {
 // 删除职位 - 请求
 export type identityservicev1_DeletePositionRequest = {
   id?: number;
+};
+
+// Redis缓存监控管理服务（只读）
+export interface RedisCacheMonitorService {
+  // 查询Redis缓存监控信息
+  Get(
+    request: redis_cacheservicev1_GetRedisCacheMonitorRequest,
+  ): Promise<redis_cacheservicev1_RedisCacheMonitorInfo>;
+}
+
+export function createRedisCacheMonitorServiceClient(
+  transport: ClientTransport,
+): RedisCacheMonitorService {
+  return {
+    Get(_request) {
+      const path = `admin/v1/redis-cache-monitor`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'RedisCacheMonitorService',
+        method: 'Get',
+      }) as Promise<redis_cacheservicev1_RedisCacheMonitorInfo>;
+    },
+  };
+}
+// 查询Redis缓存监控信息 - 请求（空）
+export type redis_cacheservicev1_GetRedisCacheMonitorRequest = {
+};
+
+// Redis缓存监控信息
+export type redis_cacheservicev1_RedisCacheMonitorInfo = {
+  dbSize: number | undefined;
+  sections: redis_cacheservicev1_InfoSection[] | undefined;
+  slowlog: redis_cacheservicev1_SlowLogEntry[] | undefined;
+};
+
+// INFO 输出的单个 section
+export type redis_cacheservicev1_InfoSection = {
+  entries: redis_cacheservicev1_InfoEntry[] | undefined;
+  name: string | undefined;
+};
+
+// INFO 输出的单个 key/value 对
+export type redis_cacheservicev1_InfoEntry = {
+  key: string | undefined;
+  value: string | undefined;
+};
+
+// SLOWLOG GET 返回的单条慢日志
+export type redis_cacheservicev1_SlowLogEntry = {
+  args: string[] | undefined;
+  clientAddr: string | undefined;
+  clientName: string | undefined;
+  createdAt: undefined | wellKnownTimestamp;
+  durationUsec: number | undefined;
+  id: number | undefined;
 };
 
 // 角色管理服务
@@ -7609,6 +8823,14 @@ export interface TenantService {
   TenantExists(
     request: identityservicev1_TenantExistsRequest,
   ): Promise<identityservicev1_TenantExistsResponse>;
+  // 查询租户用量与配额
+  GetUsage(
+    request: identityservicev1_GetTenantUsageRequest,
+  ): Promise<identityservicev1_TenantUsage>;
+  // 清理租户数据
+  CleanupData(
+    request: identityservicev1_CleanupTenantDataRequest,
+  ): Promise<wellKnownEmpty>;
 }
 
 export function createTenantServiceClient(
@@ -7832,6 +9054,28 @@ export function createTenantServiceClient(
         method: 'TenantExists',
       }) as Promise<identityservicev1_TenantExistsResponse>;
     },
+    GetUsage(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/tenants/${request.id}/usage`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'TenantService',
+        method: 'GetUsage',
+      }) as Promise<identityservicev1_TenantUsage>;
+    },
+    CleanupData(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/tenants/${request.id}/cleanup`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'TenantService',
+        method: 'CleanupData',
+      }) as Promise<wellKnownEmpty>;
+    },
   };
 }
 // 租户列表 - 答复
@@ -7857,6 +9101,7 @@ export type identityservicev1_Tenant = {
   logoUrl?: string;
   memberCount?: number;
   name?: string;
+  planId?: number;
   remark?: string;
   status?: identityservicev1_Tenant_Status;
   subscriptionAt?: wellKnownTimestamp;
@@ -7990,6 +9235,33 @@ export type identityservicev1_TenantExistsRequest = {
 // 租户是否存在 - 答复
 export type identityservicev1_TenantExistsResponse = {
   exist: boolean | undefined;
+};
+
+// 查询租户用量 - 请求
+export type identityservicev1_GetTenantUsageRequest = {
+  id: number | undefined;
+};
+
+// 租户用量与配额
+export type identityservicev1_TenantUsage = {
+  apiCallCount: number | undefined;
+  planId?: number;
+  planName?: string;
+  quotas: identityservicev1_QuotaUsage[] | undefined;
+  storageUsedBytes: number | undefined;
+  tenantId: number | undefined;
+  userCount: number | undefined;
+};
+
+// 配额用量项
+export type identityservicev1_QuotaUsage = {
+  quotaType: identityservicev1_PlanQuota_QuotaType | undefined;
+  quotaValue: number | undefined;
+};
+
+// 清理租户数据 - 请求
+export type identityservicev1_CleanupTenantDataRequest = {
+  id: number | undefined;
 };
 
 // 用户管理服务
@@ -8884,6 +10156,7 @@ export class ApiClient {
   private _attendanceService?: AttendanceService;
   private _authenticationService?: AuthenticationService;
   private _businessTripService?: BusinessTripService;
+  private _dashboardService?: DashboardService;
   private _dataAccessAuditLogService?: DataAccessAuditLogService;
   private _dictEntryService?: DictEntryService;
   private _dictTypeService?: DictTypeService;
@@ -8898,6 +10171,7 @@ export class ApiClient {
   private _loginAuditLogService?: LoginAuditLogService;
   private _loginPolicyService?: LoginPolicyService;
   private _menuService?: MenuService;
+  private _mfaService?: MfaService;
   private _operationAuditLogService?: OperationAuditLogService;
   private _orgUnitService?: OrgUnitService;
   private _outingService?: OutingService;
@@ -8905,8 +10179,12 @@ export class ApiClient {
   private _permissionAuditLogService?: PermissionAuditLogService;
   private _permissionGroupService?: PermissionGroupService;
   private _permissionService?: PermissionService;
+  private _planModuleService?: PlanModuleService;
+  private _planQuotaService?: PlanQuotaService;
+  private _planService?: PlanService;
   private _policyEvaluationLogService?: PolicyEvaluationLogService;
   private _positionService?: PositionService;
+  private _redisCacheMonitorService?: RedisCacheMonitorService;
   private _roleService?: RoleService;
   private _sealApplicationService?: SealApplicationService;
   private _taskService?: TaskService;
@@ -8942,6 +10220,10 @@ export class ApiClient {
 
   get businessTripService(): BusinessTripService {
     return this._businessTripService ??= createBusinessTripServiceClient(this._transport);
+  }
+
+  get dashboardService(): DashboardService {
+    return this._dashboardService ??= createDashboardServiceClient(this._transport);
   }
 
   get dataAccessAuditLogService(): DataAccessAuditLogService {
@@ -9000,6 +10282,10 @@ export class ApiClient {
     return this._menuService ??= createMenuServiceClient(this._transport);
   }
 
+  get mfaService(): MfaService {
+    return this._mfaService ??= createMfaServiceClient(this._transport);
+  }
+
   get operationAuditLogService(): OperationAuditLogService {
     return this._operationAuditLogService ??= createOperationAuditLogServiceClient(this._transport);
   }
@@ -9028,12 +10314,28 @@ export class ApiClient {
     return this._permissionService ??= createPermissionServiceClient(this._transport);
   }
 
+  get planModuleService(): PlanModuleService {
+    return this._planModuleService ??= createPlanModuleServiceClient(this._transport);
+  }
+
+  get planQuotaService(): PlanQuotaService {
+    return this._planQuotaService ??= createPlanQuotaServiceClient(this._transport);
+  }
+
+  get planService(): PlanService {
+    return this._planService ??= createPlanServiceClient(this._transport);
+  }
+
   get policyEvaluationLogService(): PolicyEvaluationLogService {
     return this._policyEvaluationLogService ??= createPolicyEvaluationLogServiceClient(this._transport);
   }
 
   get positionService(): PositionService {
     return this._positionService ??= createPositionServiceClient(this._transport);
+  }
+
+  get redisCacheMonitorService(): RedisCacheMonitorService {
+    return this._redisCacheMonitorService ??= createRedisCacheMonitorServiceClient(this._transport);
   }
 
   get roleService(): RoleService {

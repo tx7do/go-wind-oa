@@ -73,7 +73,7 @@ export function useToolbarActions(
         $t("common.editor.clear_content_confirm"),
         $t("common.title.confirm"),
         {
-          confirmButtonText: $t("common.confirm"),
+          confirmButtonText: $t("common.button.confirm"),
           cancelButtonText: $t("common.cancel"),
           type: "warning",
           icon: WarningFilled,

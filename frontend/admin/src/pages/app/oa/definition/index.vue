@@ -188,7 +188,7 @@ function handleToggleStatus(
     ? $t("pages.oa.definition.enableConfirmContent")
     : $t("pages.oa.definition.disableConfirmContent");
   ElMessageBox.confirm(content, title, {
-    confirmButtonText: $t("common.confirm"),
+    confirmButtonText: $t("common.button.confirm"),
     cancelButtonText: $t("common.cancel"),
     type: isEnable ? "warning" : "error",
   })

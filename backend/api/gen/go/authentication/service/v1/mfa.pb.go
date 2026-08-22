@@ -983,8 +983,11 @@ type DisableMFARequest struct {
 	//	*DisableMFARequest_TotpCode
 	//	*DisableMFARequest_Sms
 	//	*DisableMFARequest_Webauthn
-	Verifier      isDisableMFARequest_Verifier `protobuf_oneof:"verifier"`
-	Reason        *string                      `protobuf:"bytes,20,opt,name=reason,proto3,oneof" json:"reason,omitempty"`
+	Verifier isDisableMFARequest_Verifier `protobuf_oneof:"verifier"`
+	Reason   *string                      `protobuf:"bytes,20,opt,name=reason,proto3,oneof" json:"reason,omitempty"`
+	// 管理端重置：指定目标用户（不传=操作当前登录用户）。
+	// 仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。
+	UserId        *uint32 `protobuf:"varint,21,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1081,6 +1084,13 @@ func (x *DisableMFARequest) GetReason() string {
 		return *x.Reason
 	}
 	return ""
+}
+
+func (x *DisableMFARequest) GetUserId() uint32 {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return 0
 }
 
 type isDisableMFARequest_Verifier interface {
@@ -1810,7 +1820,7 @@ var File_authentication_service_v1_mfa_proto protoreflect.FileDescriptor
 
 const file_authentication_service_v1_mfa_proto_rawDesc = "" +
 	"\n" +
-	"#authentication/service/v1/mfa.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"?\n" +
+	"#authentication/service/v1/mfa.proto\x12\x19authentication.service.v1\x1a.authentication/service/v1/authentication.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"?\n" +
 	"\x13GetMFAStatusRequest\x12\x1c\n" +
 	"\auser_id\x18\x01 \x01(\tH\x00R\x06userId\x88\x01\x01B\n" +
 	"\n" +
@@ -1882,7 +1892,7 @@ const file_authentication_service_v1_mfa_proto_rawDesc = "" +
 	"\b_display\"\\\n" +
 	"\x1bConfirmEnrollMethodResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12#\n" +
-	"\rcredential_id\x18\x02 \x01(\tR\fcredentialId\"\x9a\x03\n" +
+	"\rcredential_id\x18\x02 \x01(\tR\fcredentialId\"\xc4\x03\n" +
 	"\x11DisableMFARequest\x12(\n" +
 	"\rcredential_id\x18\x01 \x01(\tH\x01R\fcredentialId\x88\x01\x01\x12A\n" +
 	"\x06method\x18\x02 \x01(\x0e2$.authentication.service.v1.MFAMethodH\x02R\x06method\x88\x01\x01\x12\x1c\n" +
@@ -1891,12 +1901,15 @@ const file_authentication_service_v1_mfa_proto_rawDesc = "" +
 	"\ttotp_code\x18\v \x01(\tH\x00R\btotpCode\x12>\n" +
 	"\x03sms\x18\f \x01(\v2*.authentication.service.v1.SMSVerificationH\x00R\x03sms\x12J\n" +
 	"\bwebauthn\x18\r \x01(\v2,.authentication.service.v1.WebAuthnAssertionH\x00R\bwebauthn\x12\x1b\n" +
-	"\x06reason\x18\x14 \x01(\tH\x03R\x06reason\x88\x01\x01B\n" +
+	"\x06reason\x18\x14 \x01(\tH\x03R\x06reason\x88\x01\x01\x12\x1c\n" +
+	"\auser_id\x18\x15 \x01(\rH\x04R\x06userId\x88\x01\x01B\n" +
 	"\n" +
 	"\bverifierB\x10\n" +
 	"\x0e_credential_idB\t\n" +
 	"\a_methodB\t\n" +
-	"\a_reason\"\xbe\x01\n" +
+	"\a_reasonB\n" +
+	"\n" +
+	"\b_user_id\"\xbe\x01\n" +
 	"\x18StartMFAChallengeRequest\x12\x1c\n" +
 	"\auser_id\x18\x01 \x01(\tH\x00R\x06userId\x88\x01\x01\x12<\n" +
 	"\x06method\x18\x02 \x01(\x0e2$.authentication.service.v1.MFAMethodR\x06method\x12(\n" +
@@ -1964,7 +1977,7 @@ const file_authentication_service_v1_mfa_proto_rawDesc = "" +
 	"\x0eMFAEnforcement\x12\x14\n" +
 	"\x10MFA_NOT_REQUIRED\x10\x00\x12\x10\n" +
 	"\fMFA_OPTIONAL\x10\x01\x12\x10\n" +
-	"\fMFA_REQUIRED\x10\x022\xd8\t\n" +
+	"\fMFA_REQUIRED\x10\x022\xca\t\n" +
 	"\n" +
 	"MFAService\x12q\n" +
 	"\fGetMFAStatus\x12..authentication.service.v1.GetMFAStatusRequest\x1a/.authentication.service.v1.GetMFAStatusResponse\"\x00\x12\x86\x01\n" +
@@ -1973,8 +1986,8 @@ const file_authentication_service_v1_mfa_proto_rawDesc = "" +
 	"\x13ConfirmEnrollMethod\x125.authentication.service.v1.ConfirmEnrollMethodRequest\x1a6.authentication.service.v1.ConfirmEnrollMethodResponse\"\x00\x12T\n" +
 	"\n" +
 	"DisableMFA\x12,.authentication.service.v1.DisableMFARequest\x1a\x16.google.protobuf.Empty\"\x00\x12\x80\x01\n" +
-	"\x11StartMFAChallenge\x123.authentication.service.v1.StartMFAChallengeRequest\x1a4.authentication.service.v1.StartMFAChallengeResponse\"\x00\x12\x83\x01\n" +
-	"\x12VerifyMFAChallenge\x124.authentication.service.v1.VerifyMFAChallengeRequest\x1a5.authentication.service.v1.VerifyMFAChallengeResponse\"\x00\x12\x86\x01\n" +
+	"\x11StartMFAChallenge\x123.authentication.service.v1.StartMFAChallengeRequest\x1a4.authentication.service.v1.StartMFAChallengeResponse\"\x00\x12v\n" +
+	"\x12VerifyMFAChallenge\x124.authentication.service.v1.VerifyMFAChallengeRequest\x1a(.authentication.service.v1.LoginResponse\"\x00\x12\x86\x01\n" +
 	"\x13GenerateBackupCodes\x125.authentication.service.v1.GenerateBackupCodesRequest\x1a6.authentication.service.v1.GenerateBackupCodesResponse\"\x00\x12z\n" +
 	"\x0fListBackupCodes\x121.authentication.service.v1.ListBackupCodesRequest\x1a2.authentication.service.v1.ListBackupCodesResponse\"\x00\x12^\n" +
 	"\x0fRevokeMFADevice\x121.authentication.service.v1.RevokeMFADeviceRequest\x1a\x16.google.protobuf.Empty\"\x00B\xf1\x01\n" +
@@ -2023,6 +2036,7 @@ var file_authentication_service_v1_mfa_proto_goTypes = []any{
 	(*WebAuthnAssertion)(nil),           // 25: authentication.service.v1.WebAuthnAssertion
 	(*timestamppb.Timestamp)(nil),       // 26: google.protobuf.Timestamp
 	(*emptypb.Empty)(nil),               // 27: google.protobuf.Empty
+	(*LoginResponse)(nil),               // 28: authentication.service.v1.LoginResponse
 }
 var file_authentication_service_v1_mfa_proto_depIdxs = []int32{
 	4,  // 0: authentication.service.v1.GetMFAStatusResponse.enrolled:type_name -> authentication.service.v1.EnrolledMethod
@@ -2066,7 +2080,7 @@ var file_authentication_service_v1_mfa_proto_depIdxs = []int32{
 	13, // 38: authentication.service.v1.MFAService.ConfirmEnrollMethod:output_type -> authentication.service.v1.ConfirmEnrollMethodResponse
 	27, // 39: authentication.service.v1.MFAService.DisableMFA:output_type -> google.protobuf.Empty
 	16, // 40: authentication.service.v1.MFAService.StartMFAChallenge:output_type -> authentication.service.v1.StartMFAChallengeResponse
-	18, // 41: authentication.service.v1.MFAService.VerifyMFAChallenge:output_type -> authentication.service.v1.VerifyMFAChallengeResponse
+	28, // 41: authentication.service.v1.MFAService.VerifyMFAChallenge:output_type -> authentication.service.v1.LoginResponse
 	20, // 42: authentication.service.v1.MFAService.GenerateBackupCodes:output_type -> authentication.service.v1.GenerateBackupCodesResponse
 	22, // 43: authentication.service.v1.MFAService.ListBackupCodes:output_type -> authentication.service.v1.ListBackupCodesResponse
 	27, // 44: authentication.service.v1.MFAService.RevokeMFADevice:output_type -> google.protobuf.Empty
@@ -2082,6 +2096,7 @@ func file_authentication_service_v1_mfa_proto_init() {
 	if File_authentication_service_v1_mfa_proto != nil {
 		return
 	}
+	file_authentication_service_v1_authentication_proto_init()
 	file_authentication_service_v1_mfa_proto_msgTypes[0].OneofWrappers = []any{}
 	file_authentication_service_v1_mfa_proto_msgTypes[2].OneofWrappers = []any{}
 	file_authentication_service_v1_mfa_proto_msgTypes[3].OneofWrappers = []any{}

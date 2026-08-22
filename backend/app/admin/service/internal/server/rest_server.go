@@ -47,6 +47,8 @@ func NewRestMiddleware(
 		adminV1.OperationAuthenticationServiceLogin,
 		adminV1.OperationAuthenticationServiceGenerateCaptcha,
 		adminV1.OperationAuthenticationServiceVerifyCaptcha,
+		adminV1.OperationAuthenticationServiceRegisterUser,
+		adminV1.OperationMfaServiceVerifyMFAChallenge,
 	)
 
 	ms = append(ms, applogging.Server(
@@ -129,6 +131,12 @@ func NewRestServer(
 	apiAuditLogService *service.ApiAuditLogService,
 	dataAccessAuditLogService *service.DataAccessAuditLogService,
 	loginAuditLogService *service.LoginAuditLogService,
+	dashboardService *service.DashboardService,
+	planService *service.PlanService,
+	planModuleService *service.PlanModuleService,
+	planQuotaService *service.PlanQuotaService,
+	mfaService *service.MfaService,
+	redisCacheMonitorService *service.RedisCacheMonitorService,
 	policyEvaluationLogService *service.PolicyEvaluationLogService,
 	operationAuditLogService *service.OperationAuditLogService,
 	permissionAuditLogService *service.PermissionAuditLogService,
@@ -169,6 +177,16 @@ func NewRestServer(
 	adminV1.RegisterApiAuditLogServiceHTTPServer(srv, apiAuditLogService)
 	adminV1.RegisterDataAccessAuditLogServiceHTTPServer(srv, dataAccessAuditLogService)
 	adminV1.RegisterLoginAuditLogServiceHTTPServer(srv, loginAuditLogService)
+
+	adminV1.RegisterDashboardServiceHTTPServer(srv, dashboardService)
+
+	adminV1.RegisterPlanServiceHTTPServer(srv, planService)
+	adminV1.RegisterPlanModuleServiceHTTPServer(srv, planModuleService)
+	adminV1.RegisterPlanQuotaServiceHTTPServer(srv, planQuotaService)
+
+	adminV1.RegisterMfaServiceHTTPServer(srv, mfaService)
+
+	adminV1.RegisterRedisCacheMonitorServiceHTTPServer(srv, redisCacheMonitorService)
 	adminV1.RegisterOperationAuditLogServiceHTTPServer(srv, operationAuditLogService)
 	adminV1.RegisterPermissionAuditLogServiceHTTPServer(srv, permissionAuditLogService)
 	adminV1.RegisterPolicyEvaluationLogServiceHTTPServer(srv, policyEvaluationLogService)

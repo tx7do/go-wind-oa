@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go-wind-oa/app/core/service/internal/data/ent/plan"
 	"go-wind-oa/app/core/service/internal/data/ent/tenant"
 	"time"
 
@@ -308,6 +309,25 @@ func (_c *TenantCreate) SetID(v uint32) *TenantCreate {
 	return _c
 }
 
+// SetPlanID sets the "plan" edge to the Plan entity by ID.
+func (_c *TenantCreate) SetPlanID(id uint32) *TenantCreate {
+	_c.mutation.SetPlanID(id)
+	return _c
+}
+
+// SetNillablePlanID sets the "plan" edge to the Plan entity by ID if the given value is not nil.
+func (_c *TenantCreate) SetNillablePlanID(id *uint32) *TenantCreate {
+	if id != nil {
+		_c = _c.SetPlanID(*id)
+	}
+	return _c
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (_c *TenantCreate) SetPlan(v *Plan) *TenantCreate {
+	return _c.SetPlanID(v.ID)
+}
+
 // Mutation returns the TenantMutation object of the builder.
 func (_c *TenantCreate) Mutation() *TenantMutation {
 	return _c.mutation
@@ -497,6 +517,23 @@ func (_c *TenantCreate) createSpec() (*Tenant, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ExpiredAt(); ok {
 		_spec.SetField(tenant.FieldExpiredAt, field.TypeTime, value)
 		_node.ExpiredAt = &value
+	}
+	if nodes := _c.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   tenant.PlanTable,
+			Columns: []string{tenant.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.plan_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

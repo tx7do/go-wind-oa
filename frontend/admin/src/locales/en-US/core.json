@@ -65,7 +65,16 @@
       "captchaCode": {
         "required": "Please enter captcha"
       }
-    }
+    },
+    "mfaTitle": "Multi-Factor Authentication",
+    "mfaDesc": "Enter the 6-digit verification code from your authenticator app to continue.",
+    "mfaCodePlaceholder": "Enter 6-digit code",
+    "mfaCodeRequired": "Please enter the verification code",
+    "mfaCodeFormatError": "Verification code must be 6 digits",
+    "mfaVerify": "Verify",
+    "mfaCancel": "Cancel",
+    "mfaVerifyFailed": "MFA verification failed",
+    "mfaNotRequired": "No MFA challenge in progress"
   },
   "notice": {
     "title": "Notifications",

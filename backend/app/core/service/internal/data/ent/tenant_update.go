@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go-wind-oa/app/core/service/internal/data/ent/plan"
 	"go-wind-oa/app/core/service/internal/data/ent/predicate"
 	"go-wind-oa/app/core/service/internal/data/ent/tenant"
 	"time"
@@ -437,9 +438,34 @@ func (_u *TenantUpdate) ClearExpiredAt() *TenantUpdate {
 	return _u
 }
 
+// SetPlanID sets the "plan" edge to the Plan entity by ID.
+func (_u *TenantUpdate) SetPlanID(id uint32) *TenantUpdate {
+	_u.mutation.SetPlanID(id)
+	return _u
+}
+
+// SetNillablePlanID sets the "plan" edge to the Plan entity by ID if the given value is not nil.
+func (_u *TenantUpdate) SetNillablePlanID(id *uint32) *TenantUpdate {
+	if id != nil {
+		_u = _u.SetPlanID(*id)
+	}
+	return _u
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (_u *TenantUpdate) SetPlan(v *Plan) *TenantUpdate {
+	return _u.SetPlanID(v.ID)
+}
+
 // Mutation returns the TenantMutation object of the builder.
 func (_u *TenantUpdate) Mutation() *TenantMutation {
 	return _u.mutation
+}
+
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (_u *TenantUpdate) ClearPlan() *TenantUpdate {
+	_u.mutation.ClearPlan()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -645,6 +671,35 @@ func (_u *TenantUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.ExpiredAtCleared() {
 		_spec.ClearField(tenant.FieldExpiredAt, field.TypeTime)
+	}
+	if _u.mutation.PlanCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   tenant.PlanTable,
+			Columns: []string{tenant.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint32),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   tenant.PlanTable,
+			Columns: []string{tenant.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -1076,9 +1131,34 @@ func (_u *TenantUpdateOne) ClearExpiredAt() *TenantUpdateOne {
 	return _u
 }
 
+// SetPlanID sets the "plan" edge to the Plan entity by ID.
+func (_u *TenantUpdateOne) SetPlanID(id uint32) *TenantUpdateOne {
+	_u.mutation.SetPlanID(id)
+	return _u
+}
+
+// SetNillablePlanID sets the "plan" edge to the Plan entity by ID if the given value is not nil.
+func (_u *TenantUpdateOne) SetNillablePlanID(id *uint32) *TenantUpdateOne {
+	if id != nil {
+		_u = _u.SetPlanID(*id)
+	}
+	return _u
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (_u *TenantUpdateOne) SetPlan(v *Plan) *TenantUpdateOne {
+	return _u.SetPlanID(v.ID)
+}
+
 // Mutation returns the TenantMutation object of the builder.
 func (_u *TenantUpdateOne) Mutation() *TenantMutation {
 	return _u.mutation
+}
+
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (_u *TenantUpdateOne) ClearPlan() *TenantUpdateOne {
+	_u.mutation.ClearPlan()
+	return _u
 }
 
 // Where appends a list predicates to the TenantUpdate builder.
@@ -1314,6 +1394,35 @@ func (_u *TenantUpdateOne) sqlSave(ctx context.Context) (_node *Tenant, err erro
 	}
 	if _u.mutation.ExpiredAtCleared() {
 		_spec.ClearField(tenant.FieldExpiredAt, field.TypeTime)
+	}
+	if _u.mutation.PlanCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   tenant.PlanTable,
+			Columns: []string{tenant.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint32),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   tenant.PlanTable,
+			Columns: []string{tenant.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Tenant{config: _u.config}

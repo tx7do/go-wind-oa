@@ -60,6 +60,17 @@ const coreRoutes: RouteRecordRaw[] = [
           title: "登录",
         },
       },
+      {
+        name: "MfaChallenge",
+        path: "mfa-challenge",
+        component: () => import("@/pages/core/login/components/MfaChallenge.vue"),
+        meta: {
+          title: "pages.auth.mfaChallenge",
+          hideInBreadcrumb: true,
+          hideInMenu: true,
+          hideInTab: true,
+        },
+      },
     ],
   },
   {

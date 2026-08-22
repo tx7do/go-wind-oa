@@ -104,7 +104,12 @@
     "syncSuccess": "同步成功",
     "syncFailed": "同步失败",
     "password_mismatch": "两次输入的密码不一致",
-    "update_status_success": "状态更新成功"
+    "update_status_success": "状态更新成功",
+    "create_success": "创建成功",
+    "create_failed": "创建失败",
+    "operation_success": "操作成功",
+    "operation_failed": "操作失败",
+    "update_status_failed": "更新状态失败"
   },
   "title": {
     "confirm": "确认",
@@ -312,6 +317,14 @@
     "importMarkdown": "导入Markdown",
     "json_parse_error": "JSON解析错误",
     "json_serialize_error": "JSON序列化错误",
-    "unknown_error": "未知错误"
-  }
+    "unknown_error": "未知错误",
+    "clear_content_confirm": "确定要清空全部内容吗？"
+  },
+  "cancel": "取消",
+  "view": "查看",
+  "loading": "加载中...",
+  "error": "错误",
+  "success": "成功",
+  "unknown": "未知",
+  "operationFailed": "操作失败"
 }

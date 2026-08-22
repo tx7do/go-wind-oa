@@ -77,6 +77,23 @@ func (Menu) Fields() []ent.Field {
 			Annotations(
 				entsql.Annotation{ /* 选填 */ },
 			),
+
+		field.Enum("module").
+			Comment("所属业务功能模块（用于套餐白名单过滤）").
+			NamedValues(
+				"Dashboard", "DASHBOARD",
+				"Opm", "OPM",
+				"System", "SYSTEM",
+				"Dict", "DICT",
+				"Tenant", "TENANT",
+				"Permission", "PERMISSION",
+				"Log", "LOG",
+				"InternalMessage", "INTERNAL_MESSAGE",
+				"File", "FILE",
+				"Task", "TASK",
+			).
+			Optional().
+			Nillable(),
 	}
 }
 
@@ -117,6 +134,10 @@ func (Menu) Indexes() []ent.Index {
 		// 前端组件索引（便于按组件聚合或过滤）
 		index.Fields("component").
 			StorageKey("idx_sys_menu_component"),
+
+		// 所属业务功能模块索引（套餐白名单过滤）
+		index.Fields("module").
+			StorageKey("idx_sys_menu_module"),
 
 		// 菜单类型索引（目录/菜单/按钮等）
 		index.Fields("type").

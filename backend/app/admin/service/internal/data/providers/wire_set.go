@@ -70,5 +70,11 @@ var ProviderSet = wire.NewSet(
 	data.NewApiAuditLogServiceClient,
 	data.NewDataAccessAuditLogServiceClient,
 	data.NewLoginAuditLogServiceClient,
+	data.NewDashboardServiceClient,
+	data.NewPlanServiceClient,
+	data.NewPlanModuleServiceClient,
+	data.NewPlanQuotaServiceClient,
+	data.NewMfaServiceClient,
+	data.NewRedisCacheMonitorServiceClient,
 	data.NewOperationAuditLogServiceClient,
 )

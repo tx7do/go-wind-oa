@@ -51,7 +51,7 @@ type MFAServiceClient interface {
 	// 发起登录时的 MFA 挑战（多步：Start->Verify）
 	StartMFAChallenge(ctx context.Context, in *StartMFAChallengeRequest, opts ...grpc.CallOption) (*StartMFAChallengeResponse, error)
 	// 验证登录时的 MFA 挑战，返回是否通过及可选 session/token
-	VerifyMFAChallenge(ctx context.Context, in *VerifyMFAChallengeRequest, opts ...grpc.CallOption) (*VerifyMFAChallengeResponse, error)
+	VerifyMFAChallenge(ctx context.Context, in *VerifyMFAChallengeRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// 生成/刷新一次性备份码（返回明文备份码列表，调用方应仅展示一次并提示用户安全保存）
 	GenerateBackupCodes(ctx context.Context, in *GenerateBackupCodesRequest, opts ...grpc.CallOption) (*GenerateBackupCodesResponse, error)
 	// 列出备份码的元信息（不返回明文）
@@ -128,9 +128,9 @@ func (c *mFAServiceClient) StartMFAChallenge(ctx context.Context, in *StartMFACh
 	return out, nil
 }
 
-func (c *mFAServiceClient) VerifyMFAChallenge(ctx context.Context, in *VerifyMFAChallengeRequest, opts ...grpc.CallOption) (*VerifyMFAChallengeResponse, error) {
+func (c *mFAServiceClient) VerifyMFAChallenge(ctx context.Context, in *VerifyMFAChallengeRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(VerifyMFAChallengeResponse)
+	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, MFAService_VerifyMFAChallenge_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -187,7 +187,7 @@ type MFAServiceServer interface {
 	// 发起登录时的 MFA 挑战（多步：Start->Verify）
 	StartMFAChallenge(context.Context, *StartMFAChallengeRequest) (*StartMFAChallengeResponse, error)
 	// 验证登录时的 MFA 挑战，返回是否通过及可选 session/token
-	VerifyMFAChallenge(context.Context, *VerifyMFAChallengeRequest) (*VerifyMFAChallengeResponse, error)
+	VerifyMFAChallenge(context.Context, *VerifyMFAChallengeRequest) (*LoginResponse, error)
 	// 生成/刷新一次性备份码（返回明文备份码列表，调用方应仅展示一次并提示用户安全保存）
 	GenerateBackupCodes(context.Context, *GenerateBackupCodesRequest) (*GenerateBackupCodesResponse, error)
 	// 列出备份码的元信息（不返回明文）
@@ -222,7 +222,7 @@ func (UnimplementedMFAServiceServer) DisableMFA(context.Context, *DisableMFARequ
 func (UnimplementedMFAServiceServer) StartMFAChallenge(context.Context, *StartMFAChallengeRequest) (*StartMFAChallengeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method StartMFAChallenge not implemented")
 }
-func (UnimplementedMFAServiceServer) VerifyMFAChallenge(context.Context, *VerifyMFAChallengeRequest) (*VerifyMFAChallengeResponse, error) {
+func (UnimplementedMFAServiceServer) VerifyMFAChallenge(context.Context, *VerifyMFAChallengeRequest) (*LoginResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method VerifyMFAChallenge not implemented")
 }
 func (UnimplementedMFAServiceServer) GenerateBackupCodes(context.Context, *GenerateBackupCodesRequest) (*GenerateBackupCodesResponse, error) {

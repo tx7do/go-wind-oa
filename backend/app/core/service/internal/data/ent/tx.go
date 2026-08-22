@@ -86,6 +86,12 @@ type Tx struct {
 	PermissionMenu *PermissionMenuClient
 	// PermissionPolicy is the client for interacting with the PermissionPolicy builders.
 	PermissionPolicy *PermissionPolicyClient
+	// Plan is the client for interacting with the Plan builders.
+	Plan *PlanClient
+	// PlanModule is the client for interacting with the PlanModule builders.
+	PlanModule *PlanModuleClient
+	// PlanQuota is the client for interacting with the PlanQuota builders.
+	PlanQuota *PlanQuotaClient
 	// PolicyEvaluationLog is the client for interacting with the PolicyEvaluationLog builders.
 	PolicyEvaluationLog *PolicyEvaluationLogClient
 	// Position is the client for interacting with the Position builders.
@@ -106,6 +112,8 @@ type Tx struct {
 	User *UserClient
 	// UserCredential is the client for interacting with the UserCredential builders.
 	UserCredential *UserCredentialClient
+	// UserMfaFactor is the client for interacting with the UserMfaFactor builders.
+	UserMfaFactor *UserMfaFactorClient
 	// UserOrgUnit is the client for interacting with the UserOrgUnit builders.
 	UserOrgUnit *UserOrgUnitClient
 	// UserPosition is the client for interacting with the UserPosition builders.
@@ -288,6 +296,9 @@ func (tx *Tx) init() {
 	tx.PermissionGroup = NewPermissionGroupClient(tx.config)
 	tx.PermissionMenu = NewPermissionMenuClient(tx.config)
 	tx.PermissionPolicy = NewPermissionPolicyClient(tx.config)
+	tx.Plan = NewPlanClient(tx.config)
+	tx.PlanModule = NewPlanModuleClient(tx.config)
+	tx.PlanQuota = NewPlanQuotaClient(tx.config)
 	tx.PolicyEvaluationLog = NewPolicyEvaluationLogClient(tx.config)
 	tx.Position = NewPositionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
@@ -298,6 +309,7 @@ func (tx *Tx) init() {
 	tx.Tenant = NewTenantClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserCredential = NewUserCredentialClient(tx.config)
+	tx.UserMfaFactor = NewUserMfaFactorClient(tx.config)
 	tx.UserOrgUnit = NewUserOrgUnitClient(tx.config)
 	tx.UserPosition = NewUserPositionClient(tx.config)
 	tx.UserRole = NewUserRoleClient(tx.config)

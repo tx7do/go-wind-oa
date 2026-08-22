@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package identity.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+// 业务功能模块
+enum Module {
+  MODULE_UNSPECIFIED = 0; // 未指定
+
+  DASHBOARD = 1;        // 仪表盘
+  OPM = 2;              // 组织人员管理
+  SYSTEM = 3;           // 系统管理
+  DICT = 4;             // 数据字典
+  TENANT = 5;           // 租户管理
+  PERMISSION = 6;       // 权限管理
+  LOG = 7;              // 日志审计
+  INTERNAL_MESSAGE = 8; // 内部消息
+  FILE = 9;             // 文件管理
+  TASK = 10;            // 任务管理
+}

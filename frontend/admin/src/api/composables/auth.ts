@@ -13,6 +13,8 @@ import {
   type UseQueryOptions,
 } from "@tanstack/vue-query";
 import type {
+  authenticationservicev1_RegisterUserRequest,
+  authenticationservicev1_RegisterUserResponse,
   authenticationservicev1_GenerateCaptchaResponse,
   authenticationservicev1_LoginRequest,
   authenticationservicev1_LoginResponse,
@@ -21,6 +23,13 @@ import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
 
 // 直接导出函数，供非 Vue 上下文使用
+// ------------------------------
+// 注册用户
+// ------------------------------
+export async function registerUser(request: authenticationservicev1_RegisterUserRequest) {
+  return apiClient.authenticationService.RegisterUser(request);
+}
+
 export async function login(request: authenticationservicev1_LoginRequest) {
   return apiClient.authenticationService.Login(request);
 }

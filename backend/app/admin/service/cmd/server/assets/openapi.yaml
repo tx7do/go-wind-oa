@@ -336,6 +336,64 @@ paths:
                                 $ref: '#/components/schemas/authentication.service.v1.VerifyCaptchaResponse'
             security:
                 - {}
+    /admin/v1/dashboard/login-status-distribution:
+        get:
+            tags:
+                - DashboardService
+            description: 登录审计按 status 分布
+            operationId: DashboardService_GetLoginStatusDistribution
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/dashboard.service.v1.StatusDistributionResponse'
+    /admin/v1/dashboard/login-trend:
+        get:
+            tags:
+                - DashboardService
+            description: 获取近 N 天每日登录次数趋势
+            operationId: DashboardService_GetLoginTrend
+            parameters:
+                - name: days
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/dashboard.service.v1.LoginTrendResponse'
+    /admin/v1/dashboard/operation-action-distribution:
+        get:
+            tags:
+                - DashboardService
+            description: 操作审计按 action 分布
+            operationId: DashboardService_GetOperationActionDistribution
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/dashboard.service.v1.ActionDistributionResponse'
+    /admin/v1/dashboard/overview:
+        get:
+            tags:
+                - DashboardService
+            description: 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
+            operationId: DashboardService_GetOverview
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/dashboard.service.v1.DashboardOverviewResponse'
     /admin/v1/data-access-audit-logs:
         get:
             tags:
@@ -2177,6 +2235,22 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/menus/sync:
+        post:
+            tags:
+                - MenuService
+            description: 同步菜单
+            operationId: MenuService_SyncMenus
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/permission.service.v1.SyncMenusRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/menus/{id}:
         get:
             tags:
@@ -2241,6 +2315,142 @@ paths:
                   schema:
                     type: integer
                     format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/mfa/disable:
+        post:
+            tags:
+                - MfaService
+            description: |-
+                禁用/移除已注册 MFA 凭证。
+                 注意：kratos http 生成器不支持 DELETE 请求体（handler 只 BindQuery），
+                 而 TS 生成器默认把 message 序列化为 body——为两端一致改用 POST + body。
+            operationId: MfaService_DisableMFA
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/authentication.service.v1.DisableMFARequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/mfa/enroll/confirm:
+        post:
+            tags:
+                - MfaService
+            description: 确认注册 MFA 方法（提交首码完成绑定）
+            operationId: MfaService_ConfirmEnrollMethod
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/authentication.service.v1.ConfirmEnrollMethodRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/authentication.service.v1.ConfirmEnrollMethodResponse'
+    /admin/v1/mfa/enroll/start:
+        post:
+            tags:
+                - MfaService
+            description: 开始注册 MFA 方法（返回 secret/QR，仅 TOTP 本轮实现）
+            operationId: MfaService_StartEnrollMethod
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/authentication.service.v1.StartEnrollMethodRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/authentication.service.v1.StartEnrollMethodResponse'
+    /admin/v1/mfa/methods:
+        get:
+            tags:
+                - MfaService
+            description: 列出已注册的 MFA 凭证
+            operationId: MfaService_ListEnrolledMethods
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/authentication.service.v1.ListEnrolledMethodsResponse'
+    /admin/v1/mfa/status:
+        get:
+            tags:
+                - MfaService
+            description: 查询当前登录用户 MFA 总览
+            operationId: MfaService_GetMFAStatus
+            parameters:
+                - name: userId
+                  in: query
+                  description: 可选：若服务端通过上下文识别用户，可不传 user_id
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/authentication.service.v1.GetMFAStatusResponse'
+    /admin/v1/mfa/verify:
+        post:
+            tags:
+                - MfaService
+            description: |-
+                验证登录 MFA 挑战。通过则返回 LoginResponse（含真 access_token）。
+                 免鉴权：登录流程在密码校验通过、待二次验证阶段调用。
+            operationId: MfaService_VerifyMFAChallenge
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/authentication.service.v1.VerifyMFAChallengeRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/authentication.service.v1.LoginResponse'
+            security:
+                - {}
+    /admin/v1/mfa/{credentialId}:
+        delete:
+            tags:
+                - MfaService
+            description: |-
+                撤销指定 MFA 凭证（按 id）。
+                 ⚠️ 当前无前端调用方：DELETE 请求体在 Go 生成器（恒 BindQuery）与 TS 生成器
+                 （发 body）之间不一致，贸然对接会静默丢参——需要时应改 POST（参见 DisableMFA）。
+            operationId: MfaService_RevokeMFADevice
+            parameters:
+                - name: credentialId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -3792,6 +4002,447 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/plan-modules:
+        get:
+            tags:
+                - PlanModuleService
+            description: 分页查询套餐模块列表
+            operationId: PlanModuleService_List
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/identity.service.v1.ListPlanModuleResponse'
+        post:
+            tags:
+                - PlanModuleService
+            description: 创建套餐模块
+            operationId: PlanModuleService_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/identity.service.v1.CreatePlanModuleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        delete:
+            tags:
+                - PlanModuleService
+            description: 删除套餐模块
+            operationId: PlanModuleService_Delete
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/plan-modules/{id}:
+        get:
+            tags:
+                - PlanModuleService
+            description: 查询套餐模块详情
+            operationId: PlanModuleService_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: viewMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/identity.service.v1.PlanModule'
+        put:
+            tags:
+                - PlanModuleService
+            description: 更新套餐模块
+            operationId: PlanModuleService_Update
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/identity.service.v1.UpdatePlanModuleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/plan-quotas:
+        get:
+            tags:
+                - PlanQuotaService
+            description: 分页查询套餐配额列表
+            operationId: PlanQuotaService_List
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/identity.service.v1.ListPlanQuotaResponse'
+        post:
+            tags:
+                - PlanQuotaService
+            description: 创建套餐配额
+            operationId: PlanQuotaService_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/identity.service.v1.CreatePlanQuotaRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        delete:
+            tags:
+                - PlanQuotaService
+            description: 删除套餐配额
+            operationId: PlanQuotaService_Delete
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/plan-quotas/{id}:
+        put:
+            tags:
+                - PlanQuotaService
+            description: 更新套餐配额
+            operationId: PlanQuotaService_Update
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/identity.service.v1.UpdatePlanQuotaRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/plans:
+        get:
+            tags:
+                - PlanService
+            description: 分页查询套餐列表
+            operationId: PlanService_List
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/identity.service.v1.ListPlanResponse'
+        post:
+            tags:
+                - PlanService
+            description: 创建套餐
+            operationId: PlanService_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/identity.service.v1.CreatePlanRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        delete:
+            tags:
+                - PlanService
+            description: 删除套餐
+            operationId: PlanService_Delete
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/plans/{id}:
+        get:
+            tags:
+                - PlanService
+            description: 查询套餐详情
+            operationId: PlanService_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: viewMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/identity.service.v1.Plan'
+        put:
+            tags:
+                - PlanService
+            description: 更新套餐
+            operationId: PlanService_Update
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/identity.service.v1.UpdatePlanRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/policy-evaluation-logs:
         get:
             tags:
@@ -4059,6 +4710,19 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/redis-cache-monitor:
+        get:
+            tags:
+                - RedisCacheMonitorService
+            description: 查询Redis缓存监控信息
+            operationId: RedisCacheMonitorService_Get
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/redis_cache.service.v1.RedisCacheMonitorInfo'
     /admin/v1/refresh-token:
         post:
             tags:
@@ -4078,6 +4742,26 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/authentication.service.v1.LoginResponse'
+    /admin/v1/register:
+        post:
+            tags:
+                - AuthenticationService
+            operationId: AuthenticationService_RegisterUser
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/authentication.service.v1.RegisterUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/authentication.service.v1.RegisterUserResponse'
+            security:
+                - {}
     /admin/v1/roles:
         get:
             tags:
@@ -4695,6 +5379,49 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/tenants/{id}/cleanup:
+        post:
+            tags:
+                - TenantService
+            description: 清理租户数据
+            operationId: TenantService_CleanupData
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/identity.service.v1.CleanupTenantDataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/tenants/{id}/usage:
+        get:
+            tags:
+                - TenantService
+            description: 查询租户用量与配额
+            operationId: TenantService_GetUsage
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/identity.service.v1.TenantUsage'
     /admin/v1/tenants:exists:
         get:
             tags:
@@ -5712,12 +6439,110 @@ components:
                     description: 日志创建时间
                     format: date-time
             description: 权限变更审计日志
+        authentication.service.v1.ConfirmEnrollMethodRequest:
+            type: object
+            properties:
+                method:
+                    enum:
+                        - MFA_METHOD_UNSPECIFIED
+                        - TOTP
+                        - SMS
+                        - EMAIL
+                        - U2F
+                        - WEBAUTHN
+                        - BACKUP_CODE
+                        - OTHER
+                    type: string
+                    format: enum
+                operationId:
+                    type: string
+                totpCode:
+                    type: string
+                sms:
+                    $ref: '#/components/schemas/authentication.service.v1.SMSVerification'
+                webauthn:
+                    $ref: '#/components/schemas/authentication.service.v1.WebAuthnAssertion'
+                backupCode:
+                    type: string
+                display:
+                    type: string
+                    description: 可选：设备/显示名
+            description: Confirm enroll
+        authentication.service.v1.ConfirmEnrollMethodResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                credentialId:
+                    type: string
         authentication.service.v1.CreateLoginPolicyRequest:
             type: object
             properties:
                 data:
                     $ref: '#/components/schemas/authentication.service.v1.LoginPolicy'
             description: 创建登录策略 - 请求
+        authentication.service.v1.DisableMFARequest:
+            type: object
+            properties:
+                credentialId:
+                    type: string
+                    description: 指定凭证 id 或仅按方法禁用全部
+                method:
+                    enum:
+                        - MFA_METHOD_UNSPECIFIED
+                        - TOTP
+                        - SMS
+                        - EMAIL
+                        - U2F
+                        - WEBAUTHN
+                        - BACKUP_CODE
+                        - OTHER
+                    type: string
+                    format: enum
+                password:
+                    type: string
+                totpCode:
+                    type: string
+                sms:
+                    $ref: '#/components/schemas/authentication.service.v1.SMSVerification'
+                webauthn:
+                    $ref: '#/components/schemas/authentication.service.v1.WebAuthnAssertion'
+                reason:
+                    type: string
+                userId:
+                    type: integer
+                    description: |-
+                        管理端重置：指定目标用户（不传=操作当前登录用户）。
+                         仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。
+                    format: uint32
+            description: Disable / remove
+        authentication.service.v1.EnrolledMethod:
+            type: object
+            properties:
+                id:
+                    type: string
+                method:
+                    enum:
+                        - MFA_METHOD_UNSPECIFIED
+                        - TOTP
+                        - SMS
+                        - EMAIL
+                        - U2F
+                        - WEBAUTHN
+                        - BACKUP_CODE
+                        - OTHER
+                    type: string
+                    format: enum
+                display:
+                    type: string
+                enabled:
+                    type: boolean
+                createdAt:
+                    type: string
+                    format: date-time
+                lastUsedAt:
+                    type: string
+                    format: date-time
         authentication.service.v1.GenerateCaptchaResponse:
             type: object
             properties:
@@ -5727,6 +6552,29 @@ components:
                 imageBase64:
                     type: string
                     description: 验证码图片的Base64编码字符串，客户端可以解码并显示给用户
+        authentication.service.v1.GetMFAStatusResponse:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                enrolled:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/authentication.service.v1.EnrolledMethod'
+                enforcement:
+                    enum:
+                        - MFA_NOT_REQUIRED
+                        - MFA_OPTIONAL
+                        - MFA_REQUIRED
+                    type: string
+                    format: enum
+        authentication.service.v1.ListEnrolledMethodsResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/authentication.service.v1.EnrolledMethod'
         authentication.service.v1.ListLoginPolicyResponse:
             type: object
             properties:
@@ -5901,7 +6749,101 @@ components:
                 id_token:
                     type: string
                     description: ID 令牌，OpenID Connect 扩展中定义的 JWT 格式令牌
+                mfa_operation_id:
+                    type: string
+                    description: MFA 挑战操作标识。非空表示登录需二次验证，此时 access_token 为空。
             description: 用户登录 - 回应
+        authentication.service.v1.RegisterUserRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                    description: 用户名
+                password:
+                    type: string
+                    description: 登入密码
+                tenantCode:
+                    type: string
+                    description: 租户代码
+                email:
+                    type: string
+                    description: 电子邮件地址
+                client_type:
+                    enum:
+                        - admin
+                        - app
+                    type: string
+                    description: 客户端类型
+                    format: enum
+        authentication.service.v1.RegisterUserResponse:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    description: 用户ID
+                    format: uint32
+        authentication.service.v1.SMSResult:
+            type: object
+            properties:
+                verificationId:
+                    type: string
+                smsSent:
+                    type: boolean
+                maskedPhone:
+                    type: string
+        authentication.service.v1.SMSVerification:
+            type: object
+            properties:
+                verificationId:
+                    type: string
+                code:
+                    type: string
+        authentication.service.v1.StartEnrollMethodRequest:
+            type: object
+            properties:
+                method:
+                    enum:
+                        - MFA_METHOD_UNSPECIFIED
+                        - TOTP
+                        - SMS
+                        - EMAIL
+                        - U2F
+                        - WEBAUTHN
+                        - BACKUP_CODE
+                        - OTHER
+                    type: string
+                    format: enum
+                phone:
+                    type: string
+                    description: 根据 method 可能需要额外参数（例如 SMS 需要 phone）
+                email:
+                    type: string
+            description: Start enroll
+        authentication.service.v1.StartEnrollMethodResponse:
+            type: object
+            properties:
+                totp:
+                    $ref: '#/components/schemas/authentication.service.v1.TOTPResult'
+                sms:
+                    $ref: '#/components/schemas/authentication.service.v1.SMSResult'
+                webauthn:
+                    $ref: '#/components/schemas/authentication.service.v1.WebAuthnResult'
+                expiresAt:
+                    type: string
+                    format: date-time
+                operationId:
+                    type: string
+                    description: 临时操作 id，用于 ConfirmEnrollMethod / 后续验证
+        authentication.service.v1.TOTPResult:
+            type: object
+            properties:
+                secret:
+                    type: string
+                    description: base32 secret：仅在注册时返回一次，服务端应只存哈希/引用
+                otpAuthUrl:
+                    type: string
+                qrCodeDataUri:
+                    type: string
         authentication.service.v1.UpdateLoginPolicyRequest:
             type: object
             properties:
@@ -5934,6 +6876,113 @@ components:
                 valid:
                     type: boolean
                     description: 验证码验证结果，true表示验证成功，false表示验证失败
+        authentication.service.v1.VerifyMFAChallengeRequest:
+            type: object
+            properties:
+                operationId:
+                    type: string
+                totpCode:
+                    type: string
+                sms:
+                    $ref: '#/components/schemas/authentication.service.v1.SMSVerification'
+                webauthn:
+                    $ref: '#/components/schemas/authentication.service.v1.WebAuthnAssertion'
+                backupCode:
+                    type: string
+        authentication.service.v1.WebAuthnAssertion:
+            type: object
+            properties:
+                id:
+                    type: string
+                clientDataJson:
+                    type: string
+                authenticatorData:
+                    type: string
+                signature:
+                    type: string
+                userHandle:
+                    type: string
+        authentication.service.v1.WebAuthnResult:
+            type: object
+            properties:
+                challenge:
+                    type: string
+                optionsJson:
+                    type: string
+                rpId:
+                    type: string
+        dashboard.service.v1.ActionDistributionResponse:
+            type: object
+            properties:
+                items:
+                    title: 分布项列表
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/dashboard.service.v1.DistributionItem'
+            description: 操作审计 action 分布响应
+        dashboard.service.v1.DashboardOverviewResponse:
+            type: object
+            properties:
+                userCount:
+                    title: 用户总数
+                    type: integer
+                    description: 活跃用户计数（软删/租户隔离由 Policy 处理）
+                    format: uint32
+                roleCount:
+                    title: 角色总数
+                    type: integer
+                    format: uint32
+                todayLoginCount:
+                    title: 今日登录次数
+                    type: integer
+                    format: uint32
+                todayOperationCount:
+                    title: 今日操作审计条数
+                    type: integer
+                    format: uint32
+            description: 概览统计卡片
+        dashboard.service.v1.DistributionItem:
+            type: object
+            properties:
+                label:
+                    title: 分组标签
+                    type: string
+                    description: action/status 枚举值字符串，由前端做 i18n 映射
+                count:
+                    title: 计数
+                    type: integer
+                    format: uint32
+            description: 通用分布项
+        dashboard.service.v1.LoginTrendResponse:
+            type: object
+            properties:
+                points:
+                    title: 趋势点列表
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/dashboard.service.v1.TrendPoint'
+            description: 登录趋势响应
+        dashboard.service.v1.StatusDistributionResponse:
+            type: object
+            properties:
+                items:
+                    title: 分布项列表
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/dashboard.service.v1.DistributionItem'
+            description: 登录审计 status 分布响应
+        dashboard.service.v1.TrendPoint:
+            type: object
+            properties:
+                date:
+                    title: 日期
+                    type: string
+                    description: 格式 YYYY-MM-DD
+                count:
+                    title: 当日登录次数
+                    type: integer
+                    format: uint32
+            description: 单日趋势点
         dict.service.v1.BatchCreateLanguagesRequest:
             type: object
             properties:
@@ -6268,12 +7317,39 @@ components:
                     type: string
                     description: 新密码
             description: 修改用户密码（需要验证旧密码） - 请求
+        identity.service.v1.CleanupTenantDataRequest:
+            type: object
+            properties:
+                id:
+                    readOnly: true
+                    type: integer
+                    description: 租户ID
+                    format: uint32
+            description: 清理租户数据 - 请求
         identity.service.v1.CreateOrgUnitRequest:
             type: object
             properties:
                 data:
                     $ref: '#/components/schemas/identity.service.v1.OrgUnit'
             description: 创建组织单元 - 请求
+        identity.service.v1.CreatePlanModuleRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/identity.service.v1.PlanModule'
+            description: 创建套餐模块 - 请求
+        identity.service.v1.CreatePlanQuotaRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/identity.service.v1.PlanQuota'
+            description: 创建套餐配额 - 请求
+        identity.service.v1.CreatePlanRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/identity.service.v1.Plan'
+            description: 创建套餐 - 请求
         identity.service.v1.CreatePositionRequest:
             type: object
             properties:
@@ -6343,6 +7419,36 @@ components:
                 total:
                     type: string
             description: 获取组织单元列表 - 答复
+        identity.service.v1.ListPlanModuleResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/identity.service.v1.PlanModule'
+                total:
+                    type: string
+            description: 套餐模块列表 - 答复
+        identity.service.v1.ListPlanQuotaResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/identity.service.v1.PlanQuota'
+                total:
+                    type: string
+            description: 套餐配额列表 - 答复
+        identity.service.v1.ListPlanResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/identity.service.v1.Plan'
+                total:
+                    type: string
+            description: 套餐列表 - 答复
         identity.service.v1.ListPositionResponse:
             type: object
             properties:
@@ -6559,6 +7665,169 @@ components:
                     type: string
                     description: 短信验证码
             description: 手机验证
+        identity.service.v1.Plan:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 套餐ID
+                    format: uint32
+                name:
+                    type: string
+                    description: 套餐名称
+                version:
+                    enum:
+                        - PLAN_VERSION_UNSPECIFIED
+                        - FREE
+                        - STANDARD
+                        - ENTERPRISE
+                    type: string
+                    description: 套餐版本
+                    format: enum
+                expiryPolicy:
+                    enum:
+                        - PLAN_EXPIRY_POLICY_UNSPECIFIED
+                        - READONLY
+                        - BLOCK_LOGIN
+                        - FREEZE
+                    type: string
+                    description: 到期处置策略
+                    format: enum
+                dataRetentionDays:
+                    type: integer
+                    description: 数据保留周期（天）
+                    format: uint32
+                description:
+                    type: string
+                    description: 描述
+                remark:
+                    type: string
+                    description: 备注
+                createdBy:
+                    type: integer
+                    description: 创建者ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 套餐
+        identity.service.v1.PlanModule:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 白名单项ID
+                    format: uint32
+                planId:
+                    type: integer
+                    description: 所属套餐ID
+                    format: uint32
+                module:
+                    enum:
+                        - MODULE_UNSPECIFIED
+                        - DASHBOARD
+                        - OPM
+                        - SYSTEM
+                        - DICT
+                        - TENANT
+                        - PERMISSION
+                        - LOG
+                        - INTERNAL_MESSAGE
+                        - FILE
+                        - TASK
+                    type: string
+                    description: 功能模块
+                    format: enum
+                createdBy:
+                    type: integer
+                    description: 创建者用户ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者用户ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 套餐模块
+        identity.service.v1.PlanQuota:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 配额项ID
+                    format: uint32
+                planId:
+                    type: integer
+                    description: 所属套餐ID
+                    format: uint32
+                quotaType:
+                    enum:
+                        - PLAN_QUOTA_TYPE_UNSPECIFIED
+                        - USER_LIMIT
+                        - STORAGE
+                        - API_CALL
+                    type: string
+                    description: 配额类型
+                    format: enum
+                quotaValue:
+                    type: string
+                    description: 配额值
+                createdBy:
+                    type: integer
+                    description: 创建者用户ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者用户ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 套餐配额
         identity.service.v1.Position:
             type: object
             properties:
@@ -6671,6 +7940,22 @@ components:
                     description: 删除时间
                     format: date-time
             description: 职位
+        identity.service.v1.QuotaUsage:
+            type: object
+            properties:
+                quotaType:
+                    enum:
+                        - PLAN_QUOTA_TYPE_UNSPECIFIED
+                        - USER_LIMIT
+                        - STORAGE
+                        - API_CALL
+                    type: string
+                    description: 配额类型
+                    format: enum
+                quotaValue:
+                    type: string
+                    description: 配额上限值
+            description: 配额用量项
         identity.service.v1.Tenant:
             type: object
             properties:
@@ -6751,6 +8036,10 @@ components:
                     type: string
                     description: 审核状态
                     format: enum
+                planId:
+                    type: integer
+                    description: 订阅套餐ID（引用套餐目录）
+                    format: uint32
                 createdBy:
                     type: integer
                     description: 创建者用户ID
@@ -6782,6 +8071,35 @@ components:
                 exist:
                     type: boolean
             description: 租户是否存在 - 答复
+        identity.service.v1.TenantUsage:
+            type: object
+            properties:
+                tenantId:
+                    type: integer
+                    description: 租户ID
+                    format: uint32
+                userCount:
+                    type: string
+                    description: 当前用户数
+                storageUsedBytes:
+                    type: string
+                    description: 存储占用字节数
+                apiCallCount:
+                    type: string
+                    description: API 调用次数
+                planId:
+                    type: integer
+                    description: 订阅套餐ID
+                    format: uint32
+                planName:
+                    type: string
+                    description: 订阅套餐名称
+                quotas:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/identity.service.v1.QuotaUsage'
+                    description: 配额上限列表
+            description: 租户用量与配额
         identity.service.v1.UpdateOrgUnitRequest:
             type: object
             properties:
@@ -6799,6 +8117,57 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新组织单元 - 请求
+        identity.service.v1.UpdatePlanModuleRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                data:
+                    $ref: '#/components/schemas/identity.service.v1.PlanModule'
+                updateMask:
+                    example: id,realname,username
+                    type: string
+                    description: 要更新的字段列表
+                    format: field-mask
+                allowMissing:
+                    type: boolean
+                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+            description: 更新套餐模块 -请求
+        identity.service.v1.UpdatePlanQuotaRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                data:
+                    $ref: '#/components/schemas/identity.service.v1.PlanQuota'
+                updateMask:
+                    example: id,realname,username
+                    type: string
+                    description: 要更新的字段列表
+                    format: field-mask
+                allowMissing:
+                    type: boolean
+                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+            description: 更新套餐配额 -请求
+        identity.service.v1.UpdatePlanRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                data:
+                    $ref: '#/components/schemas/identity.service.v1.Plan'
+                updateMask:
+                    example: id,realname,username
+                    type: string
+                    description: 要更新的字段列表
+                    format: field-mask
+                allowMissing:
+                    type: boolean
+                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+            description: 更新套餐 -请求
         identity.service.v1.UpdatePositionRequest:
             type: object
             properties:
@@ -8726,6 +10095,22 @@ components:
                     items:
                         $ref: '#/components/schemas/permission.service.v1.Menu'
                     description: 子节点树
+                module:
+                    enum:
+                        - MODULE_UNSPECIFIED
+                        - DASHBOARD
+                        - OPM
+                        - SYSTEM
+                        - DICT
+                        - TENANT
+                        - PERMISSION
+                        - LOG
+                        - INTERNAL_MESSAGE
+                        - FILE
+                        - TASK
+                    type: string
+                    description: 所属业务功能模块
+                    format: enum
                 createdBy:
                     type: integer
                     description: 创建者用户ID
@@ -9135,6 +10520,13 @@ components:
                     description: 删除时间
                     format: date-time
             description: 角色
+        permission.service.v1.SyncMenusRequest:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/permission.service.v1.Menu'
         permission.service.v1.UpdateApiRequest:
             type: object
             properties:
@@ -9220,6 +10612,57 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新角色 - 请求
+        redis_cache.service.v1.InfoEntry:
+            type: object
+            properties:
+                key:
+                    type: string
+                value:
+                    type: string
+            description: INFO 输出的单个 key/value 对
+        redis_cache.service.v1.InfoSection:
+            type: object
+            properties:
+                name:
+                    type: string
+                entries:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/redis_cache.service.v1.InfoEntry'
+            description: INFO 输出的单个 section
+        redis_cache.service.v1.RedisCacheMonitorInfo:
+            type: object
+            properties:
+                sections:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/redis_cache.service.v1.InfoSection'
+                dbSize:
+                    type: string
+                slowlog:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/redis_cache.service.v1.SlowLogEntry'
+            description: Redis缓存监控信息
+        redis_cache.service.v1.SlowLogEntry:
+            type: object
+            properties:
+                id:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
+                durationUsec:
+                    type: string
+                args:
+                    type: array
+                    items:
+                        type: string
+                clientAddr:
+                    type: string
+                clientName:
+                    type: string
+            description: SLOWLOG GET 返回的单条慢日志
         storage.service.v1.CreateFileRequest:
             type: object
             properties:
@@ -9669,6 +11112,8 @@ tags:
       description: 用户后台登录认证服务
     - name: BusinessTripService
       description: OA 出差申请管理服务（admin 边端）
+    - name: DashboardService
+      description: 后台首页分析概览服务（HTTP BFF，转发 core DashboardService）
     - name: DataAccessAuditLogService
       description: 数据访问审计日志管理服务
     - name: DictEntryService
@@ -9697,6 +11142,12 @@ tags:
       description: 登录策略管理服务
     - name: MenuService
       description: 后台菜单管理服务
+    - name: MfaService
+      description: |-
+        MFA（多因素认证）服务 HTTP 桥接。
+         管理侧 RPC（GetMFAStatus/ListEnrolledMethods/StartEnrollMethod/ConfirmEnrollMethod/
+         DisableMFA/RevokeMFADevice）需登录态，走正常 auth+authz 中间件，不加 security:{}。
+         登录挑战侧 RPC（VerifyMFAChallenge）免鉴权，加 security:{} 并加入 rest_server 白名单。
     - name: OperationAuditLogService
       description: 操作审计日志管理服务
     - name: OrgUnitService
@@ -9711,10 +11162,18 @@ tags:
       description: 权限组管理服务
     - name: PermissionService
       description: 权限点管理服务
+    - name: PlanModuleService
+      description: 套餐模块白名单管理服务
+    - name: PlanQuotaService
+      description: 套餐配额管理服务
+    - name: PlanService
+      description: 套餐管理服务
     - name: PolicyEvaluationLogService
       description: 策略评估日志服务
     - name: PositionService
       description: 职位管理服务
+    - name: RedisCacheMonitorService
+      description: Redis缓存监控管理服务（只读）
     - name: RoleService
       description: 角色管理服务
     - name: SealApplicationService

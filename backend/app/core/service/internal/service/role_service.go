@@ -445,3 +445,41 @@ func (s *RoleService) createDefaultRoles(ctx context.Context) error {
 
 	return nil
 }
+
+// GetRoleCodesByRoleIds 根据角色ID列表获取角色值列表
+func (s *RoleService) GetRoleCodesByRoleIds(ctx context.Context, req *permissionV1.GetRoleCodesByRoleIdsRequest) (*permissionV1.GetRoleCodesByRoleIdsResponse, error) {
+	ids, err := s.roleRepo.ListRoleCodesByRoleIds(ctx, req.GetRoleIds())
+	if err != nil {
+		return nil, err
+	}
+
+	return &permissionV1.GetRoleCodesByRoleIdsResponse{
+		RoleCodes: ids,
+	}, nil
+}
+
+// GetRolesByRoleCodes 根据角色值列表获取角色列表
+func (s *RoleService) GetRolesByRoleCodes(ctx context.Context, req *permissionV1.GetRolesByRoleCodesRequest) (*permissionV1.ListRoleResponse, error) {
+	roles, err := s.roleRepo.ListRolesByRoleCodes(ctx, req.GetRoleCodes())
+	if err != nil {
+		return nil, err
+	}
+
+	return &permissionV1.ListRoleResponse{
+		Items: roles,
+		Total: uint64(len(roles)),
+	}, nil
+}
+
+// GetRolesByRoleIds 根据角色ID列表获取角色列表
+func (s *RoleService) GetRolesByRoleIds(ctx context.Context, req *permissionV1.GetRolesByRoleIdsRequest) (*permissionV1.ListRoleResponse, error) {
+	roles, err := s.roleRepo.ListRolesByRoleIds(ctx, req.GetRoleIds())
+	if err != nil {
+		return nil, err
+	}
+
+	return &permissionV1.ListRoleResponse{
+		Items: roles,
+		Total: uint64(len(roles)),
+	}, nil
+}

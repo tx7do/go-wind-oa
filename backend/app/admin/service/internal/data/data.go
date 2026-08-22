@@ -18,6 +18,8 @@ import (
 	"github.com/tx7do/go-utils/captcha"
 
 	auditV1 "go-wind-oa/api/gen/go/audit/service/v1"
+	dashboardV1 "go-wind-oa/api/gen/go/dashboard/service/v1"
+	redisCacheV1 "go-wind-oa/api/gen/go/redis_cache/service/v1"
 	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
 	dictV1 "go-wind-oa/api/gen/go/dict/service/v1"
 	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
@@ -349,6 +351,60 @@ func NewLoginAuditLogServiceClient(ctx *bootstrap.Context, r registry.Discovery)
 	}
 
 	return auditV1.NewLoginAuditLogServiceClient(cli)
+}
+
+func NewPlanServiceClient(ctx *bootstrap.Context, r registry.Discovery) identityV1.PlanServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return identityV1.NewPlanServiceClient(cli)
+}
+
+func NewPlanModuleServiceClient(ctx *bootstrap.Context, r registry.Discovery) identityV1.PlanModuleServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return identityV1.NewPlanModuleServiceClient(cli)
+}
+
+func NewPlanQuotaServiceClient(ctx *bootstrap.Context, r registry.Discovery) identityV1.PlanQuotaServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return identityV1.NewPlanQuotaServiceClient(cli)
+}
+
+func NewMfaServiceClient(ctx *bootstrap.Context, r registry.Discovery) authenticationV1.MFAServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return authenticationV1.NewMFAServiceClient(cli)
+}
+
+func NewRedisCacheMonitorServiceClient(ctx *bootstrap.Context, r registry.Discovery) redisCacheV1.RedisCacheMonitorServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return redisCacheV1.NewRedisCacheMonitorServiceClient(cli)
+}
+
+func NewDashboardServiceClient(ctx *bootstrap.Context, r registry.Discovery) dashboardV1.DashboardServiceClient {
+	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
+	if err != nil {
+		return nil
+	}
+
+	return dashboardV1.NewDashboardServiceClient(cli)
 }
 
 func NewOperationAuditLogServiceClient(ctx *bootstrap.Context, r registry.Discovery) auditV1.OperationAuditLogServiceClient {

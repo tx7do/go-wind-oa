@@ -11,6 +11,8 @@ import (
 	"go-wind-oa/app/core/service/internal/service"
 
 	auditV1 "go-wind-oa/api/gen/go/audit/service/v1"
+	dashboardV1 "go-wind-oa/api/gen/go/dashboard/service/v1"
+	redisCacheV1 "go-wind-oa/api/gen/go/redis_cache/service/v1"
 	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
 	dictV1 "go-wind-oa/api/gen/go/dict/service/v1"
 	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
@@ -61,6 +63,12 @@ func NewGrpcServer(
 	policyEvaluationLogService *service.PolicyEvaluationLogService,
 
 	loginAuditLogService *service.LoginAuditLogService,
+	dashboardService *service.DashboardService,
+	planService *service.PlanService,
+	planModuleService *service.PlanModuleService,
+	planQuotaService *service.PlanQuotaService,
+	mfaService *service.MFAService,
+	redisCacheMonitorService *service.RedisCacheMonitorService,
 	apiAuditLogService *service.ApiAuditLogService,
 	operationAuditLogService *service.OperationAuditLogService,
 	dataAccessAuditLogService *service.DataAccessAuditLogService,
@@ -113,6 +121,16 @@ func NewGrpcServer(
 	identityV1.RegisterTenantServiceServer(srv, tenantService)
 
 	auditV1.RegisterLoginAuditLogServiceServer(srv, loginAuditLogService)
+
+	dashboardV1.RegisterDashboardServiceServer(srv, dashboardService)
+
+	identityV1.RegisterPlanServiceServer(srv, planService)
+	identityV1.RegisterPlanModuleServiceServer(srv, planModuleService)
+	identityV1.RegisterPlanQuotaServiceServer(srv, planQuotaService)
+
+	authenticationV1.RegisterMFAServiceServer(srv, mfaService)
+
+	redisCacheV1.RegisterRedisCacheMonitorServiceServer(srv, redisCacheMonitorService)
 	auditV1.RegisterApiAuditLogServiceServer(srv, apiAuditLogService)
 	auditV1.RegisterOperationAuditLogServiceServer(srv, operationAuditLogService)
 	auditV1.RegisterDataAccessAuditLogServiceServer(srv, dataAccessAuditLogService)

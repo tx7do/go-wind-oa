@@ -143,3 +143,13 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 
 	return s.tenantServiceClient.CreateTenantWithAdminUser(ctx, req)
 }
+
+// GetUsage 查询租户用量与配额（转发 core TenantService）。
+func (s *TenantService) GetUsage(ctx context.Context, req *identityV1.GetTenantUsageRequest) (*identityV1.TenantUsage, error) {
+	return s.tenantServiceClient.GetUsage(ctx, req)
+}
+
+// CleanupData 清理租户数据（转发 core TenantService）。
+func (s *TenantService) CleanupData(ctx context.Context, req *identityV1.CleanupTenantDataRequest) (*emptypb.Empty, error) {
+	return s.tenantServiceClient.CleanupData(ctx, req)
+}

@@ -28,7 +28,7 @@ var File_admin_service_v1_i_tenant_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_tenant_proto_rawDesc = "" +
 	"\n" +
-	"\x1fadmin/service/v1/i_tenant.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a identity/service/v1/tenant.proto\x1a\x1eidentity/service/v1/user.proto2\xc4\x06\n" +
+	"\x1fadmin/service/v1/i_tenant.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a identity/service/v1/tenant.proto\x1a\x1eidentity/service/v1/user.proto2\xc5\b\n" +
 	"\rTenantService\x12e\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a'.identity.service.v1.ListTenantResponse\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/admin/v1/tenants\x12i\n" +
 	"\x03Get\x12%.identity.service.v1.GetTenantRequest\x1a\x1b.identity.service.v1.Tenant\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/admin/v1/tenants/{id}\x12h\n" +
@@ -36,7 +36,9 @@ const file_admin_service_v1_i_tenant_proto_rawDesc = "" +
 	"\x06Update\x12(.identity.service.v1.UpdateTenantRequest\x1a\x16.google.protobuf.Empty\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\x1a\x16/admin/v1/tenants/{id}\x12j\n" +
 	"\x06Delete\x12(.identity.service.v1.DeleteTenantRequest\x1a\x16.google.protobuf.Empty\"\x1e\x82\xd3\xe4\x93\x02\x18*\x16/admin/v1/tenants/{id}\x12\x93\x01\n" +
 	"\x19CreateTenantWithAdminUser\x125.identity.service.v1.CreateTenantWithAdminUserRequest\x1a\x16.google.protobuf.Empty\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/admin/v1/tenants:with-admin\x12\x85\x01\n" +
-	"\fTenantExists\x12(.identity.service.v1.TenantExistsRequest\x1a).identity.service.v1.TenantExistsResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/admin/v1/tenants:existsB\xb6\x01\n" +
+	"\fTenantExists\x12(.identity.service.v1.TenantExistsRequest\x1a).identity.service.v1.TenantExistsResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/admin/v1/tenants:exists\x12~\n" +
+	"\bGetUsage\x12*.identity.service.v1.GetTenantUsageRequest\x1a .identity.service.v1.TenantUsage\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/admin/v1/tenants/{id}/usage\x12\x7f\n" +
+	"\vCleanupData\x12-.identity.service.v1.CleanupTenantDataRequest\x1a\x16.google.protobuf.Empty\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/admin/v1/tenants/{id}/cleanupB\xb6\x01\n" +
 	"\x14com.admin.service.v1B\fITenantProtoP\x01Z.go-wind-oa/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_tenant_proto_goTypes = []any{
@@ -47,10 +49,13 @@ var file_admin_service_v1_i_tenant_proto_goTypes = []any{
 	(*v11.DeleteTenantRequest)(nil),              // 4: identity.service.v1.DeleteTenantRequest
 	(*v11.CreateTenantWithAdminUserRequest)(nil), // 5: identity.service.v1.CreateTenantWithAdminUserRequest
 	(*v11.TenantExistsRequest)(nil),              // 6: identity.service.v1.TenantExistsRequest
-	(*v11.ListTenantResponse)(nil),               // 7: identity.service.v1.ListTenantResponse
-	(*v11.Tenant)(nil),                           // 8: identity.service.v1.Tenant
-	(*emptypb.Empty)(nil),                        // 9: google.protobuf.Empty
-	(*v11.TenantExistsResponse)(nil),             // 10: identity.service.v1.TenantExistsResponse
+	(*v11.GetTenantUsageRequest)(nil),            // 7: identity.service.v1.GetTenantUsageRequest
+	(*v11.CleanupTenantDataRequest)(nil),         // 8: identity.service.v1.CleanupTenantDataRequest
+	(*v11.ListTenantResponse)(nil),               // 9: identity.service.v1.ListTenantResponse
+	(*v11.Tenant)(nil),                           // 10: identity.service.v1.Tenant
+	(*emptypb.Empty)(nil),                        // 11: google.protobuf.Empty
+	(*v11.TenantExistsResponse)(nil),             // 12: identity.service.v1.TenantExistsResponse
+	(*v11.TenantUsage)(nil),                      // 13: identity.service.v1.TenantUsage
 }
 var file_admin_service_v1_i_tenant_proto_depIdxs = []int32{
 	0,  // 0: admin.service.v1.TenantService.List:input_type -> pagination.PagingRequest
@@ -60,15 +65,19 @@ var file_admin_service_v1_i_tenant_proto_depIdxs = []int32{
 	4,  // 4: admin.service.v1.TenantService.Delete:input_type -> identity.service.v1.DeleteTenantRequest
 	5,  // 5: admin.service.v1.TenantService.CreateTenantWithAdminUser:input_type -> identity.service.v1.CreateTenantWithAdminUserRequest
 	6,  // 6: admin.service.v1.TenantService.TenantExists:input_type -> identity.service.v1.TenantExistsRequest
-	7,  // 7: admin.service.v1.TenantService.List:output_type -> identity.service.v1.ListTenantResponse
-	8,  // 8: admin.service.v1.TenantService.Get:output_type -> identity.service.v1.Tenant
-	9,  // 9: admin.service.v1.TenantService.Create:output_type -> google.protobuf.Empty
-	9,  // 10: admin.service.v1.TenantService.Update:output_type -> google.protobuf.Empty
-	9,  // 11: admin.service.v1.TenantService.Delete:output_type -> google.protobuf.Empty
-	9,  // 12: admin.service.v1.TenantService.CreateTenantWithAdminUser:output_type -> google.protobuf.Empty
-	10, // 13: admin.service.v1.TenantService.TenantExists:output_type -> identity.service.v1.TenantExistsResponse
-	7,  // [7:14] is the sub-list for method output_type
-	0,  // [0:7] is the sub-list for method input_type
+	7,  // 7: admin.service.v1.TenantService.GetUsage:input_type -> identity.service.v1.GetTenantUsageRequest
+	8,  // 8: admin.service.v1.TenantService.CleanupData:input_type -> identity.service.v1.CleanupTenantDataRequest
+	9,  // 9: admin.service.v1.TenantService.List:output_type -> identity.service.v1.ListTenantResponse
+	10, // 10: admin.service.v1.TenantService.Get:output_type -> identity.service.v1.Tenant
+	11, // 11: admin.service.v1.TenantService.Create:output_type -> google.protobuf.Empty
+	11, // 12: admin.service.v1.TenantService.Update:output_type -> google.protobuf.Empty
+	11, // 13: admin.service.v1.TenantService.Delete:output_type -> google.protobuf.Empty
+	11, // 14: admin.service.v1.TenantService.CreateTenantWithAdminUser:output_type -> google.protobuf.Empty
+	12, // 15: admin.service.v1.TenantService.TenantExists:output_type -> identity.service.v1.TenantExistsResponse
+	13, // 16: admin.service.v1.TenantService.GetUsage:output_type -> identity.service.v1.TenantUsage
+	11, // 17: admin.service.v1.TenantService.CleanupData:output_type -> google.protobuf.Empty
+	9,  // [9:18] is the sub-list for method output_type
+	0,  // [0:9] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

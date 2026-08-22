@@ -3,6 +3,7 @@ package ent
 import (
 	"context"
 	"reflect"
+	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
@@ -49,10 +50,27 @@ func Server() middleware.Middleware {
 
 			if md == nil {
 				ctx = viewer.WithContext(ctx, appViewer.NewSystemViewer())
-				return handler(ctx, req)
+			} else {
+				ctx = viewer.WithContext(ctx, metaDataToUserViewerContext(md, traceID))
 			}
 
-			ctx = viewer.WithContext(ctx, metaDataToUserViewerContext(md, traceID))
+			// TEMP DIAGNOSTIC (oa-viewer-propagation): 记录 /oa/ 请求最终注入的
+			// viewer 身份，用于区分两种导致 "missing viewer context" 的情形：
+			//   md_nil=true  → (a) OperatorMetadata 未从 admin BFF 传播到 core
+			//   md_nil=false 且 tid/uid==0 → (b) 调用方为平台管理员（tenant_id=0）
+			//   md_nil=false 且 tid/uid!=0 → 链路正常（不应出现 403）
+			// 诊断完成后删除此块。
+			if tdbg, _ := transport.FromServerContext(ctx); tdbg != nil {
+				if op := tdbg.Operation(); strings.Contains(op, "/oa/") {
+					vtid, vuid := uint64(0), uint64(0)
+					if vc, exist := viewer.FromContext(ctx); exist && vc != nil {
+						vtid = vc.TenantID()
+						vuid = vc.UserID()
+					}
+					log.Warnf("oa-viewer-diag: op=%s md_err=%v md_nil=%v tid=%d uid=%d",
+						tdbg.Operation(), err, md == nil, vtid, vuid)
+				}
+			}
 
 			return handler(ctx, req)
 		}

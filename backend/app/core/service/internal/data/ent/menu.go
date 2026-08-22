@@ -54,6 +54,8 @@ type Menu struct {
 	Component *string `json:"component,omitempty"`
 	// 路由元信息
 	Meta *permissionpb.MenuMeta `json:"meta,omitempty"`
+	// 所属业务功能模块（用于套餐白名单过滤）
+	Module *menu.Module `json:"module,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MenuQuery when eager-loading is set.
 	Edges        MenuEdges `json:"edges"`
@@ -100,7 +102,7 @@ func (*Menu) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case menu.FieldID, menu.FieldCreatedBy, menu.FieldUpdatedBy, menu.FieldDeletedBy, menu.FieldParentID, menu.FieldTenantID:
 			values[i] = new(sql.NullInt64)
-		case menu.FieldRemark, menu.FieldStatus, menu.FieldType, menu.FieldPath, menu.FieldRedirect, menu.FieldAlias, menu.FieldName, menu.FieldComponent:
+		case menu.FieldRemark, menu.FieldStatus, menu.FieldType, menu.FieldPath, menu.FieldRedirect, menu.FieldAlias, menu.FieldName, menu.FieldComponent, menu.FieldModule:
 			values[i] = new(sql.NullString)
 		case menu.FieldCreatedAt, menu.FieldUpdatedAt, menu.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -245,6 +247,13 @@ func (_m *Menu) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field meta: %w", err)
 				}
 			}
+		case menu.FieldModule:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field module", values[i])
+			} else if value.Valid {
+				_m.Module = new(menu.Module)
+				*_m.Module = menu.Module(value.String)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -373,6 +382,11 @@ func (_m *Menu) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("meta=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Meta))
+	builder.WriteString(", ")
+	if v := _m.Module; v != nil {
+		builder.WriteString("module=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

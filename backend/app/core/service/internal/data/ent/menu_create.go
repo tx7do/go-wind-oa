@@ -253,6 +253,20 @@ func (_c *MenuCreate) SetMeta(v *permissionpb.MenuMeta) *MenuCreate {
 	return _c
 }
 
+// SetModule sets the "module" field.
+func (_c *MenuCreate) SetModule(v menu.Module) *MenuCreate {
+	_c.mutation.SetModule(v)
+	return _c
+}
+
+// SetNillableModule sets the "module" field if the given value is not nil.
+func (_c *MenuCreate) SetNillableModule(v *menu.Module) *MenuCreate {
+	if v != nil {
+		_c.SetModule(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *MenuCreate) SetID(v uint32) *MenuCreate {
 	_c.mutation.SetID(v)
@@ -359,6 +373,11 @@ func (_c *MenuCreate) check() error {
 			return &ValidationError{Name: "meta", err: fmt.Errorf(`ent: validator failed for field "Menu.meta": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.Module(); ok {
+		if err := menu.ModuleValidator(v); err != nil {
+			return &ValidationError{Name: "module", err: fmt.Errorf(`ent: validator failed for field "Menu.module": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := menu.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Menu.id": %w`, err)}
@@ -460,6 +479,10 @@ func (_c *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Meta(); ok {
 		_spec.SetField(menu.FieldMeta, field.TypeJSON, value)
 		_node.Meta = value
+	}
+	if value, ok := _c.mutation.Module(); ok {
+		_spec.SetField(menu.FieldModule, field.TypeEnum, value)
+		_node.Module = &value
 	}
 	if nodes := _c.mutation.ParentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -825,6 +848,24 @@ func (u *MenuUpsert) UpdateMeta() *MenuUpsert {
 // ClearMeta clears the value of the "meta" field.
 func (u *MenuUpsert) ClearMeta() *MenuUpsert {
 	u.SetNull(menu.FieldMeta)
+	return u
+}
+
+// SetModule sets the "module" field.
+func (u *MenuUpsert) SetModule(v menu.Module) *MenuUpsert {
+	u.Set(menu.FieldModule, v)
+	return u
+}
+
+// UpdateModule sets the "module" field to the value that was provided on create.
+func (u *MenuUpsert) UpdateModule() *MenuUpsert {
+	u.SetExcluded(menu.FieldModule)
+	return u
+}
+
+// ClearModule clears the value of the "module" field.
+func (u *MenuUpsert) ClearModule() *MenuUpsert {
+	u.SetNull(menu.FieldModule)
 	return u
 }
 
@@ -1208,6 +1249,27 @@ func (u *MenuUpsertOne) UpdateMeta() *MenuUpsertOne {
 func (u *MenuUpsertOne) ClearMeta() *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.ClearMeta()
+	})
+}
+
+// SetModule sets the "module" field.
+func (u *MenuUpsertOne) SetModule(v menu.Module) *MenuUpsertOne {
+	return u.Update(func(s *MenuUpsert) {
+		s.SetModule(v)
+	})
+}
+
+// UpdateModule sets the "module" field to the value that was provided on create.
+func (u *MenuUpsertOne) UpdateModule() *MenuUpsertOne {
+	return u.Update(func(s *MenuUpsert) {
+		s.UpdateModule()
+	})
+}
+
+// ClearModule clears the value of the "module" field.
+func (u *MenuUpsertOne) ClearModule() *MenuUpsertOne {
+	return u.Update(func(s *MenuUpsert) {
+		s.ClearModule()
 	})
 }
 
@@ -1757,6 +1819,27 @@ func (u *MenuUpsertBulk) UpdateMeta() *MenuUpsertBulk {
 func (u *MenuUpsertBulk) ClearMeta() *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.ClearMeta()
+	})
+}
+
+// SetModule sets the "module" field.
+func (u *MenuUpsertBulk) SetModule(v menu.Module) *MenuUpsertBulk {
+	return u.Update(func(s *MenuUpsert) {
+		s.SetModule(v)
+	})
+}
+
+// UpdateModule sets the "module" field to the value that was provided on create.
+func (u *MenuUpsertBulk) UpdateModule() *MenuUpsertBulk {
+	return u.Update(func(s *MenuUpsert) {
+		s.UpdateModule()
+	})
+}
+
+// ClearModule clears the value of the "module" field.
+func (u *MenuUpsertBulk) ClearModule() *MenuUpsertBulk {
+	return u.Update(func(s *MenuUpsert) {
+		s.ClearModule()
 	})
 }
 

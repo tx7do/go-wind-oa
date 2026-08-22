@@ -1577,6 +1577,7 @@ var (
 		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "路由命名，然后我们可以使用 name 而不是 path 来传递 to 属性给 <router-link>。"},
 		{Name: "component", Type: field.TypeString, Nullable: true, Comment: "前端页面组件", Default: ""},
 		{Name: "meta", Type: field.TypeJSON, Nullable: true, Comment: "路由元信息"},
+		{Name: "module", Type: field.TypeEnum, Nullable: true, Comment: "所属业务功能模块（用于套餐白名单过滤）", Enums: []string{"DASHBOARD", "OPM", "SYSTEM", "DICT", "TENANT", "PERMISSION", "LOG", "INTERNAL_MESSAGE", "FILE", "TASK"}},
 		{Name: "parent_id", Type: field.TypeUint32, Nullable: true, Comment: "父节点ID"},
 	}
 	// SysMenusTable holds the schema information for the "sys_menus" table.
@@ -1588,7 +1589,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "sys_menus_sys_menus_children",
-				Columns:    []*schema.Column{SysMenusColumns[17]},
+				Columns:    []*schema.Column{SysMenusColumns[18]},
 				RefColumns: []*schema.Column{SysMenusColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1597,12 +1598,12 @@ var (
 			{
 				Name:    "idx_sys_menu_parent_name",
 				Unique:  true,
-				Columns: []*schema.Column{SysMenusColumns[17], SysMenusColumns[14]},
+				Columns: []*schema.Column{SysMenusColumns[18], SysMenusColumns[14]},
 			},
 			{
 				Name:    "idx_sys_menu_parent_path",
 				Unique:  true,
-				Columns: []*schema.Column{SysMenusColumns[17], SysMenusColumns[11]},
+				Columns: []*schema.Column{SysMenusColumns[18], SysMenusColumns[11]},
 			},
 			{
 				Name:    "idx_sys_menu_path",
@@ -1620,6 +1621,11 @@ var (
 				Columns: []*schema.Column{SysMenusColumns[15]},
 			},
 			{
+				Name:    "idx_sys_menu_module",
+				Unique:  false,
+				Columns: []*schema.Column{SysMenusColumns[17]},
+			},
+			{
 				Name:    "idx_sys_menu_type",
 				Unique:  false,
 				Columns: []*schema.Column{SysMenusColumns[10]},
@@ -1632,7 +1638,7 @@ var (
 			{
 				Name:    "idx_sys_menu_parent",
 				Unique:  false,
-				Columns: []*schema.Column{SysMenusColumns[17]},
+				Columns: []*schema.Column{SysMenusColumns[18]},
 			},
 			{
 				Name:    "idx_sys_menu_created_by_created_at",
@@ -2232,6 +2238,105 @@ var (
 			},
 		},
 	}
+	// SysPlansColumns holds the columns for the "sys_plans" table.
+	SysPlansColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "套餐名称"},
+		{Name: "version", Type: field.TypeEnum, Nullable: true, Comment: "套餐版本", Enums: []string{"FREE", "STANDARD", "ENTERPRISE"}, Default: "FREE"},
+		{Name: "expiry_policy", Type: field.TypeEnum, Nullable: true, Comment: "到期处置策略", Enums: []string{"READONLY", "BLOCK_LOGIN", "FREEZE"}, Default: "READONLY"},
+		{Name: "data_retention_days", Type: field.TypeUint32, Nullable: true, Comment: "数据保留周期（天）"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
+	}
+	// SysPlansTable holds the schema information for the "sys_plans" table.
+	SysPlansTable = &schema.Table{
+		Name:       "sys_plans",
+		Comment:    "套餐目录表",
+		Columns:    SysPlansColumns,
+		PrimaryKey: []*schema.Column{SysPlansColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_sys_plans_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPlansColumns[1]},
+			},
+		},
+	}
+	// SysPlanModulesColumns holds the columns for the "sys_plan_modules" table.
+	SysPlanModulesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "module", Type: field.TypeEnum, Nullable: true, Comment: "功能模块", Enums: []string{"DASHBOARD", "OPM", "SYSTEM", "DICT", "TENANT", "PERMISSION", "LOG", "INTERNAL_MESSAGE", "FILE", "TASK"}},
+		{Name: "plan_id", Type: field.TypeUint32, Nullable: true},
+	}
+	// SysPlanModulesTable holds the schema information for the "sys_plan_modules" table.
+	SysPlanModulesTable = &schema.Table{
+		Name:       "sys_plan_modules",
+		Comment:    "套餐功能模块白名单表",
+		Columns:    SysPlanModulesColumns,
+		PrimaryKey: []*schema.Column{SysPlanModulesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sys_plan_modules_sys_plans_modules",
+				Columns:    []*schema.Column{SysPlanModulesColumns[8]},
+				RefColumns: []*schema.Column{SysPlansColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_sys_plan_modules_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPlanModulesColumns[1]},
+			},
+		},
+	}
+	// SysPlanQuotasColumns holds the columns for the "sys_plan_quotas" table.
+	SysPlanQuotasColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "quota_type", Type: field.TypeEnum, Nullable: true, Comment: "配额类型", Enums: []string{"USER_LIMIT", "STORAGE", "API_CALL"}},
+		{Name: "quota_value", Type: field.TypeUint64, Nullable: true, Comment: "配额值"},
+		{Name: "plan_id", Type: field.TypeUint32, Nullable: true},
+	}
+	// SysPlanQuotasTable holds the schema information for the "sys_plan_quotas" table.
+	SysPlanQuotasTable = &schema.Table{
+		Name:       "sys_plan_quotas",
+		Comment:    "套餐配额表",
+		Columns:    SysPlanQuotasColumns,
+		PrimaryKey: []*schema.Column{SysPlanQuotasColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sys_plan_quotas_sys_plans_quotas",
+				Columns:    []*schema.Column{SysPlanQuotasColumns[9]},
+				RefColumns: []*schema.Column{SysPlansColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_sys_plan_quotas_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPlanQuotasColumns[1]},
+			},
+		},
+	}
 	// SysPolicyEvaluationLogsColumns holds the columns for the "sys_policy_evaluation_logs" table.
 	SysPolicyEvaluationLogsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -2760,6 +2865,7 @@ var (
 		{Name: "unsubscribe_at", Type: field.TypeTime, Nullable: true, Comment: "取消订阅时间"},
 		{Name: "subscription_plan", Type: field.TypeString, Nullable: true, Comment: "订阅套餐"},
 		{Name: "expired_at", Type: field.TypeTime, Nullable: true, Comment: "租户有效期"},
+		{Name: "plan_id", Type: field.TypeUint32, Nullable: true},
 	}
 	// SysTenantsTable holds the schema information for the "sys_tenants" table.
 	SysTenantsTable = &schema.Table{
@@ -2767,6 +2873,14 @@ var (
 		Comment:    "租户表",
 		Columns:    SysTenantsColumns,
 		PrimaryKey: []*schema.Column{SysTenantsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sys_tenants_sys_plans_tenants",
+				Columns:    []*schema.Column{SysTenantsColumns[21]},
+				RefColumns: []*schema.Column{SysPlansColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "idx_sys_tenant_name",
@@ -2961,6 +3075,39 @@ var (
 				Name:    "idx_sys_user_cred_tenant_activate_expires_at",
 				Unique:  false,
 				Columns: []*schema.Column{SysUserCredentialsColumns[4], SysUserCredentialsColumns[16]},
+			},
+		},
+	}
+	// SysUserMfaFactorsColumns holds the columns for the "sys_user_mfa_factors" table.
+	SysUserMfaFactorsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "user_id", Type: field.TypeUint32, Nullable: true, Comment: "关联主表的用户ID"},
+		{Name: "method", Type: field.TypeEnum, Nullable: true, Comment: "MFA 方法", Enums: []string{"TOTP", "SMS", "EMAIL", "WEBAUTHN"}, Default: "TOTP"},
+		{Name: "secret_hash", Type: field.TypeString, Nullable: true, Size: 512, Comment: "MFA secret 密文（AES-GCM 加密，base64 编码；TOTP 校验需还原明文）"},
+		{Name: "display_name", Type: field.TypeString, Nullable: true, Size: 128, Comment: "设备/因子展示名（用户自定义）"},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "因子状态", Enums: []string{"DISABLED", "ENABLED"}, Default: "ENABLED"},
+		{Name: "last_used_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次用于验证的时间"},
+	}
+	// SysUserMfaFactorsTable holds the schema information for the "sys_user_mfa_factors" table.
+	SysUserMfaFactorsTable = &schema.Table{
+		Name:       "sys_user_mfa_factors",
+		Comment:    "用户 MFA 因子表",
+		Columns:    SysUserMfaFactorsColumns,
+		PrimaryKey: []*schema.Column{SysUserMfaFactorsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_sys_user_mfa_tenant_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysUserMfaFactorsColumns[4], SysUserMfaFactorsColumns[5]},
+			},
+			{
+				Name:    "idx_sys_user_mfa_tenant_uid_method",
+				Unique:  true,
+				Columns: []*schema.Column{SysUserMfaFactorsColumns[4], SysUserMfaFactorsColumns[5], SysUserMfaFactorsColumns[6]},
 			},
 		},
 	}
@@ -3444,6 +3591,9 @@ var (
 		SysPermissionGroupsTable,
 		SysPermissionMenusTable,
 		SysPermissionPoliciesTable,
+		SysPlansTable,
+		SysPlanModulesTable,
+		SysPlanQuotasTable,
 		SysPolicyEvaluationLogsTable,
 		SysPositionsTable,
 		SysRolesTable,
@@ -3454,6 +3604,7 @@ var (
 		SysTenantsTable,
 		SysUsersTable,
 		SysUserCredentialsTable,
+		SysUserMfaFactorsTable,
 		SysUserOrgUnitsTable,
 		SysUserPositionsTable,
 		SysUserRolesTable,
@@ -3656,6 +3807,23 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
+	SysPlansTable.Annotation = &entsql.Annotation{
+		Table:     "sys_plans",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysPlanModulesTable.ForeignKeys[0].RefTable = SysPlansTable
+	SysPlanModulesTable.Annotation = &entsql.Annotation{
+		Table:     "sys_plan_modules",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysPlanQuotasTable.ForeignKeys[0].RefTable = SysPlansTable
+	SysPlanQuotasTable.Annotation = &entsql.Annotation{
+		Table:     "sys_plan_quotas",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
 	SysPolicyEvaluationLogsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_policy_evaluation_logs",
 		Charset:   "utf8mb4",
@@ -3691,6 +3859,7 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
+	SysTenantsTable.ForeignKeys[0].RefTable = SysPlansTable
 	SysTenantsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_tenants",
 		Charset:   "utf8mb4",
@@ -3703,6 +3872,11 @@ func init() {
 	}
 	SysUserCredentialsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_user_credentials",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysUserMfaFactorsTable.Annotation = &entsql.Annotation{
+		Table:     "sys_user_mfa_factors",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

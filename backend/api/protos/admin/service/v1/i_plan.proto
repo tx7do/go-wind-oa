@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination/v1/pagination.proto";
+import "identity/service/v1/plan.proto";
+
+// 套餐管理服务
+service PlanService {
+  // 分页查询套餐列表
+  rpc List (pagination.PagingRequest) returns (identity.service.v1.ListPlanResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/plans"
+    };
+  }
+
+  // 查询套餐详情
+  rpc Get (identity.service.v1.GetPlanRequest) returns (identity.service.v1.Plan) {
+    option (google.api.http) = {
+      get: "/admin/v1/plans/{id}"
+    };
+  }
+
+  // 创建套餐
+  rpc Create (identity.service.v1.CreatePlanRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/plans"
+      body: "*"
+    };
+  }
+
+  // 更新套餐
+  rpc Update (identity.service.v1.UpdatePlanRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/plans/{id}"
+      body: "*"
+    };
+  }
+
+  // 删除套餐
+  rpc Delete (identity.service.v1.DeletePlanRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/plans"
+    };
+  }
+}

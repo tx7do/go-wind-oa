@@ -1,0 +1,471 @@
+package service
+
+import (
+	"bytes"
+	"context"
+	"encoding/base64"
+	"fmt"
+	"image/png"
+	"strconv"
+	"time"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/tx7do/go-utils/trans"
+	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go-wind-oa/app/core/service/internal/data"
+	"go-wind-oa/app/core/service/internal/data/ent/privacy"
+	"go-wind-oa/app/core/service/internal/data/ent/usermfafactor"
+
+	"github.com/tx7do/go-crud/viewer"
+
+	"github.com/pquerna/otp"
+	otpTotp "github.com/pquerna/otp/totp"
+
+	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
+
+	"go-wind-oa/pkg/metadata"
+	"go-wind-oa/pkg/netutil"
+)
+
+const (
+	// mfaTotpIssuer TOTP otpauth URI 中的发行方标识（认证器 App 内展示归属）。
+	mfaTotpIssuer = "GoWindAdmin"
+	// mfaTotpSkew 允许的时间窗口偏移（±1 个 30s 周期），防客户端/服务端时钟小幅漂移。
+	mfaTotpSkew = 1
+)
+
+// MFAService 实现 core 侧 MFA gRPC 服务（由 admin BFF 的 MfaService 转发）。
+//
+// 仅落地 TOTP：
+//   - 管理面（GetMFAStatus/ListEnrolledMethods/StartEnrollMethod/ConfirmEnrollMethod/DisableMFA/RevokeMFADevice）
+//     需登录态，operator 从 gRPC 元数据 OperatorMetadata 取得，强制只能操作本人因子；
+//     管理端救援重置（DisableMFA 指定他人 user_id）的权限校验在 admin BFF 层完成
+//     （那里有完整 UserTokenPayload 可判 IsPlatformAdmin），core 信任 BFF 的裁决。
+//   - 登录挑战面（VerifyMFAChallenge）免鉴权，operation_id 由登录流程签发并存入
+//     MfaChallengeCache（含 UserTokenPayload + ClientType），验证通过后用 authenticator 签发真 token。
+//
+// 非 TOTP 方法、StartMFAChallenge、备份码相关 RPC 本轮返回 UNIMPLEMENTED。
+type MFAService struct {
+	authenticationV1.UnimplementedMFAServiceServer
+
+	log *log.Helper
+
+	mfaFactorRepo     *data.UserMfaFactorRepo
+	mfaChallengeCache *data.MfaChallengeCache
+	authenticator     *data.Authenticator
+	rateLimiter       *data.LoginRateLimiter
+}
+
+func NewMFAService(
+	ctx *bootstrap.Context,
+	mfaFactorRepo *data.UserMfaFactorRepo,
+	mfaChallengeCache *data.MfaChallengeCache,
+	authenticator *data.Authenticator,
+	rateLimiter *data.LoginRateLimiter,
+) *MFAService {
+	return &MFAService{
+		log:               ctx.NewLoggerHelper("mfa/service/core-service"),
+		mfaFactorRepo:     mfaFactorRepo,
+		mfaChallengeCache: mfaChallengeCache,
+		authenticator:     authenticator,
+		rateLimiter:       rateLimiter,
+	}
+}
+
+// operatorIds 从 gRPC 元数据取当前操作者（tenantId, userId）。
+func (s *MFAService) operatorIds(ctx context.Context) (uint32, uint32, error) {
+	op, err := metadata.FromServerContext(ctx)
+	if err != nil {
+		return 0, 0, authenticationV1.ErrorUnauthorized("operator context missing")
+	}
+	return uint32(op.GetTenantId()), uint32(op.GetUserId()), nil
+}
+
+// GetMFAStatus 查询当前登录用户 MFA 总览。
+func (s *MFAService) GetMFAStatus(ctx context.Context, _ *authenticationV1.GetMFAStatusRequest) (*authenticationV1.GetMFAStatusResponse, error) {
+	tid, uid, err := s.operatorIds(ctx)
+	if err != nil {
+		return nil, err
+	}
+	infos, err := s.mfaFactorRepo.ListByUser(ctx, tid, uid)
+	if err != nil {
+		return nil, authenticationV1.ErrorInternalServerError("query mfa status failed")
+	}
+	hasTotp := false
+	for _, i := range infos {
+		if i.Method == authenticationV1.MFAMethod_TOTP && i.Enabled {
+			hasTotp = true
+			break
+		}
+	}
+	resp := &authenticationV1.GetMFAStatusResponse{
+		Enabled:     hasTotp,
+		Enforcement: authenticationV1.MFAEnforcement_MFA_NOT_REQUIRED,
+	}
+	if hasTotp {
+		resp.Enforcement = authenticationV1.MFAEnforcement_MFA_REQUIRED
+		resp.Enrolled = buildEnrolledProto(infos)
+	}
+	return resp, nil
+}
+
+// ListEnrolledMethods 列出当前登录用户的 MFA 因子（不含 secret）。
+func (s *MFAService) ListEnrolledMethods(ctx context.Context, _ *authenticationV1.ListEnrolledMethodsRequest) (*authenticationV1.ListEnrolledMethodsResponse, error) {
+	tid, uid, err := s.operatorIds(ctx)
+	if err != nil {
+		return nil, err
+	}
+	infos, err := s.mfaFactorRepo.ListByUser(ctx, tid, uid)
+	if err != nil {
+		return nil, authenticationV1.ErrorInternalServerError("list mfa methods failed")
+	}
+	return &authenticationV1.ListEnrolledMethodsResponse{
+		Items: buildEnrolledProto(infos),
+	}, nil
+}
+
+// StartEnrollMethod 开始注册 MFA 方法。仅 TOTP 本轮实现。
+func (s *MFAService) StartEnrollMethod(ctx context.Context, req *authenticationV1.StartEnrollMethodRequest) (*authenticationV1.StartEnrollMethodResponse, error) {
+	if req.GetMethod() != authenticationV1.MFAMethod_TOTP {
+		return nil, authenticationV1.ErrorBadRequest("only TOTP is supported")
+	}
+	tid, uid, err := s.operatorIds(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// 频控：同一用户 30s 冷却期内只允许发起一次注册（防循环 Start 塞 Redis）
+	if !s.mfaChallengeCache.TryAcquireEnrollCooldown(ctx, tid, uid) {
+		return nil, authenticationV1.ErrorBadRequest("enroll request too frequent, retry later")
+	}
+
+	// 预检：已绑定 TOTP 时拒绝重复注册（(tenant,user,method) 唯一约束兜底，
+	// 但提前返回友好错误，避免 Confirm 阶段撞唯一索引报笼统 500）。
+	// 重新绑定需先 DisableMFA 解绑。
+	if has, herr := s.mfaFactorRepo.HasEnabledTotp(ctx, tid, uid); herr != nil {
+		return nil, authenticationV1.ErrorInternalServerError("check mfa status failed")
+	} else if has {
+		return nil, authenticationV1.ErrorBadRequest("totp already enrolled, disable it first")
+	}
+
+	// 生成 TOTP key：issuer 标识发行方，account 用 userId 防 App 内同名冲突。
+	key, err := otpTotp.Generate(otpTotp.GenerateOpts{
+		Issuer:      mfaTotpIssuer,
+		AccountName: fmt.Sprintf("uid:%d", uid),
+	})
+	if err != nil {
+		s.log.Errorf("generate totp key failed: %s", err.Error())
+		return nil, authenticationV1.ErrorInternalServerError("generate totp key failed")
+	}
+
+	opId, err := s.mfaChallengeCache.SetEnrollChallenge(ctx, key.Secret(), tid, uid)
+	if err != nil {
+		s.log.Errorf("set enroll challenge failed: %s", err.Error())
+		return nil, authenticationV1.ErrorInternalServerError("start enroll failed")
+	}
+
+	qrUri, err := totpQrDataUri(key)
+	if err != nil {
+		s.log.Errorf("encode totp qr failed: %s", err.Error())
+		return nil, authenticationV1.ErrorInternalServerError("encode totp qr failed")
+	}
+
+	return &authenticationV1.StartEnrollMethodResponse{
+		Result: &authenticationV1.StartEnrollMethodResponse_Totp{
+			Totp: &authenticationV1.TOTPResult{
+				Secret:        key.Secret(),
+				OtpAuthUrl:    key.URL(),
+				QrCodeDataUri: qrUri,
+			},
+		},
+		OperationId: opId,
+		ExpiresAt:   timestamppb.New(time.Now().Add(data.MfaChallengeTTL)),
+	}, nil
+}
+
+// ConfirmEnrollMethod 确认注册：校验首码通过则落库因子。
+func (s *MFAService) ConfirmEnrollMethod(ctx context.Context, req *authenticationV1.ConfirmEnrollMethodRequest) (*authenticationV1.ConfirmEnrollMethodResponse, error) {
+	if req.GetMethod() != authenticationV1.MFAMethod_TOTP {
+		return nil, authenticationV1.ErrorBadRequest("only TOTP is supported")
+	}
+	tid, uid, err := s.operatorIds(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// 注册流程允许首码输错重试：peek 不消耗，落库成功才删（与登录挑战的
+	// 取出即删不同——登录挑战失败必须作废防暴穿，注册有登录态且首码空间同样 10^6，
+	// 重试面由 operation TTL + 已绑定预检 + 唯一索引共同约束）
+	enrollCtx, err := s.mfaChallengeCache.PeekEnrollChallenge(ctx, req.GetOperationId())
+	if err != nil {
+		return nil, authenticationV1.ErrorBadRequest("invalid or expired enroll operation")
+	}
+	// 防 operation_id 跨用户劫持：注册上下文绑定的人必须等于当前 operator
+	if enrollCtx.TenantID != tid || enrollCtx.UserID != uid {
+		return nil, authenticationV1.ErrorForbidden("enroll operation user mismatch")
+	}
+
+	// 校验首码：用默认 Validate（±1 窗口，等同 ValidateCustom 的默认参数语义）
+	if !otpTotp.Validate(req.GetTotpCode(), enrollCtx.Secret) {
+		return &authenticationV1.ConfirmEnrollMethodResponse{Success: false}, nil
+	}
+
+	factorId, err := s.mfaFactorRepo.CreateTotpFactor(ctx, enrollCtx.TenantID, enrollCtx.UserID, enrollCtx.Secret, req.GetDisplay())
+	if err != nil {
+		return nil, authenticationV1.ErrorInternalServerError("create mfa factor failed")
+	}
+	s.mfaChallengeCache.DeleteEnrollChallenge(ctx, req.GetOperationId())
+	return &authenticationV1.ConfirmEnrollMethodResponse{
+		Success:      true,
+		CredentialId: fmt.Sprintf("%d", factorId),
+	}, nil
+}
+
+// VerifyMFAChallenge 验证登录 MFA 挑战。通过则签发真 token 并返回 LoginResponse。
+// 免鉴权：operation_id 由登录流程在密码校验通过、待二次验证阶段签发。
+func (s *MFAService) VerifyMFAChallenge(ctx context.Context, req *authenticationV1.VerifyMFAChallengeRequest) (*authenticationV1.LoginResponse, error) {
+	// 本接口无操作者元数据，而 ent 隐私层（TenantPrivacy mixin）要求 ViewerContext
+	// 存在——与登录流程同款处理：Noop viewer + privacy.Allow。
+	// 挑战上下文绑定的 userId/tenantId 来自密码校验通过后的 tokenPayload，
+	// 越权面由 operation_id 单次有效 + 归属校验兜住。
+	ctx = viewer.WithContext(ctx, viewer.NewNoopContext())
+	ctx = privacy.DecisionContext(ctx, privacy.Allow)
+
+	// Peek 不消耗：允许失败重试（上限见 RecordLoginFailure），通过或超限才 Consume
+	challengeCtx, err := s.mfaChallengeCache.PeekLoginChallenge(ctx, req.GetOperationId())
+	if err != nil {
+		return nil, authenticationV1.ErrorBadRequest("invalid or expired mfa operation")
+	}
+
+	payload := challengeCtx.Payload
+	if payload == nil {
+		return nil, authenticationV1.ErrorInternalServerError("mfa challenge payload missing")
+	}
+
+	uid := payload.GetUserId()
+	tid := payload.GetTenantId()
+
+	// 取该用户 ENABLED 的 TOTP 因子并解密 secret
+	factorId, plainSecret, err := s.mfaFactorRepo.FindEnabledTotpForUser(ctx, tid, uid)
+	if err != nil {
+		// 因子缺失（如验证期间被解绑/被管理员重置）：作废挑战走重新登录
+		s.log.Errorf("find totp factor for login mfa failed uid=%d: %s", uid, err.Error())
+		s.mfaChallengeCache.ConsumeLoginChallenge(ctx, req.GetOperationId())
+		return nil, authenticationV1.ErrorForbidden("mfa verification failed")
+	}
+
+	// 校验 TOTP 码：±1 窗口（防时钟漂移），默认周期 30s、6 位、SHA1。
+	// digits/algorithm 用常量：totp.Generate 产出的 key 恒为 6 位 SHA1，这里与之对齐。
+	ok, verr := otpTotp.ValidateCustom(req.GetTotpCode(), plainSecret, time.Now(), otpTotp.ValidateOpts{
+		Period:    30,
+		Skew:      mfaTotpSkew,
+		Digits:    otp.DigitsSix,
+		Algorithm: otp.AlgorithmSHA1,
+	})
+	if verr != nil || !ok {
+		// 错码：记失败计数，达上限作废挑战；同时计入登录限流（IP+用户名双维度）
+		exceeded := s.mfaChallengeCache.RecordLoginFailure(ctx, req.GetOperationId())
+		if s.rateLimiter != nil {
+			if _, _, _, cerr := s.rateLimiter.CheckAndIncr(ctx, netutil.ClientIPFromContext(ctx), payload.GetUsername()); cerr != nil {
+				s.log.Errorf("mfa rate limiter incr failed: %s", cerr.Error())
+			}
+		}
+		if exceeded {
+			return nil, authenticationV1.ErrorForbidden("too many invalid mfa attempts, please login again")
+		}
+		return nil, authenticationV1.ErrorForbidden("invalid mfa code")
+	}
+
+	// 通过：原子消耗挑战做最终裁决（并发同 opId 仅先抢到者发 token，防双花），
+	// 更新 last_used_at（best-effort）、清零限流，签发真 token
+	if !s.mfaChallengeCache.TakeLoginChallengeAtomic(ctx, req.GetOperationId()) {
+		return nil, authenticationV1.ErrorForbidden("mfa challenge already consumed")
+	}
+	_ = s.mfaFactorRepo.UpdateLastUsed(ctx, tid, uid, factorId, time.Now())
+
+	// 兑现登录 MFA 闸门的承诺："限流清零在 VerifyMFAChallenge 通过后"。
+	// 不清零会导致绑定 MFA 的用户失败计数只增不减（密码错误与 MFA 登录成功
+	// 都不 Reset），比未绑定用户更容易触发限流锁定。
+	if s.rateLimiter != nil {
+		s.rateLimiter.Reset(ctx, netutil.ClientIPFromContext(ctx), payload.GetUsername())
+	}
+
+	accessToken, refreshToken, err := s.authenticator.CreateUserToken(ctx, challengeCtx.ClientType, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return &authenticationV1.LoginResponse{
+		TokenType:        authenticationV1.TokenType_bearer,
+		AccessToken:      accessToken,
+		RefreshToken:     trans.Ptr(refreshToken),
+		ExpiresIn:        int64(s.authenticator.GetAccessTokenExpires(challengeCtx.ClientType).Seconds()),
+		RefreshExpiresIn: trans.Ptr(int64(s.authenticator.GetRefreshTokenExpires(challengeCtx.ClientType).Seconds())),
+	}, nil
+}
+
+// DisableMFA 禁用/移除 MFA 凭证。
+//   - 不传 user_id：操作当前登录用户本人（解绑自己的因子）。
+//   - 传 user_id 指定他人：仅平台管理员允许（该权限校验在 admin BFF 层完成），
+//     用于用户认证器丢失时的救援重置（按 method 清空该用户该方法全部因子），记告警日志留痕。
+func (s *MFAService) DisableMFA(ctx context.Context, req *authenticationV1.DisableMFARequest) (*emptypb.Empty, error) {
+	opTid, opUid, err := s.operatorIds(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// 管理端救援路径：目标用户由因子行定位（凭 credential_id），或按 user_id+method 清空
+	if target := req.GetUserId(); target != 0 && target != opUid {
+		if req.GetCredentialId() != "" {
+			factorId, perr := parseFactorId(req.GetCredentialId())
+			if perr != nil {
+				return nil, authenticationV1.ErrorBadRequest("invalid credential id")
+			}
+			tid, uid, found, gerr := s.mfaFactorRepo.GetFactorById(ctx, factorId)
+			if gerr != nil {
+				return nil, authenticationV1.ErrorInternalServerError("disable mfa failed")
+			}
+			if !found || uid != target {
+				return nil, authenticationV1.ErrorNotFound("mfa credential not found")
+			}
+			ok, derr := s.mfaFactorRepo.DeleteForUser(ctx, tid, uid, factorId)
+			if derr != nil || !ok {
+				return nil, authenticationV1.ErrorInternalServerError("disable mfa failed")
+			}
+		} else {
+			method, merr := methodToEntity(req.GetMethod())
+			if merr != nil {
+				return nil, authenticationV1.ErrorBadRequest("method required when resetting by user")
+			}
+			// 目标用户可能在任意租户：全量查找其因子行定位 tenant
+			// （BFF 层已做平台管理员校验，此处允许跨租户）
+			ctx = viewer.WithContext(ctx, viewer.NewNoopContext())
+			ctx = privacy.DecisionContext(ctx, privacy.Allow)
+			tid, uid, found, gerr := s.mfaFactorRepo.FindFirstByUser(ctx, target, method)
+			if gerr != nil {
+				return nil, authenticationV1.ErrorInternalServerError("disable mfa failed")
+			}
+			if !found {
+				return nil, authenticationV1.ErrorNotFound("mfa credential not found")
+			}
+			if _, derr := s.mfaFactorRepo.DeleteAllByUserMethod(ctx, tid, uid, method); derr != nil {
+				return nil, authenticationV1.ErrorInternalServerError("disable mfa failed")
+			}
+		}
+
+		s.log.Warnf("admin [%d] reset mfa for user [%d], reason=%s", opUid, target, req.GetReason())
+		return &emptypb.Empty{}, nil
+	}
+
+	// 本人路径：按 credential_id 精确解绑；未传 credential_id 时按 method 清空
+	// 本人该方法全部因子（兑现 proto 注释"指定凭证 id 或仅按方法禁用全部"的契约）
+	if req.GetCredentialId() == "" {
+		method, merr := methodToEntity(req.GetMethod())
+		if merr != nil {
+			return nil, authenticationV1.ErrorBadRequest("credential_id or method required")
+		}
+		n, derr := s.mfaFactorRepo.DeleteAllByUserMethod(ctx, opTid, opUid, method)
+		if derr != nil {
+			return nil, authenticationV1.ErrorInternalServerError("disable mfa failed")
+		}
+		if n == 0 {
+			return nil, authenticationV1.ErrorNotFound("mfa credential not found")
+		}
+		return &emptypb.Empty{}, nil
+	}
+	factorId, err := parseFactorId(req.GetCredentialId())
+	if err != nil {
+		return nil, authenticationV1.ErrorBadRequest("invalid credential id")
+	}
+	ok, err := s.mfaFactorRepo.DeleteForUser(ctx, opTid, opUid, factorId)
+	if err != nil {
+		return nil, authenticationV1.ErrorInternalServerError("disable mfa failed")
+	}
+	if !ok {
+		return nil, authenticationV1.ErrorNotFound("mfa credential not found")
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// RevokeMFADevice 撤销指定 MFA 凭证（按 id），强制归属校验。
+func (s *MFAService) RevokeMFADevice(ctx context.Context, req *authenticationV1.RevokeMFADeviceRequest) (*emptypb.Empty, error) {
+	opTid, opUid, err := s.operatorIds(ctx)
+	if err != nil {
+		return nil, err
+	}
+	factorId, err := parseFactorId(req.GetCredentialId())
+	if err != nil {
+		return nil, authenticationV1.ErrorBadRequest("invalid credential id")
+	}
+	ok, err := s.mfaFactorRepo.DeleteForUser(ctx, opTid, opUid, factorId)
+	if err != nil {
+		return nil, authenticationV1.ErrorInternalServerError("revoke mfa device failed")
+	}
+	if !ok {
+		return nil, authenticationV1.ErrorNotFound("mfa credential not found")
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// buildEnrolledProto 将仓储返回的因子元信息列表转为 proto EnrolledMethod 列表。
+// 不含 secret。
+func buildEnrolledProto(infos []data.EnrolledFactorInfo) []*authenticationV1.EnrolledMethod {
+	out := make([]*authenticationV1.EnrolledMethod, 0, len(infos))
+	for _, i := range infos {
+		em := &authenticationV1.EnrolledMethod{
+			Id:         fmt.Sprintf("%d", i.ID),
+			Method:     i.Method,
+			Display:    i.DisplayName,
+			Enabled:    i.Enabled,
+			CreatedAt:  nil,
+			LastUsedAt: nil,
+		}
+		if i.CreatedAt != nil {
+			em.CreatedAt = timestamppb.New(*i.CreatedAt)
+		}
+		if i.LastUsedAt != nil {
+			em.LastUsedAt = timestamppb.New(*i.LastUsedAt)
+		}
+		out = append(out, em)
+	}
+	return out
+}
+
+// methodToEntity 将 proto MFAMethod 映射为 ent 因子方法枚举（仅 TOTP 本轮支持）。
+func methodToEntity(m authenticationV1.MFAMethod) (usermfafactor.Method, error) {
+	switch m {
+	case authenticationV1.MFAMethod_TOTP:
+		return usermfafactor.MethodTotp, nil
+	}
+	return "", fmt.Errorf("unsupported mfa method: %v", m)
+}
+
+// parseFactorId 将 proto 返回的字符串形式 credential_id 解析为 uint32 主键。
+func parseFactorId(s string) (uint32, error) {
+	v, err := strconv.ParseUint(s, 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return uint32(v), nil
+}
+
+// totpQrDataUri 将 otp.Key 的二维码图渲染为 PNG data URI，供前端 <img> 展示。
+// 生成器（totp.Generate）产生的 key 是标准 otpauth URI，编码为二维码后可被
+// Google Authenticator 等认证器 App 扫码导入。
+func totpQrDataUri(key *otp.Key) (string, error) {
+	if key == nil {
+		return "", fmt.Errorf("nil totp key")
+	}
+	img, err := key.Image(240, 240)
+	if err != nil {
+		return "", fmt.Errorf("render qr failed: %w", err)
+	}
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
+		return "", fmt.Errorf("encode qr png failed: %w", err)
+	}
+	return "data:image/png;base64," + base64.StdEncoding.EncodeToString(buf.Bytes()), nil
+}

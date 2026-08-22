@@ -22,6 +22,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/predicate"
 
 	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
+	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
 )
 
 type MenuRepo struct {
@@ -31,6 +32,7 @@ type MenuRepo struct {
 	mapper          *mapper.CopierMapper[permissionV1.Menu, ent.Menu]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.Menu_Status, menu.Status]
 	typeConverter   *mapper.EnumTypeConverter[permissionV1.Menu_Type, menu.Type]
+	moduleConverter *mapper.EnumTypeConverter[identityV1.Module, menu.Module]
 
 	repository *entCrud.Repository[
 		ent.MenuQuery, ent.MenuSelect,
@@ -49,6 +51,7 @@ func NewMenuRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Clien
 		mapper:          mapper.NewCopierMapper[permissionV1.Menu, ent.Menu](),
 		statusConverter: mapper.NewEnumTypeConverter[permissionV1.Menu_Status, menu.Status](permissionV1.Menu_Status_name, permissionV1.Menu_Status_value),
 		typeConverter:   mapper.NewEnumTypeConverter[permissionV1.Menu_Type, menu.Type](permissionV1.Menu_Type_name, permissionV1.Menu_Type_value),
+		moduleConverter: mapper.NewEnumTypeConverter[identityV1.Module, menu.Module](identityV1.Module_name, identityV1.Module_value),
 	}
 
 	repo.init()
@@ -71,6 +74,7 @@ func (r *MenuRepo) init() {
 
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
 	r.mapper.AppendConverters(r.typeConverter.NewConverterPair())
+	r.mapper.AppendConverters(r.moduleConverter.NewConverterPair())
 }
 
 func (r *MenuRepo) count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
@@ -349,4 +353,57 @@ func (r *MenuRepo) Delete(ctx context.Context, req *permissionV1.DeleteMenuReque
 	}
 
 	return nil
+}
+
+// Truncate 清空菜单表（SyncMenus 全量重建用）。
+func (r *MenuRepo) Truncate(ctx context.Context) error {
+	if _, err := r.entClient.Client().Menu.Delete().Exec(ctx); err != nil {
+		r.log.Errorf("failed to truncate menus table: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("truncate menus failed")
+	}
+	return nil
+}
+
+// CreateReturn 创建菜单并返回生成的实体（SyncMenus 递归建树需要父节点 ID）。
+func (r *MenuRepo) CreateReturn(ctx context.Context, req *permissionV1.CreateMenuRequest) (*permissionV1.Menu, error) {
+	if req == nil || req.Data == nil {
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
+	}
+
+	builder := r.entClient.Client().Menu.Create().
+		SetNillableParentID(req.Data.ParentId).
+		SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
+		SetNillablePath(req.Data.Path).
+		SetNillableRedirect(req.Data.Redirect).
+		SetNillableAlias(req.Data.Alias).
+		SetNillableName(req.Data.Name).
+		SetNillableComponent(req.Data.Component).
+		SetNillableModule(r.moduleConverter.ToEntity(req.Data.Module)).
+		SetNillableCreatedBy(req.Data.CreatedBy).
+		SetCreatedAt(time.Now())
+
+	if req.Data.Meta != nil {
+		builder.SetMeta(req.Data.Meta)
+	}
+
+	if req.Data.Id != nil {
+		builder.SetID(req.Data.GetId())
+	}
+
+	if req.Data.Status != nil {
+		builder.SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status))
+	}
+
+	entity, err := builder.Save(ctx)
+	if err != nil {
+		r.log.Errorf("create menu failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("create menu failed")
+	}
+
+	dto := r.mapper.ToDTO(entity)
+	if dto == nil {
+		return nil, permissionV1.ErrorInternalServerError("map menu failed")
+	}
+
+	return dto, nil
 }

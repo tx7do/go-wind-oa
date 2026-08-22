@@ -44,6 +44,8 @@ type AuthenticationService struct {
 	userCredentialRepo *data.UserCredentialRepo
 
 	authenticator *data.Authenticator
+	mfaFactorRepo     *data.UserMfaFactorRepo
+	mfaChallengeCache *data.MfaChallengeCache
 
 	log *log.Helper
 }
@@ -56,6 +58,8 @@ func NewAuthenticationService(
 	roleRepo *data.RoleRepo,
 	tenantRepo *data.TenantRepo,
 	permissionRepo *data.PermissionRepo,
+	mfaFactorRepo *data.UserMfaFactorRepo,
+	mfaChallengeCache *data.MfaChallengeCache,
 ) *AuthenticationService {
 	l := log.NewHelper(log.With(ctx.GetLogger(), "module", "authn/service/core-service"))
 	return &AuthenticationService{
@@ -66,6 +70,8 @@ func NewAuthenticationService(
 		roleRepo:           roleRepo,
 		permissionRepo:     permissionRepo,
 		authenticator:      authenticator,
+		mfaFactorRepo:      mfaFactorRepo,
+		mfaChallengeCache:      mfaChallengeCache,
 	}
 }
 
@@ -255,6 +261,30 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	}
 	if roleCodes != nil {
 		user.Roles = roleCodes
+	}
+
+	// ===== MFA 闸门：若该用户绑定了 ENABLED 的 TOTP 因子，则不签发 token， =====
+	// ===== 改为签发 operation_id，要求前端走二次验证（MFAService.VerifyMFAChallenge）。
+	if s.mfaFactorRepo != nil {
+		needMfa, merr := s.mfaFactorRepo.HasEnabledTotp(ctx, user.GetTenantId(), user.GetId())
+		if merr != nil {
+			// fail-closed：MFA 状态查询失败时拒绝登录，避免已绑定用户在 DB 故障时
+			// 被降级为单因子放行（与凭证校验出错即拒登的行为一致）。
+			s.log.Errorf("check mfa factor failed for user [%d]: %s", user.GetId(), merr.Error())
+			return nil, authenticationV1.ErrorInternalServerError("mfa check failed")
+		}
+		if needMfa && s.mfaChallengeCache != nil {
+			opId, cerr := s.mfaChallengeCache.SetLoginChallenge(ctx, tokenPayload, req.GetClientType())
+			if cerr != nil {
+				s.log.Errorf("set mfa login challenge failed for user [%d]: %s", user.GetId(), cerr.Error())
+				return nil, authenticationV1.ErrorInternalServerError("mfa challenge failed")
+			}
+			return &authenticationV1.LoginResponse{
+				TokenType:      authenticationV1.TokenType_bearer,
+				AccessToken:    "",
+				MfaOperationId: trans.Ptr(opId),
+			}, nil
+		}
 	}
 
 	// 生成令牌

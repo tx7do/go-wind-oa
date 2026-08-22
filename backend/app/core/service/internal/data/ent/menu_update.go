@@ -337,6 +337,26 @@ func (_u *MenuUpdate) ClearMeta() *MenuUpdate {
 	return _u
 }
 
+// SetModule sets the "module" field.
+func (_u *MenuUpdate) SetModule(v menu.Module) *MenuUpdate {
+	_u.mutation.SetModule(v)
+	return _u
+}
+
+// SetNillableModule sets the "module" field if the given value is not nil.
+func (_u *MenuUpdate) SetNillableModule(v *menu.Module) *MenuUpdate {
+	if v != nil {
+		_u.SetModule(*v)
+	}
+	return _u
+}
+
+// ClearModule clears the value of the "module" field.
+func (_u *MenuUpdate) ClearModule() *MenuUpdate {
+	_u.mutation.ClearModule()
+	return _u
+}
+
 // SetParent sets the "parent" edge to the Menu entity.
 func (_u *MenuUpdate) SetParent(v *Menu) *MenuUpdate {
 	return _u.SetParentID(v.ID)
@@ -431,6 +451,11 @@ func (_u *MenuUpdate) check() error {
 	if v, ok := _u.mutation.Meta(); ok {
 		if err := v.Validate(); err != nil {
 			return &ValidationError{Name: "meta", err: fmt.Errorf(`ent: validator failed for field "Menu.meta": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Module(); ok {
+		if err := menu.ModuleValidator(v); err != nil {
+			return &ValidationError{Name: "module", err: fmt.Errorf(`ent: validator failed for field "Menu.module": %w`, err)}
 		}
 	}
 	return nil
@@ -549,6 +574,12 @@ func (_u *MenuUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.MetaCleared() {
 		_spec.ClearField(menu.FieldMeta, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Module(); ok {
+		_spec.SetField(menu.FieldModule, field.TypeEnum, value)
+	}
+	if _u.mutation.ModuleCleared() {
+		_spec.ClearField(menu.FieldModule, field.TypeEnum)
 	}
 	if _u.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -953,6 +984,26 @@ func (_u *MenuUpdateOne) ClearMeta() *MenuUpdateOne {
 	return _u
 }
 
+// SetModule sets the "module" field.
+func (_u *MenuUpdateOne) SetModule(v menu.Module) *MenuUpdateOne {
+	_u.mutation.SetModule(v)
+	return _u
+}
+
+// SetNillableModule sets the "module" field if the given value is not nil.
+func (_u *MenuUpdateOne) SetNillableModule(v *menu.Module) *MenuUpdateOne {
+	if v != nil {
+		_u.SetModule(*v)
+	}
+	return _u
+}
+
+// ClearModule clears the value of the "module" field.
+func (_u *MenuUpdateOne) ClearModule() *MenuUpdateOne {
+	_u.mutation.ClearModule()
+	return _u
+}
+
 // SetParent sets the "parent" edge to the Menu entity.
 func (_u *MenuUpdateOne) SetParent(v *Menu) *MenuUpdateOne {
 	return _u.SetParentID(v.ID)
@@ -1060,6 +1111,11 @@ func (_u *MenuUpdateOne) check() error {
 	if v, ok := _u.mutation.Meta(); ok {
 		if err := v.Validate(); err != nil {
 			return &ValidationError{Name: "meta", err: fmt.Errorf(`ent: validator failed for field "Menu.meta": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Module(); ok {
+		if err := menu.ModuleValidator(v); err != nil {
+			return &ValidationError{Name: "module", err: fmt.Errorf(`ent: validator failed for field "Menu.module": %w`, err)}
 		}
 	}
 	return nil
@@ -1195,6 +1251,12 @@ func (_u *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) {
 	}
 	if _u.mutation.MetaCleared() {
 		_spec.ClearField(menu.FieldMeta, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Module(); ok {
+		_spec.SetField(menu.FieldModule, field.TypeEnum, value)
+	}
+	if _u.mutation.ModuleCleared() {
+		_spec.ClearField(menu.FieldModule, field.TypeEnum)
 	}
 	if _u.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{

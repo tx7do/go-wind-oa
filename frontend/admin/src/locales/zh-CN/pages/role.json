@@ -1,0 +1,12 @@
+{
+  "moduleName": "角色",
+  "name": "角色名称",
+  "code": "角色编码",
+  "tenantName": "所属租户",
+  "permissions": "权限配置",
+  "sortOrder": "排序",
+  "status": "状态",
+  "description": "描述",
+  "remark": "备注",
+  "createdAt": "创建时间"
+}

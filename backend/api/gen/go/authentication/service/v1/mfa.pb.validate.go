@@ -1864,6 +1864,10 @@ func (m *DisableMFARequest) validate(all bool) error {
 		// no validation rules for Reason
 	}
 
+	if m.UserId != nil {
+		// no validation rules for UserId
+	}
+
 	if len(errors) > 0 {
 		return DisableMFARequestMultiError(errors)
 	}

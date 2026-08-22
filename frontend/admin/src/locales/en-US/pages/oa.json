@@ -55,5 +55,29 @@
       "deleteWifiConfirmTitle": "Delete Wi-Fi Fingerprint",
       "deleteWifiConfirmContent": "Once deleted, this fingerprint will no longer participate in check-in evaluation. Confirm delete?"
     }
+  },
+  "definition": {
+    "title": "Process Definition",
+    "searchName": "Name",
+    "searchStatus": "Status",
+    "colName": "Name",
+    "colCode": "Code",
+    "colVersion": "Version",
+    "colStatus": "Status",
+    "colCreatedAt": "Created At",
+    "colOperation": "Actions",
+    "detailTitle": "Process Definition Detail",
+    "enable": "Enable",
+    "disable": "Disable",
+    "enableConfirmTitle": "Enable Confirmation",
+    "enableConfirmContent": "Enable this process definition? New submissions will be allowed.",
+    "disableConfirmTitle": "Disable Confirmation",
+    "disableConfirmContent": "Disable this process definition? New submissions will be blocked.",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "fieldCode": "Code",
+    "fieldVersion": "Version",
+    "fieldFormSchema": "Form Schema (JSON)",
+    "fieldNodeConfig": "Node Config (JSON)"
   }
 }

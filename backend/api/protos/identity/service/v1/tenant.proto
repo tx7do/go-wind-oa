@@ -10,6 +10,7 @@ import "google/protobuf/timestamp.proto";
 
 import "pagination/v1/pagination.proto";
 import "identity/service/v1/user.proto";
+import "identity/service/v1/plan_quota.proto";
 
 // 租户服务
 service TenantService {
@@ -47,6 +48,12 @@ service TenantService {
 
   // 创建租户及管理员用户
   rpc CreateTenantWithAdminUser (CreateTenantWithAdminUserRequest) returns (google.protobuf.Empty) {}
+
+  // 查询租户用量与配额
+  rpc GetUsage (GetTenantUsageRequest) returns (TenantUsage) {}
+
+  // 清理租户数据
+  rpc CleanupData (CleanupTenantDataRequest) returns (google.protobuf.Empty) {}
 }
 
 // 租户
@@ -155,7 +162,12 @@ message Tenant {
     (gnostic.openapi.v3.property) = {description: "审核状态"}
   ]; // 审核状态
 
-  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+    optional uint32 plan_id = 24 [
+    json_name = "planId",
+    (gnostic.openapi.v3.property) = {description: "订阅套餐ID（引用套餐目录）"}
+  ]; // 订阅套餐ID（引用套餐目录）
+
+optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
   optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
   optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
@@ -308,4 +320,71 @@ message AssignTenantAdminRequest {
     (gnostic.openapi.v3.property) = {description: "用户ID"},
     json_name = "userId"
   ]; // 用户ID
+}
+
+// 查询租户用量 - 请求
+message GetTenantUsageRequest {
+  uint32 id = 1 [
+    (gnostic.openapi.v3.property) = {description: "租户ID", read_only: true},
+    json_name = "id"
+  ]; // 租户ID
+}
+
+// 配额用量项
+message QuotaUsage {
+  PlanQuota.QuotaType quota_type = 1 [
+    json_name = "quotaType",
+    (gnostic.openapi.v3.property) = {description: "配额类型"}
+  ]; // 配额类型
+
+  uint64 quota_value = 2 [
+    json_name = "quotaValue",
+    (gnostic.openapi.v3.property) = {description: "配额上限值"}
+  ]; // 配额上限值
+}
+
+// 租户用量与配额
+message TenantUsage {
+  uint32 tenant_id = 1 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ]; // 租户ID
+
+  uint64 user_count = 2 [
+    json_name = "userCount",
+    (gnostic.openapi.v3.property) = {description: "当前用户数"}
+  ]; // 当前用户数
+
+  uint64 storage_used_bytes = 3 [
+    json_name = "storageUsedBytes",
+    (gnostic.openapi.v3.property) = {description: "存储占用字节数"}
+  ]; // 存储占用字节数
+
+  uint64 api_call_count = 4 [
+    json_name = "apiCallCount",
+    (gnostic.openapi.v3.property) = {description: "API 调用次数"}
+  ]; // API 调用次数
+
+  optional uint32 plan_id = 5 [
+    json_name = "planId",
+    (gnostic.openapi.v3.property) = {description: "订阅套餐ID"}
+  ]; // 订阅套餐ID
+
+  optional string plan_name = 6 [
+    json_name = "planName",
+    (gnostic.openapi.v3.property) = {description: "订阅套餐名称"}
+  ]; // 订阅套餐名称
+
+  repeated QuotaUsage quotas = 7 [
+    json_name = "quotas",
+    (gnostic.openapi.v3.property) = {description: "配额上限列表"}
+  ]; // 配额上限列表
+}
+
+// 清理租户数据 - 请求
+message CleanupTenantDataRequest {
+  uint32 id = 1 [
+    (gnostic.openapi.v3.property) = {description: "租户ID", read_only: true},
+    json_name = "id"
+  ]; // 租户ID
 }

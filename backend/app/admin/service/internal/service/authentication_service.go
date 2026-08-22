@@ -179,3 +179,8 @@ func (s *AuthenticationService) WhoAmI(ctx context.Context, _ *emptypb.Empty) (*
 		Username: operator.GetUsername(),
 	}, nil
 }
+
+// RegisterUser 注册用户（转发 core AuthenticationService）。
+func (s *AuthenticationService) RegisterUser(ctx context.Context, req *authenticationV1.RegisterUserRequest) (*authenticationV1.RegisterUserResponse, error) {
+	return s.authenticationServiceClient.RegisterUser(ctx, req)
+}

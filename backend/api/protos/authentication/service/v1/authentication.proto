@@ -247,6 +247,15 @@ message LoginResponse {
       description: "ID 令牌，OpenID Connect 扩展中定义的 JWT 格式令牌"
     }
   ]; // ID 令牌，OpenID Connect 扩展中定义的 JWT 格式令牌
+  // MFA 挑战操作标识：当用户绑定了 MFA 因子且密码校验通过时，服务端不签发 access_token，
+  // 而是返回此 operation_id。前端据此跳转 MFA 挑战页，提交 TOTP 验证码到 MFAService.VerifyMFAChallenge。
+  // 该字段非空时 access_token 必为空字符串；验证通过后由 VerifyMFAChallenge 返回真 token。
+  optional string mfa_operation_id = 8 [
+    json_name = "mfa_operation_id",
+    (gnostic.openapi.v3.property) = {
+      description: "MFA 挑战操作标识。非空表示登录需二次验证，此时 access_token 为空。"
+    }
+  ];
 }
 
 // 用户登出 - 请求

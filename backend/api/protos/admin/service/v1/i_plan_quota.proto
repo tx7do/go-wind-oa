@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination/v1/pagination.proto";
+import "identity/service/v1/plan_quota.proto";
+
+// 套餐配额管理服务
+service PlanQuotaService {
+  // 分页查询套餐配额列表
+  rpc List (pagination.PagingRequest) returns (identity.service.v1.ListPlanQuotaResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/plan-quotas"
+    };
+  }
+
+  // 创建套餐配额
+  rpc Create (identity.service.v1.CreatePlanQuotaRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/plan-quotas"
+      body: "*"
+    };
+  }
+
+  // 更新套餐配额
+  rpc Update (identity.service.v1.UpdatePlanQuotaRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/plan-quotas/{id}"
+      body: "*"
+    };
+  }
+
+  // 删除套餐配额
+  rpc Delete (identity.service.v1.DeletePlanQuotaRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/plan-quotas"
+    };
+  }
+}

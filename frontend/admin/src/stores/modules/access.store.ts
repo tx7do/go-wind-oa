@@ -29,6 +29,10 @@ interface AccessState {
    */
   accessToken: AccessToken;
   /**
+   * MFA 挑战操作标识（登录二次验证阶段暂存，验证通过后清空）
+   */
+  mfaOperationId: string | null;
+  /**
    * accessToken 过期时间戳
    */
   accessTokenExpireTime?: number;
@@ -120,16 +124,28 @@ export const useAccessStore = defineStore("core-access", {
     },
   },
   persist: {
-    // Token（access/refresh 及其过期时间）全部仅存内存，不落 localStorage。
-    // 刷新页面后 token 丢失 → 守卫看到 accessToken 为 null → 跳登录页。
-    // accessCodes 是权限码（非 secret），仍持久化以避免刷新后重新拉取。
-    pick: ["accessCodes"],
+    // Token（access/refresh 及其过期时间）持久化到 localStorage，刷新/重开浏览器后
+    // 守卫凭 accessToken 直接恢复会话：userInfo 由 JWT 本地解码重建，令牌定时刷新
+    // 与 SSE 在守卫的 getUserPermissionCodes 里重启（isAccessChecked 不持久化，
+    // 刷新后必为 false，恰好触发这条恢复链）。登出走 $reset，插件会把清空后的
+    // 状态同步写回 storage。会话态字段（mfaOperationId/loginExpired/isAccessChecked）
+    // 仍不持久化。
+    // 注：曾刻意仅存内存（防 XSS 从 storage 读 token），因"任何整页刷新即被登出"
+    // 的体验问题（F5、Vite 依赖预构建 reload 等都会触发）改回持久化。
+    pick: [
+      "accessCodes",
+      "accessToken",
+      "accessTokenExpireTime",
+      "refreshToken",
+      "refreshTokenExpireTime",
+    ],
   },
   state: (): AccessState => ({
     accessCodes: [],
     accessMenus: [],
     accessRoutes: [],
     accessToken: null,
+    mfaOperationId: null,
     accessTokenExpireTime: undefined,
     isAccessChecked: false,
     loginExpired: false,

@@ -29,6 +29,9 @@ const (
 	RoleService_Update_FullMethodName                       = "/permission.service.v1.RoleService/Update"
 	RoleService_Delete_FullMethodName                       = "/permission.service.v1.RoleService/Delete"
 	RoleService_CreateTenantRoleFromTemplate_FullMethodName = "/permission.service.v1.RoleService/CreateTenantRoleFromTemplate"
+	RoleService_GetRoleCodesByRoleIds_FullMethodName        = "/permission.service.v1.RoleService/GetRoleCodesByRoleIds"
+	RoleService_GetRolesByRoleCodes_FullMethodName          = "/permission.service.v1.RoleService/GetRolesByRoleCodes"
+	RoleService_GetRolesByRoleIds_FullMethodName            = "/permission.service.v1.RoleService/GetRolesByRoleIds"
 	RoleService_ListPermissionIds_FullMethodName            = "/permission.service.v1.RoleService/ListPermissionIds"
 	RoleService_ListRoleCodesByIds_FullMethodName           = "/permission.service.v1.RoleService/ListRoleCodesByIds"
 	RoleService_ListRoleIdsByCodes_FullMethodName           = "/permission.service.v1.RoleService/ListRoleIdsByCodes"
@@ -63,6 +66,12 @@ type RoleServiceClient interface {
 	Delete(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 从租户角色模板创建租户角色
 	CreateTenantRoleFromTemplate(ctx context.Context, in *CreateTenantRoleFromTemplateRequest, opts ...grpc.CallOption) (*Role, error)
+	// 根据角色ID列表获取角色值列表
+	GetRoleCodesByRoleIds(ctx context.Context, in *GetRoleCodesByRoleIdsRequest, opts ...grpc.CallOption) (*GetRoleCodesByRoleIdsResponse, error)
+	// 根据角色值列表获取角色列表
+	GetRolesByRoleCodes(ctx context.Context, in *GetRolesByRoleCodesRequest, opts ...grpc.CallOption) (*ListRoleResponse, error)
+	// 根据角色值列表获取角色列表
+	GetRolesByRoleIds(ctx context.Context, in *GetRolesByRoleIdsRequest, opts ...grpc.CallOption) (*ListRoleResponse, error)
 	// 根据角色ID或角色值获取对应的权限点ID列表
 	ListPermissionIds(ctx context.Context, in *ListPermissionIdsRequest, opts ...grpc.CallOption) (*ListPermissionIdsResponse, error)
 	// 根据角色ID列表获取角色值列表
@@ -167,6 +176,36 @@ func (c *roleServiceClient) CreateTenantRoleFromTemplate(ctx context.Context, in
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Role)
 	err := c.cc.Invoke(ctx, RoleService_CreateTenantRoleFromTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *roleServiceClient) GetRoleCodesByRoleIds(ctx context.Context, in *GetRoleCodesByRoleIdsRequest, opts ...grpc.CallOption) (*GetRoleCodesByRoleIdsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetRoleCodesByRoleIdsResponse)
+	err := c.cc.Invoke(ctx, RoleService_GetRoleCodesByRoleIds_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *roleServiceClient) GetRolesByRoleCodes(ctx context.Context, in *GetRolesByRoleCodesRequest, opts ...grpc.CallOption) (*ListRoleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListRoleResponse)
+	err := c.cc.Invoke(ctx, RoleService_GetRolesByRoleCodes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *roleServiceClient) GetRolesByRoleIds(ctx context.Context, in *GetRolesByRoleIdsRequest, opts ...grpc.CallOption) (*ListRoleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListRoleResponse)
+	err := c.cc.Invoke(ctx, RoleService_GetRolesByRoleIds_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -295,6 +334,12 @@ type RoleServiceServer interface {
 	Delete(context.Context, *DeleteRoleRequest) (*emptypb.Empty, error)
 	// 从租户角色模板创建租户角色
 	CreateTenantRoleFromTemplate(context.Context, *CreateTenantRoleFromTemplateRequest) (*Role, error)
+	// 根据角色ID列表获取角色值列表
+	GetRoleCodesByRoleIds(context.Context, *GetRoleCodesByRoleIdsRequest) (*GetRoleCodesByRoleIdsResponse, error)
+	// 根据角色值列表获取角色列表
+	GetRolesByRoleCodes(context.Context, *GetRolesByRoleCodesRequest) (*ListRoleResponse, error)
+	// 根据角色值列表获取角色列表
+	GetRolesByRoleIds(context.Context, *GetRolesByRoleIdsRequest) (*ListRoleResponse, error)
 	// 根据角色ID或角色值获取对应的权限点ID列表
 	ListPermissionIds(context.Context, *ListPermissionIdsRequest) (*ListPermissionIdsResponse, error)
 	// 根据角色ID列表获取角色值列表
@@ -348,6 +393,15 @@ func (UnimplementedRoleServiceServer) Delete(context.Context, *DeleteRoleRequest
 }
 func (UnimplementedRoleServiceServer) CreateTenantRoleFromTemplate(context.Context, *CreateTenantRoleFromTemplateRequest) (*Role, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateTenantRoleFromTemplate not implemented")
+}
+func (UnimplementedRoleServiceServer) GetRoleCodesByRoleIds(context.Context, *GetRoleCodesByRoleIdsRequest) (*GetRoleCodesByRoleIdsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetRoleCodesByRoleIds not implemented")
+}
+func (UnimplementedRoleServiceServer) GetRolesByRoleCodes(context.Context, *GetRolesByRoleCodesRequest) (*ListRoleResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetRolesByRoleCodes not implemented")
+}
+func (UnimplementedRoleServiceServer) GetRolesByRoleIds(context.Context, *GetRolesByRoleIdsRequest) (*ListRoleResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetRolesByRoleIds not implemented")
 }
 func (UnimplementedRoleServiceServer) ListPermissionIds(context.Context, *ListPermissionIdsRequest) (*ListPermissionIdsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListPermissionIds not implemented")
@@ -540,6 +594,60 @@ func _RoleService_CreateTenantRoleFromTemplate_Handler(srv interface{}, ctx cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RoleServiceServer).CreateTenantRoleFromTemplate(ctx, req.(*CreateTenantRoleFromTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RoleService_GetRoleCodesByRoleIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRoleCodesByRoleIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RoleServiceServer).GetRoleCodesByRoleIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RoleService_GetRoleCodesByRoleIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RoleServiceServer).GetRoleCodesByRoleIds(ctx, req.(*GetRoleCodesByRoleIdsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RoleService_GetRolesByRoleCodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRolesByRoleCodesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RoleServiceServer).GetRolesByRoleCodes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RoleService_GetRolesByRoleCodes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RoleServiceServer).GetRolesByRoleCodes(ctx, req.(*GetRolesByRoleCodesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RoleService_GetRolesByRoleIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRolesByRoleIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RoleServiceServer).GetRolesByRoleIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RoleService_GetRolesByRoleIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RoleServiceServer).GetRolesByRoleIds(ctx, req.(*GetRolesByRoleIdsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -762,6 +870,18 @@ var RoleService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateTenantRoleFromTemplate",
 			Handler:    _RoleService_CreateTenantRoleFromTemplate_Handler,
+		},
+		{
+			MethodName: "GetRoleCodesByRoleIds",
+			Handler:    _RoleService_GetRoleCodesByRoleIds_Handler,
+		},
+		{
+			MethodName: "GetRolesByRoleCodes",
+			Handler:    _RoleService_GetRolesByRoleCodes_Handler,
+		},
+		{
+			MethodName: "GetRolesByRoleIds",
+			Handler:    _RoleService_GetRolesByRoleIds_Handler,
 		},
 		{
 			MethodName: "ListPermissionIds",

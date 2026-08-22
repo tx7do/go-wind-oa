@@ -4,6 +4,7 @@ package ent
 
 import (
 	"fmt"
+	"go-wind-oa/app/core/service/internal/data/ent/plan"
 	"go-wind-oa/app/core/service/internal/data/ent/tenant"
 	"strings"
 	"time"
@@ -57,8 +58,32 @@ type Tenant struct {
 	// 订阅套餐
 	SubscriptionPlan *string `json:"subscription_plan,omitempty"`
 	// 租户有效期
-	ExpiredAt    *time.Time `json:"expired_at,omitempty"`
+	ExpiredAt *time.Time `json:"expired_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the TenantQuery when eager-loading is set.
+	Edges        TenantEdges `json:"edges"`
+	plan_id      *uint32
 	selectValues sql.SelectValues
+}
+
+// TenantEdges holds the relations/edges for other nodes in the graph.
+type TenantEdges struct {
+	// Plan holds the value of the plan edge.
+	Plan *Plan `json:"plan,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// PlanOrErr returns the Plan value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TenantEdges) PlanOrErr() (*Plan, error) {
+	if e.Plan != nil {
+		return e.Plan, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: plan.Label}
+	}
+	return nil, &NotLoadedError{edge: "plan"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -72,6 +97,8 @@ func (*Tenant) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case tenant.FieldCreatedAt, tenant.FieldUpdatedAt, tenant.FieldDeletedAt, tenant.FieldSubscriptionAt, tenant.FieldUnsubscribeAt, tenant.FieldExpiredAt:
 			values[i] = new(sql.NullTime)
+		case tenant.ForeignKeys[0]: // plan_id
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -233,6 +260,13 @@ func (_m *Tenant) assignValues(columns []string, values []any) error {
 				_m.ExpiredAt = new(time.Time)
 				*_m.ExpiredAt = value.Time
 			}
+		case tenant.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field plan_id", value)
+			} else if value.Valid {
+				_m.plan_id = new(uint32)
+				*_m.plan_id = uint32(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -244,6 +278,11 @@ func (_m *Tenant) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *Tenant) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QueryPlan queries the "plan" edge of the Tenant entity.
+func (_m *Tenant) QueryPlan() *PlanQuery {
+	return NewTenantClient(_m.config).QueryPlan(_m)
 }
 
 // Update returns a builder for updating this Tenant.

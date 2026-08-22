@@ -15,6 +15,8 @@ import {
   login as authLogin,
   logout as authLogout,
   generateCaptcha as authGenerateCaptcha,
+  registerUser as authRegisterUser,
+  verifyMfaMutation,
 } from "@/api/composables";
 import { i18n } from "@/core/i18n";
 import { setCaptchaHeaders } from "@/core/transport/rest";
@@ -41,7 +43,7 @@ class NetworkError extends Error {
   }
 }
 
-export { NetworkError };
+export { NetworkError, completeMfaChallenge };
 
 // ==============================
 // 登录加载状态（模块级单例）
@@ -131,6 +133,7 @@ async function login(
   let userInfo: null | UserInfo = null;
   try {
     loginLoading.value = true;
+    const accessStore = useAccessStore();
 
     // 若表单携带验证码，先设置一次性 Header（由 transport.unary 消费）
     if (params.captchaId && params.captchaCode) {
@@ -144,12 +147,20 @@ async function login(
       grant_type: "password",
     });
 
+    // ===== MFA 闸门：后端在密码校验通过、需二次验证时返回 mfa_operation_id，access_token 为空。
+    // 不写任何 token，记录 operation_id 并跳转 MFA 挑战页（路由守卫亦据此强制跳转）。
+    if ((resp as any).mfa_operation_id) {
+      accessStore.mfaOperationId = (resp as any).mfa_operation_id as string;
+      // 携带当前 redirect 到挑战页，验证通过后回到原目标页
+      const redirect = (router.currentRoute.value.query.redirect as string) || "";
+      await router.push({ name: "MfaChallenge", query: redirect ? { redirect } : {} });
+      return { userInfo: null };
+    }
+
     const accessToken = (resp as any).access_token;
     const refresh_token = (resp as any).refresh_token;
     let expiresAt = (resp as any).expires_in;
     let refreshExpiresAt = (resp as any).refresh_expires_in;
-
-    const accessStore = useAccessStore();
 
     const expiresAtSec = Number(expiresAt);
     expiresAt =
@@ -224,6 +235,95 @@ async function login(
   return { userInfo };
 }
 
+// completeMfaChallenge 用 operation_id + TOTP 码调后端验证，通过则套用登录成功逻辑。
+async function completeMfaChallenge(
+  totpCode: string,
+  onSuccess?: () => Promise<void> | void,
+): Promise<{ userInfo: null | UserInfo } | null> {
+  let userInfo: null | UserInfo = null;
+  const accessStore = useAccessStore();
+  const opId = accessStore.mfaOperationId;
+  if (!opId) {
+    return null;
+  }
+  try {
+    loginLoading.value = true;
+    const resp: any = await verifyMfaMutation.execute({
+      operationId: opId,
+      totpCode: totpCode,
+    } as any);
+    accessStore.mfaOperationId = null;
+
+    const accessToken = resp.access_token;
+    const refresh_token = resp.refresh_token;
+    let expiresAt = resp.expires_in;
+    let refreshExpiresAt = resp.refresh_expires_in;
+
+    const expiresAtSec = Number(expiresAt);
+    expiresAt =
+      !Number.isFinite(expiresAtSec) || expiresAtSec <= 0
+        ? Date.now() + ACCESS_TOKEN_REFRESH_INTERVAL
+        : Date.now() + Math.floor(expiresAtSec * 1000);
+
+    const refreshExpiresAtSec = Number(refreshExpiresAt);
+    refreshExpiresAt =
+      !Number.isFinite(refreshExpiresAtSec) || refreshExpiresAtSec <= 0
+        ? Date.now() + REFRESH_TOKEN_REFRESH_INTERVAL
+        : Date.now() + Math.floor(refreshExpiresAtSec * 1000);
+
+    if (accessToken) {
+      accessStore.setAccessToken(accessToken);
+      accessStore.setAccessTokenExpireTime(expiresAt);
+
+      if (refresh_token) {
+        accessStore.setRefreshToken(refresh_token);
+        accessStore.setRefreshTokenExpireTime(refreshExpiresAt);
+        startRefreshTimer();
+      }
+
+      userInfo = fetchUserInfo();
+      if (!userInfo) {
+        throw new Error(t("core.authentication.loginFailedDesc"));
+      }
+
+      const userStore = useAppUserStore();
+      userStore.setUserInfo(userInfo);
+      accessStore.setAccessCodes([]);
+
+      if (accessStore.loginExpired) {
+        accessStore.setLoginExpired(false);
+      } else {
+        if (onSuccess) {
+          await onSuccess();
+        } else {
+          await router.push(userInfo.homePath || DEFAULT_HOME_PATH);
+        }
+      }
+
+      if (userInfo?.realname) {
+        ElNotification({
+          title: t("core.authentication.loginSuccess"),
+          message: `${t("core.authentication.loginSuccessDesc")}:${userInfo?.realname}`,
+          type: "success",
+          duration: 3000,
+        });
+      }
+    }
+  } catch (error) {
+    await _doLogout();
+    const errorMsg = getErrorMsg(error);
+    ElNotification({
+      title: t("core.authentication.loginFailed"),
+      message: errorMsg,
+      type: "error",
+    });
+    return null;
+  } finally {
+    loginLoading.value = false;
+  }
+  return { userInfo };
+}
+
 async function _doLogout(redirect: boolean = true) {
   console.log("_doLogout");
   stopRefreshTimer();
@@ -246,9 +346,12 @@ async function logout(redirect: boolean = true) {
   await _doLogout(redirect);
 }
 
-async function register(_username: string, _password: string) {
-  // OA 鉴权转发层未含 RegisterUser，注册暂不可用。
-  throw new Error(t("core.authentication.registerUnavailable"));
+async function register(username: string, password: string) {
+  return await authRegisterUser({
+    username,
+    password: encryptPassword(password),
+    tenantCode: "master",
+  });
 }
 
 async function getCaptcha() {
@@ -315,6 +418,7 @@ export function useAuth() {
     login,
     logout,
     register,
+    completeMfaChallenge,
     getCaptcha,
     fetchUserInfo,
     fetchAccessCodes,

@@ -36,6 +36,15 @@ service RoleService {
   // 从租户角色模板创建租户角色
   rpc CreateTenantRoleFromTemplate(CreateTenantRoleFromTemplateRequest) returns (Role) {}
 
+  // 根据角色ID列表获取角色值列表
+  rpc GetRoleCodesByRoleIds(GetRoleCodesByRoleIdsRequest) returns (GetRoleCodesByRoleIdsResponse) {}
+
+  // 根据角色值列表获取角色列表
+  rpc GetRolesByRoleCodes(GetRolesByRoleCodesRequest) returns (ListRoleResponse) {}
+
+  // 根据角色值列表获取角色列表
+  rpc GetRolesByRoleIds(GetRolesByRoleIdsRequest) returns (ListRoleResponse) {}
+
   // 根据角色ID或角色值获取对应的权限点ID列表
   rpc ListPermissionIds(ListPermissionIdsRequest) returns (ListPermissionIdsResponse) {}
 

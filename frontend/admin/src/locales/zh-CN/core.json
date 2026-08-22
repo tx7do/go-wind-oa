@@ -65,7 +65,16 @@
       "captchaCode": {
         "required": "请输入验证码"
       }
-    }
+    },
+    "mfaTitle": "多因素认证",
+    "mfaDesc": "请输入认证器应用中显示的 6 位验证码以继续。",
+    "mfaCodePlaceholder": "请输入 6 位验证码",
+    "mfaCodeRequired": "请输入验证码",
+    "mfaCodeFormatError": "验证码必须为 6 位数字",
+    "mfaVerify": "验证",
+    "mfaCancel": "取消",
+    "mfaVerifyFailed": "MFA 验证失败",
+    "mfaNotRequired": "当前无 MFA 验证进行中"
   },
   "notice": {
     "title": "通知",

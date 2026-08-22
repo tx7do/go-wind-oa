@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "authentication/service/v1/mfa.proto";
+import "authentication/service/v1/authentication.proto";
+
+// MFA（多因素认证）服务 HTTP 桥接。
+// 管理侧 RPC（GetMFAStatus/ListEnrolledMethods/StartEnrollMethod/ConfirmEnrollMethod/
+// DisableMFA/RevokeMFADevice）需登录态，走正常 auth+authz 中间件，不加 security:{}。
+// 登录挑战侧 RPC（VerifyMFAChallenge）免鉴权，加 security:{} 并加入 rest_server 白名单。
+service MfaService {
+  // 查询当前登录用户 MFA 总览
+  rpc GetMFAStatus (authentication.service.v1.GetMFAStatusRequest) returns (authentication.service.v1.GetMFAStatusResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/mfa/status"
+    };
+  }
+
+  // 列出已注册的 MFA 凭证
+  rpc ListEnrolledMethods (authentication.service.v1.ListEnrolledMethodsRequest) returns (authentication.service.v1.ListEnrolledMethodsResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/mfa/methods"
+    };
+  }
+
+  // 开始注册 MFA 方法（返回 secret/QR，仅 TOTP 本轮实现）
+  rpc StartEnrollMethod (authentication.service.v1.StartEnrollMethodRequest) returns (authentication.service.v1.StartEnrollMethodResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/mfa/enroll/start"
+      body: "*"
+    };
+  }
+
+  // 确认注册 MFA 方法（提交首码完成绑定）
+  rpc ConfirmEnrollMethod (authentication.service.v1.ConfirmEnrollMethodRequest) returns (authentication.service.v1.ConfirmEnrollMethodResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/mfa/enroll/confirm"
+      body: "*"
+    };
+  }
+
+  // 禁用/移除已注册 MFA 凭证。
+  // 注意：kratos http 生成器不支持 DELETE 请求体（handler 只 BindQuery），
+  // 而 TS 生成器默认把 message 序列化为 body——为两端一致改用 POST + body。
+  rpc DisableMFA (authentication.service.v1.DisableMFARequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/mfa/disable"
+      body: "*"
+    };
+  }
+
+  // 撤销指定 MFA 凭证（按 id）。
+  // ⚠️ 当前无前端调用方：DELETE 请求体在 Go 生成器（恒 BindQuery）与 TS 生成器
+  // （发 body）之间不一致，贸然对接会静默丢参——需要时应改 POST（参见 DisableMFA）。
+  rpc RevokeMFADevice (authentication.service.v1.RevokeMFADeviceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/mfa/{credential_id}"
+    };
+  }
+
+  // 验证登录 MFA 挑战。通过则返回 LoginResponse（含真 access_token）。
+  // 免鉴权：登录流程在密码校验通过、待二次验证阶段调用。
+  rpc VerifyMFAChallenge (authentication.service.v1.VerifyMFAChallengeRequest) returns (authentication.service.v1.LoginResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/mfa/verify"
+      body: "*"
+    };
+
+    option(gnostic.openapi.v3.operation) = {
+      security: {}
+    };
+  }
+}

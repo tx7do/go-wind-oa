@@ -55,5 +55,29 @@
       "deleteWifiConfirmTitle": "删除 Wi-Fi 指纹",
       "deleteWifiConfirmContent": "删除后，该指纹不再参与打卡判定。确认删除？"
     }
+  },
+  "definition": {
+    "title": "流程定义",
+    "searchName": "名称",
+    "searchStatus": "状态",
+    "colName": "名称",
+    "colCode": "编码",
+    "colVersion": "版本",
+    "colStatus": "状态",
+    "colCreatedAt": "创建时间",
+    "colOperation": "操作",
+    "detailTitle": "流程定义详情",
+    "enable": "启用",
+    "disable": "停用",
+    "enableConfirmTitle": "启用确认",
+    "enableConfirmContent": "确定启用该流程定义吗？启用后可发起新的申请。",
+    "disableConfirmTitle": "停用确认",
+    "disableConfirmContent": "确定停用该流程定义吗？停用后不能发起新的申请。",
+    "cancel": "取消",
+    "submit": "提交",
+    "fieldCode": "编码",
+    "fieldVersion": "版本",
+    "fieldFormSchema": "表单结构（JSON）",
+    "fieldNodeConfig": "节点配置（JSON）"
   }
 }

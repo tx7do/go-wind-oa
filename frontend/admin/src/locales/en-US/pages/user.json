@@ -41,7 +41,10 @@
     "status": "Status",
     "role": "Role",
     "position": "Position",
-    "orgUnit": "Organization"
+    "orgUnit": "Organization",
+    "oldPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password"
   },
   "table": {
     "username": "Username",
@@ -86,7 +89,23 @@
     "backupEmail": "Backup Email",
     "backupEmailDesc": "Bound email: ant***sign.com",
     "mfaDevice": "MFA Device",
-    "mfaDeviceDesc": "No MFA device bound. After binding, secondary confirmation will be required."
+    "mfaDeviceDesc": "No MFA device bound. After binding, secondary confirmation will be required.",
+    "mfaBoundDesc": "TOTP authenticator is bound. A verification code is required on every login.",
+    "mfaStartBind": "Bind Authenticator",
+    "mfaUnbind": "Unbind",
+    "mfaBindTitle": "Bind TOTP Authenticator",
+    "mfaScanQr": "Scan this QR code with your authenticator app",
+    "mfaManualEntry": "Or enter this secret manually",
+    "mfaEnterCode": "Enter the 6-digit code shown in your authenticator",
+    "mfaCodePlaceholder": "6-digit code",
+    "mfaConfirmBind": "Confirm Bind",
+    "mfaBindSuccess": "TOTP bound successfully",
+    "mfaBindFailed": "Failed to bind TOTP",
+    "mfaEnrollStartFailed": "Failed to start enrollment",
+    "mfaUnbindSuccess": "TOTP unbound successfully",
+    "mfaUnbindFailed": "Failed to unbind TOTP",
+    "mfaUnbindConfirmTitle": "Unbind TOTP?",
+    "mfaUnbindConfirmContent": "After unbinding, login will no longer require a verification code. This reduces account security."
   },
   "accountBind": {
     "email": "Email Account",
@@ -105,5 +124,10 @@
     "unbind": "Unbind",
     "bindNow": "Bind Now",
     "bind": "Bind"
-  }
+  },
+  "resetMfa": "Reset MFA",
+  "resetMfaConfirmTitle": "Reset MFA for this user?",
+  "resetMfaConfirmDesc": "This will remove their TOTP binding. Next login will skip MFA until re-enrolled.",
+  "resetMfaSuccess": "MFA reset successfully",
+  "resetMfaFailed": "Failed to reset MFA"
 }

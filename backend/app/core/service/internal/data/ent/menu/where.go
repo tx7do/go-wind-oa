@@ -1015,6 +1015,36 @@ func MetaNotNil() predicate.Menu {
 	return predicate.Menu(sql.FieldNotNull(FieldMeta))
 }
 
+// ModuleEQ applies the EQ predicate on the "module" field.
+func ModuleEQ(v Module) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldModule, v))
+}
+
+// ModuleNEQ applies the NEQ predicate on the "module" field.
+func ModuleNEQ(v Module) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldModule, v))
+}
+
+// ModuleIn applies the In predicate on the "module" field.
+func ModuleIn(vs ...Module) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldModule, vs...))
+}
+
+// ModuleNotIn applies the NotIn predicate on the "module" field.
+func ModuleNotIn(vs ...Module) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldModule, vs...))
+}
+
+// ModuleIsNil applies the IsNil predicate on the "module" field.
+func ModuleIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldModule))
+}
+
+// ModuleNotNil applies the NotNil predicate on the "module" field.
+func ModuleNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldModule))
+}
+
 // HasParent applies the HasEdge predicate on the "parent" edge.
 func HasParent() predicate.Menu {
 	return predicate.Menu(func(s *sql.Selector) {

@@ -104,7 +104,12 @@
     "syncSuccess": "Sync successful",
     "syncFailed": "Sync failed",
     "password_mismatch": "The two passwords do not match",
-    "update_status_success": "Status updated successfully"
+    "update_status_success": "Status updated successfully",
+    "create_success": "Created successfully",
+    "create_failed": "Creation failed",
+    "operation_success": "Operation succeeded",
+    "operation_failed": "Operation failed",
+    "update_status_failed": "Failed to update status"
   },
   "title": {
     "confirm": "Confirm",
@@ -312,6 +317,14 @@
     "importMarkdown": "Import Markdown",
     "json_parse_error": "JSON parse error",
     "json_serialize_error": "JSON serialization error",
-    "unknown_error": "Unknown error"
-  }
+    "unknown_error": "Unknown error",
+    "clear_content_confirm": "Are you sure you want to clear all content?"
+  },
+  "cancel": "Cancel",
+  "view": "View",
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  "unknown": "Unknown",
+  "operationFailed": "Operation failed"
 }

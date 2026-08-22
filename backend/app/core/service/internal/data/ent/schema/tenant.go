@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
@@ -118,6 +119,15 @@ func (Tenant) Fields() []ent.Field {
 			Comment("租户有效期").
 			Optional().
 			Nillable(),
+	}
+}
+
+// Edges of the Tenant.
+func (Tenant) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("plan", Plan.Type).
+			Ref("tenants").
+			Unique(),
 	}
 }
 

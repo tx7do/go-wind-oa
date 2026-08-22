@@ -49,6 +49,8 @@ const (
 	FieldComponent = "component"
 	// FieldMeta holds the string denoting the meta field in the database.
 	FieldMeta = "meta"
+	// FieldModule holds the string denoting the module field in the database.
+	FieldModule = "module"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
@@ -85,6 +87,7 @@ var Columns = []string{
 	FieldName,
 	FieldComponent,
 	FieldMeta,
+	FieldModule,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -167,6 +170,37 @@ func TypeValidator(_type Type) error {
 		return nil
 	default:
 		return fmt.Errorf("menu: invalid enum value for type field: %q", _type)
+	}
+}
+
+// Module defines the type for the "module" enum field.
+type Module string
+
+// Module values.
+const (
+	ModuleDashboard       Module = "DASHBOARD"
+	ModuleOpm             Module = "OPM"
+	ModuleSystem          Module = "SYSTEM"
+	ModuleDict            Module = "DICT"
+	ModuleTenant          Module = "TENANT"
+	ModulePermission      Module = "PERMISSION"
+	ModuleLog             Module = "LOG"
+	ModuleInternalMessage Module = "INTERNAL_MESSAGE"
+	ModuleFile            Module = "FILE"
+	ModuleTask            Module = "TASK"
+)
+
+func (m Module) String() string {
+	return string(m)
+}
+
+// ModuleValidator is a validator for the "module" field enum values. It is called by the builders before save.
+func ModuleValidator(m Module) error {
+	switch m {
+	case ModuleDashboard, ModuleOpm, ModuleSystem, ModuleDict, ModuleTenant, ModulePermission, ModuleLog, ModuleInternalMessage, ModuleFile, ModuleTask:
+		return nil
+	default:
+		return fmt.Errorf("menu: invalid enum value for module field: %q", m)
 	}
 }
 
@@ -256,6 +290,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByComponent orders the results by the component field.
 func ByComponent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldComponent, opts...).ToFunc()
+}
+
+// ByModule orders the results by the module field.
+func ByModule(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldModule, opts...).ToFunc()
 }
 
 // ByParentField orders the results by parent field.
