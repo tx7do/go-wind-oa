@@ -1,65 +1,23 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
-    <ElCard shadow="never">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <span class="label">工作日</span>
-          <ElDatePicker
-            v-model="workDate"
-            type="date"
-            value-format="YYYY-MM-DD"
-            :clearable="false"
-            style="width: 180px"
-            @change="loadRecords"
-          />
-          <ElButton :loading="loading" @click="loadRecords">查询</ElButton>
-          <ElButton type="primary" plain :loading="settling" @click="runSettlement">
-            执行当日结算
-          </ElButton>
-        </div>
-        <ElButton type="primary" plain @click="openSettings">考勤设置</ElButton>
-      </div>
-    </ElCard>
-
-    <ElCard shadow="never" class="mt-4 flex-1">
-      <ElTable :data="records" border stripe v-loading="loading">
-        <ElTableColumn prop="userId" label="用户ID" width="100" />
-        <ElTableColumn prop="workDate" label="工作日" width="120">
-          <template #default="{ row }">{{ fmtDate(row.workDate) }}</template>
-        </ElTableColumn>
-        <ElTableColumn prop="checkInAt" label="签到时间" width="180">
-          <template #default="{ row }">{{ fmtTime(row.checkInAt) }}</template>
-        </ElTableColumn>
-        <ElTableColumn label="签到定位" min-width="160">
-          <template #default="{ row }">
-            <span v-if="row.checkInLatitude">
-              {{ row.checkInLatitude }}, {{ row.checkInLongitude }}
-              <span v-if="row.checkInWifiBssid"> / {{ row.checkInWifiBssid }}</span>
-            </span>
-            <span v-else>-</span>
-          </template>
-        </ElTableColumn>
-        <ElTableColumn prop="checkOutAt" label="签退时间" width="180">
-          <template #default="{ row }">{{ fmtTime(row.checkOutAt) }}</template>
-        </ElTableColumn>
-        <ElTableColumn label="结果" width="100">
-          <template #default="{ row }">
-            <ElTag :type="resultTagType(row.dayResult)">{{ resultLabel(row.dayResult) }}</ElTag>
-          </template>
-        </ElTableColumn>
-      </ElTable>
-      <div class="pager">
-        <ElPagination
-          v-model:current-page="page"
-          v-model:page-size="pageSize"
-          :total="total"
-          :page-sizes="[10, 20, 50]"
-          layout="total, sizes, prev, pager, next"
-          @current-change="loadRecords"
-          @size-change="loadRecords"
-        />
-      </div>
-    </ElCard>
+    <div class="status-bar">
+      <span class="label">工作日</span>
+      <ElDatePicker
+        v-model="workDate"
+        type="date"
+        value-format="YYYY-MM-DD"
+        :clearable="false"
+        style="width: 180px"
+        @change="onWorkDateChange"
+      />
+      <ElButton :loading="settling" @click="runSettlement">执行当日结算</ElButton>
+      <ElButton type="primary" plain @click="openSettings">考勤设置</ElButton>
+    </div>
+    <ProPage ref="pageRef" :config="pageConfig">
+      <template #dayResult="scope: any">
+        <ElTag :type="resultTagType(scope.row.dayResult)">{{ resultLabel(scope.row.dayResult) }}</ElTag>
+      </template>
+    </ProPage>
 
     <ElDialog v-model="settingsVisible" title="考勤设置" width="420px">
       <ElForm label-width="100px">
@@ -79,64 +37,37 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from "vue";
+import { ref, computed, reactive } from "vue";
 import {
   ElButton,
-  ElCard,
   ElDatePicker,
   ElDialog,
   ElForm,
   ElFormItem,
   ElInput,
   ElMessage,
-  ElPagination,
-  ElTable,
-  ElTableColumn,
   ElTag,
 } from "element-plus";
 
+import ProPage from "@/components/Pro/ProPage/index.vue";
+import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import {
-  useListAttendanceRecords,
+  fetchListAttendanceRecords,
   useRunDailySettlement,
   useUpdateAttendanceSetting,
 } from "@/api/composables";
 import { apiClient } from "@/api/client";
 
+const pageRef = ref();
+
 const today = () => new Date().toISOString().slice(0, 10);
-
 const workDate = ref(today());
-const records = ref<any[]>([]);
-const loading = ref(false);
-const page = ref(1);
-const pageSize = ref(10);
-const total = ref(0);
-
-const recordsQuery = useListAttendanceRecords(
-  reactive({
-    userId: 0,
-    workDate: computed(() => `${workDate.value}T00:00:00Z`),
-    page: computed(() => page.value),
-    pageSize: computed(() => pageSize.value),
-  }),
-  { enabled: false }
-);
-
-async function loadRecords() {
-  loading.value = true;
-  try {
-    const resp = await recordsQuery.refetch();
-    records.value = resp.data?.items ?? [];
-    total.value = Number(resp.data?.total ?? 0);
-  } finally {
-    loading.value = false;
-  }
-}
-
 const settling = ref(false);
+
 const settlementMutation = useRunDailySettlement({
   onSuccess: (resp: any) => {
     ElMessage.success(`结算完成，处理 ${resp?.settledCount ?? 0} 条记录`);
-    loadRecords();
+    pageRef.value?.refresh();
   },
   onError: (err: Error) => ElMessage.error(err.message || "结算失败"),
 });
@@ -184,6 +115,15 @@ function fmtTime(v?: string) {
   return v ? String(v).replace("T", " ").slice(0, 19) : "-";
 }
 
+function locateStr(row: any): string {
+  if (row.checkInLatitude) {
+    let s = `${row.checkInLatitude}, ${row.checkInLongitude}`;
+    if (row.checkInWifiBssid) s += ` / ${row.checkInWifiBssid}`;
+    return s;
+  }
+  return "-";
+}
+
 function resultLabel(r?: string): string {
   switch (r) {
     case "NORMAL": return "正常";
@@ -210,7 +150,55 @@ function resultTagType(r?: string): "success" | "warning" | "danger" | "info" {
   }
 }
 
-onMounted(loadRecords);
+const pageConfig = computed<ProPageConfig>(() => ({
+  table: {
+    listAction: async (query: any) => {
+      const result = await fetchListAttendanceRecords({
+        userId: query.userId ?? 0,
+        workDate: `${workDate.value}T00:00:00Z`,
+        page: query.page,
+        pageSize: query.pageSize,
+      } as any);
+      return { items: (result as any)?.items ?? [], total: (result as any)?.total ?? 0 };
+    },
+    toolbar: [],
+    toolbarRight: [],
+    defaultToolbar: ["refresh", "filter"],
+    pagination: true,
+    tableAttrs: { border: true, stripe: true },
+    columns: [
+      { prop: "userId", label: "用户ID", width: 100 },
+      {
+        prop: "workDate",
+        label: "工作日",
+        width: 120,
+        formatter: (row: any) => fmtDate(row.workDate),
+      },
+      {
+        prop: "checkInAt",
+        label: "签到时间",
+        width: 180,
+        formatter: (row: any) => fmtTime(row.checkInAt),
+      },
+      {
+        label: "签到定位",
+        minWidth: 160,
+        formatter: (row: any) => locateStr(row),
+      },
+      {
+        prop: "checkOutAt",
+        label: "签退时间",
+        width: 180,
+        formatter: (row: any) => fmtTime(row.checkOutAt),
+      },
+      { prop: "dayResult", label: "结果", width: 100, slotName: "dayResult" },
+    ],
+  },
+}));
+
+function onWorkDateChange() {
+  pageRef.value?.refresh();
+}
 </script>
 
 <style lang="scss" scoped>
@@ -220,13 +208,14 @@ onMounted(loadRecords);
   min-width: 0;
   flex-shrink: 0;
 }
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
 .label {
   font-size: 14px;
   color: var(--el-text-color-regular);
-}
-.pager {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 12px;
 }
 </style>

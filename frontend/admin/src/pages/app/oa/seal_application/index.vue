@@ -1,75 +1,25 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
-    <ElCard shadow="never" class="flex-1">
-      <ElTable :data="applications" border stripe v-loading="loadingApps">
-        <ElTableColumn prop="id" label="ID" width="80" />
-        <ElTableColumn prop="applicantName" label="申请人" width="120" />
-        <ElTableColumn prop="purpose" label="用印事由" min-width="160" show-overflow-tooltip />
-        <ElTableColumn label="印章类型" width="120">
-          <template #default="{ row }">{{ sealTypeLabel(row.sealType) }}</template>
-        </ElTableColumn>
-        <ElTableColumn prop="fileCount" label="文件份数" width="100" />
-        <ElTableColumn prop="recipient" label="收件方" width="160" show-overflow-tooltip />
-        <ElTableColumn label="状态" width="100">
-          <template #default="{ row }">
-            <ElTag :type="statusTag(row.sealStatus)">{{ statusLabel(row.sealStatus) }}</ElTag>
-          </template>
-        </ElTableColumn>
-        <ElTableColumn prop="instanceId" label="流程实例" width="100" />
-      </ElTable>
-      <div class="pager">
-        <ElPagination
-          v-model:current-page="appPage"
-          v-model:page-size="appPageSize"
-          :total="appTotal"
-          :page-sizes="[10, 20, 50]"
-          layout="total, sizes, prev, pager, next"
-          @current-change="loadAll"
-          @size-change="loadAll"
-        />
-      </div>
-    </ElCard>
+    <ProPage ref="pageRef" :config="pageConfig">
+      <template #sealStatus="scope: any">
+        <ElTag :type="statusTag(scope.row.sealStatus)">{{ statusLabel(scope.row.sealStatus) }}</ElTag>
+      </template>
+    </ProPage>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from "vue";
-import {
-  ElCard,
-  ElPagination,
-  ElTable,
-  ElTableColumn,
-  ElTag,
-} from "element-plus";
+import { ref, computed } from "vue";
+import { ElTag } from "element-plus";
 
-import { useListSealApplications } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
+import ProPage from "@/components/Pro/ProPage/index.vue";
+import type { ProPageConfig } from "@/components/Pro/ProPage/types";
+import type {
+  oaservicev1_ListSealApplicationsRequest,
+} from "@/api/generated/admin/service/v1";
+import { fetchListSealApplications } from "@/api/composables";
 
-const applications = ref<any[]>([]);
-const loadingApps = ref(false);
-const appPage = ref(1);
-const appPageSize = ref(10);
-const appTotal = ref(0);
-const appsQuery = useListSealApplications(
-  reactive({
-    userId: 0,
-    status: undefined,
-    page: computed(() => appPage.value),
-    pageSize: computed(() => appPageSize.value),
-  }),
-  { enabled: false }
-);
-
-async function loadAll() {
-  loadingApps.value = true;
-  try {
-    const a = await appsQuery.refetch();
-    applications.value = a.data?.items ?? [];
-    appTotal.value = Number(a.data?.total ?? 0);
-  } finally {
-    loadingApps.value = false;
-  }
-}
+const pageRef = ref();
 
 function sealTypeLabel(s?: string): string {
   switch (s) {
@@ -99,13 +49,47 @@ function statusTag(s?: string): "success" | "danger" | "info" | "warning" {
   }
 }
 
-onMounted(loadAll);
+const pageConfig = computed<ProPageConfig>(() => ({
+  table: {
+    listAction: async (query: any) => {
+      const req: oaservicev1_ListSealApplicationsRequest = {
+        userId: query.userId ?? 0,
+        status: query.status,
+        page: query.page,
+        pageSize: query.pageSize,
+      };
+      const result = await fetchListSealApplications(req);
+      return { items: (result as any)?.items ?? [], total: (result as any)?.total ?? 0 };
+    },
+    toolbar: [],
+    toolbarRight: [],
+    defaultToolbar: ["refresh", "filter"],
+    pagination: true,
+    tableAttrs: { border: true, stripe: true },
+    columns: [
+      { prop: "id", label: "ID", width: 80 },
+      { prop: "applicantName", label: "申请人", width: 120 },
+      { prop: "purpose", label: "用印事由", minWidth: 160, showOverflowTooltip: true },
+      {
+        prop: "sealType",
+        label: "印章类型",
+        width: 120,
+        formatter: (row: any) => sealTypeLabel(row.sealType),
+      },
+      { prop: "fileCount", label: "文件份数", width: 100 },
+      { prop: "recipient", label: "收件方", width: 160, showOverflowTooltip: true },
+      { prop: "sealStatus", label: "状态", width: 100, slotName: "sealStatus" },
+      { prop: "instanceId", label: "流程实例", width: 100 },
+    ],
+  },
+}));
 </script>
 
-<style scoped>
-.pager {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 12px;
+<style lang="scss" scoped>
+.app-container {
+  padding: 20px;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
 }
 </style>

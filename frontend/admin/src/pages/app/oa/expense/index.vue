@@ -1,90 +1,36 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
-    <ElCard shadow="never" class="flex-1">
-      <ElTable :data="applications" border stripe v-loading="loading">
-        <ElTableColumn type="expand">
-          <template #default="{ row }">
-            <ElTable :data="row.items ?? []" border size="small">
-              <ElTableColumn prop="category" label="类别" width="120" />
-              <ElTableColumn prop="amount" label="金额" width="120" />
-              <ElTableColumn label="费用日期" width="120">
-                <template #default="{ row: item }">{{ fmtDate(item.expenseDate) }}</template>
-              </ElTableColumn>
-              <ElTableColumn prop="description" label="说明" min-width="160" />
-              <ElTableColumn prop="invoiceFileId" label="发票文件ID" width="110" />
-            </ElTable>
-          </template>
-        </ElTableColumn>
-        <ElTableColumn prop="id" label="ID" width="80" />
-        <ElTableColumn prop="createdBy" label="申请人ID" width="100" />
-        <ElTableColumn prop="title" label="事由" min-width="200" show-overflow-tooltip />
-        <ElTableColumn prop="totalAmount" label="总额" width="120" />
-        <ElTableColumn label="状态" width="100">
-          <template #default="{ row }">
-            <ElTag :type="statusTag(row.expenseStatus)">{{ statusLabel(row.expenseStatus) }}</ElTag>
-          </template>
-        </ElTableColumn>
-        <ElTableColumn prop="instanceId" label="流程实例" width="100" />
-        <ElTableColumn prop="created_at" label="提交时间" width="170">
-          <template #default="{ row }">{{ fmtTime(row.createdAt || row.created_at) }}</template>
-        </ElTableColumn>
-      </ElTable>
-      <div class="pager">
-        <ElPagination
-          v-model:current-page="page"
-          v-model:page-size="pageSize"
-          :total="total"
-          :page-sizes="[10, 20, 50]"
-          layout="total, sizes, prev, pager, next"
-          @current-change="load"
-          @size-change="load"
-        />
-      </div>
-    </ElCard>
+    <ProPage ref="pageRef" :config="pageConfig">
+      <template #expenseStatus="scope: any">
+        <ElTag :type="statusTag(scope.row.expenseStatus)">{{ statusLabel(scope.row.expenseStatus) }}</ElTag>
+      </template>
+      <template #operation="scope: any">
+        <ElButton size="small" type="primary" link @click="openDetail(scope.row.items)">
+          查看
+        </ElButton>
+      </template>
+    </ProPage>
+
+    <ExpenseDetailDrawer ref="drawerRef" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from "vue";
+import { ref, computed } from "vue";
+import { ElButton, ElTag } from "element-plus";
+
+import ProPage from "@/components/Pro/ProPage/index.vue";
+import type { ProPageConfig } from "@/components/Pro/ProPage/types";
+import ExpenseDetailDrawer from "./expense-detail-drawer.vue";
 import {
-  ElCard,
-  ElPagination,
-  ElTable,
-  ElTableColumn,
-  ElTag,
-} from "element-plus";
+  fetchListExpenseApplications,
+} from "@/api/composables";
+import type {
+  oaservicev1_ListExpenseApplicationsRequest,
+} from "@/api/generated/admin/service/v1";
 
-import { useListExpenseApplications } from "@/api/composables";
-
-const applications = ref<any[]>([]);
-const loading = ref(false);
-const page = ref(1);
-const pageSize = ref(10);
-const total = ref(0);
-const appsQuery = useListExpenseApplications(
-  reactive({
-    userId: 0,
-    status: undefined,
-    page: computed(() => page.value),
-    pageSize: computed(() => pageSize.value),
-  }),
-  { enabled: false }
-);
-
-async function load() {
-  loading.value = true;
-  try {
-    const resp = await appsQuery.refetch();
-    applications.value = resp.data?.items ?? [];
-    total.value = Number(resp.data?.total ?? 0);
-  } finally {
-    loading.value = false;
-  }
-}
-
-function fmtDate(v?: string) {
-  return v ? String(v).slice(0, 10) : "-";
-}
+const pageRef = ref();
+const drawerRef = ref();
 
 function fmtTime(v?: string) {
   return v ? String(v).replace("T", " ").slice(0, 19) : "-";
@@ -108,7 +54,44 @@ function statusTag(s?: string): "success" | "danger" | "info" | "warning" {
   }
 }
 
-onMounted(load);
+function openDetail(items: any[]) {
+  drawerRef.value?.open(items);
+}
+
+const pageConfig = computed<ProPageConfig>(() => ({
+  table: {
+    listAction: async (query: any) => {
+      const req: oaservicev1_ListExpenseApplicationsRequest = {
+        userId: query.userId ?? 0,
+        status: query.status,
+        page: query.page,
+        pageSize: query.pageSize,
+      };
+      const result = await fetchListExpenseApplications(req);
+      return { items: (result as any)?.items ?? [], total: (result as any)?.total ?? 0 };
+    },
+    toolbar: [],
+    toolbarRight: [],
+    defaultToolbar: ["refresh", "filter"],
+    pagination: true,
+    tableAttrs: { border: true, stripe: true },
+    columns: [
+      { prop: "id", label: "ID", width: 80 },
+      { prop: "createdBy", label: "申请人ID", width: 100 },
+      { prop: "title", label: "事由", minWidth: 200, showOverflowTooltip: true },
+      { prop: "totalAmount", label: "总额", width: 120 },
+      { prop: "expenseStatus", label: "状态", width: 100, slotName: "expenseStatus" },
+      { prop: "instanceId", label: "流程实例", width: 100 },
+      {
+        prop: "createdAt",
+        label: "提交时间",
+        width: 170,
+        formatter: (row: any) => fmtTime(row.createdAt || row.created_at),
+      },
+      { prop: "operation", label: "操作", width: 100, slotName: "operation" },
+    ],
+  },
+}));
 </script>
 
 <style lang="scss" scoped>
@@ -117,10 +100,5 @@ onMounted(load);
   width: 100%;
   min-width: 0;
   flex-shrink: 0;
-}
-.pager {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 12px;
 }
 </style>

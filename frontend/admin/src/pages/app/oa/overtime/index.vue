@@ -1,75 +1,25 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
-    <ElCard shadow="never" class="flex-1">
-      <ElTable :data="applications" border stripe v-loading="loadingApps">
-        <ElTableColumn prop="id" label="ID" width="80" />
-        <ElTableColumn prop="applicantName" label="申请人" width="120" />
-        <ElTableColumn prop="reason" label="事由" min-width="160" show-overflow-tooltip />
-        <ElTableColumn label="起止" min-width="200">
-          <template #default="{ row }">
-            {{ fmtDate(row.startTime) }} ~ {{ fmtDate(row.endTime) }}
-          </template>
-        </ElTableColumn>
-        <ElTableColumn label="状态" width="100">
-          <template #default="{ row }">
-            <ElTag :type="statusTag(row.overtimeStatus)">{{ statusLabel(row.overtimeStatus) }}</ElTag>
-          </template>
-        </ElTableColumn>
-        <ElTableColumn prop="instanceId" label="流程实例" width="100" />
-      </ElTable>
-      <div class="pager">
-        <ElPagination
-          v-model:current-page="appPage"
-          v-model:page-size="appPageSize"
-          :total="appTotal"
-          :page-sizes="[10, 20, 50]"
-          layout="total, sizes, prev, pager, next"
-          @current-change="loadAll"
-          @size-change="loadAll"
-        />
-      </div>
-    </ElCard>
+    <ProPage ref="pageRef" :config="pageConfig">
+      <template #overtimeStatus="scope: any">
+        <ElTag :type="statusTag(scope.row.overtimeStatus)">{{ statusLabel(scope.row.overtimeStatus) }}</ElTag>
+      </template>
+    </ProPage>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from "vue";
-import {
-  ElCard,
-  ElPagination,
-  ElTable,
-  ElTableColumn,
-  ElTag,
-} from "element-plus";
+import { ref, computed } from "vue";
+import { ElTag } from "element-plus";
 
-import { useListOvertimeApplications } from "@/api/composables";
-import { PaginationQuery } from "@/core/transport/rest";
+import ProPage from "@/components/Pro/ProPage/index.vue";
+import type { ProPageConfig } from "@/components/Pro/ProPage/types";
+import type {
+  oaservicev1_ListOvertimeApplicationsRequest,
+} from "@/api/generated/admin/service/v1";
+import { fetchListOvertimeApplications } from "@/api/composables";
 
-const applications = ref<any[]>([]);
-const loadingApps = ref(false);
-const appPage = ref(1);
-const appPageSize = ref(10);
-const appTotal = ref(0);
-const appsQuery = useListOvertimeApplications(
-  reactive({
-    userId: 0,
-    status: undefined,
-    page: computed(() => appPage.value),
-    pageSize: computed(() => appPageSize.value),
-  }),
-  { enabled: false }
-);
-
-async function loadAll() {
-  loadingApps.value = true;
-  try {
-    const a = await appsQuery.refetch();
-    applications.value = a.data?.items ?? [];
-    appTotal.value = Number(a.data?.total ?? 0);
-  } finally {
-    loadingApps.value = false;
-  }
-}
+const pageRef = ref();
 
 function statusLabel(s?: string): string {
   switch (s) {
@@ -101,13 +51,44 @@ function fmtDate(ts?: { seconds?: number; nanos?: number } | string): string {
   return d.toISOString().slice(0, 10);
 }
 
-onMounted(loadAll);
+const pageConfig = computed<ProPageConfig>(() => ({
+  table: {
+    listAction: async (query: any) => {
+      const req: oaservicev1_ListOvertimeApplicationsRequest = {
+        userId: query.userId ?? 0,
+        status: query.status,
+        page: query.page,
+        pageSize: query.pageSize,
+      };
+      const result = await fetchListOvertimeApplications(req);
+      return { items: (result as any)?.items ?? [], total: (result as any)?.total ?? 0 };
+    },
+    toolbar: [],
+    toolbarRight: [],
+    defaultToolbar: ["refresh", "filter"],
+    pagination: true,
+    tableAttrs: { border: true, stripe: true },
+    columns: [
+      { prop: "id", label: "ID", width: 80 },
+      { prop: "applicantName", label: "申请人", width: 120 },
+      { prop: "reason", label: "事由", minWidth: 160, showOverflowTooltip: true },
+      {
+        label: "起止",
+        minWidth: 200,
+        formatter: (row: any) => `${fmtDate(row.startTime)} ~ ${fmtDate(row.endTime)}`,
+      },
+      { prop: "overtimeStatus", label: "状态", width: 100, slotName: "overtimeStatus" },
+      { prop: "instanceId", label: "流程实例", width: 100 },
+    ],
+  },
+}));
 </script>
 
-<style scoped>
-.pager {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 12px;
+<style lang="scss" scoped>
+.app-container {
+  padding: 20px;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
 }
 </style>

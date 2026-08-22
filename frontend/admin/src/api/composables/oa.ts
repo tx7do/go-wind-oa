@@ -225,6 +225,17 @@ export function useListLeaveBalances(
   });
 }
 
+export async function fetchListLeaveBalances(
+  req: oaservicev1_ListLeaveBalancesRequest
+) {
+  return queryClient.fetchQuery({
+    queryKey: ["listLeaveBalances", req],
+    queryFn: () => apiClient.leaveService.ListLeaveBalances(req),
+    staleTime: 0,
+    retry: 0,
+  });
+}
+
 export function useListLeaveApplications(
   req: oaservicev1_ListLeaveApplicationsRequest,
   options?: Omit<UseQueryOptions<oaservicev1_ListLeaveApplicationsResponse, Error>, "queryKey">
@@ -233,6 +244,17 @@ export function useListLeaveApplications(
     queryKey: ["listLeaveApplications", req],
     queryFn: () => apiClient.leaveService.ListLeaveApplications(req),
     ...options,
+  });
+}
+
+export async function fetchListLeaveApplications(
+  req: oaservicev1_ListLeaveApplicationsRequest
+) {
+  return queryClient.fetchQuery({
+    queryKey: ["listLeaveApplications", req],
+    queryFn: () => apiClient.leaveService.ListLeaveApplications(req),
+    staleTime: 0,
+    retry: 0,
   });
 }
 
@@ -248,6 +270,17 @@ export function useListExpenseApplications(
     queryKey: ["listExpenseApplications", req],
     queryFn: () => apiClient.expenseService.ListExpenseApplications(req),
     ...options,
+  });
+}
+
+export async function fetchListExpenseApplications(
+  req: oaservicev1_ListExpenseApplicationsRequest
+) {
+  return queryClient.fetchQuery({
+    queryKey: ["listExpenseApplications", req],
+    queryFn: () => apiClient.expenseService.ListExpenseApplications(req),
+    staleTime: 0,
+    retry: 0,
   });
 }
 
@@ -268,6 +301,17 @@ export function useListBusinessTripApplications(
     queryKey: ["listBusinessTripApplications", req],
     queryFn: () => apiClient.businessTripService.ListBusinessTripApplications(req),
     ...options,
+  });
+}
+
+export async function fetchListBusinessTripApplications(
+  req: oaservicev1_ListBusinessTripApplicationsRequest
+) {
+  return queryClient.fetchQuery({
+    queryKey: ["listBusinessTripApplications", req],
+    queryFn: () => apiClient.businessTripService.ListBusinessTripApplications(req),
+    staleTime: 0,
+    retry: 0,
   });
 }
 
@@ -295,6 +339,17 @@ export function useListOvertimeApplications(
   });
 }
 
+export async function fetchListOvertimeApplications(
+  req: oaservicev1_ListOvertimeApplicationsRequest
+) {
+  return queryClient.fetchQuery({
+    queryKey: ["listOvertimeApplications", req],
+    queryFn: () => apiClient.overtimeService.ListOvertimeApplications(req),
+    staleTime: 0,
+    retry: 0,
+  });
+}
+
 export function useListSealApplications(
   req: oaservicev1_ListSealApplicationsRequest,
   options?: Omit<UseQueryOptions<oaservicev1_ListSealApplicationsResponse, Error>, "queryKey">
@@ -306,6 +361,17 @@ export function useListSealApplications(
   });
 }
 
+export async function fetchListSealApplications(
+  req: oaservicev1_ListSealApplicationsRequest
+) {
+  return queryClient.fetchQuery({
+    queryKey: ["listSealApplications", req],
+    queryFn: () => apiClient.sealApplicationService.ListSealApplications(req),
+    staleTime: 0,
+    retry: 0,
+  });
+}
+
 export function useListOutingApplications(
   req: oaservicev1_ListOutingApplicationsRequest,
   options?: Omit<UseQueryOptions<oaservicev1_ListOutingApplicationsResponse, Error>, "queryKey">
@@ -314,6 +380,17 @@ export function useListOutingApplications(
     queryKey: ["listOutingApplications", req],
     queryFn: () => apiClient.outingService.ListOutingApplications(req),
     ...options,
+  });
+}
+
+export async function fetchListOutingApplications(
+  req: oaservicev1_ListOutingApplicationsRequest
+) {
+  return queryClient.fetchQuery({
+    queryKey: ["listOutingApplications", req],
+    queryFn: () => apiClient.outingService.ListOutingApplications(req),
+    staleTime: 0,
+    retry: 0,
   });
 }
 
@@ -329,6 +406,17 @@ export function useListAttendanceRecords(
     queryKey: ["listAttendanceRecords", req],
     queryFn: () => apiClient.attendanceService.ListAttendanceRecords(req),
     ...options,
+  });
+}
+
+export async function fetchListAttendanceRecords(
+  req: oaservicev1_ListAttendanceRecordsRequest
+) {
+  return queryClient.fetchQuery({
+    queryKey: ["listAttendanceRecords", req],
+    queryFn: () => apiClient.attendanceService.ListAttendanceRecords(req),
+    staleTime: 0,
+    retry: 0,
   });
 }
 
@@ -451,6 +539,15 @@ export function useListHolidays(
   });
 }
 
+export async function fetchListHolidays(req: { year: number }) {
+  return queryClient.fetchQuery({
+    queryKey: ["listHolidays", req.year],
+    queryFn: () => apiClient.attendanceService.ListHolidays(req),
+    staleTime: 0,
+    retry: 0,
+  });
+}
+
 export function useUpsertHoliday(
   options?: UseMutationOptions<Record<never, never>, Error, oaservicev1_Holiday>
 ) {
@@ -529,4 +626,20 @@ export async function fetchPositions() {
 export function positionDisplayName(p?: identityservicev1_Position): string {
   if (!p) return "";
   return p.name || `#${p.id}`;
+}
+
+/** 通讯录成员列表：取全租户用户（noPaging）。 */
+export async function fetchDirectoryUsers() {
+  return queryClient.fetchQuery({
+    queryKey: ["directoryUsers"],
+    queryFn: () =>
+      apiClient.userService.List({
+        page: 1,
+        pageSize: 999,
+        noPaging: true,
+        sorting: undefined,
+      }),
+    staleTime: 0,
+    retry: 0,
+  }) as Promise<identityservicev1_ListUserResponse>;
 }

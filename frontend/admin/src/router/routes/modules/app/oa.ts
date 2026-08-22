@@ -23,7 +23,7 @@ const oa: RouteRecordRaw[] = [
     component: Layout,
     meta: {
       order: 2003,
-      icon: "lucide:file-work",
+      icon: "lucide:file-cog",
       title: "routes.oa.moduleName",
       keepAlive: true,
     },
@@ -33,7 +33,7 @@ const oa: RouteRecordRaw[] = [
         name: "OaWorkflowDefinition",
         meta: {
           order: 1,
-          icon: "lucide:file-work",
+          icon: "lucide:file-cog",
           title: "routes.oa.definition",
         },
         component: () => import("@/pages/app/oa/definition/index.vue"),
@@ -79,14 +79,34 @@ const oa: RouteRecordRaw[] = [
         component: () => import("@/pages/app/oa/attendance/holidays.vue"),
       },
       {
-        path: "leave",
-        name: "OaLeaveManagement",
+        path: "leave/types",
+        name: "OaLeaveTypes",
         meta: {
           order: 4,
           icon: "lucide:plane-takeoff",
-          title: "routes.oa.leave",
+          title: "routes.oa.leaveTypes",
         },
-        component: () => import("@/pages/app/oa/leave/index.vue"),
+        component: () => import("@/pages/app/oa/leave/types.vue"),
+      },
+      {
+        path: "leave/balances",
+        name: "OaLeaveBalances",
+        meta: {
+          order: 4,
+          icon: "lucide:plane-takeoff",
+          title: "routes.oa.leaveBalances",
+        },
+        component: () => import("@/pages/app/oa/leave/balances.vue"),
+      },
+      {
+        path: "leave/applications",
+        name: "OaLeaveApplications",
+        meta: {
+          order: 4,
+          icon: "lucide:plane-takeoff",
+          title: "routes.oa.leaveApplications",
+        },
+        component: () => import("@/pages/app/oa/leave/applications.vue"),
       },
       {
         path: "expense",
@@ -103,7 +123,7 @@ const oa: RouteRecordRaw[] = [
         name: "OaBusinessTripManagement",
         meta: {
           order: 6,
-          icon: "lucide:suitcase",
+          icon: "lucide:luggage",
           title: "routes.oa.businessTrip",
         },
         component: () => import("@/pages/app/oa/business_trip/index.vue"),
@@ -153,7 +173,7 @@ const oa: RouteRecordRaw[] = [
         name: "OaDirectoryManagement",
         meta: {
           order: 11,
-          icon: "lucide:address-book",
+          icon: "lucide:contact",
           title: "routes.oa.directory",
         },
         component: () => import("@/pages/app/oa/directory/index.vue"),
