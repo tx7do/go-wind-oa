@@ -7,7 +7,7 @@ import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
 /// 站内信收件箱页。
 ///
 /// 经 [NotificationService.listMessages] 拉取当前用户收件箱，
-/// 与 cms tag_list_page 同构（Future + setState）。审批流转产生的通知经
+/// 与 tag_list_page 同构（Future + setState）。审批流转产生的通知经
 /// core-service notifyManyAsync 落库，此页读取展示。
 class OaNotificationsPage extends StatefulWidget {
   const OaNotificationsPage({super.key});

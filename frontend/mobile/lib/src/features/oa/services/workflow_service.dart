@@ -11,7 +11,7 @@ import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
 
 /// OA 工作流服务。
 ///
-/// 对齐 cms TagService 模式：extends [BaseService]，经 [GetIt] 取生成的
+/// 对齐 TagService 模式：extends [BaseService]，经 [GetIt] 取生成的
 /// [oaApi.ApiClient].workflowService；用 cached_query 的 Query / Mutation
 /// 管理列表/写操作。
 ///

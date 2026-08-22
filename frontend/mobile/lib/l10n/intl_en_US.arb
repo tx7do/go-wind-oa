@@ -1,5 +1,5 @@
 {
-  "appName": "GoWind CMS",
+  "appName": "GoWind OA",
 
   "@@locale": "en_US",
 
@@ -154,9 +154,9 @@
   "confirm": "Confirm",
   "featureNotAvailable": "This feature is coming soon",
   "welcomeBack": "Welcome back",
-  "footerText": "© 2026 GoWind CMS  ·  Powered by Flutter",
+  "footerText": "© 2026 GoWind OA  ·  Powered by Flutter",
 
-  "aboutSubtitle": "A modern content management system powered by Go and Flutter",
+  "aboutSubtitle": "A collaborative office automation system powered by Go and Flutter",
   "aboutFeature1Title": "Content Management",
   "aboutFeature1Desc": "Create, edit and publish content with an intuitive and powerful editor",
   "aboutFeature2Title": "Multi-language Support",

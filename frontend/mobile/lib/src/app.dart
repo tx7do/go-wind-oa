@@ -16,14 +16,14 @@ import 'package:flutter_app/src/core/utilities/logger.dart' show debug;
 import 'app_router/app_router.dart' as pages;
 
 /// 应用程序
-class CMSApp extends StatefulWidget {
-  const CMSApp({super.key});
+class OAApp extends StatefulWidget {
+  const OAApp({super.key});
 
   @override
-  State<CMSApp> createState() => _CMSAppState();
+  State<OAApp> createState() => _OAAppState();
 }
 
-class _CMSAppState extends State<CMSApp> {
+class _OAAppState extends State<OAApp> {
   @override
   void initState() {
     super.initState();

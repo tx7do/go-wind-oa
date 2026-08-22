@@ -1,5 +1,5 @@
 {
-  "appName": "GoWind CMS",
+  "appName": "GoWind OA",
 
   "@@locale": "zh_CN",
 
@@ -154,9 +154,9 @@
   "confirm": "确定",
   "featureNotAvailable": "该功能即将上线，敬请期待",
   "welcomeBack": "欢迎回来",
-  "footerText": "© 2026 GoWind CMS  ·  Powered by Flutter",
+  "footerText": "© 2026 GoWind OA  ·  Powered by Flutter",
 
-  "aboutSubtitle": "一个基于 Go 和 Flutter 构建的现代化内容管理系统",
+  "aboutSubtitle": "一个基于 Go 和 Flutter 构建的协同办公系统",
   "aboutFeature1Title": "内容管理",
   "aboutFeature1Desc": "使用直观且强大的编辑器创建、编辑和发布内容",
   "aboutFeature2Title": "多语言支持",

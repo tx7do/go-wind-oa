@@ -54,9 +54,9 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
-  /// `GoWind CMS`
+  /// `GoWind OA`
   String get appName {
-    return Intl.message('GoWind CMS', name: 'appName', desc: '', args: []);
+    return Intl.message('GoWind OA', name: 'appName', desc: '', args: []);
   }
 
   /// `首页`
@@ -544,20 +544,20 @@ class S {
     return Intl.message('欢迎回来', name: 'welcomeBack', desc: '', args: []);
   }
 
-  /// `© 2026 GoWind CMS  ·  Powered by Flutter`
+  /// `© 2026 GoWind OA  ·  Powered by Flutter`
   String get footerText {
     return Intl.message(
-      '© 2026 GoWind CMS  ·  Powered by Flutter',
+      '© 2026 GoWind OA  ·  Powered by Flutter',
       name: 'footerText',
       desc: '',
       args: [],
     );
   }
 
-  /// `一个基于 Go 和 Flutter 构建的现代化内容管理系统`
+  /// `一个基于 Go 和 Flutter 构建的协同办公系统`
   String get aboutSubtitle {
     return Intl.message(
-      '一个基于 Go 和 Flutter 构建的现代化内容管理系统',
+      '一个基于 Go 和 Flutter 构建的协同办公系统',
       name: 'aboutSubtitle',
       desc: '',
       args: [],

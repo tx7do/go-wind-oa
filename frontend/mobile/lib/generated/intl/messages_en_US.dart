@@ -64,12 +64,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Cross-platform",
     ),
     "aboutSubtitle": MessageLookupByLibrary.simpleMessage(
-      "A modern content management system powered by Go and Flutter",
+      "A collaborative office automation system powered by Go and Flutter",
     ),
     "aboutTechStack": MessageLookupByLibrary.simpleMessage("Built with"),
     "allLoaded": MessageLookupByLibrary.simpleMessage("— All Loaded —"),
     "allPosts": MessageLookupByLibrary.simpleMessage("All Posts"),
-    "appName": MessageLookupByLibrary.simpleMessage("GoWind CMS"),
+    "appName": MessageLookupByLibrary.simpleMessage("GoWind OA"),
     "appearance": MessageLookupByLibrary.simpleMessage("Appearance"),
     "backToHome": MessageLookupByLibrary.simpleMessage("Back to Home"),
     "bookmarkHint": MessageLookupByLibrary.simpleMessage(
@@ -128,7 +128,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "followSystem": MessageLookupByLibrary.simpleMessage("System"),
     "footerText": MessageLookupByLibrary.simpleMessage(
-      "© 2026 GoWind CMS  ·  Powered by Flutter",
+      "© 2026 GoWind OA  ·  Powered by Flutter",
     ),
     "guestUser": MessageLookupByLibrary.simpleMessage("Guest"),
     "home": MessageLookupByLibrary.simpleMessage("Home"),

@@ -735,6 +735,10 @@ class AuthenticationServiceV1LoginResponse {
   String? access_token;
   int? expires_in;
   String? id_token;
+  /// MFA 挑战操作标识：当用户绑定了 MFA 因子且密码校验通过时，服务端不签发 access_token，
+  /// 而是返回此 operation_id。前端据此跳转 MFA 挑战页，提交 TOTP 验证码到 MFAService.VerifyMFAChallenge。
+  /// 该字段非空时 access_token 必为空字符串；验证通过后由 VerifyMFAChallenge 返回真 token。
+  String? mfa_operation_id;
   int? refresh_expires_in;
   String? refresh_token;
   String? scope;
@@ -744,6 +748,7 @@ class AuthenticationServiceV1LoginResponse {
     this.access_token,
     this.expires_in,
     this.id_token,
+    this.mfa_operation_id,
     this.refresh_expires_in,
     this.refresh_token,
     this.scope,
@@ -755,6 +760,7 @@ class AuthenticationServiceV1LoginResponse {
       access_token: json['access_token'] as String?,
       expires_in: json['expires_in'] != null ? int.parse(json['expires_in'].toString()) : null,
       id_token: json['id_token'] as String?,
+      mfa_operation_id: json['mfa_operation_id'] as String?,
       refresh_expires_in: json['refresh_expires_in'] != null ? int.parse(json['refresh_expires_in'].toString()) : null,
       refresh_token: json['refresh_token'] as String?,
       scope: json['scope'] as String?,
@@ -767,6 +773,7 @@ class AuthenticationServiceV1LoginResponse {
     if (access_token != null) json['access_token'] = access_token;
     if (expires_in != null) json['expires_in'] = expires_in.toString();
     if (id_token != null) json['id_token'] = id_token;
+    if (mfa_operation_id != null) json['mfa_operation_id'] = mfa_operation_id;
     if (refresh_expires_in != null) json['refresh_expires_in'] = refresh_expires_in.toString();
     if (refresh_token != null) json['refresh_token'] = refresh_token;
     if (scope != null) json['scope'] = scope;
@@ -776,7 +783,7 @@ class AuthenticationServiceV1LoginResponse {
 
   @override
   String toString() {
-    return 'AuthenticationServiceV1LoginResponse(access_token: $access_token, expires_in: $expires_in, id_token: $id_token, refresh_expires_in: $refresh_expires_in, refresh_token: $refresh_token, scope: $scope, token_type: $token_type)';
+    return 'AuthenticationServiceV1LoginResponse(access_token: $access_token, expires_in: $expires_in, id_token: $id_token, mfa_operation_id: $mfa_operation_id, refresh_expires_in: $refresh_expires_in, refresh_token: $refresh_token, scope: $scope, token_type: $token_type)';
   }
 
   @override
@@ -787,6 +794,7 @@ class AuthenticationServiceV1LoginResponse {
       && access_token == other.access_token
       && expires_in == other.expires_in
       && id_token == other.id_token
+      && mfa_operation_id == other.mfa_operation_id
       && refresh_expires_in == other.refresh_expires_in
       && refresh_token == other.refresh_token
       && scope == other.scope
@@ -798,6 +806,7 @@ class AuthenticationServiceV1LoginResponse {
     access_token,
     expires_in,
     id_token,
+    mfa_operation_id,
     refresh_expires_in,
     refresh_token,
     scope,
@@ -808,6 +817,7 @@ class AuthenticationServiceV1LoginResponse {
     String? access_token,
     int? expires_in,
     String? id_token,
+    String? mfa_operation_id,
     int? refresh_expires_in,
     String? refresh_token,
     String? scope,
@@ -817,6 +827,7 @@ class AuthenticationServiceV1LoginResponse {
       access_token: access_token ?? this.access_token,
       expires_in: expires_in ?? this.expires_in,
       id_token: id_token ?? this.id_token,
+      mfa_operation_id: mfa_operation_id ?? this.mfa_operation_id,
       refresh_expires_in: refresh_expires_in ?? this.refresh_expires_in,
       refresh_token: refresh_token ?? this.refresh_token,
       scope: scope ?? this.scope,
