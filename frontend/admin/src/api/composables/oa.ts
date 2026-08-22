@@ -500,7 +500,7 @@ export async function fetchUsers() {
         noPaging: false,
         sorting: undefined,
       }),
-    staleTime: 60_000,
+    staleTime: 0,
     retry: 0,
   }) as Promise<identityservicev1_ListUserResponse>;
 }
@@ -521,7 +521,7 @@ export async function fetchPositions() {
         noPaging: false,
         sorting: undefined,
       }),
-    staleTime: 60_000,
+    staleTime: 0,
     retry: 0,
   }) as Promise<identityservicev1_ListPositionResponse>;
 }

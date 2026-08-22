@@ -422,10 +422,11 @@ export * from "./notification";
 
 | 配置项 | 值 | 说明 |
 |---|---|---|
-| `staleTime` | `60_000` (60s) | 数据在 60 秒内视为新鲜，不会重新请求 |
-| `retry` | `false` | 请求失败不自动重试 |
+| `staleTime` | `0` | 数据立即视为过期，每次访问都重新请求 |
+| `gcTime` | `0` | 查询结果不驻留内存，无观察者时立即回收 |
+| `retry` | `1` | 请求失败自动重试 1 次 |
 | `refetchOnWindowFocus` | `false` | 窗口聚焦时不自动刷新 |
-| `refetchOnReconnect` | `false` | 网络重连时不自动刷新 |
+| `refetchOnReconnect` | `true` | 网络重连时自动刷新 |
 
 ### Query Key 约定
 
