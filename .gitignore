@@ -33,3 +33,6 @@ go.work.sum
 
 # ZCode 本地会话/规划产物
 .zcode/
+
+# Playwright MCP 测试截图产物
+.playwright-mcp/
