@@ -371,7 +371,7 @@ func (User) Indexes() []ent.Index {
 package providers
 
 import "github.com/google/wire"
-import "go-wind-cms/app/core/service/internal/data"
+import "go-wind-oa/app/core/service/internal/data"
 
 var ProviderSet = wire.NewSet(
     data.NewRedisClient,
@@ -422,7 +422,7 @@ YAML 多文件，放 `configs/`（`server.yaml` / `data.yaml` / `client.yaml` / 
 data:
   database:
     driver: "postgres"
-    source: "host=postgres port=5432 user=postgres password=*** dbname=gwc sslmode=disable"
+    source: "host=postgres port=5432 user=postgres password=*** dbname=go_wind_oa sslmode=disable"
     migrate: true
   redis:
     addr: "redis:6379"

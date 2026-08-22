@@ -16,21 +16,14 @@ import (
 	"github.com/tx7do/kratos-bootstrap/rpc"
 
 	"github.com/tx7do/go-utils/captcha"
-	"github.com/tx7do/go-utils/translator"
-	"github.com/tx7do/go-utils/translator/google"
 
 	auditV1 "go-wind-oa/api/gen/go/audit/service/v1"
 	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
-	commentV1 "go-wind-oa/api/gen/go/comment/service/v1"
-	contentV1 "go-wind-oa/api/gen/go/content/service/v1"
 	dictV1 "go-wind-oa/api/gen/go/dict/service/v1"
 	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
 	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
-	interactionV1 "go-wind-oa/api/gen/go/interaction/service/v1"
-	mediaV1 "go-wind-oa/api/gen/go/media/service/v1"
 	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
 	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
-	siteV1 "go-wind-oa/api/gen/go/site/service/v1"
 	storageV1 "go-wind-oa/api/gen/go/storage/service/v1"
 	taskV1 "go-wind-oa/api/gen/go/task/service/v1"
 
@@ -90,13 +83,6 @@ func NewDiscovery(ctx *bootstrap.Context) registry.Discovery {
 
 func NewMinIoClient(ctx *bootstrap.Context) *oss.MinIOClient {
 	return oss.NewMinIoClient(ctx.GetConfig(), ctx.GetLogger())
-}
-
-// NewTranslator 创建翻译器
-func NewTranslator(_ *bootstrap.Context) translator.Translator {
-	return google.NewTranslator(
-		google.WithVersion("v1"),
-	)
 }
 
 // NewAuthorizer 创建权鉴器
@@ -408,112 +394,4 @@ func NewTaskServiceClient(ctx *bootstrap.Context, r registry.Discovery) taskV1.T
 	}
 
 	return taskV1.NewTaskServiceClient(cli)
-}
-
-func NewCommentServiceClient(ctx *bootstrap.Context, r registry.Discovery) commentV1.CommentServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return commentV1.NewCommentServiceClient(cli)
-}
-
-func NewInteractionAdminServiceClient(ctx *bootstrap.Context, r registry.Discovery) interactionV1.InteractionAdminServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return interactionV1.NewInteractionAdminServiceClient(cli)
-}
-
-func NewCategoryServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.CategoryServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return contentV1.NewCategoryServiceClient(cli)
-}
-
-func NewPageServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.PageServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return contentV1.NewPageServiceClient(cli)
-}
-
-func NewSectionServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.SectionServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return contentV1.NewSectionServiceClient(cli)
-}
-
-func NewPostServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.PostServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return contentV1.NewPostServiceClient(cli)
-}
-
-func NewTagServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.TagServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return contentV1.NewTagServiceClient(cli)
-}
-
-func NewNavigationServiceClient(ctx *bootstrap.Context, r registry.Discovery) siteV1.NavigationServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return siteV1.NewNavigationServiceClient(cli)
-}
-
-func NewNavigationItemServiceClient(ctx *bootstrap.Context, r registry.Discovery) siteV1.NavigationItemServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return siteV1.NewNavigationItemServiceClient(cli)
-}
-
-func NewSiteSettingServiceClient(ctx *bootstrap.Context, r registry.Discovery) siteV1.SiteSettingServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return siteV1.NewSiteSettingServiceClient(cli)
-}
-
-func NewSiteServiceClient(ctx *bootstrap.Context, r registry.Discovery) siteV1.SiteServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return siteV1.NewSiteServiceClient(cli)
-}
-
-func NewMediaAssetServiceClient(ctx *bootstrap.Context, r registry.Discovery) mediaV1.MediaAssetServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return mediaV1.NewMediaAssetServiceClient(cli)
 }

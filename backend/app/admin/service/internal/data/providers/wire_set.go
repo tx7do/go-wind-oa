@@ -28,8 +28,6 @@ var ProviderSet = wire.NewSet(
 	data.NewClientType,
 	data.NewAuthorizer,
 
-	data.NewTranslator,
-
 	auth.NewTokenChecker,
 
 	data.NewAuthenticationServiceClient,
@@ -73,20 +71,4 @@ var ProviderSet = wire.NewSet(
 	data.NewDataAccessAuditLogServiceClient,
 	data.NewLoginAuditLogServiceClient,
 	data.NewOperationAuditLogServiceClient,
-
-	data.NewPageServiceClient,
-	data.NewSectionServiceClient,
-	data.NewCategoryServiceClient,
-	data.NewPostServiceClient,
-	data.NewTagServiceClient,
-
-	data.NewCommentServiceClient,
-	data.NewInteractionAdminServiceClient,
-
-	data.NewNavigationServiceClient,
-	data.NewNavigationItemServiceClient,
-	data.NewSiteSettingServiceClient,
-	data.NewSiteServiceClient,
-
-	data.NewMediaAssetServiceClient,
 )

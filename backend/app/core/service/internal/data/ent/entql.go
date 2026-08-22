@@ -8,10 +8,6 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancesetting"
 	"go-wind-oa/app/core/service/internal/data/ent/businesstripapplication"
-	"go-wind-oa/app/core/service/internal/data/ent/category"
-	"go-wind-oa/app/core/service/internal/data/ent/categorytranslation"
-	"go-wind-oa/app/core/service/internal/data/ent/comment"
-	"go-wind-oa/app/core/service/internal/data/ent/commentlike"
 	"go-wind-oa/app/core/service/internal/data/ent/dataaccessauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/dictentry"
 	"go-wind-oa/app/core/service/internal/data/ent/dictentryi18n"
@@ -20,7 +16,6 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/expenseitem"
 	"go-wind-oa/app/core/service/internal/data/ent/file"
 	"go-wind-oa/app/core/service/internal/data/ent/holiday"
-	"go-wind-oa/app/core/service/internal/data/ent/interactioncounter"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagerecipient"
@@ -30,21 +25,15 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/leavetype"
 	"go-wind-oa/app/core/service/internal/data/ent/loginauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/loginpolicy"
-	"go-wind-oa/app/core/service/internal/data/ent/mediaasset"
-	"go-wind-oa/app/core/service/internal/data/ent/mediavariant"
 	"go-wind-oa/app/core/service/internal/data/ent/membership"
 	"go-wind-oa/app/core/service/internal/data/ent/membershiporgunit"
 	"go-wind-oa/app/core/service/internal/data/ent/membershipposition"
 	"go-wind-oa/app/core/service/internal/data/ent/membershiprole"
 	"go-wind-oa/app/core/service/internal/data/ent/menu"
-	"go-wind-oa/app/core/service/internal/data/ent/navigation"
-	"go-wind-oa/app/core/service/internal/data/ent/navigationitem"
 	"go-wind-oa/app/core/service/internal/data/ent/operationauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/orgunit"
 	"go-wind-oa/app/core/service/internal/data/ent/outingapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/overtimeapplication"
-	"go-wind-oa/app/core/service/internal/data/ent/page"
-	"go-wind-oa/app/core/service/internal/data/ent/pagetranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/permission"
 	"go-wind-oa/app/core/service/internal/data/ent/permissionapi"
 	"go-wind-oa/app/core/service/internal/data/ent/permissionauditlog"
@@ -53,23 +42,11 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/permissionpolicy"
 	"go-wind-oa/app/core/service/internal/data/ent/policyevaluationlog"
 	"go-wind-oa/app/core/service/internal/data/ent/position"
-	"go-wind-oa/app/core/service/internal/data/ent/post"
-	"go-wind-oa/app/core/service/internal/data/ent/postcategory"
-	"go-wind-oa/app/core/service/internal/data/ent/postlike"
-	"go-wind-oa/app/core/service/internal/data/ent/posttag"
-	"go-wind-oa/app/core/service/internal/data/ent/posttranslation"
-	"go-wind-oa/app/core/service/internal/data/ent/postwatch"
 	"go-wind-oa/app/core/service/internal/data/ent/predicate"
 	"go-wind-oa/app/core/service/internal/data/ent/role"
 	"go-wind-oa/app/core/service/internal/data/ent/rolemetadata"
 	"go-wind-oa/app/core/service/internal/data/ent/rolepermission"
 	"go-wind-oa/app/core/service/internal/data/ent/sealapplication"
-	"go-wind-oa/app/core/service/internal/data/ent/section"
-	"go-wind-oa/app/core/service/internal/data/ent/sectiontranslation"
-	"go-wind-oa/app/core/service/internal/data/ent/site"
-	"go-wind-oa/app/core/service/internal/data/ent/sitesetting"
-	"go-wind-oa/app/core/service/internal/data/ent/tag"
-	"go-wind-oa/app/core/service/internal/data/ent/tagtranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/task"
 	"go-wind-oa/app/core/service/internal/data/ent/tenant"
 	"go-wind-oa/app/core/service/internal/data/ent/user"
@@ -90,7 +67,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 77)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 54)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   api.Table,
@@ -241,122 +218,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
-			Table:   category.Table,
-			Columns: category.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: category.FieldID,
-			},
-		},
-		Type: "Category",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			category.FieldCreatedAt:       {Type: field.TypeTime, Column: category.FieldCreatedAt},
-			category.FieldUpdatedAt:       {Type: field.TypeTime, Column: category.FieldUpdatedAt},
-			category.FieldDeletedAt:       {Type: field.TypeTime, Column: category.FieldDeletedAt},
-			category.FieldCreatedBy:       {Type: field.TypeUint32, Column: category.FieldCreatedBy},
-			category.FieldUpdatedBy:       {Type: field.TypeUint32, Column: category.FieldUpdatedBy},
-			category.FieldDeletedBy:       {Type: field.TypeUint32, Column: category.FieldDeletedBy},
-			category.FieldSortOrder:       {Type: field.TypeUint32, Column: category.FieldSortOrder},
-			category.FieldPath:            {Type: field.TypeString, Column: category.FieldPath},
-			category.FieldParentID:        {Type: field.TypeUint32, Column: category.FieldParentID},
-			category.FieldTenantID:        {Type: field.TypeUint32, Column: category.FieldTenantID},
-			category.FieldStatus:          {Type: field.TypeEnum, Column: category.FieldStatus},
-			category.FieldIsNav:           {Type: field.TypeBool, Column: category.FieldIsNav},
-			category.FieldIcon:            {Type: field.TypeString, Column: category.FieldIcon},
-			category.FieldCode:            {Type: field.TypeString, Column: category.FieldCode},
-			category.FieldPostCount:       {Type: field.TypeUint32, Column: category.FieldPostCount},
-			category.FieldDirectPostCount: {Type: field.TypeUint32, Column: category.FieldDirectPostCount},
-			category.FieldDepth:           {Type: field.TypeInt32, Column: category.FieldDepth},
-			category.FieldCustomFields:    {Type: field.TypeJSON, Column: category.FieldCustomFields},
-		},
-	}
-	graph.Nodes[6] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   categorytranslation.Table,
-			Columns: categorytranslation.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: categorytranslation.FieldID,
-			},
-		},
-		Type: "CategoryTranslation",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			categorytranslation.FieldCreatedAt:    {Type: field.TypeTime, Column: categorytranslation.FieldCreatedAt},
-			categorytranslation.FieldUpdatedAt:    {Type: field.TypeTime, Column: categorytranslation.FieldUpdatedAt},
-			categorytranslation.FieldDeletedAt:    {Type: field.TypeTime, Column: categorytranslation.FieldDeletedAt},
-			categorytranslation.FieldCreatedBy:    {Type: field.TypeUint32, Column: categorytranslation.FieldCreatedBy},
-			categorytranslation.FieldUpdatedBy:    {Type: field.TypeUint32, Column: categorytranslation.FieldUpdatedBy},
-			categorytranslation.FieldDeletedBy:    {Type: field.TypeUint32, Column: categorytranslation.FieldDeletedBy},
-			categorytranslation.FieldSeo:          {Type: field.TypeJSON, Column: categorytranslation.FieldSeo},
-			categorytranslation.FieldTenantID:     {Type: field.TypeUint32, Column: categorytranslation.FieldTenantID},
-			categorytranslation.FieldCategoryID:   {Type: field.TypeUint32, Column: categorytranslation.FieldCategoryID},
-			categorytranslation.FieldLanguageCode: {Type: field.TypeString, Column: categorytranslation.FieldLanguageCode},
-			categorytranslation.FieldName:         {Type: field.TypeString, Column: categorytranslation.FieldName},
-			categorytranslation.FieldSlug:         {Type: field.TypeString, Column: categorytranslation.FieldSlug},
-			categorytranslation.FieldDescription:  {Type: field.TypeString, Column: categorytranslation.FieldDescription},
-			categorytranslation.FieldThumbnail:    {Type: field.TypeString, Column: categorytranslation.FieldThumbnail},
-			categorytranslation.FieldCoverImage:   {Type: field.TypeString, Column: categorytranslation.FieldCoverImage},
-			categorytranslation.FieldFullPath:     {Type: field.TypeString, Column: categorytranslation.FieldFullPath},
-		},
-	}
-	graph.Nodes[7] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   comment.Table,
-			Columns: comment.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: comment.FieldID,
-			},
-		},
-		Type: "Comment",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			comment.FieldCreatedAt:        {Type: field.TypeTime, Column: comment.FieldCreatedAt},
-			comment.FieldUpdatedAt:        {Type: field.TypeTime, Column: comment.FieldUpdatedAt},
-			comment.FieldDeletedAt:        {Type: field.TypeTime, Column: comment.FieldDeletedAt},
-			comment.FieldCreatedBy:        {Type: field.TypeUint32, Column: comment.FieldCreatedBy},
-			comment.FieldUpdatedBy:        {Type: field.TypeUint32, Column: comment.FieldUpdatedBy},
-			comment.FieldDeletedBy:        {Type: field.TypeUint32, Column: comment.FieldDeletedBy},
-			comment.FieldParentID:         {Type: field.TypeUint32, Column: comment.FieldParentID},
-			comment.FieldTenantID:         {Type: field.TypeUint32, Column: comment.FieldTenantID},
-			comment.FieldContentType:      {Type: field.TypeEnum, Column: comment.FieldContentType},
-			comment.FieldObjectID:         {Type: field.TypeUint32, Column: comment.FieldObjectID},
-			comment.FieldContent:          {Type: field.TypeString, Column: comment.FieldContent},
-			comment.FieldAuthorID:         {Type: field.TypeUint32, Column: comment.FieldAuthorID},
-			comment.FieldAuthorName:       {Type: field.TypeString, Column: comment.FieldAuthorName},
-			comment.FieldAuthorEmail:      {Type: field.TypeString, Column: comment.FieldAuthorEmail},
-			comment.FieldAuthorURL:        {Type: field.TypeString, Column: comment.FieldAuthorURL},
-			comment.FieldAuthorType:       {Type: field.TypeEnum, Column: comment.FieldAuthorType},
-			comment.FieldStatus:           {Type: field.TypeEnum, Column: comment.FieldStatus},
-			comment.FieldIPAddress:        {Type: field.TypeString, Column: comment.FieldIPAddress},
-			comment.FieldLocation:         {Type: field.TypeString, Column: comment.FieldLocation},
-			comment.FieldUserAgent:        {Type: field.TypeString, Column: comment.FieldUserAgent},
-			comment.FieldDetectedLanguage: {Type: field.TypeString, Column: comment.FieldDetectedLanguage},
-			comment.FieldIsSpam:           {Type: field.TypeBool, Column: comment.FieldIsSpam},
-			comment.FieldIsSticky:         {Type: field.TypeBool, Column: comment.FieldIsSticky},
-			comment.FieldReplyToID:        {Type: field.TypeUint32, Column: comment.FieldReplyToID},
-		},
-	}
-	graph.Nodes[8] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   commentlike.Table,
-			Columns: commentlike.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: commentlike.FieldID,
-			},
-		},
-		Type: "CommentLike",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			commentlike.FieldCreatedAt: {Type: field.TypeTime, Column: commentlike.FieldCreatedAt},
-			commentlike.FieldUpdatedAt: {Type: field.TypeTime, Column: commentlike.FieldUpdatedAt},
-			commentlike.FieldDeletedAt: {Type: field.TypeTime, Column: commentlike.FieldDeletedAt},
-			commentlike.FieldTenantID:  {Type: field.TypeUint32, Column: commentlike.FieldTenantID},
-			commentlike.FieldUserID:    {Type: field.TypeUint32, Column: commentlike.FieldUserID},
-			commentlike.FieldCommentID: {Type: field.TypeUint32, Column: commentlike.FieldCommentID},
-		},
-	}
-	graph.Nodes[9] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
 			Table:   dataaccessauditlog.Table,
 			Columns: dataaccessauditlog.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -394,7 +255,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			dataaccessauditlog.FieldSignature:       {Type: field.TypeBytes, Column: dataaccessauditlog.FieldSignature},
 		},
 	}
-	graph.Nodes[10] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   dictentry.Table,
 			Columns: dictentry.Columns,
@@ -418,7 +279,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			dictentry.FieldNumericValue: {Type: field.TypeInt32, Column: dictentry.FieldNumericValue},
 		},
 	}
-	graph.Nodes[11] = &sqlgraph.Node{
+	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   dictentryi18n.Table,
 			Columns: dictentryi18n.Columns,
@@ -442,7 +303,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			dictentryi18n.FieldEntryLabel:   {Type: field.TypeString, Column: dictentryi18n.FieldEntryLabel},
 		},
 	}
-	graph.Nodes[12] = &sqlgraph.Node{
+	graph.Nodes[8] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   dicttype.Table,
 			Columns: dicttype.Columns,
@@ -466,7 +327,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			dicttype.FieldTypeName:  {Type: field.TypeString, Column: dicttype.FieldTypeName},
 		},
 	}
-	graph.Nodes[13] = &sqlgraph.Node{
+	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   expenseapplication.Table,
 			Columns: expenseapplication.Columns,
@@ -490,7 +351,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			expenseapplication.FieldInstanceID:    {Type: field.TypeUint32, Column: expenseapplication.FieldInstanceID},
 		},
 	}
-	graph.Nodes[14] = &sqlgraph.Node{
+	graph.Nodes[10] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   expenseitem.Table,
 			Columns: expenseitem.Columns,
@@ -515,7 +376,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			expenseitem.FieldInvoiceFileID: {Type: field.TypeUint32, Column: expenseitem.FieldInvoiceFileID},
 		},
 	}
-	graph.Nodes[15] = &sqlgraph.Node{
+	graph.Nodes[11] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   file.Table,
 			Columns: file.Columns,
@@ -547,7 +408,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			file.FieldContentHash:   {Type: field.TypeString, Column: file.FieldContentHash},
 		},
 	}
-	graph.Nodes[16] = &sqlgraph.Node{
+	graph.Nodes[12] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   holiday.Table,
 			Columns: holiday.Columns,
@@ -570,28 +431,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			holiday.FieldName:        {Type: field.TypeString, Column: holiday.FieldName},
 		},
 	}
-	graph.Nodes[17] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   interactioncounter.Table,
-			Columns: interactioncounter.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: interactioncounter.FieldID,
-			},
-		},
-		Type: "InteractionCounter",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			interactioncounter.FieldCreatedAt:  {Type: field.TypeTime, Column: interactioncounter.FieldCreatedAt},
-			interactioncounter.FieldUpdatedAt:  {Type: field.TypeTime, Column: interactioncounter.FieldUpdatedAt},
-			interactioncounter.FieldDeletedAt:  {Type: field.TypeTime, Column: interactioncounter.FieldDeletedAt},
-			interactioncounter.FieldTenantID:   {Type: field.TypeUint32, Column: interactioncounter.FieldTenantID},
-			interactioncounter.FieldTargetType: {Type: field.TypeUint8, Column: interactioncounter.FieldTargetType},
-			interactioncounter.FieldTargetID:   {Type: field.TypeUint32, Column: interactioncounter.FieldTargetID},
-			interactioncounter.FieldMetric:     {Type: field.TypeUint8, Column: interactioncounter.FieldMetric},
-			interactioncounter.FieldCount:      {Type: field.TypeInt64, Column: interactioncounter.FieldCount},
-		},
-	}
-	graph.Nodes[18] = &sqlgraph.Node{
+	graph.Nodes[13] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   internalmessage.Table,
 			Columns: internalmessage.Columns,
@@ -617,7 +457,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			internalmessage.FieldType:       {Type: field.TypeEnum, Column: internalmessage.FieldType},
 		},
 	}
-	graph.Nodes[19] = &sqlgraph.Node{
+	graph.Nodes[14] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   internalmessagecategory.Table,
 			Columns: internalmessagecategory.Columns,
@@ -643,7 +483,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			internalmessagecategory.FieldIconURL:   {Type: field.TypeString, Column: internalmessagecategory.FieldIconURL},
 		},
 	}
-	graph.Nodes[20] = &sqlgraph.Node{
+	graph.Nodes[15] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   internalmessagerecipient.Table,
 			Columns: internalmessagerecipient.Columns,
@@ -665,7 +505,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			internalmessagerecipient.FieldReadAt:          {Type: field.TypeTime, Column: internalmessagerecipient.FieldReadAt},
 		},
 	}
-	graph.Nodes[21] = &sqlgraph.Node{
+	graph.Nodes[16] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   language.Table,
 			Columns: language.Columns,
@@ -690,7 +530,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			language.FieldIsDefault:    {Type: field.TypeBool, Column: language.FieldIsDefault},
 		},
 	}
-	graph.Nodes[22] = &sqlgraph.Node{
+	graph.Nodes[17] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   leaveapplication.Table,
 			Columns: leaveapplication.Columns,
@@ -719,7 +559,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			leaveapplication.FieldInstanceID:  {Type: field.TypeUint32, Column: leaveapplication.FieldInstanceID},
 		},
 	}
-	graph.Nodes[23] = &sqlgraph.Node{
+	graph.Nodes[18] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   leavebalance.Table,
 			Columns: leavebalance.Columns,
@@ -744,7 +584,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			leavebalance.FieldUsedDays:    {Type: field.TypeFloat64, Column: leavebalance.FieldUsedDays},
 		},
 	}
-	graph.Nodes[24] = &sqlgraph.Node{
+	graph.Nodes[19] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   leavetype.Table,
 			Columns: leavetype.Columns,
@@ -767,7 +607,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			leavetype.FieldName:      {Type: field.TypeString, Column: leavetype.FieldName},
 		},
 	}
-	graph.Nodes[25] = &sqlgraph.Node{
+	graph.Nodes[20] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   loginauditlog.Table,
 			Columns: loginauditlog.Columns,
@@ -800,7 +640,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			loginauditlog.FieldSignature:     {Type: field.TypeBytes, Column: loginauditlog.FieldSignature},
 		},
 	}
-	graph.Nodes[26] = &sqlgraph.Node{
+	graph.Nodes[21] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   loginpolicy.Table,
 			Columns: loginpolicy.Columns,
@@ -825,64 +665,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			loginpolicy.FieldMethod:    {Type: field.TypeEnum, Column: loginpolicy.FieldMethod},
 		},
 	}
-	graph.Nodes[27] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   mediaasset.Table,
-			Columns: mediaasset.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: mediaasset.FieldID,
-			},
-		},
-		Type: "MediaAsset",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			mediaasset.FieldCreatedAt:        {Type: field.TypeTime, Column: mediaasset.FieldCreatedAt},
-			mediaasset.FieldUpdatedAt:        {Type: field.TypeTime, Column: mediaasset.FieldUpdatedAt},
-			mediaasset.FieldDeletedAt:        {Type: field.TypeTime, Column: mediaasset.FieldDeletedAt},
-			mediaasset.FieldCreatedBy:        {Type: field.TypeUint32, Column: mediaasset.FieldCreatedBy},
-			mediaasset.FieldUpdatedBy:        {Type: field.TypeUint32, Column: mediaasset.FieldUpdatedBy},
-			mediaasset.FieldDeletedBy:        {Type: field.TypeUint32, Column: mediaasset.FieldDeletedBy},
-			mediaasset.FieldTenantID:         {Type: field.TypeUint32, Column: mediaasset.FieldTenantID},
-			mediaasset.FieldFilename:         {Type: field.TypeString, Column: mediaasset.FieldFilename},
-			mediaasset.FieldType:             {Type: field.TypeEnum, Column: mediaasset.FieldType},
-			mediaasset.FieldMimeType:         {Type: field.TypeString, Column: mediaasset.FieldMimeType},
-			mediaasset.FieldSize:             {Type: field.TypeUint64, Column: mediaasset.FieldSize},
-			mediaasset.FieldStoragePath:      {Type: field.TypeString, Column: mediaasset.FieldStoragePath},
-			mediaasset.FieldURL:              {Type: field.TypeString, Column: mediaasset.FieldURL},
-			mediaasset.FieldWidth:            {Type: field.TypeUint32, Column: mediaasset.FieldWidth},
-			mediaasset.FieldHeight:           {Type: field.TypeUint32, Column: mediaasset.FieldHeight},
-			mediaasset.FieldDuration:         {Type: field.TypeUint32, Column: mediaasset.FieldDuration},
-			mediaasset.FieldAltText:          {Type: field.TypeString, Column: mediaasset.FieldAltText},
-			mediaasset.FieldTitle:            {Type: field.TypeString, Column: mediaasset.FieldTitle},
-			mediaasset.FieldCaption:          {Type: field.TypeString, Column: mediaasset.FieldCaption},
-			mediaasset.FieldProcessingStatus: {Type: field.TypeEnum, Column: mediaasset.FieldProcessingStatus},
-			mediaasset.FieldProcessingError:  {Type: field.TypeString, Column: mediaasset.FieldProcessingError},
-			mediaasset.FieldFileHash:         {Type: field.TypeString, Column: mediaasset.FieldFileHash},
-			mediaasset.FieldFolderID:         {Type: field.TypeUint32, Column: mediaasset.FieldFolderID},
-			mediaasset.FieldFileID:           {Type: field.TypeUint32, Column: mediaasset.FieldFileID},
-			mediaasset.FieldReferenceCount:   {Type: field.TypeUint32, Column: mediaasset.FieldReferenceCount},
-			mediaasset.FieldIsPrivate:        {Type: field.TypeBool, Column: mediaasset.FieldIsPrivate},
-		},
-	}
-	graph.Nodes[28] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   mediavariant.Table,
-			Columns: mediavariant.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: mediavariant.FieldID,
-			},
-		},
-		Type: "MediaVariant",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			mediavariant.FieldCreatedAt:   {Type: field.TypeTime, Column: mediavariant.FieldCreatedAt},
-			mediavariant.FieldTenantID:    {Type: field.TypeUint32, Column: mediavariant.FieldTenantID},
-			mediavariant.FieldMediaID:     {Type: field.TypeUint32, Column: mediavariant.FieldMediaID},
-			mediavariant.FieldFileID:      {Type: field.TypeUint32, Column: mediavariant.FieldFileID},
-			mediavariant.FieldVariantName: {Type: field.TypeUint32, Column: mediavariant.FieldVariantName},
-		},
-	}
-	graph.Nodes[29] = &sqlgraph.Node{
+	graph.Nodes[22] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   membership.Table,
 			Columns: membership.Columns,
@@ -914,7 +697,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			membership.FieldStatus:     {Type: field.TypeEnum, Column: membership.FieldStatus},
 		},
 	}
-	graph.Nodes[30] = &sqlgraph.Node{
+	graph.Nodes[23] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   membershiporgunit.Table,
 			Columns: membershiporgunit.Columns,
@@ -945,7 +728,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			membershiporgunit.FieldStatus:       {Type: field.TypeEnum, Column: membershiporgunit.FieldStatus},
 		},
 	}
-	graph.Nodes[31] = &sqlgraph.Node{
+	graph.Nodes[24] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   membershipposition.Table,
 			Columns: membershipposition.Columns,
@@ -974,7 +757,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			membershipposition.FieldStatus:       {Type: field.TypeEnum, Column: membershipposition.FieldStatus},
 		},
 	}
-	graph.Nodes[32] = &sqlgraph.Node{
+	graph.Nodes[25] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   membershiprole.Table,
 			Columns: membershiprole.Columns,
@@ -1002,7 +785,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			membershiprole.FieldStatus:       {Type: field.TypeEnum, Column: membershiprole.FieldStatus},
 		},
 	}
-	graph.Nodes[33] = &sqlgraph.Node{
+	graph.Nodes[26] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   menu.Table,
 			Columns: menu.Columns,
@@ -1032,63 +815,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			menu.FieldMeta:      {Type: field.TypeJSON, Column: menu.FieldMeta},
 		},
 	}
-	graph.Nodes[34] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   navigation.Table,
-			Columns: navigation.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: navigation.FieldID,
-			},
-		},
-		Type: "Navigation",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			navigation.FieldCreatedAt: {Type: field.TypeTime, Column: navigation.FieldCreatedAt},
-			navigation.FieldUpdatedAt: {Type: field.TypeTime, Column: navigation.FieldUpdatedAt},
-			navigation.FieldDeletedAt: {Type: field.TypeTime, Column: navigation.FieldDeletedAt},
-			navigation.FieldCreatedBy: {Type: field.TypeUint32, Column: navigation.FieldCreatedBy},
-			navigation.FieldUpdatedBy: {Type: field.TypeUint32, Column: navigation.FieldUpdatedBy},
-			navigation.FieldDeletedBy: {Type: field.TypeUint32, Column: navigation.FieldDeletedBy},
-			navigation.FieldTenantID:  {Type: field.TypeUint32, Column: navigation.FieldTenantID},
-			navigation.FieldName:      {Type: field.TypeString, Column: navigation.FieldName},
-			navigation.FieldLocation:  {Type: field.TypeEnum, Column: navigation.FieldLocation},
-			navigation.FieldLocale:    {Type: field.TypeString, Column: navigation.FieldLocale},
-			navigation.FieldIsActive:  {Type: field.TypeBool, Column: navigation.FieldIsActive},
-		},
-	}
-	graph.Nodes[35] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   navigationitem.Table,
-			Columns: navigationitem.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: navigationitem.FieldID,
-			},
-		},
-		Type: "NavigationItem",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			navigationitem.FieldCreatedAt:          {Type: field.TypeTime, Column: navigationitem.FieldCreatedAt},
-			navigationitem.FieldUpdatedAt:          {Type: field.TypeTime, Column: navigationitem.FieldUpdatedAt},
-			navigationitem.FieldDeletedAt:          {Type: field.TypeTime, Column: navigationitem.FieldDeletedAt},
-			navigationitem.FieldCreatedBy:          {Type: field.TypeUint32, Column: navigationitem.FieldCreatedBy},
-			navigationitem.FieldUpdatedBy:          {Type: field.TypeUint32, Column: navigationitem.FieldUpdatedBy},
-			navigationitem.FieldDeletedBy:          {Type: field.TypeUint32, Column: navigationitem.FieldDeletedBy},
-			navigationitem.FieldSortOrder:          {Type: field.TypeUint32, Column: navigationitem.FieldSortOrder},
-			navigationitem.FieldParentID:           {Type: field.TypeUint32, Column: navigationitem.FieldParentID},
-			navigationitem.FieldTenantID:           {Type: field.TypeUint32, Column: navigationitem.FieldTenantID},
-			navigationitem.FieldLinkType:           {Type: field.TypeEnum, Column: navigationitem.FieldLinkType},
-			navigationitem.FieldNavigationID:       {Type: field.TypeUint32, Column: navigationitem.FieldNavigationID},
-			navigationitem.FieldTitle:              {Type: field.TypeString, Column: navigationitem.FieldTitle},
-			navigationitem.FieldURL:                {Type: field.TypeString, Column: navigationitem.FieldURL},
-			navigationitem.FieldObjectID:           {Type: field.TypeUint32, Column: navigationitem.FieldObjectID},
-			navigationitem.FieldIcon:               {Type: field.TypeString, Column: navigationitem.FieldIcon},
-			navigationitem.FieldDescription:        {Type: field.TypeString, Column: navigationitem.FieldDescription},
-			navigationitem.FieldIsOpenNewTab:       {Type: field.TypeBool, Column: navigationitem.FieldIsOpenNewTab},
-			navigationitem.FieldIsInvalid:          {Type: field.TypeBool, Column: navigationitem.FieldIsInvalid},
-			navigationitem.FieldRequiredPermission: {Type: field.TypeString, Column: navigationitem.FieldRequiredPermission},
-		},
-	}
-	graph.Nodes[36] = &sqlgraph.Node{
+	graph.Nodes[27] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   operationauditlog.Table,
 			Columns: operationauditlog.Columns,
@@ -1120,7 +847,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			operationauditlog.FieldSignature:      {Type: field.TypeBytes, Column: operationauditlog.FieldSignature},
 		},
 	}
-	graph.Nodes[37] = &sqlgraph.Node{
+	graph.Nodes[28] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   orgunit.Table,
 			Columns: orgunit.Columns,
@@ -1167,7 +894,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			orgunit.FieldPermissionTags:     {Type: field.TypeJSON, Column: orgunit.FieldPermissionTags},
 		},
 	}
-	graph.Nodes[38] = &sqlgraph.Node{
+	graph.Nodes[29] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   outingapplication.Table,
 			Columns: outingapplication.Columns,
@@ -1193,7 +920,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			outingapplication.FieldInstanceID:   {Type: field.TypeUint32, Column: outingapplication.FieldInstanceID},
 		},
 	}
-	graph.Nodes[39] = &sqlgraph.Node{
+	graph.Nodes[30] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   overtimeapplication.Table,
 			Columns: overtimeapplication.Columns,
@@ -1219,71 +946,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			overtimeapplication.FieldInstanceID:       {Type: field.TypeUint32, Column: overtimeapplication.FieldInstanceID},
 		},
 	}
-	graph.Nodes[40] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   page.Table,
-			Columns: page.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: page.FieldID,
-			},
-		},
-		Type: "Page",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			page.FieldCreatedAt:        {Type: field.TypeTime, Column: page.FieldCreatedAt},
-			page.FieldUpdatedAt:        {Type: field.TypeTime, Column: page.FieldUpdatedAt},
-			page.FieldDeletedAt:        {Type: field.TypeTime, Column: page.FieldDeletedAt},
-			page.FieldCreatedBy:        {Type: field.TypeUint32, Column: page.FieldCreatedBy},
-			page.FieldUpdatedBy:        {Type: field.TypeUint32, Column: page.FieldUpdatedBy},
-			page.FieldDeletedBy:        {Type: field.TypeUint32, Column: page.FieldDeletedBy},
-			page.FieldSortOrder:        {Type: field.TypeUint32, Column: page.FieldSortOrder},
-			page.FieldPath:             {Type: field.TypeString, Column: page.FieldPath},
-			page.FieldParentID:         {Type: field.TypeUint32, Column: page.FieldParentID},
-			page.FieldEditorType:       {Type: field.TypeEnum, Column: page.FieldEditorType},
-			page.FieldTenantID:         {Type: field.TypeUint32, Column: page.FieldTenantID},
-			page.FieldStatus:           {Type: field.TypeEnum, Column: page.FieldStatus},
-			page.FieldType:             {Type: field.TypeEnum, Column: page.FieldType},
-			page.FieldSlug:             {Type: field.TypeString, Column: page.FieldSlug},
-			page.FieldAuthorID:         {Type: field.TypeUint32, Column: page.FieldAuthorID},
-			page.FieldAuthorName:       {Type: field.TypeString, Column: page.FieldAuthorName},
-			page.FieldDisallowComment:  {Type: field.TypeBool, Column: page.FieldDisallowComment},
-			page.FieldRedirectURL:      {Type: field.TypeString, Column: page.FieldRedirectURL},
-			page.FieldShowInNavigation: {Type: field.TypeBool, Column: page.FieldShowInNavigation},
-			page.FieldTemplate:         {Type: field.TypeString, Column: page.FieldTemplate},
-			page.FieldIsCustomTemplate: {Type: field.TypeBool, Column: page.FieldIsCustomTemplate},
-			page.FieldCustomFields:     {Type: field.TypeJSON, Column: page.FieldCustomFields},
-			page.FieldDepth:            {Type: field.TypeInt32, Column: page.FieldDepth},
-		},
-	}
-	graph.Nodes[41] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   pagetranslation.Table,
-			Columns: pagetranslation.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: pagetranslation.FieldID,
-			},
-		},
-		Type: "PageTranslation",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			pagetranslation.FieldCreatedAt:    {Type: field.TypeTime, Column: pagetranslation.FieldCreatedAt},
-			pagetranslation.FieldUpdatedAt:    {Type: field.TypeTime, Column: pagetranslation.FieldUpdatedAt},
-			pagetranslation.FieldDeletedAt:    {Type: field.TypeTime, Column: pagetranslation.FieldDeletedAt},
-			pagetranslation.FieldCreatedBy:    {Type: field.TypeUint32, Column: pagetranslation.FieldCreatedBy},
-			pagetranslation.FieldUpdatedBy:    {Type: field.TypeUint32, Column: pagetranslation.FieldUpdatedBy},
-			pagetranslation.FieldDeletedBy:    {Type: field.TypeUint32, Column: pagetranslation.FieldDeletedBy},
-			pagetranslation.FieldSeo:          {Type: field.TypeJSON, Column: pagetranslation.FieldSeo},
-			pagetranslation.FieldTenantID:     {Type: field.TypeUint32, Column: pagetranslation.FieldTenantID},
-			pagetranslation.FieldPageID:       {Type: field.TypeUint32, Column: pagetranslation.FieldPageID},
-			pagetranslation.FieldLanguageCode: {Type: field.TypeString, Column: pagetranslation.FieldLanguageCode},
-			pagetranslation.FieldTitle:        {Type: field.TypeString, Column: pagetranslation.FieldTitle},
-			pagetranslation.FieldSlug:         {Type: field.TypeString, Column: pagetranslation.FieldSlug},
-			pagetranslation.FieldThumbnail:    {Type: field.TypeString, Column: pagetranslation.FieldThumbnail},
-			pagetranslation.FieldCoverImage:   {Type: field.TypeString, Column: pagetranslation.FieldCoverImage},
-			pagetranslation.FieldFullPath:     {Type: field.TypeString, Column: pagetranslation.FieldFullPath},
-		},
-	}
-	graph.Nodes[42] = &sqlgraph.Node{
+	graph.Nodes[31] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permission.Table,
 			Columns: permission.Columns,
@@ -1308,7 +971,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permission.FieldGroupID:     {Type: field.TypeUint32, Column: permission.FieldGroupID},
 		},
 	}
-	graph.Nodes[43] = &sqlgraph.Node{
+	graph.Nodes[32] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permissionapi.Table,
 			Columns: permissionapi.Columns,
@@ -1330,7 +993,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissionapi.FieldAPIID:        {Type: field.TypeUint32, Column: permissionapi.FieldAPIID},
 		},
 	}
-	graph.Nodes[44] = &sqlgraph.Node{
+	graph.Nodes[33] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permissionauditlog.Table,
 			Columns: permissionauditlog.Columns,
@@ -1356,7 +1019,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissionauditlog.FieldSignature:  {Type: field.TypeBytes, Column: permissionauditlog.FieldSignature},
 		},
 	}
-	graph.Nodes[45] = &sqlgraph.Node{
+	graph.Nodes[34] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permissiongroup.Table,
 			Columns: permissiongroup.Columns,
@@ -1383,7 +1046,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissiongroup.FieldModule:      {Type: field.TypeString, Column: permissiongroup.FieldModule},
 		},
 	}
-	graph.Nodes[46] = &sqlgraph.Node{
+	graph.Nodes[35] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permissionmenu.Table,
 			Columns: permissionmenu.Columns,
@@ -1405,7 +1068,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissionmenu.FieldMenuID:       {Type: field.TypeUint32, Column: permissionmenu.FieldMenuID},
 		},
 	}
-	graph.Nodes[47] = &sqlgraph.Node{
+	graph.Nodes[36] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permissionpolicy.Table,
 			Columns: permissionpolicy.Columns,
@@ -1432,7 +1095,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissionpolicy.FieldCacheTTL:     {Type: field.TypeUint32, Column: permissionpolicy.FieldCacheTTL},
 		},
 	}
-	graph.Nodes[48] = &sqlgraph.Node{
+	graph.Nodes[37] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   policyevaluationlog.Table,
 			Columns: policyevaluationlog.Columns,
@@ -1461,7 +1124,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			policyevaluationlog.FieldSignature:         {Type: field.TypeBytes, Column: policyevaluationlog.FieldSignature},
 		},
 	}
-	graph.Nodes[49] = &sqlgraph.Node{
+	graph.Nodes[38] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   position.Table,
 			Columns: position.Columns,
@@ -1497,143 +1160,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			position.FieldEndAt:               {Type: field.TypeTime, Column: position.FieldEndAt},
 		},
 	}
-	graph.Nodes[50] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   post.Table,
-			Columns: post.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: post.FieldID,
-			},
-		},
-		Type: "Post",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			post.FieldCreatedAt:       {Type: field.TypeTime, Column: post.FieldCreatedAt},
-			post.FieldUpdatedAt:       {Type: field.TypeTime, Column: post.FieldUpdatedAt},
-			post.FieldDeletedAt:       {Type: field.TypeTime, Column: post.FieldDeletedAt},
-			post.FieldCreatedBy:       {Type: field.TypeUint32, Column: post.FieldCreatedBy},
-			post.FieldUpdatedBy:       {Type: field.TypeUint32, Column: post.FieldUpdatedBy},
-			post.FieldDeletedBy:       {Type: field.TypeUint32, Column: post.FieldDeletedBy},
-			post.FieldSortOrder:       {Type: field.TypeUint32, Column: post.FieldSortOrder},
-			post.FieldEditorType:      {Type: field.TypeEnum, Column: post.FieldEditorType},
-			post.FieldTenantID:        {Type: field.TypeUint32, Column: post.FieldTenantID},
-			post.FieldStatus:          {Type: field.TypeEnum, Column: post.FieldStatus},
-			post.FieldCode:            {Type: field.TypeString, Column: post.FieldCode},
-			post.FieldDisallowComment: {Type: field.TypeBool, Column: post.FieldDisallowComment},
-			post.FieldInProgress:      {Type: field.TypeBool, Column: post.FieldInProgress},
-			post.FieldAutoSummary:     {Type: field.TypeBool, Column: post.FieldAutoSummary},
-			post.FieldIsFeatured:      {Type: field.TypeBool, Column: post.FieldIsFeatured},
-			post.FieldAuthorID:        {Type: field.TypeUint32, Column: post.FieldAuthorID},
-			post.FieldAuthorName:      {Type: field.TypeString, Column: post.FieldAuthorName},
-			post.FieldPasswordHash:    {Type: field.TypeString, Column: post.FieldPasswordHash},
-			post.FieldCustomFields:    {Type: field.TypeJSON, Column: post.FieldCustomFields},
-			post.FieldPublishTime:     {Type: field.TypeTime, Column: post.FieldPublishTime},
-		},
-	}
-	graph.Nodes[51] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   postcategory.Table,
-			Columns: postcategory.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: postcategory.FieldID,
-			},
-		},
-		Type: "PostCategory",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			postcategory.FieldCreatedAt:  {Type: field.TypeTime, Column: postcategory.FieldCreatedAt},
-			postcategory.FieldTenantID:   {Type: field.TypeUint32, Column: postcategory.FieldTenantID},
-			postcategory.FieldPostID:     {Type: field.TypeUint32, Column: postcategory.FieldPostID},
-			postcategory.FieldCategoryID: {Type: field.TypeUint32, Column: postcategory.FieldCategoryID},
-		},
-	}
-	graph.Nodes[52] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   postlike.Table,
-			Columns: postlike.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: postlike.FieldID,
-			},
-		},
-		Type: "PostLike",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			postlike.FieldCreatedAt: {Type: field.TypeTime, Column: postlike.FieldCreatedAt},
-			postlike.FieldUpdatedAt: {Type: field.TypeTime, Column: postlike.FieldUpdatedAt},
-			postlike.FieldDeletedAt: {Type: field.TypeTime, Column: postlike.FieldDeletedAt},
-			postlike.FieldTenantID:  {Type: field.TypeUint32, Column: postlike.FieldTenantID},
-			postlike.FieldUserID:    {Type: field.TypeUint32, Column: postlike.FieldUserID},
-			postlike.FieldPostID:    {Type: field.TypeUint32, Column: postlike.FieldPostID},
-		},
-	}
-	graph.Nodes[53] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   posttag.Table,
-			Columns: posttag.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: posttag.FieldID,
-			},
-		},
-		Type: "PostTag",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			posttag.FieldCreatedAt: {Type: field.TypeTime, Column: posttag.FieldCreatedAt},
-			posttag.FieldTenantID:  {Type: field.TypeUint32, Column: posttag.FieldTenantID},
-			posttag.FieldPostID:    {Type: field.TypeUint32, Column: posttag.FieldPostID},
-			posttag.FieldTagID:     {Type: field.TypeUint32, Column: posttag.FieldTagID},
-		},
-	}
-	graph.Nodes[54] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   posttranslation.Table,
-			Columns: posttranslation.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: posttranslation.FieldID,
-			},
-		},
-		Type: "PostTranslation",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			posttranslation.FieldCreatedAt:       {Type: field.TypeTime, Column: posttranslation.FieldCreatedAt},
-			posttranslation.FieldUpdatedAt:       {Type: field.TypeTime, Column: posttranslation.FieldUpdatedAt},
-			posttranslation.FieldDeletedAt:       {Type: field.TypeTime, Column: posttranslation.FieldDeletedAt},
-			posttranslation.FieldCreatedBy:       {Type: field.TypeUint32, Column: posttranslation.FieldCreatedBy},
-			posttranslation.FieldUpdatedBy:       {Type: field.TypeUint32, Column: posttranslation.FieldUpdatedBy},
-			posttranslation.FieldDeletedBy:       {Type: field.TypeUint32, Column: posttranslation.FieldDeletedBy},
-			posttranslation.FieldSeo:             {Type: field.TypeJSON, Column: posttranslation.FieldSeo},
-			posttranslation.FieldTenantID:        {Type: field.TypeUint32, Column: posttranslation.FieldTenantID},
-			posttranslation.FieldPostID:          {Type: field.TypeUint32, Column: posttranslation.FieldPostID},
-			posttranslation.FieldLanguageCode:    {Type: field.TypeString, Column: posttranslation.FieldLanguageCode},
-			posttranslation.FieldTitle:           {Type: field.TypeString, Column: posttranslation.FieldTitle},
-			posttranslation.FieldSlug:            {Type: field.TypeString, Column: posttranslation.FieldSlug},
-			posttranslation.FieldSummary:         {Type: field.TypeString, Column: posttranslation.FieldSummary},
-			posttranslation.FieldContent:         {Type: field.TypeString, Column: posttranslation.FieldContent},
-			posttranslation.FieldOriginalContent: {Type: field.TypeString, Column: posttranslation.FieldOriginalContent},
-			posttranslation.FieldThumbnail:       {Type: field.TypeString, Column: posttranslation.FieldThumbnail},
-			posttranslation.FieldFullPath:        {Type: field.TypeString, Column: posttranslation.FieldFullPath},
-			posttranslation.FieldWordCount:       {Type: field.TypeUint32, Column: posttranslation.FieldWordCount},
-		},
-	}
-	graph.Nodes[55] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   postwatch.Table,
-			Columns: postwatch.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: postwatch.FieldID,
-			},
-		},
-		Type: "PostWatch",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			postwatch.FieldCreatedAt: {Type: field.TypeTime, Column: postwatch.FieldCreatedAt},
-			postwatch.FieldUpdatedAt: {Type: field.TypeTime, Column: postwatch.FieldUpdatedAt},
-			postwatch.FieldDeletedAt: {Type: field.TypeTime, Column: postwatch.FieldDeletedAt},
-			postwatch.FieldTenantID:  {Type: field.TypeUint32, Column: postwatch.FieldTenantID},
-			postwatch.FieldUserID:    {Type: field.TypeUint32, Column: postwatch.FieldUserID},
-			postwatch.FieldPostID:    {Type: field.TypeUint32, Column: postwatch.FieldPostID},
-		},
-	}
-	graph.Nodes[56] = &sqlgraph.Node{
+	graph.Nodes[39] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   role.Table,
 			Columns: role.Columns,
@@ -1661,7 +1188,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldType:        {Type: field.TypeEnum, Column: role.FieldType},
 		},
 	}
-	graph.Nodes[57] = &sqlgraph.Node{
+	graph.Nodes[40] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rolemetadata.Table,
 			Columns: rolemetadata.Columns,
@@ -1690,7 +1217,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rolemetadata.FieldCustomOverrides:   {Type: field.TypeJSON, Column: rolemetadata.FieldCustomOverrides},
 		},
 	}
-	graph.Nodes[58] = &sqlgraph.Node{
+	graph.Nodes[41] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rolepermission.Table,
 			Columns: rolepermission.Columns,
@@ -1715,7 +1242,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rolepermission.FieldPriority:     {Type: field.TypeInt32, Column: rolepermission.FieldPriority},
 		},
 	}
-	graph.Nodes[59] = &sqlgraph.Node{
+	graph.Nodes[42] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   sealapplication.Table,
 			Columns: sealapplication.Columns,
@@ -1741,172 +1268,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			sealapplication.FieldInstanceID: {Type: field.TypeUint32, Column: sealapplication.FieldInstanceID},
 		},
 	}
-	graph.Nodes[60] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   section.Table,
-			Columns: section.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: section.FieldID,
-			},
-		},
-		Type: "Section",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			section.FieldCreatedAt: {Type: field.TypeTime, Column: section.FieldCreatedAt},
-			section.FieldUpdatedAt: {Type: field.TypeTime, Column: section.FieldUpdatedAt},
-			section.FieldDeletedAt: {Type: field.TypeTime, Column: section.FieldDeletedAt},
-			section.FieldCreatedBy: {Type: field.TypeUint32, Column: section.FieldCreatedBy},
-			section.FieldUpdatedBy: {Type: field.TypeUint32, Column: section.FieldUpdatedBy},
-			section.FieldDeletedBy: {Type: field.TypeUint32, Column: section.FieldDeletedBy},
-			section.FieldSortOrder: {Type: field.TypeUint32, Column: section.FieldSortOrder},
-			section.FieldTenantID:  {Type: field.TypeUint32, Column: section.FieldTenantID},
-			section.FieldPageID:    {Type: field.TypeUint32, Column: section.FieldPageID},
-			section.FieldType:      {Type: field.TypeEnum, Column: section.FieldType},
-			section.FieldName:      {Type: field.TypeString, Column: section.FieldName},
-			section.FieldConfig:    {Type: field.TypeJSON, Column: section.FieldConfig},
-		},
-	}
-	graph.Nodes[61] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   sectiontranslation.Table,
-			Columns: sectiontranslation.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: sectiontranslation.FieldID,
-			},
-		},
-		Type: "SectionTranslation",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			sectiontranslation.FieldCreatedAt:    {Type: field.TypeTime, Column: sectiontranslation.FieldCreatedAt},
-			sectiontranslation.FieldUpdatedAt:    {Type: field.TypeTime, Column: sectiontranslation.FieldUpdatedAt},
-			sectiontranslation.FieldDeletedAt:    {Type: field.TypeTime, Column: sectiontranslation.FieldDeletedAt},
-			sectiontranslation.FieldCreatedBy:    {Type: field.TypeUint32, Column: sectiontranslation.FieldCreatedBy},
-			sectiontranslation.FieldUpdatedBy:    {Type: field.TypeUint32, Column: sectiontranslation.FieldUpdatedBy},
-			sectiontranslation.FieldDeletedBy:    {Type: field.TypeUint32, Column: sectiontranslation.FieldDeletedBy},
-			sectiontranslation.FieldTenantID:     {Type: field.TypeUint32, Column: sectiontranslation.FieldTenantID},
-			sectiontranslation.FieldSectionID:    {Type: field.TypeUint32, Column: sectiontranslation.FieldSectionID},
-			sectiontranslation.FieldLanguageCode: {Type: field.TypeString, Column: sectiontranslation.FieldLanguageCode},
-			sectiontranslation.FieldContent:      {Type: field.TypeJSON, Column: sectiontranslation.FieldContent},
-		},
-	}
-	graph.Nodes[62] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   site.Table,
-			Columns: site.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: site.FieldID,
-			},
-		},
-		Type: "Site",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			site.FieldCreatedAt:        {Type: field.TypeTime, Column: site.FieldCreatedAt},
-			site.FieldUpdatedAt:        {Type: field.TypeTime, Column: site.FieldUpdatedAt},
-			site.FieldDeletedAt:        {Type: field.TypeTime, Column: site.FieldDeletedAt},
-			site.FieldCreatedBy:        {Type: field.TypeUint32, Column: site.FieldCreatedBy},
-			site.FieldUpdatedBy:        {Type: field.TypeUint32, Column: site.FieldUpdatedBy},
-			site.FieldDeletedBy:        {Type: field.TypeUint32, Column: site.FieldDeletedBy},
-			site.FieldTenantID:         {Type: field.TypeUint32, Column: site.FieldTenantID},
-			site.FieldName:             {Type: field.TypeString, Column: site.FieldName},
-			site.FieldSlug:             {Type: field.TypeString, Column: site.FieldSlug},
-			site.FieldDomain:           {Type: field.TypeString, Column: site.FieldDomain},
-			site.FieldAlternateDomains: {Type: field.TypeJSON, Column: site.FieldAlternateDomains},
-			site.FieldIsDefault:        {Type: field.TypeBool, Column: site.FieldIsDefault},
-			site.FieldStatus:           {Type: field.TypeEnum, Column: site.FieldStatus},
-			site.FieldDefaultLocale:    {Type: field.TypeString, Column: site.FieldDefaultLocale},
-			site.FieldTemplate:         {Type: field.TypeString, Column: site.FieldTemplate},
-			site.FieldTheme:            {Type: field.TypeString, Column: site.FieldTheme},
-		},
-	}
-	graph.Nodes[63] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   sitesetting.Table,
-			Columns: sitesetting.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: sitesetting.FieldID,
-			},
-		},
-		Type: "SiteSetting",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			sitesetting.FieldCreatedAt:       {Type: field.TypeTime, Column: sitesetting.FieldCreatedAt},
-			sitesetting.FieldUpdatedAt:       {Type: field.TypeTime, Column: sitesetting.FieldUpdatedAt},
-			sitesetting.FieldDeletedAt:       {Type: field.TypeTime, Column: sitesetting.FieldDeletedAt},
-			sitesetting.FieldCreatedBy:       {Type: field.TypeUint32, Column: sitesetting.FieldCreatedBy},
-			sitesetting.FieldUpdatedBy:       {Type: field.TypeUint32, Column: sitesetting.FieldUpdatedBy},
-			sitesetting.FieldDeletedBy:       {Type: field.TypeUint32, Column: sitesetting.FieldDeletedBy},
-			sitesetting.FieldTenantID:        {Type: field.TypeUint32, Column: sitesetting.FieldTenantID},
-			sitesetting.FieldSiteID:          {Type: field.TypeUint32, Column: sitesetting.FieldSiteID},
-			sitesetting.FieldLocale:          {Type: field.TypeString, Column: sitesetting.FieldLocale},
-			sitesetting.FieldGroup:           {Type: field.TypeString, Column: sitesetting.FieldGroup},
-			sitesetting.FieldKey:             {Type: field.TypeString, Column: sitesetting.FieldKey},
-			sitesetting.FieldValue:           {Type: field.TypeString, Column: sitesetting.FieldValue},
-			sitesetting.FieldType:            {Type: field.TypeEnum, Column: sitesetting.FieldType},
-			sitesetting.FieldLabel:           {Type: field.TypeString, Column: sitesetting.FieldLabel},
-			sitesetting.FieldDescription:     {Type: field.TypeString, Column: sitesetting.FieldDescription},
-			sitesetting.FieldPlaceholder:     {Type: field.TypeString, Column: sitesetting.FieldPlaceholder},
-			sitesetting.FieldOptions:         {Type: field.TypeJSON, Column: sitesetting.FieldOptions},
-			sitesetting.FieldIsRequired:      {Type: field.TypeBool, Column: sitesetting.FieldIsRequired},
-			sitesetting.FieldValidationRegex: {Type: field.TypeString, Column: sitesetting.FieldValidationRegex},
-		},
-	}
-	graph.Nodes[64] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   tag.Table,
-			Columns: tag.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: tag.FieldID,
-			},
-		},
-		Type: "Tag",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			tag.FieldCreatedAt:  {Type: field.TypeTime, Column: tag.FieldCreatedAt},
-			tag.FieldUpdatedAt:  {Type: field.TypeTime, Column: tag.FieldUpdatedAt},
-			tag.FieldDeletedAt:  {Type: field.TypeTime, Column: tag.FieldDeletedAt},
-			tag.FieldCreatedBy:  {Type: field.TypeUint32, Column: tag.FieldCreatedBy},
-			tag.FieldUpdatedBy:  {Type: field.TypeUint32, Column: tag.FieldUpdatedBy},
-			tag.FieldDeletedBy:  {Type: field.TypeUint32, Column: tag.FieldDeletedBy},
-			tag.FieldSortOrder:  {Type: field.TypeUint32, Column: tag.FieldSortOrder},
-			tag.FieldTenantID:   {Type: field.TypeUint32, Column: tag.FieldTenantID},
-			tag.FieldStatus:     {Type: field.TypeEnum, Column: tag.FieldStatus},
-			tag.FieldColor:      {Type: field.TypeString, Column: tag.FieldColor},
-			tag.FieldIcon:       {Type: field.TypeString, Column: tag.FieldIcon},
-			tag.FieldGroup:      {Type: field.TypeString, Column: tag.FieldGroup},
-			tag.FieldCode:       {Type: field.TypeString, Column: tag.FieldCode},
-			tag.FieldIsFeatured: {Type: field.TypeBool, Column: tag.FieldIsFeatured},
-			tag.FieldPostCount:  {Type: field.TypeUint32, Column: tag.FieldPostCount},
-		},
-	}
-	graph.Nodes[65] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   tagtranslation.Table,
-			Columns: tagtranslation.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: tagtranslation.FieldID,
-			},
-		},
-		Type: "TagTranslation",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			tagtranslation.FieldCreatedAt:    {Type: field.TypeTime, Column: tagtranslation.FieldCreatedAt},
-			tagtranslation.FieldUpdatedAt:    {Type: field.TypeTime, Column: tagtranslation.FieldUpdatedAt},
-			tagtranslation.FieldDeletedAt:    {Type: field.TypeTime, Column: tagtranslation.FieldDeletedAt},
-			tagtranslation.FieldCreatedBy:    {Type: field.TypeUint32, Column: tagtranslation.FieldCreatedBy},
-			tagtranslation.FieldUpdatedBy:    {Type: field.TypeUint32, Column: tagtranslation.FieldUpdatedBy},
-			tagtranslation.FieldDeletedBy:    {Type: field.TypeUint32, Column: tagtranslation.FieldDeletedBy},
-			tagtranslation.FieldSeo:          {Type: field.TypeJSON, Column: tagtranslation.FieldSeo},
-			tagtranslation.FieldTenantID:     {Type: field.TypeUint32, Column: tagtranslation.FieldTenantID},
-			tagtranslation.FieldTagID:        {Type: field.TypeUint32, Column: tagtranslation.FieldTagID},
-			tagtranslation.FieldLanguageCode: {Type: field.TypeString, Column: tagtranslation.FieldLanguageCode},
-			tagtranslation.FieldName:         {Type: field.TypeString, Column: tagtranslation.FieldName},
-			tagtranslation.FieldSlug:         {Type: field.TypeString, Column: tagtranslation.FieldSlug},
-			tagtranslation.FieldDescription:  {Type: field.TypeString, Column: tagtranslation.FieldDescription},
-			tagtranslation.FieldCoverImage:   {Type: field.TypeString, Column: tagtranslation.FieldCoverImage},
-			tagtranslation.FieldFullPath:     {Type: field.TypeString, Column: tagtranslation.FieldFullPath},
-		},
-	}
-	graph.Nodes[66] = &sqlgraph.Node{
+	graph.Nodes[43] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   task.Table,
 			Columns: task.Columns,
@@ -1933,7 +1295,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			task.FieldEnable:      {Type: field.TypeBool, Column: task.FieldEnable},
 		},
 	}
-	graph.Nodes[67] = &sqlgraph.Node{
+	graph.Nodes[44] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   tenant.Table,
 			Columns: tenant.Columns,
@@ -1966,7 +1328,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			tenant.FieldExpiredAt:        {Type: field.TypeTime, Column: tenant.FieldExpiredAt},
 		},
 	}
-	graph.Nodes[68] = &sqlgraph.Node{
+	graph.Nodes[45] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   user.Table,
 			Columns: user.Columns,
@@ -2002,7 +1364,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldStatus:      {Type: field.TypeEnum, Column: user.FieldStatus},
 		},
 	}
-	graph.Nodes[69] = &sqlgraph.Node{
+	graph.Nodes[46] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   usercredential.Table,
 			Columns: usercredential.Columns,
@@ -2035,7 +1397,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			usercredential.FieldResetTokenUsedAt:       {Type: field.TypeTime, Column: usercredential.FieldResetTokenUsedAt},
 		},
 	}
-	graph.Nodes[70] = &sqlgraph.Node{
+	graph.Nodes[47] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userorgunit.Table,
 			Columns: userorgunit.Columns,
@@ -2065,7 +1427,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userorgunit.FieldStatus:     {Type: field.TypeEnum, Column: userorgunit.FieldStatus},
 		},
 	}
-	graph.Nodes[71] = &sqlgraph.Node{
+	graph.Nodes[48] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userposition.Table,
 			Columns: userposition.Columns,
@@ -2094,7 +1456,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userposition.FieldStatus:     {Type: field.TypeEnum, Column: userposition.FieldStatus},
 		},
 	}
-	graph.Nodes[72] = &sqlgraph.Node{
+	graph.Nodes[49] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userrole.Table,
 			Columns: userrole.Columns,
@@ -2122,7 +1484,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userrole.FieldStatus:     {Type: field.TypeEnum, Column: userrole.FieldStatus},
 		},
 	}
-	graph.Nodes[73] = &sqlgraph.Node{
+	graph.Nodes[50] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowdefinition.Table,
 			Columns: workflowdefinition.Columns,
@@ -2148,7 +1510,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			workflowdefinition.FieldDefinitionStatus: {Type: field.TypeEnum, Column: workflowdefinition.FieldDefinitionStatus},
 		},
 	}
-	graph.Nodes[74] = &sqlgraph.Node{
+	graph.Nodes[51] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowinstance.Table,
 			Columns: workflowinstance.Columns,
@@ -2173,7 +1535,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			workflowinstance.FieldBusinessID:       {Type: field.TypeUint32, Column: workflowinstance.FieldBusinessID},
 		},
 	}
-	graph.Nodes[75] = &sqlgraph.Node{
+	graph.Nodes[52] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowlog.Table,
 			Columns: workflowlog.Columns,
@@ -2196,7 +1558,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			workflowlog.FieldComment:   {Type: field.TypeString, Column: workflowlog.FieldComment},
 		},
 	}
-	graph.Nodes[76] = &sqlgraph.Node{
+	graph.Nodes[53] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowtask.Table,
 			Columns: workflowtask.Columns,
@@ -2219,54 +1581,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			workflowtask.FieldTaskStatus:     {Type: field.TypeEnum, Column: workflowtask.FieldTaskStatus},
 		},
 	}
-	graph.MustAddE(
-		"parent",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   category.ParentTable,
-			Columns: []string{category.ParentColumn},
-			Bidi:    false,
-		},
-		"Category",
-		"Category",
-	)
-	graph.MustAddE(
-		"children",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   category.ChildrenTable,
-			Columns: []string{category.ChildrenColumn},
-			Bidi:    false,
-		},
-		"Category",
-		"Category",
-	)
-	graph.MustAddE(
-		"parent",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   comment.ParentTable,
-			Columns: []string{comment.ParentColumn},
-			Bidi:    false,
-		},
-		"Comment",
-		"Comment",
-	)
-	graph.MustAddE(
-		"children",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   comment.ChildrenTable,
-			Columns: []string{comment.ChildrenColumn},
-			Bidi:    false,
-		},
-		"Comment",
-		"Comment",
-	)
 	graph.MustAddE(
 		"dict_type",
 		&sqlgraph.EdgeSpec{
@@ -2368,30 +1682,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   navigationitem.ParentTable,
-			Columns: []string{navigationitem.ParentColumn},
-			Bidi:    false,
-		},
-		"NavigationItem",
-		"NavigationItem",
-	)
-	graph.MustAddE(
-		"children",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   navigationitem.ChildrenTable,
-			Columns: []string{navigationitem.ChildrenColumn},
-			Bidi:    false,
-		},
-		"NavigationItem",
-		"NavigationItem",
-	)
-	graph.MustAddE(
-		"parent",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
 			Table:   orgunit.ParentTable,
 			Columns: []string{orgunit.ParentColumn},
 			Bidi:    false,
@@ -2410,30 +1700,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"OrgUnit",
 		"OrgUnit",
-	)
-	graph.MustAddE(
-		"parent",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   page.ParentTable,
-			Columns: []string{page.ParentColumn},
-			Bidi:    false,
-		},
-		"Page",
-		"Page",
-	)
-	graph.MustAddE(
-		"children",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   page.ChildrenTable,
-			Columns: []string{page.ChildrenColumn},
-			Bidi:    false,
-		},
-		"Page",
-		"Page",
 	)
 	graph.MustAddE(
 		"parent",
@@ -3156,542 +2422,6 @@ func (f *BusinessTripApplicationFilter) WhereInstanceID(p entql.Uint32P) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *CategoryQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the CategoryQuery builder.
-func (_q *CategoryQuery) Filter() *CategoryFilter {
-	return &CategoryFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *CategoryMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the CategoryMutation builder.
-func (m *CategoryMutation) Filter() *CategoryFilter {
-	return &CategoryFilter{config: m.config, predicateAdder: m}
-}
-
-// CategoryFilter provides a generic filtering capability at runtime for CategoryQuery.
-type CategoryFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *CategoryFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *CategoryFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(category.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *CategoryFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(category.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *CategoryFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(category.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *CategoryFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(category.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *CategoryFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(category.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *CategoryFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(category.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *CategoryFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(category.FieldDeletedBy))
-}
-
-// WhereSortOrder applies the entql uint32 predicate on the sort_order field.
-func (f *CategoryFilter) WhereSortOrder(p entql.Uint32P) {
-	f.Where(p.Field(category.FieldSortOrder))
-}
-
-// WherePath applies the entql string predicate on the path field.
-func (f *CategoryFilter) WherePath(p entql.StringP) {
-	f.Where(p.Field(category.FieldPath))
-}
-
-// WhereParentID applies the entql uint32 predicate on the parent_id field.
-func (f *CategoryFilter) WhereParentID(p entql.Uint32P) {
-	f.Where(p.Field(category.FieldParentID))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *CategoryFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(category.FieldTenantID))
-}
-
-// WhereStatus applies the entql string predicate on the status field.
-func (f *CategoryFilter) WhereStatus(p entql.StringP) {
-	f.Where(p.Field(category.FieldStatus))
-}
-
-// WhereIsNav applies the entql bool predicate on the is_nav field.
-func (f *CategoryFilter) WhereIsNav(p entql.BoolP) {
-	f.Where(p.Field(category.FieldIsNav))
-}
-
-// WhereIcon applies the entql string predicate on the icon field.
-func (f *CategoryFilter) WhereIcon(p entql.StringP) {
-	f.Where(p.Field(category.FieldIcon))
-}
-
-// WhereCode applies the entql string predicate on the code field.
-func (f *CategoryFilter) WhereCode(p entql.StringP) {
-	f.Where(p.Field(category.FieldCode))
-}
-
-// WherePostCount applies the entql uint32 predicate on the post_count field.
-func (f *CategoryFilter) WherePostCount(p entql.Uint32P) {
-	f.Where(p.Field(category.FieldPostCount))
-}
-
-// WhereDirectPostCount applies the entql uint32 predicate on the direct_post_count field.
-func (f *CategoryFilter) WhereDirectPostCount(p entql.Uint32P) {
-	f.Where(p.Field(category.FieldDirectPostCount))
-}
-
-// WhereDepth applies the entql int32 predicate on the depth field.
-func (f *CategoryFilter) WhereDepth(p entql.Int32P) {
-	f.Where(p.Field(category.FieldDepth))
-}
-
-// WhereCustomFields applies the entql json.RawMessage predicate on the custom_fields field.
-func (f *CategoryFilter) WhereCustomFields(p entql.BytesP) {
-	f.Where(p.Field(category.FieldCustomFields))
-}
-
-// WhereHasParent applies a predicate to check if query has an edge parent.
-func (f *CategoryFilter) WhereHasParent() {
-	f.Where(entql.HasEdge("parent"))
-}
-
-// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
-func (f *CategoryFilter) WhereHasParentWith(preds ...predicate.Category) {
-	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasChildren applies a predicate to check if query has an edge children.
-func (f *CategoryFilter) WhereHasChildren() {
-	f.Where(entql.HasEdge("children"))
-}
-
-// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
-func (f *CategoryFilter) WhereHasChildrenWith(preds ...predicate.Category) {
-	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *CategoryTranslationQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the CategoryTranslationQuery builder.
-func (_q *CategoryTranslationQuery) Filter() *CategoryTranslationFilter {
-	return &CategoryTranslationFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *CategoryTranslationMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the CategoryTranslationMutation builder.
-func (m *CategoryTranslationMutation) Filter() *CategoryTranslationFilter {
-	return &CategoryTranslationFilter{config: m.config, predicateAdder: m}
-}
-
-// CategoryTranslationFilter provides a generic filtering capability at runtime for CategoryTranslationQuery.
-type CategoryTranslationFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *CategoryTranslationFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *CategoryTranslationFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(categorytranslation.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *CategoryTranslationFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(categorytranslation.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *CategoryTranslationFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(categorytranslation.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *CategoryTranslationFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(categorytranslation.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *CategoryTranslationFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(categorytranslation.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *CategoryTranslationFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(categorytranslation.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *CategoryTranslationFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(categorytranslation.FieldDeletedBy))
-}
-
-// WhereSeo applies the entql json.RawMessage predicate on the seo field.
-func (f *CategoryTranslationFilter) WhereSeo(p entql.BytesP) {
-	f.Where(p.Field(categorytranslation.FieldSeo))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *CategoryTranslationFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(categorytranslation.FieldTenantID))
-}
-
-// WhereCategoryID applies the entql uint32 predicate on the category_id field.
-func (f *CategoryTranslationFilter) WhereCategoryID(p entql.Uint32P) {
-	f.Where(p.Field(categorytranslation.FieldCategoryID))
-}
-
-// WhereLanguageCode applies the entql string predicate on the language_code field.
-func (f *CategoryTranslationFilter) WhereLanguageCode(p entql.StringP) {
-	f.Where(p.Field(categorytranslation.FieldLanguageCode))
-}
-
-// WhereName applies the entql string predicate on the name field.
-func (f *CategoryTranslationFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(categorytranslation.FieldName))
-}
-
-// WhereSlug applies the entql string predicate on the slug field.
-func (f *CategoryTranslationFilter) WhereSlug(p entql.StringP) {
-	f.Where(p.Field(categorytranslation.FieldSlug))
-}
-
-// WhereDescription applies the entql string predicate on the description field.
-func (f *CategoryTranslationFilter) WhereDescription(p entql.StringP) {
-	f.Where(p.Field(categorytranslation.FieldDescription))
-}
-
-// WhereThumbnail applies the entql string predicate on the thumbnail field.
-func (f *CategoryTranslationFilter) WhereThumbnail(p entql.StringP) {
-	f.Where(p.Field(categorytranslation.FieldThumbnail))
-}
-
-// WhereCoverImage applies the entql string predicate on the cover_image field.
-func (f *CategoryTranslationFilter) WhereCoverImage(p entql.StringP) {
-	f.Where(p.Field(categorytranslation.FieldCoverImage))
-}
-
-// WhereFullPath applies the entql string predicate on the full_path field.
-func (f *CategoryTranslationFilter) WhereFullPath(p entql.StringP) {
-	f.Where(p.Field(categorytranslation.FieldFullPath))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *CommentQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the CommentQuery builder.
-func (_q *CommentQuery) Filter() *CommentFilter {
-	return &CommentFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *CommentMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the CommentMutation builder.
-func (m *CommentMutation) Filter() *CommentFilter {
-	return &CommentFilter{config: m.config, predicateAdder: m}
-}
-
-// CommentFilter provides a generic filtering capability at runtime for CommentQuery.
-type CommentFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *CommentFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *CommentFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(comment.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *CommentFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(comment.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *CommentFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(comment.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *CommentFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(comment.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *CommentFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(comment.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *CommentFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(comment.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *CommentFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(comment.FieldDeletedBy))
-}
-
-// WhereParentID applies the entql uint32 predicate on the parent_id field.
-func (f *CommentFilter) WhereParentID(p entql.Uint32P) {
-	f.Where(p.Field(comment.FieldParentID))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *CommentFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(comment.FieldTenantID))
-}
-
-// WhereContentType applies the entql string predicate on the content_type field.
-func (f *CommentFilter) WhereContentType(p entql.StringP) {
-	f.Where(p.Field(comment.FieldContentType))
-}
-
-// WhereObjectID applies the entql uint32 predicate on the object_id field.
-func (f *CommentFilter) WhereObjectID(p entql.Uint32P) {
-	f.Where(p.Field(comment.FieldObjectID))
-}
-
-// WhereContent applies the entql string predicate on the content field.
-func (f *CommentFilter) WhereContent(p entql.StringP) {
-	f.Where(p.Field(comment.FieldContent))
-}
-
-// WhereAuthorID applies the entql uint32 predicate on the author_id field.
-func (f *CommentFilter) WhereAuthorID(p entql.Uint32P) {
-	f.Where(p.Field(comment.FieldAuthorID))
-}
-
-// WhereAuthorName applies the entql string predicate on the author_name field.
-func (f *CommentFilter) WhereAuthorName(p entql.StringP) {
-	f.Where(p.Field(comment.FieldAuthorName))
-}
-
-// WhereAuthorEmail applies the entql string predicate on the author_email field.
-func (f *CommentFilter) WhereAuthorEmail(p entql.StringP) {
-	f.Where(p.Field(comment.FieldAuthorEmail))
-}
-
-// WhereAuthorURL applies the entql string predicate on the author_url field.
-func (f *CommentFilter) WhereAuthorURL(p entql.StringP) {
-	f.Where(p.Field(comment.FieldAuthorURL))
-}
-
-// WhereAuthorType applies the entql string predicate on the author_type field.
-func (f *CommentFilter) WhereAuthorType(p entql.StringP) {
-	f.Where(p.Field(comment.FieldAuthorType))
-}
-
-// WhereStatus applies the entql string predicate on the status field.
-func (f *CommentFilter) WhereStatus(p entql.StringP) {
-	f.Where(p.Field(comment.FieldStatus))
-}
-
-// WhereIPAddress applies the entql string predicate on the ip_address field.
-func (f *CommentFilter) WhereIPAddress(p entql.StringP) {
-	f.Where(p.Field(comment.FieldIPAddress))
-}
-
-// WhereLocation applies the entql string predicate on the location field.
-func (f *CommentFilter) WhereLocation(p entql.StringP) {
-	f.Where(p.Field(comment.FieldLocation))
-}
-
-// WhereUserAgent applies the entql string predicate on the user_agent field.
-func (f *CommentFilter) WhereUserAgent(p entql.StringP) {
-	f.Where(p.Field(comment.FieldUserAgent))
-}
-
-// WhereDetectedLanguage applies the entql string predicate on the detected_language field.
-func (f *CommentFilter) WhereDetectedLanguage(p entql.StringP) {
-	f.Where(p.Field(comment.FieldDetectedLanguage))
-}
-
-// WhereIsSpam applies the entql bool predicate on the is_spam field.
-func (f *CommentFilter) WhereIsSpam(p entql.BoolP) {
-	f.Where(p.Field(comment.FieldIsSpam))
-}
-
-// WhereIsSticky applies the entql bool predicate on the is_sticky field.
-func (f *CommentFilter) WhereIsSticky(p entql.BoolP) {
-	f.Where(p.Field(comment.FieldIsSticky))
-}
-
-// WhereReplyToID applies the entql uint32 predicate on the reply_to_id field.
-func (f *CommentFilter) WhereReplyToID(p entql.Uint32P) {
-	f.Where(p.Field(comment.FieldReplyToID))
-}
-
-// WhereHasParent applies a predicate to check if query has an edge parent.
-func (f *CommentFilter) WhereHasParent() {
-	f.Where(entql.HasEdge("parent"))
-}
-
-// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
-func (f *CommentFilter) WhereHasParentWith(preds ...predicate.Comment) {
-	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasChildren applies a predicate to check if query has an edge children.
-func (f *CommentFilter) WhereHasChildren() {
-	f.Where(entql.HasEdge("children"))
-}
-
-// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
-func (f *CommentFilter) WhereHasChildrenWith(preds ...predicate.Comment) {
-	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *CommentLikeQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the CommentLikeQuery builder.
-func (_q *CommentLikeQuery) Filter() *CommentLikeFilter {
-	return &CommentLikeFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *CommentLikeMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the CommentLikeMutation builder.
-func (m *CommentLikeMutation) Filter() *CommentLikeFilter {
-	return &CommentLikeFilter{config: m.config, predicateAdder: m}
-}
-
-// CommentLikeFilter provides a generic filtering capability at runtime for CommentLikeQuery.
-type CommentLikeFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *CommentLikeFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *CommentLikeFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(commentlike.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *CommentLikeFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(commentlike.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *CommentLikeFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(commentlike.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *CommentLikeFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(commentlike.FieldDeletedAt))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *CommentLikeFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(commentlike.FieldTenantID))
-}
-
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *CommentLikeFilter) WhereUserID(p entql.Uint32P) {
-	f.Where(p.Field(commentlike.FieldUserID))
-}
-
-// WhereCommentID applies the entql uint32 predicate on the comment_id field.
-func (f *CommentLikeFilter) WhereCommentID(p entql.Uint32P) {
-	f.Where(p.Field(commentlike.FieldCommentID))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (_q *DataAccessAuditLogQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -3720,7 +2450,7 @@ type DataAccessAuditLogFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *DataAccessAuditLogFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3890,7 +2620,7 @@ type DictEntryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *DictEntryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4013,7 +2743,7 @@ type DictEntryI18nFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *DictEntryI18nFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4122,7 +2852,7 @@ type DictTypeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *DictTypeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4231,7 +2961,7 @@ type ExpenseApplicationFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ExpenseApplicationFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[13].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4340,7 +3070,7 @@ type ExpenseItemFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ExpenseItemFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[14].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4454,7 +3184,7 @@ type FileFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *FileFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[15].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4589,7 +3319,7 @@ type HolidayFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *HolidayFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[16].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4651,86 +3381,6 @@ func (f *HolidayFilter) WhereName(p entql.StringP) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *InteractionCounterQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the InteractionCounterQuery builder.
-func (_q *InteractionCounterQuery) Filter() *InteractionCounterFilter {
-	return &InteractionCounterFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *InteractionCounterMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the InteractionCounterMutation builder.
-func (m *InteractionCounterMutation) Filter() *InteractionCounterFilter {
-	return &InteractionCounterFilter{config: m.config, predicateAdder: m}
-}
-
-// InteractionCounterFilter provides a generic filtering capability at runtime for InteractionCounterQuery.
-type InteractionCounterFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *InteractionCounterFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[17].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *InteractionCounterFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(interactioncounter.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *InteractionCounterFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(interactioncounter.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *InteractionCounterFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(interactioncounter.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *InteractionCounterFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(interactioncounter.FieldDeletedAt))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *InteractionCounterFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(interactioncounter.FieldTenantID))
-}
-
-// WhereTargetType applies the entql uint8 predicate on the target_type field.
-func (f *InteractionCounterFilter) WhereTargetType(p entql.Uint8P) {
-	f.Where(p.Field(interactioncounter.FieldTargetType))
-}
-
-// WhereTargetID applies the entql uint32 predicate on the target_id field.
-func (f *InteractionCounterFilter) WhereTargetID(p entql.Uint32P) {
-	f.Where(p.Field(interactioncounter.FieldTargetID))
-}
-
-// WhereMetric applies the entql uint8 predicate on the metric field.
-func (f *InteractionCounterFilter) WhereMetric(p entql.Uint8P) {
-	f.Where(p.Field(interactioncounter.FieldMetric))
-}
-
-// WhereCount applies the entql int64 predicate on the count field.
-func (f *InteractionCounterFilter) WhereCount(p entql.Int64P) {
-	f.Where(p.Field(interactioncounter.FieldCount))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (_q *InternalMessageQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -4759,7 +3409,7 @@ type InternalMessageFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *InternalMessageFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[18].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[13].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4864,7 +3514,7 @@ type InternalMessageCategoryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *InternalMessageCategoryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[19].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[14].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4969,7 +3619,7 @@ type InternalMessageRecipientFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *InternalMessageRecipientFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[20].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[15].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5054,7 +3704,7 @@ type LanguageFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *LanguageFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[21].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[16].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5154,7 +3804,7 @@ type LeaveApplicationFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *LeaveApplicationFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[22].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[17].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5274,7 +3924,7 @@ type LeaveBalanceFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *LeaveBalanceFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[23].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[18].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5374,7 +4024,7 @@ type LeaveTypeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *LeaveTypeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[24].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[19].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5464,7 +4114,7 @@ type LoginAuditLogFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *LoginAuditLogFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[25].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[20].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5604,7 +4254,7 @@ type LoginPolicyFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *LoginPolicyFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[26].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[21].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5676,241 +4326,6 @@ func (f *LoginPolicyFilter) WhereMethod(p entql.StringP) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *MediaAssetQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the MediaAssetQuery builder.
-func (_q *MediaAssetQuery) Filter() *MediaAssetFilter {
-	return &MediaAssetFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *MediaAssetMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the MediaAssetMutation builder.
-func (m *MediaAssetMutation) Filter() *MediaAssetFilter {
-	return &MediaAssetFilter{config: m.config, predicateAdder: m}
-}
-
-// MediaAssetFilter provides a generic filtering capability at runtime for MediaAssetQuery.
-type MediaAssetFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *MediaAssetFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[27].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *MediaAssetFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *MediaAssetFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(mediaasset.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *MediaAssetFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(mediaasset.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *MediaAssetFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(mediaasset.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *MediaAssetFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *MediaAssetFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *MediaAssetFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldDeletedBy))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *MediaAssetFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldTenantID))
-}
-
-// WhereFilename applies the entql string predicate on the filename field.
-func (f *MediaAssetFilter) WhereFilename(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldFilename))
-}
-
-// WhereType applies the entql string predicate on the type field.
-func (f *MediaAssetFilter) WhereType(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldType))
-}
-
-// WhereMimeType applies the entql string predicate on the mime_type field.
-func (f *MediaAssetFilter) WhereMimeType(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldMimeType))
-}
-
-// WhereSize applies the entql uint64 predicate on the size field.
-func (f *MediaAssetFilter) WhereSize(p entql.Uint64P) {
-	f.Where(p.Field(mediaasset.FieldSize))
-}
-
-// WhereStoragePath applies the entql string predicate on the storage_path field.
-func (f *MediaAssetFilter) WhereStoragePath(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldStoragePath))
-}
-
-// WhereURL applies the entql string predicate on the url field.
-func (f *MediaAssetFilter) WhereURL(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldURL))
-}
-
-// WhereWidth applies the entql uint32 predicate on the width field.
-func (f *MediaAssetFilter) WhereWidth(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldWidth))
-}
-
-// WhereHeight applies the entql uint32 predicate on the height field.
-func (f *MediaAssetFilter) WhereHeight(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldHeight))
-}
-
-// WhereDuration applies the entql uint32 predicate on the duration field.
-func (f *MediaAssetFilter) WhereDuration(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldDuration))
-}
-
-// WhereAltText applies the entql string predicate on the alt_text field.
-func (f *MediaAssetFilter) WhereAltText(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldAltText))
-}
-
-// WhereTitle applies the entql string predicate on the title field.
-func (f *MediaAssetFilter) WhereTitle(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldTitle))
-}
-
-// WhereCaption applies the entql string predicate on the caption field.
-func (f *MediaAssetFilter) WhereCaption(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldCaption))
-}
-
-// WhereProcessingStatus applies the entql string predicate on the processing_status field.
-func (f *MediaAssetFilter) WhereProcessingStatus(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldProcessingStatus))
-}
-
-// WhereProcessingError applies the entql string predicate on the processing_error field.
-func (f *MediaAssetFilter) WhereProcessingError(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldProcessingError))
-}
-
-// WhereFileHash applies the entql string predicate on the file_hash field.
-func (f *MediaAssetFilter) WhereFileHash(p entql.StringP) {
-	f.Where(p.Field(mediaasset.FieldFileHash))
-}
-
-// WhereFolderID applies the entql uint32 predicate on the folder_id field.
-func (f *MediaAssetFilter) WhereFolderID(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldFolderID))
-}
-
-// WhereFileID applies the entql uint32 predicate on the file_id field.
-func (f *MediaAssetFilter) WhereFileID(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldFileID))
-}
-
-// WhereReferenceCount applies the entql uint32 predicate on the reference_count field.
-func (f *MediaAssetFilter) WhereReferenceCount(p entql.Uint32P) {
-	f.Where(p.Field(mediaasset.FieldReferenceCount))
-}
-
-// WhereIsPrivate applies the entql bool predicate on the is_private field.
-func (f *MediaAssetFilter) WhereIsPrivate(p entql.BoolP) {
-	f.Where(p.Field(mediaasset.FieldIsPrivate))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *MediaVariantQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the MediaVariantQuery builder.
-func (_q *MediaVariantQuery) Filter() *MediaVariantFilter {
-	return &MediaVariantFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *MediaVariantMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the MediaVariantMutation builder.
-func (m *MediaVariantMutation) Filter() *MediaVariantFilter {
-	return &MediaVariantFilter{config: m.config, predicateAdder: m}
-}
-
-// MediaVariantFilter provides a generic filtering capability at runtime for MediaVariantQuery.
-type MediaVariantFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *MediaVariantFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[28].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *MediaVariantFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(mediavariant.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *MediaVariantFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(mediavariant.FieldCreatedAt))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *MediaVariantFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(mediavariant.FieldTenantID))
-}
-
-// WhereMediaID applies the entql uint32 predicate on the media_id field.
-func (f *MediaVariantFilter) WhereMediaID(p entql.Uint32P) {
-	f.Where(p.Field(mediavariant.FieldMediaID))
-}
-
-// WhereFileID applies the entql uint32 predicate on the file_id field.
-func (f *MediaVariantFilter) WhereFileID(p entql.Uint32P) {
-	f.Where(p.Field(mediavariant.FieldFileID))
-}
-
-// WhereVariantName applies the entql uint32 predicate on the variant_name field.
-func (f *MediaVariantFilter) WhereVariantName(p entql.Uint32P) {
-	f.Where(p.Field(mediavariant.FieldVariantName))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (_q *MembershipQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -5939,7 +4354,7 @@ type MembershipFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *MembershipFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[29].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[22].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -6074,7 +4489,7 @@ type MembershipOrgUnitFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *MembershipOrgUnitFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[30].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[23].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -6204,7 +4619,7 @@ type MembershipPositionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *MembershipPositionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[31].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[24].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -6324,7 +4739,7 @@ type MembershipRoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *MembershipRoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[32].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[25].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -6439,7 +4854,7 @@ type MenuFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *MenuFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[33].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[26].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -6564,264 +4979,6 @@ func (f *MenuFilter) WhereHasChildrenWith(preds ...predicate.Menu) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *NavigationQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the NavigationQuery builder.
-func (_q *NavigationQuery) Filter() *NavigationFilter {
-	return &NavigationFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *NavigationMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the NavigationMutation builder.
-func (m *NavigationMutation) Filter() *NavigationFilter {
-	return &NavigationFilter{config: m.config, predicateAdder: m}
-}
-
-// NavigationFilter provides a generic filtering capability at runtime for NavigationQuery.
-type NavigationFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *NavigationFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[34].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *NavigationFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(navigation.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *NavigationFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(navigation.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *NavigationFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(navigation.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *NavigationFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(navigation.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *NavigationFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(navigation.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *NavigationFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(navigation.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *NavigationFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(navigation.FieldDeletedBy))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *NavigationFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(navigation.FieldTenantID))
-}
-
-// WhereName applies the entql string predicate on the name field.
-func (f *NavigationFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(navigation.FieldName))
-}
-
-// WhereLocation applies the entql string predicate on the location field.
-func (f *NavigationFilter) WhereLocation(p entql.StringP) {
-	f.Where(p.Field(navigation.FieldLocation))
-}
-
-// WhereLocale applies the entql string predicate on the locale field.
-func (f *NavigationFilter) WhereLocale(p entql.StringP) {
-	f.Where(p.Field(navigation.FieldLocale))
-}
-
-// WhereIsActive applies the entql bool predicate on the is_active field.
-func (f *NavigationFilter) WhereIsActive(p entql.BoolP) {
-	f.Where(p.Field(navigation.FieldIsActive))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *NavigationItemQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the NavigationItemQuery builder.
-func (_q *NavigationItemQuery) Filter() *NavigationItemFilter {
-	return &NavigationItemFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *NavigationItemMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the NavigationItemMutation builder.
-func (m *NavigationItemMutation) Filter() *NavigationItemFilter {
-	return &NavigationItemFilter{config: m.config, predicateAdder: m}
-}
-
-// NavigationItemFilter provides a generic filtering capability at runtime for NavigationItemQuery.
-type NavigationItemFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *NavigationItemFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[35].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *NavigationItemFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(navigationitem.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *NavigationItemFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(navigationitem.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *NavigationItemFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(navigationitem.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *NavigationItemFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(navigationitem.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *NavigationItemFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(navigationitem.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *NavigationItemFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(navigationitem.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *NavigationItemFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(navigationitem.FieldDeletedBy))
-}
-
-// WhereSortOrder applies the entql uint32 predicate on the sort_order field.
-func (f *NavigationItemFilter) WhereSortOrder(p entql.Uint32P) {
-	f.Where(p.Field(navigationitem.FieldSortOrder))
-}
-
-// WhereParentID applies the entql uint32 predicate on the parent_id field.
-func (f *NavigationItemFilter) WhereParentID(p entql.Uint32P) {
-	f.Where(p.Field(navigationitem.FieldParentID))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *NavigationItemFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(navigationitem.FieldTenantID))
-}
-
-// WhereLinkType applies the entql string predicate on the link_type field.
-func (f *NavigationItemFilter) WhereLinkType(p entql.StringP) {
-	f.Where(p.Field(navigationitem.FieldLinkType))
-}
-
-// WhereNavigationID applies the entql uint32 predicate on the navigation_id field.
-func (f *NavigationItemFilter) WhereNavigationID(p entql.Uint32P) {
-	f.Where(p.Field(navigationitem.FieldNavigationID))
-}
-
-// WhereTitle applies the entql string predicate on the title field.
-func (f *NavigationItemFilter) WhereTitle(p entql.StringP) {
-	f.Where(p.Field(navigationitem.FieldTitle))
-}
-
-// WhereURL applies the entql string predicate on the url field.
-func (f *NavigationItemFilter) WhereURL(p entql.StringP) {
-	f.Where(p.Field(navigationitem.FieldURL))
-}
-
-// WhereObjectID applies the entql uint32 predicate on the object_id field.
-func (f *NavigationItemFilter) WhereObjectID(p entql.Uint32P) {
-	f.Where(p.Field(navigationitem.FieldObjectID))
-}
-
-// WhereIcon applies the entql string predicate on the icon field.
-func (f *NavigationItemFilter) WhereIcon(p entql.StringP) {
-	f.Where(p.Field(navigationitem.FieldIcon))
-}
-
-// WhereDescription applies the entql string predicate on the description field.
-func (f *NavigationItemFilter) WhereDescription(p entql.StringP) {
-	f.Where(p.Field(navigationitem.FieldDescription))
-}
-
-// WhereIsOpenNewTab applies the entql bool predicate on the is_open_new_tab field.
-func (f *NavigationItemFilter) WhereIsOpenNewTab(p entql.BoolP) {
-	f.Where(p.Field(navigationitem.FieldIsOpenNewTab))
-}
-
-// WhereIsInvalid applies the entql bool predicate on the is_invalid field.
-func (f *NavigationItemFilter) WhereIsInvalid(p entql.BoolP) {
-	f.Where(p.Field(navigationitem.FieldIsInvalid))
-}
-
-// WhereRequiredPermission applies the entql string predicate on the required_permission field.
-func (f *NavigationItemFilter) WhereRequiredPermission(p entql.StringP) {
-	f.Where(p.Field(navigationitem.FieldRequiredPermission))
-}
-
-// WhereHasParent applies a predicate to check if query has an edge parent.
-func (f *NavigationItemFilter) WhereHasParent() {
-	f.Where(entql.HasEdge("parent"))
-}
-
-// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
-func (f *NavigationItemFilter) WhereHasParentWith(preds ...predicate.NavigationItem) {
-	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasChildren applies a predicate to check if query has an edge children.
-func (f *NavigationItemFilter) WhereHasChildren() {
-	f.Where(entql.HasEdge("children"))
-}
-
-// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
-func (f *NavigationItemFilter) WhereHasChildrenWith(preds ...predicate.NavigationItem) {
-	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (_q *OperationAuditLogQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -6850,7 +5007,7 @@ type OperationAuditLogFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *OperationAuditLogFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[36].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[27].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -6985,7 +5142,7 @@ type OrgUnitFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *OrgUnitFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[37].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[28].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7223,7 +5380,7 @@ type OutingApplicationFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *OutingApplicationFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[38].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[29].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7328,7 +5485,7 @@ type OvertimeApplicationFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *OvertimeApplicationFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[39].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[30].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7405,304 +5562,6 @@ func (f *OvertimeApplicationFilter) WhereInstanceID(p entql.Uint32P) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *PageQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the PageQuery builder.
-func (_q *PageQuery) Filter() *PageFilter {
-	return &PageFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *PageMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the PageMutation builder.
-func (m *PageMutation) Filter() *PageFilter {
-	return &PageFilter{config: m.config, predicateAdder: m}
-}
-
-// PageFilter provides a generic filtering capability at runtime for PageQuery.
-type PageFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *PageFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[40].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PageFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(page.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *PageFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(page.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *PageFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(page.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PageFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(page.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PageFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(page.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PageFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(page.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PageFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(page.FieldDeletedBy))
-}
-
-// WhereSortOrder applies the entql uint32 predicate on the sort_order field.
-func (f *PageFilter) WhereSortOrder(p entql.Uint32P) {
-	f.Where(p.Field(page.FieldSortOrder))
-}
-
-// WherePath applies the entql string predicate on the path field.
-func (f *PageFilter) WherePath(p entql.StringP) {
-	f.Where(p.Field(page.FieldPath))
-}
-
-// WhereParentID applies the entql uint32 predicate on the parent_id field.
-func (f *PageFilter) WhereParentID(p entql.Uint32P) {
-	f.Where(p.Field(page.FieldParentID))
-}
-
-// WhereEditorType applies the entql string predicate on the editor_type field.
-func (f *PageFilter) WhereEditorType(p entql.StringP) {
-	f.Where(p.Field(page.FieldEditorType))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PageFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(page.FieldTenantID))
-}
-
-// WhereStatus applies the entql string predicate on the status field.
-func (f *PageFilter) WhereStatus(p entql.StringP) {
-	f.Where(p.Field(page.FieldStatus))
-}
-
-// WhereType applies the entql string predicate on the type field.
-func (f *PageFilter) WhereType(p entql.StringP) {
-	f.Where(p.Field(page.FieldType))
-}
-
-// WhereSlug applies the entql string predicate on the slug field.
-func (f *PageFilter) WhereSlug(p entql.StringP) {
-	f.Where(p.Field(page.FieldSlug))
-}
-
-// WhereAuthorID applies the entql uint32 predicate on the author_id field.
-func (f *PageFilter) WhereAuthorID(p entql.Uint32P) {
-	f.Where(p.Field(page.FieldAuthorID))
-}
-
-// WhereAuthorName applies the entql string predicate on the author_name field.
-func (f *PageFilter) WhereAuthorName(p entql.StringP) {
-	f.Where(p.Field(page.FieldAuthorName))
-}
-
-// WhereDisallowComment applies the entql bool predicate on the disallow_comment field.
-func (f *PageFilter) WhereDisallowComment(p entql.BoolP) {
-	f.Where(p.Field(page.FieldDisallowComment))
-}
-
-// WhereRedirectURL applies the entql string predicate on the redirect_url field.
-func (f *PageFilter) WhereRedirectURL(p entql.StringP) {
-	f.Where(p.Field(page.FieldRedirectURL))
-}
-
-// WhereShowInNavigation applies the entql bool predicate on the show_in_navigation field.
-func (f *PageFilter) WhereShowInNavigation(p entql.BoolP) {
-	f.Where(p.Field(page.FieldShowInNavigation))
-}
-
-// WhereTemplate applies the entql string predicate on the template field.
-func (f *PageFilter) WhereTemplate(p entql.StringP) {
-	f.Where(p.Field(page.FieldTemplate))
-}
-
-// WhereIsCustomTemplate applies the entql bool predicate on the is_custom_template field.
-func (f *PageFilter) WhereIsCustomTemplate(p entql.BoolP) {
-	f.Where(p.Field(page.FieldIsCustomTemplate))
-}
-
-// WhereCustomFields applies the entql json.RawMessage predicate on the custom_fields field.
-func (f *PageFilter) WhereCustomFields(p entql.BytesP) {
-	f.Where(p.Field(page.FieldCustomFields))
-}
-
-// WhereDepth applies the entql int32 predicate on the depth field.
-func (f *PageFilter) WhereDepth(p entql.Int32P) {
-	f.Where(p.Field(page.FieldDepth))
-}
-
-// WhereHasParent applies a predicate to check if query has an edge parent.
-func (f *PageFilter) WhereHasParent() {
-	f.Where(entql.HasEdge("parent"))
-}
-
-// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
-func (f *PageFilter) WhereHasParentWith(preds ...predicate.Page) {
-	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasChildren applies a predicate to check if query has an edge children.
-func (f *PageFilter) WhereHasChildren() {
-	f.Where(entql.HasEdge("children"))
-}
-
-// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
-func (f *PageFilter) WhereHasChildrenWith(preds ...predicate.Page) {
-	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *PageTranslationQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the PageTranslationQuery builder.
-func (_q *PageTranslationQuery) Filter() *PageTranslationFilter {
-	return &PageTranslationFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *PageTranslationMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the PageTranslationMutation builder.
-func (m *PageTranslationMutation) Filter() *PageTranslationFilter {
-	return &PageTranslationFilter{config: m.config, predicateAdder: m}
-}
-
-// PageTranslationFilter provides a generic filtering capability at runtime for PageTranslationQuery.
-type PageTranslationFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *PageTranslationFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[41].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PageTranslationFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(pagetranslation.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *PageTranslationFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(pagetranslation.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *PageTranslationFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(pagetranslation.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PageTranslationFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(pagetranslation.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PageTranslationFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(pagetranslation.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PageTranslationFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(pagetranslation.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PageTranslationFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(pagetranslation.FieldDeletedBy))
-}
-
-// WhereSeo applies the entql json.RawMessage predicate on the seo field.
-func (f *PageTranslationFilter) WhereSeo(p entql.BytesP) {
-	f.Where(p.Field(pagetranslation.FieldSeo))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PageTranslationFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(pagetranslation.FieldTenantID))
-}
-
-// WherePageID applies the entql uint32 predicate on the page_id field.
-func (f *PageTranslationFilter) WherePageID(p entql.Uint32P) {
-	f.Where(p.Field(pagetranslation.FieldPageID))
-}
-
-// WhereLanguageCode applies the entql string predicate on the language_code field.
-func (f *PageTranslationFilter) WhereLanguageCode(p entql.StringP) {
-	f.Where(p.Field(pagetranslation.FieldLanguageCode))
-}
-
-// WhereTitle applies the entql string predicate on the title field.
-func (f *PageTranslationFilter) WhereTitle(p entql.StringP) {
-	f.Where(p.Field(pagetranslation.FieldTitle))
-}
-
-// WhereSlug applies the entql string predicate on the slug field.
-func (f *PageTranslationFilter) WhereSlug(p entql.StringP) {
-	f.Where(p.Field(pagetranslation.FieldSlug))
-}
-
-// WhereThumbnail applies the entql string predicate on the thumbnail field.
-func (f *PageTranslationFilter) WhereThumbnail(p entql.StringP) {
-	f.Where(p.Field(pagetranslation.FieldThumbnail))
-}
-
-// WhereCoverImage applies the entql string predicate on the cover_image field.
-func (f *PageTranslationFilter) WhereCoverImage(p entql.StringP) {
-	f.Where(p.Field(pagetranslation.FieldCoverImage))
-}
-
-// WhereFullPath applies the entql string predicate on the full_path field.
-func (f *PageTranslationFilter) WhereFullPath(p entql.StringP) {
-	f.Where(p.Field(pagetranslation.FieldFullPath))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (_q *PermissionQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -7731,7 +5590,7 @@ type PermissionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[42].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[31].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7831,7 +5690,7 @@ type PermissionApiFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionApiFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[43].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[32].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7916,7 +5775,7 @@ type PermissionAuditLogFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionAuditLogFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[44].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[33].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8021,7 +5880,7 @@ type PermissionGroupFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionGroupFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[45].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[34].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8159,7 +6018,7 @@ type PermissionMenuFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionMenuFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[46].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[35].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8244,7 +6103,7 @@ type PermissionPolicyFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionPolicyFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[47].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[36].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8354,7 +6213,7 @@ type PolicyEvaluationLogFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PolicyEvaluationLogFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[48].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[37].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8474,7 +6333,7 @@ type PositionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PositionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[49].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[38].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8601,536 +6460,6 @@ func (f *PositionFilter) WhereEndAt(p entql.TimeP) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *PostQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the PostQuery builder.
-func (_q *PostQuery) Filter() *PostFilter {
-	return &PostFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *PostMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the PostMutation builder.
-func (m *PostMutation) Filter() *PostFilter {
-	return &PostFilter{config: m.config, predicateAdder: m}
-}
-
-// PostFilter provides a generic filtering capability at runtime for PostQuery.
-type PostFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *PostFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[50].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PostFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(post.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *PostFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(post.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *PostFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(post.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PostFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(post.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PostFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(post.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PostFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(post.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PostFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(post.FieldDeletedBy))
-}
-
-// WhereSortOrder applies the entql uint32 predicate on the sort_order field.
-func (f *PostFilter) WhereSortOrder(p entql.Uint32P) {
-	f.Where(p.Field(post.FieldSortOrder))
-}
-
-// WhereEditorType applies the entql string predicate on the editor_type field.
-func (f *PostFilter) WhereEditorType(p entql.StringP) {
-	f.Where(p.Field(post.FieldEditorType))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PostFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(post.FieldTenantID))
-}
-
-// WhereStatus applies the entql string predicate on the status field.
-func (f *PostFilter) WhereStatus(p entql.StringP) {
-	f.Where(p.Field(post.FieldStatus))
-}
-
-// WhereCode applies the entql string predicate on the code field.
-func (f *PostFilter) WhereCode(p entql.StringP) {
-	f.Where(p.Field(post.FieldCode))
-}
-
-// WhereDisallowComment applies the entql bool predicate on the disallow_comment field.
-func (f *PostFilter) WhereDisallowComment(p entql.BoolP) {
-	f.Where(p.Field(post.FieldDisallowComment))
-}
-
-// WhereInProgress applies the entql bool predicate on the in_progress field.
-func (f *PostFilter) WhereInProgress(p entql.BoolP) {
-	f.Where(p.Field(post.FieldInProgress))
-}
-
-// WhereAutoSummary applies the entql bool predicate on the auto_summary field.
-func (f *PostFilter) WhereAutoSummary(p entql.BoolP) {
-	f.Where(p.Field(post.FieldAutoSummary))
-}
-
-// WhereIsFeatured applies the entql bool predicate on the is_featured field.
-func (f *PostFilter) WhereIsFeatured(p entql.BoolP) {
-	f.Where(p.Field(post.FieldIsFeatured))
-}
-
-// WhereAuthorID applies the entql uint32 predicate on the author_id field.
-func (f *PostFilter) WhereAuthorID(p entql.Uint32P) {
-	f.Where(p.Field(post.FieldAuthorID))
-}
-
-// WhereAuthorName applies the entql string predicate on the author_name field.
-func (f *PostFilter) WhereAuthorName(p entql.StringP) {
-	f.Where(p.Field(post.FieldAuthorName))
-}
-
-// WherePasswordHash applies the entql string predicate on the password_hash field.
-func (f *PostFilter) WherePasswordHash(p entql.StringP) {
-	f.Where(p.Field(post.FieldPasswordHash))
-}
-
-// WhereCustomFields applies the entql json.RawMessage predicate on the custom_fields field.
-func (f *PostFilter) WhereCustomFields(p entql.BytesP) {
-	f.Where(p.Field(post.FieldCustomFields))
-}
-
-// WherePublishTime applies the entql time.Time predicate on the publish_time field.
-func (f *PostFilter) WherePublishTime(p entql.TimeP) {
-	f.Where(p.Field(post.FieldPublishTime))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *PostCategoryQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the PostCategoryQuery builder.
-func (_q *PostCategoryQuery) Filter() *PostCategoryFilter {
-	return &PostCategoryFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *PostCategoryMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the PostCategoryMutation builder.
-func (m *PostCategoryMutation) Filter() *PostCategoryFilter {
-	return &PostCategoryFilter{config: m.config, predicateAdder: m}
-}
-
-// PostCategoryFilter provides a generic filtering capability at runtime for PostCategoryQuery.
-type PostCategoryFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *PostCategoryFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[51].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PostCategoryFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(postcategory.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *PostCategoryFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(postcategory.FieldCreatedAt))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PostCategoryFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(postcategory.FieldTenantID))
-}
-
-// WherePostID applies the entql uint32 predicate on the post_id field.
-func (f *PostCategoryFilter) WherePostID(p entql.Uint32P) {
-	f.Where(p.Field(postcategory.FieldPostID))
-}
-
-// WhereCategoryID applies the entql uint32 predicate on the category_id field.
-func (f *PostCategoryFilter) WhereCategoryID(p entql.Uint32P) {
-	f.Where(p.Field(postcategory.FieldCategoryID))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *PostLikeQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the PostLikeQuery builder.
-func (_q *PostLikeQuery) Filter() *PostLikeFilter {
-	return &PostLikeFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *PostLikeMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the PostLikeMutation builder.
-func (m *PostLikeMutation) Filter() *PostLikeFilter {
-	return &PostLikeFilter{config: m.config, predicateAdder: m}
-}
-
-// PostLikeFilter provides a generic filtering capability at runtime for PostLikeQuery.
-type PostLikeFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *PostLikeFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[52].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PostLikeFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(postlike.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *PostLikeFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(postlike.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *PostLikeFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(postlike.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PostLikeFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(postlike.FieldDeletedAt))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PostLikeFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(postlike.FieldTenantID))
-}
-
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *PostLikeFilter) WhereUserID(p entql.Uint32P) {
-	f.Where(p.Field(postlike.FieldUserID))
-}
-
-// WherePostID applies the entql uint32 predicate on the post_id field.
-func (f *PostLikeFilter) WherePostID(p entql.Uint32P) {
-	f.Where(p.Field(postlike.FieldPostID))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *PostTagQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the PostTagQuery builder.
-func (_q *PostTagQuery) Filter() *PostTagFilter {
-	return &PostTagFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *PostTagMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the PostTagMutation builder.
-func (m *PostTagMutation) Filter() *PostTagFilter {
-	return &PostTagFilter{config: m.config, predicateAdder: m}
-}
-
-// PostTagFilter provides a generic filtering capability at runtime for PostTagQuery.
-type PostTagFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *PostTagFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[53].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PostTagFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(posttag.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *PostTagFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(posttag.FieldCreatedAt))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PostTagFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(posttag.FieldTenantID))
-}
-
-// WherePostID applies the entql uint32 predicate on the post_id field.
-func (f *PostTagFilter) WherePostID(p entql.Uint32P) {
-	f.Where(p.Field(posttag.FieldPostID))
-}
-
-// WhereTagID applies the entql uint32 predicate on the tag_id field.
-func (f *PostTagFilter) WhereTagID(p entql.Uint32P) {
-	f.Where(p.Field(posttag.FieldTagID))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *PostTranslationQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the PostTranslationQuery builder.
-func (_q *PostTranslationQuery) Filter() *PostTranslationFilter {
-	return &PostTranslationFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *PostTranslationMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the PostTranslationMutation builder.
-func (m *PostTranslationMutation) Filter() *PostTranslationFilter {
-	return &PostTranslationFilter{config: m.config, predicateAdder: m}
-}
-
-// PostTranslationFilter provides a generic filtering capability at runtime for PostTranslationQuery.
-type PostTranslationFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *PostTranslationFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[54].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PostTranslationFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(posttranslation.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *PostTranslationFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(posttranslation.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *PostTranslationFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(posttranslation.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PostTranslationFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(posttranslation.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PostTranslationFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(posttranslation.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PostTranslationFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(posttranslation.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PostTranslationFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(posttranslation.FieldDeletedBy))
-}
-
-// WhereSeo applies the entql json.RawMessage predicate on the seo field.
-func (f *PostTranslationFilter) WhereSeo(p entql.BytesP) {
-	f.Where(p.Field(posttranslation.FieldSeo))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PostTranslationFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(posttranslation.FieldTenantID))
-}
-
-// WherePostID applies the entql uint32 predicate on the post_id field.
-func (f *PostTranslationFilter) WherePostID(p entql.Uint32P) {
-	f.Where(p.Field(posttranslation.FieldPostID))
-}
-
-// WhereLanguageCode applies the entql string predicate on the language_code field.
-func (f *PostTranslationFilter) WhereLanguageCode(p entql.StringP) {
-	f.Where(p.Field(posttranslation.FieldLanguageCode))
-}
-
-// WhereTitle applies the entql string predicate on the title field.
-func (f *PostTranslationFilter) WhereTitle(p entql.StringP) {
-	f.Where(p.Field(posttranslation.FieldTitle))
-}
-
-// WhereSlug applies the entql string predicate on the slug field.
-func (f *PostTranslationFilter) WhereSlug(p entql.StringP) {
-	f.Where(p.Field(posttranslation.FieldSlug))
-}
-
-// WhereSummary applies the entql string predicate on the summary field.
-func (f *PostTranslationFilter) WhereSummary(p entql.StringP) {
-	f.Where(p.Field(posttranslation.FieldSummary))
-}
-
-// WhereContent applies the entql string predicate on the content field.
-func (f *PostTranslationFilter) WhereContent(p entql.StringP) {
-	f.Where(p.Field(posttranslation.FieldContent))
-}
-
-// WhereOriginalContent applies the entql string predicate on the original_content field.
-func (f *PostTranslationFilter) WhereOriginalContent(p entql.StringP) {
-	f.Where(p.Field(posttranslation.FieldOriginalContent))
-}
-
-// WhereThumbnail applies the entql string predicate on the thumbnail field.
-func (f *PostTranslationFilter) WhereThumbnail(p entql.StringP) {
-	f.Where(p.Field(posttranslation.FieldThumbnail))
-}
-
-// WhereFullPath applies the entql string predicate on the full_path field.
-func (f *PostTranslationFilter) WhereFullPath(p entql.StringP) {
-	f.Where(p.Field(posttranslation.FieldFullPath))
-}
-
-// WhereWordCount applies the entql uint32 predicate on the word_count field.
-func (f *PostTranslationFilter) WhereWordCount(p entql.Uint32P) {
-	f.Where(p.Field(posttranslation.FieldWordCount))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *PostWatchQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the PostWatchQuery builder.
-func (_q *PostWatchQuery) Filter() *PostWatchFilter {
-	return &PostWatchFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *PostWatchMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the PostWatchMutation builder.
-func (m *PostWatchMutation) Filter() *PostWatchFilter {
-	return &PostWatchFilter{config: m.config, predicateAdder: m}
-}
-
-// PostWatchFilter provides a generic filtering capability at runtime for PostWatchQuery.
-type PostWatchFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *PostWatchFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[55].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *PostWatchFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(postwatch.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *PostWatchFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(postwatch.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *PostWatchFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(postwatch.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PostWatchFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(postwatch.FieldDeletedAt))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PostWatchFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(postwatch.FieldTenantID))
-}
-
-// WhereUserID applies the entql uint32 predicate on the user_id field.
-func (f *PostWatchFilter) WhereUserID(p entql.Uint32P) {
-	f.Where(p.Field(postwatch.FieldUserID))
-}
-
-// WherePostID applies the entql uint32 predicate on the post_id field.
-func (f *PostWatchFilter) WherePostID(p entql.Uint32P) {
-	f.Where(p.Field(postwatch.FieldPostID))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (_q *RoleQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -9159,7 +6488,7 @@ type RoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[56].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[39].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -9274,7 +6603,7 @@ type RoleMetadataFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleMetadataFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[57].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[40].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -9394,7 +6723,7 @@ type RolePermissionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RolePermissionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[58].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[41].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -9494,7 +6823,7 @@ type SealApplicationFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SealApplicationFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[59].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[42].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -9571,681 +6900,6 @@ func (f *SealApplicationFilter) WhereInstanceID(p entql.Uint32P) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *SectionQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the SectionQuery builder.
-func (_q *SectionQuery) Filter() *SectionFilter {
-	return &SectionFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *SectionMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the SectionMutation builder.
-func (m *SectionMutation) Filter() *SectionFilter {
-	return &SectionFilter{config: m.config, predicateAdder: m}
-}
-
-// SectionFilter provides a generic filtering capability at runtime for SectionQuery.
-type SectionFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *SectionFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[60].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *SectionFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(section.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *SectionFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(section.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *SectionFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(section.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *SectionFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(section.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *SectionFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(section.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *SectionFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(section.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *SectionFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(section.FieldDeletedBy))
-}
-
-// WhereSortOrder applies the entql uint32 predicate on the sort_order field.
-func (f *SectionFilter) WhereSortOrder(p entql.Uint32P) {
-	f.Where(p.Field(section.FieldSortOrder))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *SectionFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(section.FieldTenantID))
-}
-
-// WherePageID applies the entql uint32 predicate on the page_id field.
-func (f *SectionFilter) WherePageID(p entql.Uint32P) {
-	f.Where(p.Field(section.FieldPageID))
-}
-
-// WhereType applies the entql string predicate on the type field.
-func (f *SectionFilter) WhereType(p entql.StringP) {
-	f.Where(p.Field(section.FieldType))
-}
-
-// WhereName applies the entql string predicate on the name field.
-func (f *SectionFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(section.FieldName))
-}
-
-// WhereConfig applies the entql json.RawMessage predicate on the config field.
-func (f *SectionFilter) WhereConfig(p entql.BytesP) {
-	f.Where(p.Field(section.FieldConfig))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *SectionTranslationQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the SectionTranslationQuery builder.
-func (_q *SectionTranslationQuery) Filter() *SectionTranslationFilter {
-	return &SectionTranslationFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *SectionTranslationMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the SectionTranslationMutation builder.
-func (m *SectionTranslationMutation) Filter() *SectionTranslationFilter {
-	return &SectionTranslationFilter{config: m.config, predicateAdder: m}
-}
-
-// SectionTranslationFilter provides a generic filtering capability at runtime for SectionTranslationQuery.
-type SectionTranslationFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *SectionTranslationFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[61].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *SectionTranslationFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(sectiontranslation.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *SectionTranslationFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(sectiontranslation.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *SectionTranslationFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(sectiontranslation.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *SectionTranslationFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(sectiontranslation.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *SectionTranslationFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(sectiontranslation.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *SectionTranslationFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(sectiontranslation.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *SectionTranslationFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(sectiontranslation.FieldDeletedBy))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *SectionTranslationFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(sectiontranslation.FieldTenantID))
-}
-
-// WhereSectionID applies the entql uint32 predicate on the section_id field.
-func (f *SectionTranslationFilter) WhereSectionID(p entql.Uint32P) {
-	f.Where(p.Field(sectiontranslation.FieldSectionID))
-}
-
-// WhereLanguageCode applies the entql string predicate on the language_code field.
-func (f *SectionTranslationFilter) WhereLanguageCode(p entql.StringP) {
-	f.Where(p.Field(sectiontranslation.FieldLanguageCode))
-}
-
-// WhereContent applies the entql json.RawMessage predicate on the content field.
-func (f *SectionTranslationFilter) WhereContent(p entql.BytesP) {
-	f.Where(p.Field(sectiontranslation.FieldContent))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *SiteQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the SiteQuery builder.
-func (_q *SiteQuery) Filter() *SiteFilter {
-	return &SiteFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *SiteMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the SiteMutation builder.
-func (m *SiteMutation) Filter() *SiteFilter {
-	return &SiteFilter{config: m.config, predicateAdder: m}
-}
-
-// SiteFilter provides a generic filtering capability at runtime for SiteQuery.
-type SiteFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *SiteFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[62].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *SiteFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(site.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *SiteFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(site.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *SiteFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(site.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *SiteFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(site.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *SiteFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(site.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *SiteFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(site.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *SiteFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(site.FieldDeletedBy))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *SiteFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(site.FieldTenantID))
-}
-
-// WhereName applies the entql string predicate on the name field.
-func (f *SiteFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(site.FieldName))
-}
-
-// WhereSlug applies the entql string predicate on the slug field.
-func (f *SiteFilter) WhereSlug(p entql.StringP) {
-	f.Where(p.Field(site.FieldSlug))
-}
-
-// WhereDomain applies the entql string predicate on the domain field.
-func (f *SiteFilter) WhereDomain(p entql.StringP) {
-	f.Where(p.Field(site.FieldDomain))
-}
-
-// WhereAlternateDomains applies the entql json.RawMessage predicate on the alternate_domains field.
-func (f *SiteFilter) WhereAlternateDomains(p entql.BytesP) {
-	f.Where(p.Field(site.FieldAlternateDomains))
-}
-
-// WhereIsDefault applies the entql bool predicate on the is_default field.
-func (f *SiteFilter) WhereIsDefault(p entql.BoolP) {
-	f.Where(p.Field(site.FieldIsDefault))
-}
-
-// WhereStatus applies the entql string predicate on the status field.
-func (f *SiteFilter) WhereStatus(p entql.StringP) {
-	f.Where(p.Field(site.FieldStatus))
-}
-
-// WhereDefaultLocale applies the entql string predicate on the default_locale field.
-func (f *SiteFilter) WhereDefaultLocale(p entql.StringP) {
-	f.Where(p.Field(site.FieldDefaultLocale))
-}
-
-// WhereTemplate applies the entql string predicate on the template field.
-func (f *SiteFilter) WhereTemplate(p entql.StringP) {
-	f.Where(p.Field(site.FieldTemplate))
-}
-
-// WhereTheme applies the entql string predicate on the theme field.
-func (f *SiteFilter) WhereTheme(p entql.StringP) {
-	f.Where(p.Field(site.FieldTheme))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *SiteSettingQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the SiteSettingQuery builder.
-func (_q *SiteSettingQuery) Filter() *SiteSettingFilter {
-	return &SiteSettingFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *SiteSettingMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the SiteSettingMutation builder.
-func (m *SiteSettingMutation) Filter() *SiteSettingFilter {
-	return &SiteSettingFilter{config: m.config, predicateAdder: m}
-}
-
-// SiteSettingFilter provides a generic filtering capability at runtime for SiteSettingQuery.
-type SiteSettingFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *SiteSettingFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[63].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *SiteSettingFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(sitesetting.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *SiteSettingFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(sitesetting.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *SiteSettingFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(sitesetting.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *SiteSettingFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(sitesetting.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *SiteSettingFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(sitesetting.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *SiteSettingFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(sitesetting.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *SiteSettingFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(sitesetting.FieldDeletedBy))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *SiteSettingFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(sitesetting.FieldTenantID))
-}
-
-// WhereSiteID applies the entql uint32 predicate on the site_id field.
-func (f *SiteSettingFilter) WhereSiteID(p entql.Uint32P) {
-	f.Where(p.Field(sitesetting.FieldSiteID))
-}
-
-// WhereLocale applies the entql string predicate on the locale field.
-func (f *SiteSettingFilter) WhereLocale(p entql.StringP) {
-	f.Where(p.Field(sitesetting.FieldLocale))
-}
-
-// WhereGroup applies the entql string predicate on the group field.
-func (f *SiteSettingFilter) WhereGroup(p entql.StringP) {
-	f.Where(p.Field(sitesetting.FieldGroup))
-}
-
-// WhereKey applies the entql string predicate on the key field.
-func (f *SiteSettingFilter) WhereKey(p entql.StringP) {
-	f.Where(p.Field(sitesetting.FieldKey))
-}
-
-// WhereValue applies the entql string predicate on the value field.
-func (f *SiteSettingFilter) WhereValue(p entql.StringP) {
-	f.Where(p.Field(sitesetting.FieldValue))
-}
-
-// WhereType applies the entql string predicate on the type field.
-func (f *SiteSettingFilter) WhereType(p entql.StringP) {
-	f.Where(p.Field(sitesetting.FieldType))
-}
-
-// WhereLabel applies the entql string predicate on the label field.
-func (f *SiteSettingFilter) WhereLabel(p entql.StringP) {
-	f.Where(p.Field(sitesetting.FieldLabel))
-}
-
-// WhereDescription applies the entql string predicate on the description field.
-func (f *SiteSettingFilter) WhereDescription(p entql.StringP) {
-	f.Where(p.Field(sitesetting.FieldDescription))
-}
-
-// WherePlaceholder applies the entql string predicate on the placeholder field.
-func (f *SiteSettingFilter) WherePlaceholder(p entql.StringP) {
-	f.Where(p.Field(sitesetting.FieldPlaceholder))
-}
-
-// WhereOptions applies the entql json.RawMessage predicate on the options field.
-func (f *SiteSettingFilter) WhereOptions(p entql.BytesP) {
-	f.Where(p.Field(sitesetting.FieldOptions))
-}
-
-// WhereIsRequired applies the entql bool predicate on the is_required field.
-func (f *SiteSettingFilter) WhereIsRequired(p entql.BoolP) {
-	f.Where(p.Field(sitesetting.FieldIsRequired))
-}
-
-// WhereValidationRegex applies the entql string predicate on the validation_regex field.
-func (f *SiteSettingFilter) WhereValidationRegex(p entql.StringP) {
-	f.Where(p.Field(sitesetting.FieldValidationRegex))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *TagQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the TagQuery builder.
-func (_q *TagQuery) Filter() *TagFilter {
-	return &TagFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *TagMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the TagMutation builder.
-func (m *TagMutation) Filter() *TagFilter {
-	return &TagFilter{config: m.config, predicateAdder: m}
-}
-
-// TagFilter provides a generic filtering capability at runtime for TagQuery.
-type TagFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *TagFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[64].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *TagFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(tag.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *TagFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(tag.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *TagFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(tag.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *TagFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(tag.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *TagFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(tag.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *TagFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(tag.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *TagFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(tag.FieldDeletedBy))
-}
-
-// WhereSortOrder applies the entql uint32 predicate on the sort_order field.
-func (f *TagFilter) WhereSortOrder(p entql.Uint32P) {
-	f.Where(p.Field(tag.FieldSortOrder))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *TagFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(tag.FieldTenantID))
-}
-
-// WhereStatus applies the entql string predicate on the status field.
-func (f *TagFilter) WhereStatus(p entql.StringP) {
-	f.Where(p.Field(tag.FieldStatus))
-}
-
-// WhereColor applies the entql string predicate on the color field.
-func (f *TagFilter) WhereColor(p entql.StringP) {
-	f.Where(p.Field(tag.FieldColor))
-}
-
-// WhereIcon applies the entql string predicate on the icon field.
-func (f *TagFilter) WhereIcon(p entql.StringP) {
-	f.Where(p.Field(tag.FieldIcon))
-}
-
-// WhereGroup applies the entql string predicate on the group field.
-func (f *TagFilter) WhereGroup(p entql.StringP) {
-	f.Where(p.Field(tag.FieldGroup))
-}
-
-// WhereCode applies the entql string predicate on the code field.
-func (f *TagFilter) WhereCode(p entql.StringP) {
-	f.Where(p.Field(tag.FieldCode))
-}
-
-// WhereIsFeatured applies the entql bool predicate on the is_featured field.
-func (f *TagFilter) WhereIsFeatured(p entql.BoolP) {
-	f.Where(p.Field(tag.FieldIsFeatured))
-}
-
-// WherePostCount applies the entql uint32 predicate on the post_count field.
-func (f *TagFilter) WherePostCount(p entql.Uint32P) {
-	f.Where(p.Field(tag.FieldPostCount))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *TagTranslationQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the TagTranslationQuery builder.
-func (_q *TagTranslationQuery) Filter() *TagTranslationFilter {
-	return &TagTranslationFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *TagTranslationMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the TagTranslationMutation builder.
-func (m *TagTranslationMutation) Filter() *TagTranslationFilter {
-	return &TagTranslationFilter{config: m.config, predicateAdder: m}
-}
-
-// TagTranslationFilter provides a generic filtering capability at runtime for TagTranslationQuery.
-type TagTranslationFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *TagTranslationFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[65].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *TagTranslationFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(tagtranslation.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *TagTranslationFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(tagtranslation.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *TagTranslationFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(tagtranslation.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *TagTranslationFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(tagtranslation.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *TagTranslationFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(tagtranslation.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *TagTranslationFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(tagtranslation.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *TagTranslationFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(tagtranslation.FieldDeletedBy))
-}
-
-// WhereSeo applies the entql json.RawMessage predicate on the seo field.
-func (f *TagTranslationFilter) WhereSeo(p entql.BytesP) {
-	f.Where(p.Field(tagtranslation.FieldSeo))
-}
-
-// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *TagTranslationFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(tagtranslation.FieldTenantID))
-}
-
-// WhereTagID applies the entql uint32 predicate on the tag_id field.
-func (f *TagTranslationFilter) WhereTagID(p entql.Uint32P) {
-	f.Where(p.Field(tagtranslation.FieldTagID))
-}
-
-// WhereLanguageCode applies the entql string predicate on the language_code field.
-func (f *TagTranslationFilter) WhereLanguageCode(p entql.StringP) {
-	f.Where(p.Field(tagtranslation.FieldLanguageCode))
-}
-
-// WhereName applies the entql string predicate on the name field.
-func (f *TagTranslationFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(tagtranslation.FieldName))
-}
-
-// WhereSlug applies the entql string predicate on the slug field.
-func (f *TagTranslationFilter) WhereSlug(p entql.StringP) {
-	f.Where(p.Field(tagtranslation.FieldSlug))
-}
-
-// WhereDescription applies the entql string predicate on the description field.
-func (f *TagTranslationFilter) WhereDescription(p entql.StringP) {
-	f.Where(p.Field(tagtranslation.FieldDescription))
-}
-
-// WhereCoverImage applies the entql string predicate on the cover_image field.
-func (f *TagTranslationFilter) WhereCoverImage(p entql.StringP) {
-	f.Where(p.Field(tagtranslation.FieldCoverImage))
-}
-
-// WhereFullPath applies the entql string predicate on the full_path field.
-func (f *TagTranslationFilter) WhereFullPath(p entql.StringP) {
-	f.Where(p.Field(tagtranslation.FieldFullPath))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (_q *TaskQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -10274,7 +6928,7 @@ type TaskFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TaskFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[66].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[43].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -10384,7 +7038,7 @@ type TenantFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TenantFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[67].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[44].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -10524,7 +7178,7 @@ type UserFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[68].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[45].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -10679,7 +7333,7 @@ type UserCredentialFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserCredentialFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[69].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[46].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -10819,7 +7473,7 @@ type UserOrgUnitFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserOrgUnitFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[70].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[47].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -10944,7 +7598,7 @@ type UserPositionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserPositionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[71].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[48].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -11064,7 +7718,7 @@ type UserRoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserRoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[72].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[49].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -11179,7 +7833,7 @@ type WorkflowDefinitionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowDefinitionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[73].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[50].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -11298,7 +7952,7 @@ type WorkflowInstanceFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowInstanceFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[74].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[51].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -11440,7 +8094,7 @@ type WorkflowLogFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowLogFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[75].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[52].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -11544,7 +8198,7 @@ type WorkflowTaskFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowTaskFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[76].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[53].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

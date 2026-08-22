@@ -57,7 +57,7 @@ const coreRoutes: RouteRecordRaw[] = [
         path: "login",
         component: Login,
         meta: {
-          title: "pages.auth.login",
+          title: "登录",
         },
       },
     ],
@@ -67,7 +67,7 @@ const coreRoutes: RouteRecordRaw[] = [
     path: LOGIN_PATH,
     component: Login,
     meta: {
-      title: "pages.auth.login",
+      title: "登录",
       ignoreAccess: true,
     },
   },

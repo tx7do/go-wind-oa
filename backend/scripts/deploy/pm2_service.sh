@@ -44,7 +44,7 @@ fi
 
 popd >/dev/null
 
-project_name="${PROJECT_NAME:-gwc}"
+project_name="${PROJECT_NAME:-go_wind_oa}"
 install_root="${HOME}/app/${project_name}"
 app_root="${project_root}/app"
 

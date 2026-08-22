@@ -4,7 +4,7 @@
 // 最小可用的冒烟数据：租户 + 角色 + 组织（含 leader）+ 两名用户（主管/员工，
 // 密码见 -password）+ 请假类型与员工额度。幂等：租户已存在则跳过写入。
 //
-// 运行：go run ./app/core/service/cmd/smokeseed -dsn "host=localhost port=5432 user=postgres password=*Abcd123456 dbname=gwc sslmode=disable" -password 12345678
+// 运行：go run ./app/core/service/cmd/smokeseed -dsn "host=localhost port=5432 user=postgres password=*Abcd123456 dbname=go_wind_oa sslmode=disable" -password 12345678
 //
 // 输出的 loginPassword 是 LoginRequest.password 所需的 base64(AES(明文)) 串。
 package main
@@ -42,7 +42,7 @@ const (
 )
 
 func main() {
-	dsn := flag.String("dsn", "host=localhost port=5432 user=postgres password=*Abcd123456 dbname=gwc sslmode=disable", "postgres DSN")
+	dsn := flag.String("dsn", "host=localhost port=5432 user=postgres password=*Abcd123456 dbname=go_wind_oa sslmode=disable", "postgres DSN")
 	password := flag.String("password", "12345678", "冒烟用户明文密码")
 	flag.Parse()
 

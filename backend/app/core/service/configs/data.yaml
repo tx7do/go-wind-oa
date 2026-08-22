@@ -1,7 +1,7 @@
 data:
   database:
     driver: "postgres"
-    source: "host=postgres port=5432 user=postgres password=*Abcd123456 dbname=gwc sslmode=disable"
+    source: "host=postgres port=5432 user=postgres password=*Abcd123456 dbname=go_wind_oa sslmode=disable"
     migrate: true
     debug: false
     max_idle_connections: 25

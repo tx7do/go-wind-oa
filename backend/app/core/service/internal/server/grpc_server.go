@@ -12,16 +12,11 @@ import (
 
 	auditV1 "go-wind-oa/api/gen/go/audit/service/v1"
 	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
-	commentV1 "go-wind-oa/api/gen/go/comment/service/v1"
-	contentV1 "go-wind-oa/api/gen/go/content/service/v1"
 	dictV1 "go-wind-oa/api/gen/go/dict/service/v1"
 	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
-	interactionV1 "go-wind-oa/api/gen/go/interaction/service/v1"
 	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
-	mediaV1 "go-wind-oa/api/gen/go/media/service/v1"
 	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
 	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
-	siteV1 "go-wind-oa/api/gen/go/site/service/v1"
 	storageV1 "go-wind-oa/api/gen/go/storage/service/v1"
 	taskV1 "go-wind-oa/api/gen/go/task/service/v1"
 
@@ -78,24 +73,10 @@ func NewGrpcServer(
 	leaveService *service.LeaveService,
 	expenseService *service.ExpenseService,
 	attendanceService *service.AttendanceService,
-
-	commentService *service.CommentService,
-
-	interactionService *service.InteractionService,
-	interactionAdminService *service.InteractionAdminService,
-
-	postService *service.PostService,
-	categoryService *service.CategoryService,
-	tagService *service.TagService,
-	pageService *service.PageService,
-	sectionService *service.SectionService,
-
-	siteService *service.SiteService,
-	siteSettingService *service.SiteSettingService,
-	navigationService *service.NavigationService,
-	navigationItemService *service.NavigationItemService,
-
-	mediaAssetService *service.MediaAssetService,
+	businessTripService *service.BusinessTripService,
+	outingService *service.OutingService,
+	overtimeService *service.OvertimeService,
+	sealApplicationService *service.SealApplicationService,
 ) (*grpc.Server, error) {
 	cfg := ctx.GetConfig()
 
@@ -147,24 +128,10 @@ func NewGrpcServer(
 	oaV1.RegisterLeaveServiceServer(srv, leaveService)
 	oaV1.RegisterExpenseServiceServer(srv, expenseService)
 	oaV1.RegisterAttendanceServiceServer(srv, attendanceService)
-
-	commentV1.RegisterCommentServiceServer(srv, commentService)
-
-	interactionV1.RegisterInteractionServiceServer(srv, interactionService)
-	interactionV1.RegisterInteractionAdminServiceServer(srv, interactionAdminService)
-
-	contentV1.RegisterPostServiceServer(srv, postService)
-	contentV1.RegisterCategoryServiceServer(srv, categoryService)
-	contentV1.RegisterTagServiceServer(srv, tagService)
-	contentV1.RegisterPageServiceServer(srv, pageService)
-	contentV1.RegisterSectionServiceServer(srv, sectionService)
-
-	siteV1.RegisterSiteSettingServiceServer(srv, siteSettingService)
-	siteV1.RegisterSiteServiceServer(srv, siteService)
-	siteV1.RegisterNavigationServiceServer(srv, navigationService)
-	siteV1.RegisterNavigationItemServiceServer(srv, navigationItemService)
-
-	mediaV1.RegisterMediaAssetServiceServer(srv, mediaAssetService)
+	oaV1.RegisterBusinessTripServiceServer(srv, businessTripService)
+	oaV1.RegisterOutingServiceServer(srv, outingService)
+	oaV1.RegisterOvertimeServiceServer(srv, overtimeService)
+	oaV1.RegisterSealApplicationServiceServer(srv, sealApplicationService)
 
 	return srv, nil
 }

@@ -34,8 +34,6 @@ var ProviderSet = wire.NewSet(
 
 	data.NewPasswordCrypto,
 
-	data.NewSearchRepo,
-
 	data.NewDictTypeRepo,
 	data.NewDictEntryRepo,
 	data.NewDictEntryI18nRepo,
@@ -99,34 +97,4 @@ var ProviderSet = wire.NewSet(
 	data.NewSealApplicationRepo,
 	data.NewOutingApplicationRepo,
 	data.NewAttendanceRepo,
-
-	data.NewCategoryRepo,
-	data.NewCategoryTranslationRepo,
-
-	data.NewCommentRepo,
-
-	data.NewInteractionRepo,
-
-	data.NewMediaAssetRepo,
-	data.NewMediaVariantRepo,
-
-	data.NewNavigationRepo,
-	data.NewNavigationItemRepo,
-
-	data.NewPageRepo,
-	data.NewPageTranslationRepo,
-
-	data.NewSectionRepo,
-	data.NewSectionTranslationRepo,
-
-	data.NewPostRepo,
-	data.NewPostTranslationRepo,
-	data.NewPostCategoryRepo,
-	data.NewPostTagRepo,
-
-	data.NewSiteSettingRepo,
-	data.NewSiteRepo,
-
-	data.NewTagRepo,
-	data.NewTagTranslationRepo,
 )

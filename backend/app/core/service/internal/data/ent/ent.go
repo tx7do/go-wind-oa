@@ -11,10 +11,6 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/attendancerecord"
 	"go-wind-oa/app/core/service/internal/data/ent/attendancesetting"
 	"go-wind-oa/app/core/service/internal/data/ent/businesstripapplication"
-	"go-wind-oa/app/core/service/internal/data/ent/category"
-	"go-wind-oa/app/core/service/internal/data/ent/categorytranslation"
-	"go-wind-oa/app/core/service/internal/data/ent/comment"
-	"go-wind-oa/app/core/service/internal/data/ent/commentlike"
 	"go-wind-oa/app/core/service/internal/data/ent/dataaccessauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/dictentry"
 	"go-wind-oa/app/core/service/internal/data/ent/dictentryi18n"
@@ -23,7 +19,6 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/expenseitem"
 	"go-wind-oa/app/core/service/internal/data/ent/file"
 	"go-wind-oa/app/core/service/internal/data/ent/holiday"
-	"go-wind-oa/app/core/service/internal/data/ent/interactioncounter"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagerecipient"
@@ -33,21 +28,15 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/leavetype"
 	"go-wind-oa/app/core/service/internal/data/ent/loginauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/loginpolicy"
-	"go-wind-oa/app/core/service/internal/data/ent/mediaasset"
-	"go-wind-oa/app/core/service/internal/data/ent/mediavariant"
 	"go-wind-oa/app/core/service/internal/data/ent/membership"
 	"go-wind-oa/app/core/service/internal/data/ent/membershiporgunit"
 	"go-wind-oa/app/core/service/internal/data/ent/membershipposition"
 	"go-wind-oa/app/core/service/internal/data/ent/membershiprole"
 	"go-wind-oa/app/core/service/internal/data/ent/menu"
-	"go-wind-oa/app/core/service/internal/data/ent/navigation"
-	"go-wind-oa/app/core/service/internal/data/ent/navigationitem"
 	"go-wind-oa/app/core/service/internal/data/ent/operationauditlog"
 	"go-wind-oa/app/core/service/internal/data/ent/orgunit"
 	"go-wind-oa/app/core/service/internal/data/ent/outingapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/overtimeapplication"
-	"go-wind-oa/app/core/service/internal/data/ent/page"
-	"go-wind-oa/app/core/service/internal/data/ent/pagetranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/permission"
 	"go-wind-oa/app/core/service/internal/data/ent/permissionapi"
 	"go-wind-oa/app/core/service/internal/data/ent/permissionauditlog"
@@ -56,22 +45,10 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/permissionpolicy"
 	"go-wind-oa/app/core/service/internal/data/ent/policyevaluationlog"
 	"go-wind-oa/app/core/service/internal/data/ent/position"
-	"go-wind-oa/app/core/service/internal/data/ent/post"
-	"go-wind-oa/app/core/service/internal/data/ent/postcategory"
-	"go-wind-oa/app/core/service/internal/data/ent/postlike"
-	"go-wind-oa/app/core/service/internal/data/ent/posttag"
-	"go-wind-oa/app/core/service/internal/data/ent/posttranslation"
-	"go-wind-oa/app/core/service/internal/data/ent/postwatch"
 	"go-wind-oa/app/core/service/internal/data/ent/role"
 	"go-wind-oa/app/core/service/internal/data/ent/rolemetadata"
 	"go-wind-oa/app/core/service/internal/data/ent/rolepermission"
 	"go-wind-oa/app/core/service/internal/data/ent/sealapplication"
-	"go-wind-oa/app/core/service/internal/data/ent/section"
-	"go-wind-oa/app/core/service/internal/data/ent/sectiontranslation"
-	"go-wind-oa/app/core/service/internal/data/ent/site"
-	"go-wind-oa/app/core/service/internal/data/ent/sitesetting"
-	"go-wind-oa/app/core/service/internal/data/ent/tag"
-	"go-wind-oa/app/core/service/internal/data/ent/tagtranslation"
 	"go-wind-oa/app/core/service/internal/data/ent/task"
 	"go-wind-oa/app/core/service/internal/data/ent/tenant"
 	"go-wind-oa/app/core/service/internal/data/ent/user"
@@ -154,10 +131,6 @@ func checkColumn(t, c string) error {
 			attendancerecord.Table:         attendancerecord.ValidColumn,
 			attendancesetting.Table:        attendancesetting.ValidColumn,
 			businesstripapplication.Table:  businesstripapplication.ValidColumn,
-			category.Table:                 category.ValidColumn,
-			categorytranslation.Table:      categorytranslation.ValidColumn,
-			comment.Table:                  comment.ValidColumn,
-			commentlike.Table:              commentlike.ValidColumn,
 			dataaccessauditlog.Table:       dataaccessauditlog.ValidColumn,
 			dictentry.Table:                dictentry.ValidColumn,
 			dictentryi18n.Table:            dictentryi18n.ValidColumn,
@@ -166,7 +139,6 @@ func checkColumn(t, c string) error {
 			expenseitem.Table:              expenseitem.ValidColumn,
 			file.Table:                     file.ValidColumn,
 			holiday.Table:                  holiday.ValidColumn,
-			interactioncounter.Table:       interactioncounter.ValidColumn,
 			internalmessage.Table:          internalmessage.ValidColumn,
 			internalmessagecategory.Table:  internalmessagecategory.ValidColumn,
 			internalmessagerecipient.Table: internalmessagerecipient.ValidColumn,
@@ -176,21 +148,15 @@ func checkColumn(t, c string) error {
 			leavetype.Table:                leavetype.ValidColumn,
 			loginauditlog.Table:            loginauditlog.ValidColumn,
 			loginpolicy.Table:              loginpolicy.ValidColumn,
-			mediaasset.Table:               mediaasset.ValidColumn,
-			mediavariant.Table:             mediavariant.ValidColumn,
 			membership.Table:               membership.ValidColumn,
 			membershiporgunit.Table:        membershiporgunit.ValidColumn,
 			membershipposition.Table:       membershipposition.ValidColumn,
 			membershiprole.Table:           membershiprole.ValidColumn,
 			menu.Table:                     menu.ValidColumn,
-			navigation.Table:               navigation.ValidColumn,
-			navigationitem.Table:           navigationitem.ValidColumn,
 			operationauditlog.Table:        operationauditlog.ValidColumn,
 			orgunit.Table:                  orgunit.ValidColumn,
 			outingapplication.Table:        outingapplication.ValidColumn,
 			overtimeapplication.Table:      overtimeapplication.ValidColumn,
-			page.Table:                     page.ValidColumn,
-			pagetranslation.Table:          pagetranslation.ValidColumn,
 			permission.Table:               permission.ValidColumn,
 			permissionapi.Table:            permissionapi.ValidColumn,
 			permissionauditlog.Table:       permissionauditlog.ValidColumn,
@@ -199,22 +165,10 @@ func checkColumn(t, c string) error {
 			permissionpolicy.Table:         permissionpolicy.ValidColumn,
 			policyevaluationlog.Table:      policyevaluationlog.ValidColumn,
 			position.Table:                 position.ValidColumn,
-			post.Table:                     post.ValidColumn,
-			postcategory.Table:             postcategory.ValidColumn,
-			postlike.Table:                 postlike.ValidColumn,
-			posttag.Table:                  posttag.ValidColumn,
-			posttranslation.Table:          posttranslation.ValidColumn,
-			postwatch.Table:                postwatch.ValidColumn,
 			role.Table:                     role.ValidColumn,
 			rolemetadata.Table:             rolemetadata.ValidColumn,
 			rolepermission.Table:           rolepermission.ValidColumn,
 			sealapplication.Table:          sealapplication.ValidColumn,
-			section.Table:                  section.ValidColumn,
-			sectiontranslation.Table:       sectiontranslation.ValidColumn,
-			site.Table:                     site.ValidColumn,
-			sitesetting.Table:              sitesetting.ValidColumn,
-			tag.Table:                      tag.ValidColumn,
-			tagtranslation.Table:           tagtranslation.ValidColumn,
 			task.Table:                     task.ValidColumn,
 			tenant.Table:                   tenant.ValidColumn,
 			user.Table:                     user.ValidColumn,

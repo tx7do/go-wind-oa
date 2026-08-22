@@ -62,22 +62,4 @@ var ProviderSet = wire.NewSet(
 	service.NewSealApplicationService,
 	service.NewOutingService,
 	service.NewAttendanceService,
-
-	service.NewCategoryService,
-	service.NewTagService,
-	service.NewPageService,
-	service.NewSectionService,
-	service.NewPostService,
-
-	service.NewCommentService,
-	service.NewInteractionAdminService,
-
-	service.NewMediaAssetService,
-
-	service.NewNavigationService,
-	service.NewNavigationItemService,
-	service.NewSiteSettingService,
-	service.NewSiteService,
-
-	service.NewTranslatorService,
 )

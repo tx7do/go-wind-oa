@@ -22,14 +22,6 @@ type Tx struct {
 	AttendanceSetting *AttendanceSettingClient
 	// BusinessTripApplication is the client for interacting with the BusinessTripApplication builders.
 	BusinessTripApplication *BusinessTripApplicationClient
-	// Category is the client for interacting with the Category builders.
-	Category *CategoryClient
-	// CategoryTranslation is the client for interacting with the CategoryTranslation builders.
-	CategoryTranslation *CategoryTranslationClient
-	// Comment is the client for interacting with the Comment builders.
-	Comment *CommentClient
-	// CommentLike is the client for interacting with the CommentLike builders.
-	CommentLike *CommentLikeClient
 	// DataAccessAuditLog is the client for interacting with the DataAccessAuditLog builders.
 	DataAccessAuditLog *DataAccessAuditLogClient
 	// DictEntry is the client for interacting with the DictEntry builders.
@@ -46,8 +38,6 @@ type Tx struct {
 	File *FileClient
 	// Holiday is the client for interacting with the Holiday builders.
 	Holiday *HolidayClient
-	// InteractionCounter is the client for interacting with the InteractionCounter builders.
-	InteractionCounter *InteractionCounterClient
 	// InternalMessage is the client for interacting with the InternalMessage builders.
 	InternalMessage *InternalMessageClient
 	// InternalMessageCategory is the client for interacting with the InternalMessageCategory builders.
@@ -66,10 +56,6 @@ type Tx struct {
 	LoginAuditLog *LoginAuditLogClient
 	// LoginPolicy is the client for interacting with the LoginPolicy builders.
 	LoginPolicy *LoginPolicyClient
-	// MediaAsset is the client for interacting with the MediaAsset builders.
-	MediaAsset *MediaAssetClient
-	// MediaVariant is the client for interacting with the MediaVariant builders.
-	MediaVariant *MediaVariantClient
 	// Membership is the client for interacting with the Membership builders.
 	Membership *MembershipClient
 	// MembershipOrgUnit is the client for interacting with the MembershipOrgUnit builders.
@@ -80,10 +66,6 @@ type Tx struct {
 	MembershipRole *MembershipRoleClient
 	// Menu is the client for interacting with the Menu builders.
 	Menu *MenuClient
-	// Navigation is the client for interacting with the Navigation builders.
-	Navigation *NavigationClient
-	// NavigationItem is the client for interacting with the NavigationItem builders.
-	NavigationItem *NavigationItemClient
 	// OperationAuditLog is the client for interacting with the OperationAuditLog builders.
 	OperationAuditLog *OperationAuditLogClient
 	// OrgUnit is the client for interacting with the OrgUnit builders.
@@ -92,10 +74,6 @@ type Tx struct {
 	OutingApplication *OutingApplicationClient
 	// OvertimeApplication is the client for interacting with the OvertimeApplication builders.
 	OvertimeApplication *OvertimeApplicationClient
-	// Page is the client for interacting with the Page builders.
-	Page *PageClient
-	// PageTranslation is the client for interacting with the PageTranslation builders.
-	PageTranslation *PageTranslationClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// PermissionApi is the client for interacting with the PermissionApi builders.
@@ -112,18 +90,6 @@ type Tx struct {
 	PolicyEvaluationLog *PolicyEvaluationLogClient
 	// Position is the client for interacting with the Position builders.
 	Position *PositionClient
-	// Post is the client for interacting with the Post builders.
-	Post *PostClient
-	// PostCategory is the client for interacting with the PostCategory builders.
-	PostCategory *PostCategoryClient
-	// PostLike is the client for interacting with the PostLike builders.
-	PostLike *PostLikeClient
-	// PostTag is the client for interacting with the PostTag builders.
-	PostTag *PostTagClient
-	// PostTranslation is the client for interacting with the PostTranslation builders.
-	PostTranslation *PostTranslationClient
-	// PostWatch is the client for interacting with the PostWatch builders.
-	PostWatch *PostWatchClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// RoleMetadata is the client for interacting with the RoleMetadata builders.
@@ -132,18 +98,6 @@ type Tx struct {
 	RolePermission *RolePermissionClient
 	// SealApplication is the client for interacting with the SealApplication builders.
 	SealApplication *SealApplicationClient
-	// Section is the client for interacting with the Section builders.
-	Section *SectionClient
-	// SectionTranslation is the client for interacting with the SectionTranslation builders.
-	SectionTranslation *SectionTranslationClient
-	// Site is the client for interacting with the Site builders.
-	Site *SiteClient
-	// SiteSetting is the client for interacting with the SiteSetting builders.
-	SiteSetting *SiteSettingClient
-	// Tag is the client for interacting with the Tag builders.
-	Tag *TagClient
-	// TagTranslation is the client for interacting with the TagTranslation builders.
-	TagTranslation *TagTranslationClient
 	// Task is the client for interacting with the Task builders.
 	Task *TaskClient
 	// Tenant is the client for interacting with the Tenant builders.
@@ -302,10 +256,6 @@ func (tx *Tx) init() {
 	tx.AttendanceRecord = NewAttendanceRecordClient(tx.config)
 	tx.AttendanceSetting = NewAttendanceSettingClient(tx.config)
 	tx.BusinessTripApplication = NewBusinessTripApplicationClient(tx.config)
-	tx.Category = NewCategoryClient(tx.config)
-	tx.CategoryTranslation = NewCategoryTranslationClient(tx.config)
-	tx.Comment = NewCommentClient(tx.config)
-	tx.CommentLike = NewCommentLikeClient(tx.config)
 	tx.DataAccessAuditLog = NewDataAccessAuditLogClient(tx.config)
 	tx.DictEntry = NewDictEntryClient(tx.config)
 	tx.DictEntryI18n = NewDictEntryI18nClient(tx.config)
@@ -314,7 +264,6 @@ func (tx *Tx) init() {
 	tx.ExpenseItem = NewExpenseItemClient(tx.config)
 	tx.File = NewFileClient(tx.config)
 	tx.Holiday = NewHolidayClient(tx.config)
-	tx.InteractionCounter = NewInteractionCounterClient(tx.config)
 	tx.InternalMessage = NewInternalMessageClient(tx.config)
 	tx.InternalMessageCategory = NewInternalMessageCategoryClient(tx.config)
 	tx.InternalMessageRecipient = NewInternalMessageRecipientClient(tx.config)
@@ -324,21 +273,15 @@ func (tx *Tx) init() {
 	tx.LeaveType = NewLeaveTypeClient(tx.config)
 	tx.LoginAuditLog = NewLoginAuditLogClient(tx.config)
 	tx.LoginPolicy = NewLoginPolicyClient(tx.config)
-	tx.MediaAsset = NewMediaAssetClient(tx.config)
-	tx.MediaVariant = NewMediaVariantClient(tx.config)
 	tx.Membership = NewMembershipClient(tx.config)
 	tx.MembershipOrgUnit = NewMembershipOrgUnitClient(tx.config)
 	tx.MembershipPosition = NewMembershipPositionClient(tx.config)
 	tx.MembershipRole = NewMembershipRoleClient(tx.config)
 	tx.Menu = NewMenuClient(tx.config)
-	tx.Navigation = NewNavigationClient(tx.config)
-	tx.NavigationItem = NewNavigationItemClient(tx.config)
 	tx.OperationAuditLog = NewOperationAuditLogClient(tx.config)
 	tx.OrgUnit = NewOrgUnitClient(tx.config)
 	tx.OutingApplication = NewOutingApplicationClient(tx.config)
 	tx.OvertimeApplication = NewOvertimeApplicationClient(tx.config)
-	tx.Page = NewPageClient(tx.config)
-	tx.PageTranslation = NewPageTranslationClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.PermissionApi = NewPermissionApiClient(tx.config)
 	tx.PermissionAuditLog = NewPermissionAuditLogClient(tx.config)
@@ -347,22 +290,10 @@ func (tx *Tx) init() {
 	tx.PermissionPolicy = NewPermissionPolicyClient(tx.config)
 	tx.PolicyEvaluationLog = NewPolicyEvaluationLogClient(tx.config)
 	tx.Position = NewPositionClient(tx.config)
-	tx.Post = NewPostClient(tx.config)
-	tx.PostCategory = NewPostCategoryClient(tx.config)
-	tx.PostLike = NewPostLikeClient(tx.config)
-	tx.PostTag = NewPostTagClient(tx.config)
-	tx.PostTranslation = NewPostTranslationClient(tx.config)
-	tx.PostWatch = NewPostWatchClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.RoleMetadata = NewRoleMetadataClient(tx.config)
 	tx.RolePermission = NewRolePermissionClient(tx.config)
 	tx.SealApplication = NewSealApplicationClient(tx.config)
-	tx.Section = NewSectionClient(tx.config)
-	tx.SectionTranslation = NewSectionTranslationClient(tx.config)
-	tx.Site = NewSiteClient(tx.config)
-	tx.SiteSetting = NewSiteSettingClient(tx.config)
-	tx.Tag = NewTagClient(tx.config)
-	tx.TagTranslation = NewTagTranslationClient(tx.config)
 	tx.Task = NewTaskClient(tx.config)
 	tx.Tenant = NewTenantClient(tx.config)
 	tx.User = NewUserClient(tx.config)

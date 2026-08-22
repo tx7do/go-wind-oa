@@ -3,23 +3,23 @@
 
 openapi: 3.0.3
 info:
-    title: GoWind Content Hub App API
-    description: GoWind Content Hub App API
+    title: GoWind OA App API
+    description: GoWind OA App API
     contact:
         name: tx7do
-        url: https://github.com/tx7do/go-wind-cms
+        url: https://github.com/tx7do/go-wind-oa
         email: yanglinbo@gmail.com
     license:
         name: MIT License
-        url: https://github.com/tx7do/go-wind-cms/blob/master/LICENSE
+        url: https://github.com/tx7do/go-wind-oa/blob/master/LICENSE
     version: "1.0"
 paths:
-    /app/v1/categories:
+    /app/v1/directory/users:
         get:
             tags:
-                - CategoryService
-            description: 获取类别列表
-            operationId: CategoryService_List
+                - UserService
+            description: 通讯录用户列表（按组织过滤，敏感字段脱敏）
+            operationId: UserService_List
             parameters:
                 - name: page
                   in: query
@@ -91,294 +91,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/content.service.v1.ListCategoryResponse'
-        post:
-            tags:
-                - CategoryService
-            description: 创建类别
-            operationId: CategoryService_Create
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/content.service.v1.CreateCategoryRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Category'
-    /app/v1/categories/{id}:
-        get:
-            tags:
-                - CategoryService
-            description: 获取类别数据
-            operationId: CategoryService_Get
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: code
-                  in: query
-                  schema:
-                    type: string
-                - name: locale
-                  in: query
-                  schema:
-                    type: string
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Category'
-        put:
-            tags:
-                - CategoryService
-            description: 更新类别
-            operationId: CategoryService_Update
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/content.service.v1.UpdateCategoryRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Category'
-        delete:
-            tags:
-                - CategoryService
-            description: 删除类别
-            operationId: CategoryService_Delete
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-    /app/v1/categories/{id}/translation:
-        get:
-            tags:
-                - CategoryService
-            description: 获取翻译数据
-            operationId: CategoryService_GetTranslation
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: code
-                  in: query
-                  schema:
-                    type: string
-                - name: locale
-                  in: query
-                  schema:
-                    type: string
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.CategoryTranslation'
-    /app/v1/comments:
-        get:
-            tags:
-                - CommentService
-            description: 获取评论列表
-            operationId: CommentService_List
-            parameters:
-                - name: page
-                  in: query
-                  description: 当前页码（从1开始，默认1）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: pageSize
-                  in: query
-                  description: 每页条数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: offset
-                  in: query
-                  description: 跳过的记录数（从0开始，默认0）
-                  schema:
-                    type: string
-                - name: limit
-                  in: query
-                  description: 最多返回的记录数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: token
-                  in: query
-                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
-                  schema:
-                    type: string
-                - name: noPaging
-                  in: query
-                  description: 是否不分页，如果为true，则page和pageSize参数无效。
-                  schema:
-                    type: boolean
-                - name: query
-                  in: query
-                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
-                  schema:
-                    type: string
-                - name: filter
-                  in: query
-                  description: Google AIP规范字符串过滤条件
-                  schema:
-                    type: string
-                - name: filterExpr.type
-                  in: query
-                  description: 过滤表达式类型
-                  schema:
-                    enum:
-                        - EXPR_TYPE_UNSPECIFIED
-                        - AND
-                        - OR
-                    type: string
-                    format: enum
-                - name: orderBy
-                  in: query
-                  description: 排序条件
-                  schema:
-                    type: string
-                - name: fieldMask
-                  in: query
-                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/comment.service.v1.ListCommentResponse'
-        post:
-            tags:
-                - CommentService
-            description: 创建评论
-            operationId: CommentService_Create
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/comment.service.v1.CreateCommentRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/comment.service.v1.Comment'
-    /app/v1/comments/{id}:
-        get:
-            tags:
-                - CommentService
-            description: 获取评论数据
-            operationId: CommentService_Get
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/comment.service.v1.Comment'
-        put:
-            tags:
-                - CommentService
-            description: 更新评论
-            operationId: CommentService_Update
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/comment.service.v1.UpdateCommentRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/comment.service.v1.Comment'
-        delete:
-            tags:
-                - CommentService
-            description: 删除评论
-            operationId: CommentService_Delete
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            responses:
-                "200":
-                    description: OK
-                    content: {}
+                                $ref: '#/components/schemas/identity.service.v1.ListUserResponse'
     /app/v1/file/download:
         get:
             tags:
@@ -477,198 +190,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/storage.service.v1.UploadFileResponse'
-    /app/v1/interactions/counts:list:
-        post:
-            tags:
-                - InteractionService
-            description: 批量查询计数
-            operationId: InteractionService_GetCounts
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/interaction.service.v1.GetCountsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/interaction.service.v1.GetCountsResponse'
-    /app/v1/interactions/like:
-        post:
-            tags:
-                - InteractionService
-            description: 点赞
-            operationId: InteractionService_Like
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/interaction.service.v1.LikeRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/interaction.service.v1.LikeResponse'
-    /app/v1/interactions/status:
-        post:
-            tags:
-                - InteractionService
-            description: 批量查询交互状态
-            operationId: InteractionService_GetInteractionStatus
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/interaction.service.v1.GetInteractionStatusRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/interaction.service.v1.GetInteractionStatusResponse'
-    /app/v1/interactions/unlike:
-        post:
-            tags:
-                - InteractionService
-            description: 取消点赞
-            operationId: InteractionService_Unlike
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/interaction.service.v1.LikeRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/interaction.service.v1.LikeResponse'
-    /app/v1/interactions/unwatch:
-        post:
-            tags:
-                - InteractionService
-            description: 取消收藏 post
-            operationId: InteractionService_Unwatch
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/interaction.service.v1.WatchRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/interaction.service.v1.WatchResponse'
-    /app/v1/interactions/watch:
-        post:
-            tags:
-                - InteractionService
-            description: 收藏 post
-            operationId: InteractionService_Watch
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/interaction.service.v1.WatchRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/interaction.service.v1.WatchResponse'
-    /app/v1/interactions/watched-posts:
-        get:
-            tags:
-                - InteractionService
-            description: 列出当前 viewer 收藏的 post
-            operationId: InteractionService_ListWatchedPosts
-            parameters:
-                - name: page
-                  in: query
-                  description: 当前页码（从1开始，默认1）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: pageSize
-                  in: query
-                  description: 每页条数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: offset
-                  in: query
-                  description: 跳过的记录数（从0开始，默认0）
-                  schema:
-                    type: string
-                - name: limit
-                  in: query
-                  description: 最多返回的记录数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: token
-                  in: query
-                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
-                  schema:
-                    type: string
-                - name: noPaging
-                  in: query
-                  description: 是否不分页，如果为true，则page和pageSize参数无效。
-                  schema:
-                    type: boolean
-                - name: query
-                  in: query
-                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
-                  schema:
-                    type: string
-                - name: filter
-                  in: query
-                  description: Google AIP规范字符串过滤条件
-                  schema:
-                    type: string
-                - name: filterExpr.type
-                  in: query
-                  description: 过滤表达式类型
-                  schema:
-                    enum:
-                        - EXPR_TYPE_UNSPECIFIED
-                        - AND
-                        - OR
-                    type: string
-                    format: enum
-                - name: orderBy
-                  in: query
-                  description: 排序条件
-                  schema:
-                    type: string
-                - name: fieldMask
-                  in: query
-                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.ListPostResponse'
     /app/v1/internal-message/my-messages:
         get:
             tags:
@@ -828,172 +349,6 @@ paths:
                 "200":
                     description: OK
                     content: {}
-    /app/v1/navigations:
-        get:
-            tags:
-                - NavigationService
-            description: 获取导航列表
-            operationId: NavigationService_List
-            parameters:
-                - name: page
-                  in: query
-                  description: 当前页码（从1开始，默认1）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: pageSize
-                  in: query
-                  description: 每页条数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: offset
-                  in: query
-                  description: 跳过的记录数（从0开始，默认0）
-                  schema:
-                    type: string
-                - name: limit
-                  in: query
-                  description: 最多返回的记录数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: token
-                  in: query
-                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
-                  schema:
-                    type: string
-                - name: noPaging
-                  in: query
-                  description: 是否不分页，如果为true，则page和pageSize参数无效。
-                  schema:
-                    type: boolean
-                - name: query
-                  in: query
-                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
-                  schema:
-                    type: string
-                - name: filter
-                  in: query
-                  description: Google AIP规范字符串过滤条件
-                  schema:
-                    type: string
-                - name: filterExpr.type
-                  in: query
-                  description: 过滤表达式类型
-                  schema:
-                    enum:
-                        - EXPR_TYPE_UNSPECIFIED
-                        - AND
-                        - OR
-                    type: string
-                    format: enum
-                - name: orderBy
-                  in: query
-                  description: 排序条件
-                  schema:
-                    type: string
-                - name: fieldMask
-                  in: query
-                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/site.service.v1.ListNavigationResponse'
-        post:
-            tags:
-                - NavigationService
-            description: 创建导航
-            operationId: NavigationService_Create
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/site.service.v1.CreateNavigationRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/site.service.v1.Navigation'
-    /app/v1/navigations/{id}:
-        get:
-            tags:
-                - NavigationService
-            description: 获取导航数据
-            operationId: NavigationService_Get
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: name
-                  in: query
-                  schema:
-                    type: string
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/site.service.v1.Navigation'
-        put:
-            tags:
-                - NavigationService
-            description: 更新导航
-            operationId: NavigationService_Update
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/site.service.v1.UpdateNavigationRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/site.service.v1.Navigation'
-        delete:
-            tags:
-                - NavigationService
-            description: 删除导航
-            operationId: NavigationService_Delete
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            responses:
-                "200":
-                    description: OK
-                    content: {}
     /app/v1/oa/attendance/check-in:
         post:
             tags:
@@ -1037,6 +392,83 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/oa.service.v1.ListAttendanceRecordsResponse'
+    /app/v1/oa/business-trip/applications:
+        get:
+            tags:
+                - BusinessTripService
+            description: 查询我的出差申请
+            operationId: BusinessTripService_ListBusinessTripApplications
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: status
+                  in: query
+                  schema:
+                    enum:
+                        - PENDING
+                        - APPROVED
+                        - REJECTED
+                        - WITHDRAWN
+                    type: string
+                    format: enum
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.ListBusinessTripApplicationsResponse'
+        post:
+            tags:
+                - BusinessTripService
+            description: 提交出差申请
+            operationId: BusinessTripService_SubmitBusinessTripApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/oa.service.v1.SubmitBusinessTripApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.SubmitBusinessTripApplicationResponse'
+    /app/v1/oa/business-trip/applications/{id}:
+        get:
+            tags:
+                - BusinessTripService
+            description: 查询出差申请详情
+            operationId: BusinessTripService_GetBusinessTripApplication
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.BusinessTripApplication'
     /app/v1/oa/expense/applications:
         get:
             tags:
@@ -1293,6 +725,237 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/oa.service.v1.ListLeaveTypesResponse'
+    /app/v1/oa/outing/applications:
+        get:
+            tags:
+                - OutingService
+            description: 查询我的外出申请
+            operationId: OutingService_ListOutingApplications
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: status
+                  in: query
+                  schema:
+                    enum:
+                        - PENDING
+                        - APPROVED
+                        - REJECTED
+                        - WITHDRAWN
+                    type: string
+                    format: enum
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.ListOutingApplicationsResponse'
+        post:
+            tags:
+                - OutingService
+            description: 提交外出申请
+            operationId: OutingService_SubmitOutingApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/oa.service.v1.SubmitOutingApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.SubmitOutingApplicationResponse'
+    /app/v1/oa/outing/applications/{id}:
+        get:
+            tags:
+                - OutingService
+            description: 查询外出申请详情
+            operationId: OutingService_GetOutingApplication
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.OutingApplication'
+    /app/v1/oa/overtime/applications:
+        get:
+            tags:
+                - OvertimeService
+            description: 查询我的加班申请
+            operationId: OvertimeService_ListOvertimeApplications
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: status
+                  in: query
+                  schema:
+                    enum:
+                        - PENDING
+                        - APPROVED
+                        - REJECTED
+                        - WITHDRAWN
+                    type: string
+                    format: enum
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.ListOvertimeApplicationsResponse'
+        post:
+            tags:
+                - OvertimeService
+            description: 提交加班申请
+            operationId: OvertimeService_SubmitOvertimeApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/oa.service.v1.SubmitOvertimeApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.SubmitOvertimeApplicationResponse'
+    /app/v1/oa/overtime/applications/{id}:
+        get:
+            tags:
+                - OvertimeService
+            description: 查询加班申请详情
+            operationId: OvertimeService_GetOvertimeApplication
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.OvertimeApplication'
+    /app/v1/oa/seal-applications:
+        get:
+            tags:
+                - SealApplicationService
+            description: 查询我的用印申请
+            operationId: SealApplicationService_ListSealApplications
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: status
+                  in: query
+                  schema:
+                    enum:
+                        - PENDING
+                        - APPROVED
+                        - REJECTED
+                        - WITHDRAWN
+                    type: string
+                    format: enum
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.ListSealApplicationsResponse'
+        post:
+            tags:
+                - SealApplicationService
+            description: 提交用印申请
+            operationId: SealApplicationService_SubmitSealApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/oa.service.v1.SubmitSealApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.SubmitSealApplicationResponse'
+    /app/v1/oa/seal-applications/{id}:
+        get:
+            tags:
+                - SealApplicationService
+            description: 查询用印申请详情
+            operationId: SealApplicationService_GetSealApplication
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.SealApplication'
     /app/v1/oa/workflow/apply-form:
         get:
             tags:
@@ -1420,12 +1083,12 @@ paths:
                 "200":
                     description: OK
                     content: {}
-    /app/v1/pages:
+    /app/v1/org-units:
         get:
             tags:
-                - PageService
-            description: 获取页面列表
-            operationId: PageService_List
+                - OrgUnitService
+            description: 查询组织单元列表（组织树）
+            operationId: OrgUnitService_List
             parameters:
                 - name: page
                   in: query
@@ -1497,31 +1160,13 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/content.service.v1.ListPageResponse'
-        post:
-            tags:
-                - PageService
-            description: 创建页面
-            operationId: PageService_Create
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/content.service.v1.CreatePageRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Page'
-    /app/v1/pages/{id}:
+                                $ref: '#/components/schemas/identity.service.v1.ListOrgUnitResponse'
+    /app/v1/org-units/{id}:
         get:
             tags:
-                - PageService
-            description: 获取页面数据
-            operationId: PageService_Get
+                - OrgUnitService
+            description: 查询组织单元详情
+            operationId: OrgUnitService_Get
             parameters:
                 - name: id
                   in: path
@@ -1529,14 +1174,6 @@ paths:
                   schema:
                     type: integer
                     format: uint32
-                - name: slug
-                  in: query
-                  schema:
-                    type: string
-                - name: locale
-                  in: query
-                  schema:
-                    type: string
                 - name: viewMask
                   in: query
                   schema:
@@ -1548,320 +1185,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/content.service.v1.Page'
-        put:
-            tags:
-                - PageService
-            description: 更新页面
-            operationId: PageService_Update
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/content.service.v1.UpdatePageRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Page'
-        delete:
-            tags:
-                - PageService
-            description: 删除页面
-            operationId: PageService_Delete
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-    /app/v1/pages/{id}/translation:
-        get:
-            tags:
-                - PageService
-            description: 获取翻译数据
-            operationId: PageService_GetTranslation
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: slug
-                  in: query
-                  schema:
-                    type: string
-                - name: locale
-                  in: query
-                  schema:
-                    type: string
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.PageTranslation'
-    /app/v1/posts:
-        get:
-            tags:
-                - PostService
-            description: 获取帖子列表
-            operationId: PostService_List
-            parameters:
-                - name: page
-                  in: query
-                  description: 当前页码（从1开始，默认1）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: pageSize
-                  in: query
-                  description: 每页条数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: offset
-                  in: query
-                  description: 跳过的记录数（从0开始，默认0）
-                  schema:
-                    type: string
-                - name: limit
-                  in: query
-                  description: 最多返回的记录数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: token
-                  in: query
-                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
-                  schema:
-                    type: string
-                - name: noPaging
-                  in: query
-                  description: 是否不分页，如果为true，则page和pageSize参数无效。
-                  schema:
-                    type: boolean
-                - name: query
-                  in: query
-                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
-                  schema:
-                    type: string
-                - name: filter
-                  in: query
-                  description: Google AIP规范字符串过滤条件
-                  schema:
-                    type: string
-                - name: filterExpr.type
-                  in: query
-                  description: 过滤表达式类型
-                  schema:
-                    enum:
-                        - EXPR_TYPE_UNSPECIFIED
-                        - AND
-                        - OR
-                    type: string
-                    format: enum
-                - name: orderBy
-                  in: query
-                  description: 排序条件
-                  schema:
-                    type: string
-                - name: fieldMask
-                  in: query
-                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.ListPostResponse'
-        post:
-            tags:
-                - PostService
-            description: 创建帖子
-            operationId: PostService_Create
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/content.service.v1.CreatePostRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Post'
-    /app/v1/posts/search:
-        get:
-            tags:
-                - PostService
-            description: "全文搜索帖子（前台，基于 OpenSearch）\r\n\r\n 仅返回 PUBLISHED 状态内容；tenant_id 由服务端从登录用户上下文注入，\r\n 客户端无法指定或绕过。故此端点不进鉴权白名单——必须登录后方可搜索。"
-            operationId: PostService_SearchPosts
-            parameters:
-                - name: query
-                  in: query
-                  description: 搜索查询词
-                  schema:
-                    type: string
-                - name: language
-                  in: query
-                  description: 语言代码（必填，仅返回该语言的翻译命中）
-                  schema:
-                    type: string
-                - name: page
-                  in: query
-                  description: 页码（0-based）
-                  schema:
-                    type: integer
-                    format: int32
-                - name: pageSize
-                  in: query
-                  description: 每页条数（服务端封顶 50）
-                  schema:
-                    type: integer
-                    format: int32
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.SearchPostsResponse'
-    /app/v1/posts/{id}:
-        get:
-            tags:
-                - PostService
-            description: 获取帖子数据
-            operationId: PostService_Get
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: code
-                  in: query
-                  schema:
-                    type: string
-                - name: locale
-                  in: query
-                  schema:
-                    type: string
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Post'
-        put:
-            tags:
-                - PostService
-            description: 更新帖子
-            operationId: PostService_Update
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/content.service.v1.UpdatePostRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Post'
-        delete:
-            tags:
-                - PostService
-            description: 删除帖子
-            operationId: PostService_Delete
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-    /app/v1/posts/{id}/translation:
-        get:
-            tags:
-                - PostService
-            description: 获取翻译数据
-            operationId: PostService_GetTranslation
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: code
-                  in: query
-                  schema:
-                    type: string
-                - name: locale
-                  in: query
-                  schema:
-                    type: string
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.PostTranslation'
+                                $ref: '#/components/schemas/identity.service.v1.OrgUnit'
     /app/v1/refresh-token:
         post:
             tags:
@@ -1881,404 +1205,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/authentication.service.v1.LoginResponse'
-    /app/v1/sections:
-        get:
-            tags:
-                - SectionService
-            description: 获取区块列表
-            operationId: SectionService_List
-            parameters:
-                - name: page
-                  in: query
-                  description: 当前页码（从1开始，默认1）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: pageSize
-                  in: query
-                  description: 每页条数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: offset
-                  in: query
-                  description: 跳过的记录数（从0开始，默认0）
-                  schema:
-                    type: string
-                - name: limit
-                  in: query
-                  description: 最多返回的记录数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: token
-                  in: query
-                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
-                  schema:
-                    type: string
-                - name: noPaging
-                  in: query
-                  description: 是否不分页，如果为true，则page和pageSize参数无效。
-                  schema:
-                    type: boolean
-                - name: query
-                  in: query
-                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
-                  schema:
-                    type: string
-                - name: filter
-                  in: query
-                  description: Google AIP规范字符串过滤条件
-                  schema:
-                    type: string
-                - name: filterExpr.type
-                  in: query
-                  description: 过滤表达式类型
-                  schema:
-                    enum:
-                        - EXPR_TYPE_UNSPECIFIED
-                        - AND
-                        - OR
-                    type: string
-                    format: enum
-                - name: orderBy
-                  in: query
-                  description: 排序条件
-                  schema:
-                    type: string
-                - name: fieldMask
-                  in: query
-                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.ListSectionResponse'
-        post:
-            tags:
-                - SectionService
-            description: 创建区块
-            operationId: SectionService_Create
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/content.service.v1.CreateSectionRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Section'
-    /app/v1/sections/{id}:
-        get:
-            tags:
-                - SectionService
-            description: 获取区块数据
-            operationId: SectionService_Get
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: locale
-                  in: query
-                  schema:
-                    type: string
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Section'
-        put:
-            tags:
-                - SectionService
-            description: 更新区块
-            operationId: SectionService_Update
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/content.service.v1.UpdateSectionRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Section'
-        delete:
-            tags:
-                - SectionService
-            description: 删除区块
-            operationId: SectionService_Delete
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-    /app/v1/sections/{id}/translation:
-        get:
-            tags:
-                - SectionService
-            description: 获取翻译数据
-            operationId: SectionService_GetTranslation
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: locale
-                  in: query
-                  schema:
-                    type: string
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.SectionTranslation'
-    /app/v1/tags:
-        get:
-            tags:
-                - TagService
-            description: 获取标签列表
-            operationId: TagService_List
-            parameters:
-                - name: page
-                  in: query
-                  description: 当前页码（从1开始，默认1）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: pageSize
-                  in: query
-                  description: 每页条数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: offset
-                  in: query
-                  description: 跳过的记录数（从0开始，默认0）
-                  schema:
-                    type: string
-                - name: limit
-                  in: query
-                  description: 最多返回的记录数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: token
-                  in: query
-                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
-                  schema:
-                    type: string
-                - name: noPaging
-                  in: query
-                  description: 是否不分页，如果为true，则page和pageSize参数无效。
-                  schema:
-                    type: boolean
-                - name: query
-                  in: query
-                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
-                  schema:
-                    type: string
-                - name: filter
-                  in: query
-                  description: Google AIP规范字符串过滤条件
-                  schema:
-                    type: string
-                - name: filterExpr.type
-                  in: query
-                  description: 过滤表达式类型
-                  schema:
-                    enum:
-                        - EXPR_TYPE_UNSPECIFIED
-                        - AND
-                        - OR
-                    type: string
-                    format: enum
-                - name: orderBy
-                  in: query
-                  description: 排序条件
-                  schema:
-                    type: string
-                - name: fieldMask
-                  in: query
-                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.ListTagResponse'
-        post:
-            tags:
-                - TagService
-            description: 创建标签
-            operationId: TagService_Create
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/content.service.v1.CreateTagRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Tag'
-    /app/v1/tags/{id}:
-        get:
-            tags:
-                - TagService
-            description: 获取标签数据
-            operationId: TagService_Get
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: code
-                  in: query
-                  schema:
-                    type: string
-                - name: locale
-                  in: query
-                  schema:
-                    type: string
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Tag'
-        put:
-            tags:
-                - TagService
-            description: 更新标签
-            operationId: TagService_Update
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/content.service.v1.UpdateTagRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.Tag'
-        delete:
-            tags:
-                - TagService
-            description: 删除标签
-            operationId: TagService_Delete
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-    /app/v1/tags/{id}/translation:
-        get:
-            tags:
-                - TagService
-            description: 获取翻译数据
-            operationId: TagService_GetTranslation
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: code
-                  in: query
-                  schema:
-                    type: string
-                - name: locale
-                  in: query
-                  schema:
-                    type: string
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/content.service.v1.TagTranslation'
 components:
     schemas:
         KratosStatus:
@@ -2395,1135 +1321,6 @@ components:
                     type: string
                     description: ID 令牌，OpenID Connect 扩展中定义的 JWT 格式令牌
             description: 用户登录 - 回应
-        comment.service.v1.Comment:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 评论ID
-                    format: uint32
-                contentType:
-                    enum:
-                        - CONTENT_TYPE_UNSPECIFIED
-                        - CONTENT_TYPE_POST
-                        - CONTENT_TYPE_PAGE
-                        - CONTENT_TYPE_PRODUCT
-                    type: string
-                    description: 内容类型
-                    format: enum
-                objectId:
-                    type: integer
-                    description: 对象ID
-                    format: uint32
-                content:
-                    type: string
-                    description: 评论内容
-                authorId:
-                    type: integer
-                    description: 评论作者ID，0表示游客
-                    format: uint32
-                authorName:
-                    type: string
-                    description: 评论作者名称（游客填写）
-                authorEmail:
-                    type: string
-                    description: 评论作者邮箱（游客填写）
-                authorUrl:
-                    type: string
-                    description: 评论作者网址（游客填写）
-                authorType:
-                    enum:
-                        - AUTHOR_TYPE_UNSPECIFIED
-                        - AUTHOR_TYPE_GUEST
-                        - AUTHOR_TYPE_USER
-                        - AUTHOR_TYPE_ADMIN
-                        - AUTHOR_TYPE_MODERATOR
-                    type: string
-                    description: 作者类型（用于前端高亮管理员回复）
-                    format: enum
-                status:
-                    enum:
-                        - STATUS_UNSPECIFIED
-                        - STATUS_PENDING
-                        - STATUS_APPROVED
-                        - STATUS_REJECTED
-                        - STATUS_SPAM
-                    type: string
-                    description: 评论状态
-                    format: enum
-                ipAddress:
-                    type: string
-                    description: 评论者 IP（脱敏存储，如 192.168.1.*）
-                location:
-                    type: string
-                    description: 评论者地理位置（根据 IP 反查，可能不准确）
-                userAgent:
-                    type: string
-                    description: User-Agent
-                detectedLanguage:
-                    type: string
-                    description: 自动检测的语言代码（ISO 639-1，如 'zh', 'en'）
-                isSpam:
-                    type: boolean
-                    description: 是否标记为垃圾评论
-                isSticky:
-                    type: boolean
-                    description: 是否置顶评论
-                parentId:
-                    type: integer
-                    description: 父节点ID
-                    format: uint32
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/comment.service.v1.Comment'
-                    description: 子节点树
-                replyToId:
-                    type: integer
-                    description: 回复的评论ID（记录 '@某人' 关系，可能与 parent_id 不同）
-                    format: uint32
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 评论
-        comment.service.v1.CreateCommentRequest:
-            type: object
-            properties:
-                data:
-                    $ref: '#/components/schemas/comment.service.v1.Comment'
-            description: 请求 - 创建评论
-        comment.service.v1.ListCommentResponse:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/comment.service.v1.Comment'
-                total:
-                    type: string
-            description: 回应 - 评论列表
-        comment.service.v1.UpdateCommentRequest:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    format: uint32
-                data:
-                    $ref: '#/components/schemas/comment.service.v1.Comment'
-                updateMask:
-                    example: id,realname,username
-                    type: string
-                    description: 要更新的字段列表
-                    format: field-mask
-                allowMissing:
-                    type: boolean
-                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-            description: 请求 - 更新评论
-        content.service.v1.Category:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 类别ID
-                    format: uint32
-                status:
-                    enum:
-                        - CATEGORY_STATUS_UNSPECIFIED
-                        - CATEGORY_STATUS_ACTIVE
-                        - CATEGORY_STATUS_HIDDEN
-                        - CATEGORY_STATUS_ARCHIVED
-                    type: string
-                    description: 分类状态
-                    format: enum
-                sortOrder:
-                    type: integer
-                    description: 排序优先级（数值越小越靠前，同级分类间排序）
-                    format: uint32
-                isNav:
-                    type: boolean
-                    description: 是否显示在导航菜单
-                icon:
-                    type: string
-                    description: 分类图标
-                code:
-                    type: string
-                    description: 唯一代码（如 slug、编码等，便于唯一标识分类）
-                postCount:
-                    type: integer
-                    description: 该分类下的文章总数（含子分类，可选）
-                    format: uint32
-                directPostCount:
-                    type: integer
-                    description: 该分类下的直接文章数（不含子分类）
-                    format: uint32
-                translations:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.CategoryTranslation'
-                    description: 多语言翻译列表
-                availableLanguages:
-                    example: ["zh-CN", "en-US", "ja-JP"]
-                    type: array
-                    items:
-                        type: string
-                    description: 可用的语言代码列表（快速查询，避免遍历 translations）
-                customFields:
-                    type: object
-                    additionalProperties:
-                        type: string
-                    description: 自定义字段，键值对形式，便于扩展
-                parentId:
-                    type: integer
-                    description: 父节点ID
-                    format: uint32
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.Category'
-                    description: 子节点树
-                depth:
-                    type: integer
-                    description: 分类层级深度（0=顶级，1=二级，以此类推）
-                    format: int32
-                path:
-                    type: string
-                    description: 物化路径（Materialized Path），如 '1/5/23'，便于层级查询
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 类别
-        content.service.v1.CategoryTranslation:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 翻译记录ID
-                    format: uint32
-                categoryId:
-                    type: integer
-                    description: 关联的分类ID
-                    format: uint32
-                languageCode:
-                    type: string
-                    description: 语言代码
-                name:
-                    type: string
-                    description: 分类名称
-                slug:
-                    type: string
-                    description: 分类别名
-                description:
-                    type: string
-                    description: 分类描述
-                thumbnail:
-                    type: string
-                    description: 缩略图
-                coverImage:
-                    type: string
-                    description: 封面图
-                fullPath:
-                    type: string
-                    description: 完整路径（如 /zh-CN/category/tech）
-                seo:
-                    $ref: '#/components/schemas/content.service.v1.SeoMeta'
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 类别翻译
-        content.service.v1.CreateCategoryRequest:
-            type: object
-            properties:
-                data:
-                    $ref: '#/components/schemas/content.service.v1.Category'
-            description: 请求 - 创建类别
-        content.service.v1.CreatePageRequest:
-            type: object
-            properties:
-                data:
-                    $ref: '#/components/schemas/content.service.v1.Page'
-            description: 请求 - 创建页面
-        content.service.v1.CreatePostRequest:
-            type: object
-            properties:
-                data:
-                    $ref: '#/components/schemas/content.service.v1.Post'
-            description: 请求 - 创建帖子
-        content.service.v1.CreateSectionRequest:
-            type: object
-            properties:
-                data:
-                    $ref: '#/components/schemas/content.service.v1.Section'
-            description: 请求 - 创建区块
-        content.service.v1.CreateTagRequest:
-            type: object
-            properties:
-                data:
-                    $ref: '#/components/schemas/content.service.v1.Tag'
-            description: 请求 - 创建标签
-        content.service.v1.ListCategoryResponse:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.Category'
-                total:
-                    type: string
-            description: 回应 - 类别列表
-        content.service.v1.ListPageResponse:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.Page'
-                total:
-                    type: string
-            description: 回应 - 页面列表
-        content.service.v1.ListPostResponse:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.Post'
-                total:
-                    type: string
-            description: 回应 - 帖子列表
-        content.service.v1.ListSectionResponse:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.Section'
-                total:
-                    type: string
-            description: 回应 - 区块列表
-        content.service.v1.ListTagResponse:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.Tag'
-                total:
-                    type: string
-            description: 回应 - 标签列表
-        content.service.v1.Page:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 页面ID
-                    format: uint32
-                status:
-                    enum:
-                        - PAGE_STATUS_UNSPECIFIED
-                        - PAGE_STATUS_DRAFT
-                        - PAGE_STATUS_PUBLISHED
-                        - PAGE_STATUS_ARCHIVED
-                    type: string
-                    description: 页面状态
-                    format: enum
-                type:
-                    enum:
-                        - PAGE_TYPE_UNSPECIFIED
-                        - PAGE_TYPE_DEFAULT
-                        - PAGE_TYPE_HOME
-                        - PAGE_TYPE_ERROR_404
-                        - PAGE_TYPE_ERROR_500
-                        - PAGE_TYPE_CUSTOM
-                    type: string
-                    description: 页面类型（首页/404/普通页面等，影响路由和渲染逻辑）
-                    format: enum
-                editorType:
-                    enum:
-                        - EDITOR_TYPE_UNSPECIFIED
-                        - EDITOR_TYPE_MARKDOWN
-                        - EDITOR_TYPE_RICH_TEXT
-                        - EDITOR_TYPE_PLAIN_TEXT
-                        - EDITOR_TYPE_CODE
-                        - EDITOR_TYPE_JSON_BLOCK
-                        - EDITOR_TYPE_VISUAL_BUILDER
-                    type: string
-                    description: 编辑器类型
-                    format: enum
-                slug:
-                    type: string
-                    description: 页面唯一标识（默认语言，URL 友好，决定主路由）
-                authorId:
-                    type: integer
-                    description: 页面作者ID
-                    format: uint32
-                authorName:
-                    type: string
-                    description: 页面作者名称
-                disallowComment:
-                    type: boolean
-                    description: 是否禁止评论（默认 true，页面通常关闭评论）
-                redirectUrl:
-                    type: string
-                    description: 重定向 URL
-                showInNavigation:
-                    type: boolean
-                    description: 是否在主导航中显示（用于自动生成菜单）
-                sortOrder:
-                    type: integer
-                    description: 导航排序（数值越小越靠前）
-                    format: uint32
-                template:
-                    type: string
-                    description: 页面模板名称（如 'about-us', 'contact'，覆盖全局默认模板）
-                isCustomTemplate:
-                    type: boolean
-                    description: 是否使用自定义模板代码（而非预设模板）
-                customFields:
-                    type: object
-                    additionalProperties:
-                        type: string
-                    description: 自定义字段，键值对形式，便于扩展
-                translations:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.PageTranslation'
-                    description: 多语言翻译列表
-                availableLanguages:
-                    example: ["zh-CN", "en-US", "ja-JP"]
-                    type: array
-                    items:
-                        type: string
-                    description: 可用的语言代码列表（快速查询，避免遍历 translations）
-                parentId:
-                    type: integer
-                    description: 父页面ID（0 表示顶级页面，用于构建站点树形结构）
-                    format: uint32
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.Page'
-                    description: 子节点树
-                depth:
-                    type: integer
-                    description: 页面层级深度（0=顶级，1=二级，用于面包屑导航）
-                    format: int32
-                path:
-                    type: string
-                    description: 物化路径（如 '1/5/23'，便于层级查询）
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 页面
-        content.service.v1.PageTranslation:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 翻译记录ID
-                    format: uint32
-                pageId:
-                    type: integer
-                    description: 关联的页面ID
-                    format: uint32
-                languageCode:
-                    type: string
-                    description: 语言代码（ISO 639-1 标准）
-                title:
-                    type: string
-                    description: 页面标题
-                slug:
-                    type: string
-                    description: 语言特定的 slug（覆盖主表 slug，用于多语言路由，如中文用拼音）
-                thumbnail:
-                    type: string
-                    description: 缩略图
-                coverImage:
-                    type: string
-                    description: 封面图
-                fullPath:
-                    type: string
-                    description: 完整路径（如 /zh-CN/about-us），首页应为 '/' 或 '/zh-CN/'
-                seo:
-                    $ref: '#/components/schemas/content.service.v1.SeoMeta'
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 页面翻译
-        content.service.v1.Post:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 帖子ID
-                    format: uint32
-                status:
-                    enum:
-                        - POST_STATUS_UNSPECIFIED
-                        - POST_STATUS_DRAFT
-                        - POST_STATUS_PUBLISHED
-                        - POST_STATUS_SCHEDULED
-                        - POST_STATUS_TRASHED
-                    type: string
-                    description: 帖子状态
-                    format: enum
-                editorType:
-                    enum:
-                        - EDITOR_TYPE_UNSPECIFIED
-                        - EDITOR_TYPE_MARKDOWN
-                        - EDITOR_TYPE_RICH_TEXT
-                        - EDITOR_TYPE_PLAIN_TEXT
-                        - EDITOR_TYPE_CODE
-                        - EDITOR_TYPE_JSON_BLOCK
-                        - EDITOR_TYPE_VISUAL_BUILDER
-                    type: string
-                    description: 编辑器类型
-                    format: enum
-                code:
-                    type: string
-                    description: 唯一编码（必须唯一，建议使用英文）
-                disallowComment:
-                    type: boolean
-                    description: 帖子是否禁止评论
-                inProgress:
-                    type: boolean
-                    description: 帖子是否正在编辑中（如正在编辑则不允许发布，避免内容不完整）
-                autoSummary:
-                    type: boolean
-                    description: 是否自动生成摘要
-                isFeatured:
-                    type: boolean
-                    description: 是否推荐
-                sortOrder:
-                    type: integer
-                    description: 排序优先级（数值越小越靠前，同组内排序）
-                    format: uint32
-                authorId:
-                    type: integer
-                    description: 评论作者ID，0表示游客
-                    format: uint32
-                authorName:
-                    type: string
-                    description: 帖子作者名称（游客填写）
-                customFields:
-                    type: object
-                    additionalProperties:
-                        type: string
-                    description: 自定义字段，键值对形式，便于扩展
-                translations:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.PostTranslation'
-                    description: 多语言翻译列表
-                availableLanguages:
-                    example: ["zh-CN", "en-US", "ja-JP"]
-                    type: array
-                    items:
-                        type: string
-                    description: 可用的语言代码列表（快速查询，避免遍历 translations）
-                categoryIds:
-                    type: array
-                    items:
-                        type: integer
-                        format: uint32
-                    description: 关联的分类ID列表（多选）
-                tagIds:
-                    type: array
-                    items:
-                        type: integer
-                        format: uint32
-                    description: 关联的标签ID列表（多选）
-                passwordHash:
-                    type: string
-                    description: 密码哈希
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-                publishTime:
-                    type: string
-                    description: 发布时间
-                    format: date-time
-            description: 帖子
-        content.service.v1.PostTranslation:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 帖子翻译ID
-                    format: uint32
-                postId:
-                    type: integer
-                    description: 关联的帖子ID
-                    format: uint32
-                languageCode:
-                    type: string
-                    description: 语言代码
-                title:
-                    type: string
-                    description: 帖子标题
-                slug:
-                    type: string
-                    description: 语言特定 slug（覆盖主表 slug，如中文用拼音 /post/hou-duan）
-                summary:
-                    type: string
-                    description: 帖子摘要
-                content:
-                    type: string
-                    description: 帖子内容
-                originalContent:
-                    type: string
-                    description: 原始内容
-                thumbnail:
-                    type: string
-                    description: 缩略图（某些语言可能需要不同图片）
-                fullPath:
-                    type: string
-                    description: 完整路径（如 /zh-CN/blog/post-slug）
-                wordCount:
-                    type: integer
-                    description: 当前语言版本的字数（中文按字符数，英文按单词数）
-                    format: uint32
-                seo:
-                    $ref: '#/components/schemas/content.service.v1.SeoMeta'
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 帖子翻译
-        content.service.v1.SearchPostHit:
-            type: object
-            properties:
-                postId:
-                    type: integer
-                    description: 帖子 ID（用于后续 GetPost 详情查询）
-                    format: uint32
-                language:
-                    type: string
-                    description: 语言代码
-                title:
-                    type: string
-                    description: 标题（来自翻译，用于搜索结果展示）
-            description: 搜索命中条目（最小字段集）
-        content.service.v1.SearchPostsResponse:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.SearchPostHit'
-                total:
-                    type: integer
-                    format: int32
-            description: "回应 - 帖子搜索\r\n\r\n 仅返回最小字段集：post_id / language / title。\r\n 不含 content / tenant_id / status——这些字段不向前台暴露。"
-        content.service.v1.Section:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 区块ID
-                    format: uint32
-                pageId:
-                    type: integer
-                    description: 所属页面ID
-                    format: uint32
-                type:
-                    enum:
-                        - SECTION_TYPE_UNSPECIFIED
-                        - SECTION_TYPE_RICH_TEXT
-                        - SECTION_TYPE_MARKDOWN
-                        - SECTION_TYPE_TITLE
-                        - SECTION_TYPE_IMAGE
-                        - SECTION_TYPE_GALLERY
-                        - SECTION_TYPE_VIDEO
-                        - SECTION_TYPE_BUTTON
-                        - SECTION_TYPE_DIVIDER
-                        - SECTION_TYPE_SPACER
-                        - SECTION_TYPE_CODE
-                        - SECTION_TYPE_HTML
-                        - SECTION_TYPE_FORM
-                        - SECTION_TYPE_CAROUSEL
-                        - SECTION_TYPE_CUSTOM
-                    type: string
-                    description: 区块类型
-                    format: enum
-                name:
-                    type: string
-                    description: 区块名称（后台标识用，语言无关）
-                sortOrder:
-                    type: integer
-                    description: 排序（越小越靠前）
-                    format: uint32
-                config:
-                    type: object
-                    additionalProperties:
-                        type: string
-                    description: 区块样式/布局配置（边距、CSS class、列数等，语言无关）
-                translations:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.SectionTranslation'
-                    description: 多语言翻译列表
-                availableLanguages:
-                    example: ["zh-CN", "en-US", "ja-JP"]
-                    type: array
-                    items:
-                        type: string
-                    description: 可用的语言代码列表（快速查询，避免遍历 translations）
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 页面区块（语言无关的结构，内容随语言变化在翻译表中）
-        content.service.v1.SectionTranslation:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 翻译记录ID
-                    format: uint32
-                sectionId:
-                    type: integer
-                    description: 关联的区块ID
-                    format: uint32
-                languageCode:
-                    type: string
-                    description: 语言代码（ISO 639-1 标准）
-                content:
-                    type: object
-                    additionalProperties:
-                        type: string
-                    description: 区块内容（键值对，适配不同类型区块，随语言变化）
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 区块翻译（语言相关的内容）
-        content.service.v1.SeoMeta:
-            type: object
-            properties:
-                seoTitle:
-                    type: string
-                    description: SEO 标题（覆盖页面默认标题）
-                metaKeywords:
-                    type: string
-                    description: SEO 关键词
-                metaDescription:
-                    type: string
-                    description: SEO 描述
-                ogTitle:
-                    type: string
-                    description: OG 标题（覆盖页面默认标题）
-                ogDescription:
-                    type: string
-                    description: OG 描述
-                ogImage:
-                    type: string
-                    description: OG 图片 URL
-                canonicalUrl:
-                    type: string
-                    description: 规范 URL（SEO 用，格式：/{locale}/tag/{slug}，如 /zh-CN/tag/golang，允许自定义以覆盖默认生成的 URL）
-            description: SEO 元信息结构设计
-        content.service.v1.Tag:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 标签ID
-                    format: uint32
-                status:
-                    enum:
-                        - TAG_STATUS_UNSPECIFIED
-                        - TAG_STATUS_ACTIVE
-                        - TAG_STATUS_HIDDEN
-                        - TAG_STATUS_ARCHIVED
-                    type: string
-                    description: 标签状态
-                    format: enum
-                color:
-                    type: string
-                    description: 标签颜色（HEX 格式，如 '#3498db'，用于标签云/前端展示）
-                icon:
-                    type: string
-                    description: 标签图标（可选，支持图标名称如 'fas fa-code' 或 SVG URL）
-                group:
-                    type: string
-                    description: 标签分组（可选，如 '技术栈'、'行业'，用于后台分类管理，不影响前台展示）
-                sortOrder:
-                    type: integer
-                    description: 排序优先级（数值越小越靠前，同组内排序）
-                    format: uint32
-                isFeatured:
-                    type: boolean
-                    description: 是否推荐
-                code:
-                    type: string
-                    description: 唯一代码（如 slug、编码等，便于唯一标识标签）
-                postCount:
-                    type: integer
-                    description: 使用该标签的文章总数（跨所有语言，仅统计 status=ACTIVE 的文章）
-                    format: uint32
-                translations:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/content.service.v1.TagTranslation'
-                    description: 多语言翻译列表
-                availableLanguages:
-                    example: ["zh-CN", "en-US", "ja-JP"]
-                    type: array
-                    items:
-                        type: string
-                    description: 可用的语言代码列表（快速查询，避免遍历 translations）
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 标签
-        content.service.v1.TagTranslation:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 翻译记录ID
-                    format: uint32
-                tagId:
-                    type: integer
-                    description: 关联的标签ID
-                    format: uint32
-                languageCode:
-                    type: string
-                    description: 语言代码
-                name:
-                    type: string
-                    description: 标签名称
-                slug:
-                    type: string
-                    description: 标签别名（同语言下唯一，不同语言可重复，如 zh-CN 的 'go' 与 en-US 的 'go' 允许共存）
-                description:
-                    type: string
-                    description: 标签描述
-                coverImage:
-                    type: string
-                    description: 封面图
-                fullPath:
-                    type: string
-                    description: 完整路径（格式：/{locale}/tag/{slug}，如 /zh-CN/tag/golang）
-                seo:
-                    $ref: '#/components/schemas/content.service.v1.SeoMeta'
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 标签翻译
-        content.service.v1.UpdateCategoryRequest:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    format: uint32
-                data:
-                    $ref: '#/components/schemas/content.service.v1.Category'
-                updateMask:
-                    example: id,realname,username
-                    type: string
-                    description: 要更新的字段列表
-                    format: field-mask
-                allowMissing:
-                    type: boolean
-                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-            description: 请求 - 更新类别
-        content.service.v1.UpdatePageRequest:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    format: uint32
-                data:
-                    $ref: '#/components/schemas/content.service.v1.Page'
-                updateMask:
-                    example: id,realname,username
-                    type: string
-                    description: 要更新的字段列表
-                    format: field-mask
-                allowMissing:
-                    type: boolean
-                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-            description: 请求 - 更新页面
-        content.service.v1.UpdatePostRequest:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    format: uint32
-                data:
-                    $ref: '#/components/schemas/content.service.v1.Post'
-                updateMask:
-                    example: id,realname,username
-                    type: string
-                    description: 要更新的字段列表
-                    format: field-mask
-                allowMissing:
-                    type: boolean
-                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-            description: 请求 - 更新帖子
-        content.service.v1.UpdateSectionRequest:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    format: uint32
-                data:
-                    $ref: '#/components/schemas/content.service.v1.Section'
-                updateMask:
-                    example: id,realname,username
-                    type: string
-                    description: 要更新的字段列表
-                    format: field-mask
-                allowMissing:
-                    type: boolean
-                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-            description: 请求 - 更新区块
-        content.service.v1.UpdateTagRequest:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    format: uint32
-                data:
-                    $ref: '#/components/schemas/content.service.v1.Tag'
-                updateMask:
-                    example: id,realname,username
-                    type: string
-                    description: 要更新的字段列表
-                    format: field-mask
-                allowMissing:
-                    type: boolean
-                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-            description: 请求 - 更新标签
         identity.service.v1.BindContactRequest:
             type: object
             properties:
@@ -3571,6 +1368,191 @@ components:
                     type: string
                     description: 邮箱验证码
             description: 邮箱验证
+        identity.service.v1.ListOrgUnitResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/identity.service.v1.OrgUnit'
+                total:
+                    type: string
+            description: 获取组织单元列表 - 答复
+        identity.service.v1.ListUserResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/identity.service.v1.User'
+                total:
+                    type: string
+            description: 获取用户列表 - 答复
+        identity.service.v1.OrgUnit:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 组织单元ID
+                    format: uint32
+                name:
+                    type: string
+                    description: 组织单元名称
+                code:
+                    type: string
+                    description: 唯一编码（建议规则：部门编码 + 组织单元类型 + 序号，如 “FIN-LEADER-001”），用于数据同步和快速识别
+                type:
+                    enum:
+                        - COMPANY
+                        - DIVISION
+                        - DEPARTMENT
+                        - TEAM
+                        - PROJECT
+                        - COMMITTEE
+                        - REGION
+                        - SUBSIDIARY
+                        - BRANCH
+                        - OTHER
+                    type: string
+                    description: 组织类型
+                    format: enum
+                path:
+                    type: string
+                    description: 树路径
+                status:
+                    enum:
+                        - OFF
+                        - ON
+                    type: string
+                    description: 状态
+                    format: enum
+                sortOrder:
+                    type: integer
+                    description: 排序顺序，值越小越靠前
+                    format: uint32
+                leaderId:
+                    type: integer
+                    description: 负责人用户ID
+                    format: uint32
+                leaderName:
+                    type: string
+                    description: 负责人用户名称
+                tenantId:
+                    type: integer
+                    description: 租户ID
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
+                remark:
+                    type: string
+                    description: 备注
+                description:
+                    type: string
+                    description: 描述信息
+                businessScopes:
+                    type: array
+                    items:
+                        type: string
+                    description: 组织的业务范围/服务条线，支持多值，便于过滤、权限映射和同步
+                externalId:
+                    type: string
+                    description: 外部系统ID
+                isLegalEntity:
+                    type: boolean
+                    description: 是否为法定主体
+                registrationNumber:
+                    type: string
+                    description: 注册号/统一社会信用代码
+                taxId:
+                    type: string
+                    description: 税号
+                legalEntityOrgId:
+                    type: integer
+                    description: 关联的法定主体组织ID（若有）
+                    format: uint32
+                address:
+                    type: string
+                    description: 详细地址
+                phone:
+                    type: string
+                    description: 联系电话
+                email:
+                    type: string
+                    description: 联系邮箱
+                timezone:
+                    type: string
+                    description: 时区，例如：Asia/Shanghai
+                country:
+                    type: string
+                    description: 国家/地区代码
+                latitude:
+                    type: number
+                    description: 纬度
+                    format: double
+                longitude:
+                    type: number
+                    description: 经度
+                    format: double
+                startAt:
+                    type: string
+                    description: 生效开始时间（UTC）
+                    format: date-time
+                endAt:
+                    type: string
+                    description: 生效结束时间（UTC）
+                    format: date-time
+                attributes:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: 自定义扩展属性
+                permissionTags:
+                    type: array
+                    items:
+                        type: string
+                    description: 与权限/角色映射的标签
+                contactUserId:
+                    type: integer
+                    description: 业务联系人用户ID
+                    format: uint32
+                contactUserName:
+                    type: string
+                    description: 业务联系人用户名称
+                parentId:
+                    type: integer
+                    description: 父节点ID
+                    format: uint32
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/identity.service.v1.OrgUnit'
+                    description: 子节点树
+                createdBy:
+                    type: integer
+                    description: 创建者用户ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者用户ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 组织单元
         identity.service.v1.PhoneVerification:
             required:
                 - code
@@ -3803,127 +1785,6 @@ components:
                 verificationId:
                     type: string
                     description: 服务端生成的验证码会话ID（可选）
-        interaction.service.v1.CountMap:
-            type: object
-            properties:
-                counts:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/interaction.service.v1.MetricCount'
-            description: 单个目标下所有请求 metric 的计数集合。
-        interaction.service.v1.GetCountsRequest:
-            type: object
-            properties:
-                targetType:
-                    enum:
-                        - TARGET_TYPE_UNSPECIFIED
-                        - TARGET_TYPE_POST
-                        - TARGET_TYPE_COMMENT
-                    type: string
-                    format: enum
-                targetIds:
-                    type: array
-                    items:
-                        type: integer
-                        format: uint32
-                metrics:
-                    type: array
-                    items:
-                        enum:
-                            - COUNTER_METRIC_UNSPECIFIED
-                            - COUNTER_METRIC_LIKE
-                            - COUNTER_METRIC_WATCH
-                        type: string
-                        format: enum
-        interaction.service.v1.GetCountsResponse:
-            type: object
-            properties:
-                counts:
-                    type: object
-                    additionalProperties:
-                        $ref: '#/components/schemas/interaction.service.v1.CountMap'
-            description: |-
-                target_id → 该目标下各 metric 的计数集合。
-                 未在 counter 表中记录的 (target, metric) 组合不出现在响应中，前端按 0 兜底。
-        interaction.service.v1.GetInteractionStatusRequest:
-            type: object
-            properties:
-                targetType:
-                    enum:
-                        - TARGET_TYPE_UNSPECIFIED
-                        - TARGET_TYPE_POST
-                        - TARGET_TYPE_COMMENT
-                    type: string
-                    format: enum
-                targetIds:
-                    type: array
-                    items:
-                        type: integer
-                        format: uint32
-        interaction.service.v1.GetInteractionStatusResponse:
-            type: object
-            properties:
-                statuses:
-                    type: object
-                    additionalProperties:
-                        $ref: '#/components/schemas/interaction.service.v1.InteractionStatus'
-        interaction.service.v1.InteractionStatus:
-            type: object
-            properties:
-                liked:
-                    type: boolean
-                watched:
-                    type: boolean
-        interaction.service.v1.LikeRequest:
-            type: object
-            properties:
-                targetType:
-                    enum:
-                        - TARGET_TYPE_UNSPECIFIED
-                        - TARGET_TYPE_POST
-                        - TARGET_TYPE_COMMENT
-                    type: string
-                    format: enum
-                targetId:
-                    type: integer
-                    format: uint32
-        interaction.service.v1.LikeResponse:
-            type: object
-            properties:
-                liked:
-                    type: boolean
-                likeCount:
-                    type: integer
-                    format: int32
-        interaction.service.v1.MetricCount:
-            type: object
-            properties:
-                metric:
-                    enum:
-                        - COUNTER_METRIC_UNSPECIFIED
-                        - COUNTER_METRIC_LIKE
-                        - COUNTER_METRIC_WATCH
-                    type: string
-                    format: enum
-                count:
-                    type: string
-            description: |-
-                单个 (target, metric) 的计数条目。用于 GetCountsResponse 的内层结构。
-                 注意：proto3 不允许枚举类型作 map key，故内层用 repeated MetricCount 而非 map<CounterMetric,int64>。
-        interaction.service.v1.WatchRequest:
-            type: object
-            properties:
-                postId:
-                    type: integer
-                    format: uint32
-        interaction.service.v1.WatchResponse:
-            type: object
-            properties:
-                watched:
-                    type: boolean
-                watchCount:
-                    type: integer
-                    format: int32
         internal_message.service.v1.InternalMessage:
             type: object
             properties:
@@ -4115,6 +1976,75 @@ components:
                     type: string
                     description: 审批意见
             description: 审批任务 - 请求
+        oa.service.v1.BusinessTripApplication:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 申请单ID
+                    format: uint32
+                title:
+                    type: string
+                    description: 出差事由标题
+                destination:
+                    type: string
+                    description: 出差目的地
+                startDate:
+                    type: string
+                    description: 开始日期
+                    format: date-time
+                endDate:
+                    type: string
+                    description: 结束日期（含）
+                    format: date-time
+                itinerary:
+                    type: string
+                    description: 行程安排说明
+                applicantName:
+                    type: string
+                    description: 申请人姓名（服务端回填）
+                tripStatus:
+                    enum:
+                        - PENDING
+                        - APPROVED
+                        - REJECTED
+                        - WITHDRAWN
+                    type: string
+                    description: 申请单状态
+                    format: enum
+                instanceId:
+                    type: integer
+                    description: 关联工作流实例ID
+                    format: uint32
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                createdBy:
+                    type: integer
+                    description: 申请人用户ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者用户ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 出差申请单
         oa.service.v1.CheckInRequest:
             type: object
             properties:
@@ -4455,6 +2385,16 @@ components:
                 total:
                     type: string
             description: 查询记录 - 回应
+        oa.service.v1.ListBusinessTripApplicationsResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/oa.service.v1.BusinessTripApplication'
+                total:
+                    type: string
+            description: 查询出差申请 - 回应
         oa.service.v1.ListExpenseApplicationsResponse:
             type: object
             properties:
@@ -4495,6 +2435,36 @@ components:
                 total:
                     type: string
             description: 查询请假类型列表 - 回应
+        oa.service.v1.ListOutingApplicationsResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/oa.service.v1.OutingApplication'
+                total:
+                    type: string
+            description: 查询外出申请 - 回应
+        oa.service.v1.ListOvertimeApplicationsResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/oa.service.v1.OvertimeApplication'
+                total:
+                    type: string
+            description: 查询加班申请 - 回应
+        oa.service.v1.ListSealApplicationsResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/oa.service.v1.SealApplication'
+                total:
+                    type: string
+            description: 查询用印申请 - 回应
         oa.service.v1.MyTaskItem:
             type: object
             properties:
@@ -4514,6 +2484,213 @@ components:
                     type: string
                     description: 状态标签
             description: 我的任务列表项
+        oa.service.v1.OutingApplication:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 申请单ID
+                    format: uint32
+                reason:
+                    type: string
+                    description: 外出事由
+                destination:
+                    type: string
+                    description: 外出目的地
+                startTime:
+                    type: string
+                    description: 外出开始时间
+                    format: date-time
+                endTime:
+                    type: string
+                    description: 外出结束时间
+                    format: date-time
+                applicantName:
+                    type: string
+                    description: 申请人姓名（服务端回填）
+                outingStatus:
+                    enum:
+                        - PENDING
+                        - APPROVED
+                        - REJECTED
+                        - WITHDRAWN
+                    type: string
+                    description: 申请单状态
+                    format: enum
+                instanceId:
+                    type: integer
+                    description: 关联工作流实例ID
+                    format: uint32
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                createdBy:
+                    type: integer
+                    description: 申请人用户ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者用户ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 外出申请单
+        oa.service.v1.OvertimeApplication:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 申请单ID
+                    format: uint32
+                reason:
+                    type: string
+                    description: 加班事由
+                startTime:
+                    type: string
+                    description: 加班开始时间
+                    format: date-time
+                endTime:
+                    type: string
+                    description: 加班结束时间
+                    format: date-time
+                compensationType:
+                    enum:
+                        - COMP_LEAVE
+                        - OVERTIME_PAY
+                    type: string
+                    description: 补偿方式（调休/加班费）
+                    format: enum
+                applicantName:
+                    type: string
+                    description: 申请人姓名（服务端回填）
+                overtimeStatus:
+                    enum:
+                        - PENDING
+                        - APPROVED
+                        - REJECTED
+                        - WITHDRAWN
+                    type: string
+                    description: 申请单状态
+                    format: enum
+                instanceId:
+                    type: integer
+                    description: 关联工作流实例ID
+                    format: uint32
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                createdBy:
+                    type: integer
+                    description: 申请人用户ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者用户ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 加班申请单
+        oa.service.v1.SealApplication:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 申请单ID
+                    format: uint32
+                purpose:
+                    type: string
+                    description: 用印事由
+                sealType:
+                    enum:
+                        - OFFICIAL_SEAL
+                        - CONTRACT_SEAL
+                        - FINANCE_SEAL
+                        - LEGAL_SEAL
+                    type: string
+                    description: 印章类型
+                    format: enum
+                fileCount:
+                    type: integer
+                    description: 用印文件份数
+                    format: int32
+                recipient:
+                    type: string
+                    description: 收件方
+                applicantName:
+                    type: string
+                    description: 申请人姓名（服务端回填）
+                sealStatus:
+                    enum:
+                        - PENDING
+                        - APPROVED
+                        - REJECTED
+                        - WITHDRAWN
+                    type: string
+                    description: 申请单状态
+                    format: enum
+                instanceId:
+                    type: integer
+                    description: 关联工作流实例ID
+                    format: uint32
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                createdBy:
+                    type: integer
+                    description: 申请人用户ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者用户ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 用印申请单
         oa.service.v1.SubmitApplyRequest:
             type: object
             properties:
@@ -4543,6 +2720,39 @@ components:
                     description: 实例ID
                     format: uint32
             description: 提交申请 - 回应
+        oa.service.v1.SubmitBusinessTripApplicationRequest:
+            type: object
+            properties:
+                title:
+                    type: string
+                    description: 出差事由标题
+                destination:
+                    type: string
+                    description: 出差目的地
+                startDate:
+                    type: string
+                    description: 开始日期
+                    format: date-time
+                endDate:
+                    type: string
+                    description: 结束日期（含）
+                    format: date-time
+                itinerary:
+                    type: string
+                    description: 行程安排说明
+            description: 提交出差申请 - 请求
+        oa.service.v1.SubmitBusinessTripApplicationResponse:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 申请单ID
+                    format: uint32
+                instanceId:
+                    type: integer
+                    description: 工作流实例ID
+                    format: uint32
+            description: 提交出差申请 - 回应
         oa.service.v1.SubmitExpenseApplicationRequest:
             type: object
             properties:
@@ -4612,6 +2822,105 @@ components:
                     description: 工作流实例ID
                     format: uint32
             description: 提交请假申请 - 回应
+        oa.service.v1.SubmitOutingApplicationRequest:
+            type: object
+            properties:
+                reason:
+                    type: string
+                    description: 外出事由
+                destination:
+                    type: string
+                    description: 外出目的地
+                startTime:
+                    type: string
+                    description: 外出开始时间
+                    format: date-time
+                endTime:
+                    type: string
+                    description: 外出结束时间
+                    format: date-time
+            description: 提交外出申请 - 请求
+        oa.service.v1.SubmitOutingApplicationResponse:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 申请单ID
+                    format: uint32
+                instanceId:
+                    type: integer
+                    description: 工作流实例ID
+                    format: uint32
+            description: 提交外出申请 - 回应
+        oa.service.v1.SubmitOvertimeApplicationRequest:
+            type: object
+            properties:
+                reason:
+                    type: string
+                    description: 加班事由
+                startTime:
+                    type: string
+                    description: 加班开始时间
+                    format: date-time
+                endTime:
+                    type: string
+                    description: 加班结束时间
+                    format: date-time
+                compensationType:
+                    enum:
+                        - COMP_LEAVE
+                        - OVERTIME_PAY
+                    type: string
+                    description: 补偿方式（调休/加班费）
+                    format: enum
+            description: 提交加班申请 - 请求
+        oa.service.v1.SubmitOvertimeApplicationResponse:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 申请单ID
+                    format: uint32
+                instanceId:
+                    type: integer
+                    description: 工作流实例ID
+                    format: uint32
+            description: 提交加班申请 - 回应
+        oa.service.v1.SubmitSealApplicationRequest:
+            type: object
+            properties:
+                purpose:
+                    type: string
+                    description: 用印事由
+                sealType:
+                    enum:
+                        - OFFICIAL_SEAL
+                        - CONTRACT_SEAL
+                        - FINANCE_SEAL
+                        - LEGAL_SEAL
+                    type: string
+                    description: 印章类型
+                    format: enum
+                fileCount:
+                    type: integer
+                    description: 用印文件份数
+                    format: int32
+                recipient:
+                    type: string
+                    description: 收件方
+            description: 提交用印申请 - 请求
+        oa.service.v1.SubmitSealApplicationResponse:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 申请单ID
+                    format: uint32
+                instanceId:
+                    type: integer
+                    description: 工作流实例ID
+                    format: uint32
+            description: 提交用印申请 - 回应
         oa.service.v1.WithdrawApplyRequest:
             type: object
             properties:
@@ -4726,182 +3035,6 @@ components:
                     description: 删除时间
                     format: date-time
             description: 审批任务
-        site.service.v1.CreateNavigationRequest:
-            type: object
-            properties:
-                data:
-                    $ref: '#/components/schemas/site.service.v1.Navigation'
-            description: 请求 - 创建导航
-        site.service.v1.ListNavigationResponse:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/site.service.v1.Navigation'
-                total:
-                    type: string
-            description: 回应 - 导航列表
-        site.service.v1.Navigation:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 导航ID
-                    format: uint32
-                name:
-                    type: string
-                    description: 导航名称（如'主导航'、'页脚'）
-                location:
-                    enum:
-                        - NAVIGATION_LOCATION_UNSPECIFIED
-                        - HEADER
-                        - FOOTER
-                        - SIDEBAR
-                        - MOBILE
-                        - TOP_BAR
-                        - OFFCANVAS
-                    type: string
-                    description: 渲染位置
-                    format: enum
-                locale:
-                    type: string
-                    description: 关联的语言区域（如 'zh-CN', 'en-US'），空值表示默认/通用导航；仅用于后台管理筛选，不影响前端渲染逻辑
-                isActive:
-                    type: boolean
-                    description: 是否启用（禁用后前端不渲染）
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/site.service.v1.NavigationItem'
-                    description: 导航项列表（按 sort_order 排序）
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 导航
-        site.service.v1.NavigationItem:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 导航项目项ID
-                    format: uint32
-                navigationId:
-                    type: integer
-                    description: 所属导航项目菜单ID
-                    format: uint32
-                title:
-                    type: string
-                    description: 显示文本（单语言，多语言通过多套导航项目实现）
-                description:
-                    type: string
-                    description: 描述文本（用于悬停提示或移动端）
-                icon:
-                    type: string
-                    description: 图标（支持 Font Awesome 格式如 'fas fa-home'，或 SVG URL）
-                url:
-                    type: string
-                    description: 目标 URL（link_type=CUSTOM/EXTERNAL 时必填；关联类型可自动生成）
-                linkType:
-                    enum:
-                        - LINK_TYPE_UNSPECIFIED
-                        - LINK_TYPE_CUSTOM
-                        - LINK_TYPE_POST
-                        - LINK_TYPE_PAGE
-                        - LINK_TYPE_CATEGORY
-                        - LINK_TYPE_EXTERNAL
-                    type: string
-                    description: 链接类型
-                    format: enum
-                objectId:
-                    type: integer
-                    description: 关联对象ID（link_type=POST/PAGE/CATEGORY 时使用）
-                    format: uint32
-                sortOrder:
-                    type: integer
-                    description: 排序优先级（数值越小越靠前）
-                    format: uint32
-                isOpenNewTab:
-                    type: boolean
-                    description: 是否在新标签页打开
-                isInvalid:
-                    type: boolean
-                    description: 是否无效（如关联的文章/页面被删除或设置为不可见，前端可根据此字段决定是否隐藏该导航项目项）
-                requiredPermission:
-                    type: string
-                    description: 访问权限标识（如 view_admin_panel，前端可根据用户权限决定是否显示该导航项目项）
-                parentId:
-                    type: integer
-                    description: 父菜单项ID（0 表示顶级项）
-                    format: uint32
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/site.service.v1.NavigationItem'
-                    description: 子节点树
-                createdBy:
-                    type: integer
-                    description: 创建者用户ID
-                    format: uint32
-                updatedBy:
-                    type: integer
-                    description: 更新者用户ID
-                    format: uint32
-                deletedBy:
-                    type: integer
-                    description: 删除者用户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-                updatedAt:
-                    type: string
-                    description: 更新时间
-                    format: date-time
-                deletedAt:
-                    type: string
-                    description: 删除时间
-                    format: date-time
-            description: 导航项目项
-        site.service.v1.UpdateNavigationRequest:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    format: uint32
-                data:
-                    $ref: '#/components/schemas/site.service.v1.Navigation'
-                updateMask:
-                    example: id,realname,username
-                    type: string
-                    description: 要更新的字段列表
-                    format: field-mask
-                allowMissing:
-                    type: boolean
-                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-            description: 请求 - 更新导航
         storage.service.v1.DownloadFileResponse:
             type: object
             properties:
@@ -5024,31 +3157,27 @@ tags:
       description: OA 考勤参与服务（app 边端，移动端）
     - name: AuthenticationService
       description: 用户前台登录认证服务
-    - name: CategoryService
-      description: 类别服务
-    - name: CommentService
-      description: 评论服务
+    - name: BusinessTripService
+      description: OA 出差申请参与服务（app 边端，移动端）
     - name: ExpenseService
       description: OA 报销参与服务（app 边端，移动端）
     - name: FileTransferService
       description: 文件传输服务
-    - name: InteractionService
-      description: 交互服务（点赞/收藏）
     - name: InternalMessageService
       description: 站内信参与服务（app 边端，移动端，只读收件箱）
     - name: LeaveService
       description: OA 请假参与服务（app 边端，移动端）
-    - name: NavigationService
-      description: 导航服务
-    - name: PageService
-      description: 页面服务
-    - name: PostService
-      description: 帖子服务
-    - name: SectionService
-      description: 页面区块服务
-    - name: TagService
-      description: 标签服务
+    - name: OrgUnitService
+      description: 组织单元查询服务（app 边端，移动端通讯录用，只读）
+    - name: OutingService
+      description: OA 外出申请参与服务（app 边端，移动端）
+    - name: OvertimeService
+      description: OA 加班申请参与服务（app 边端，移动端）
+    - name: SealApplicationService
+      description: OA 用印申请参与服务（app 边端，移动端）
     - name: UserProfileService
       description: 用户个人资料服务
+    - name: UserService
+      description: 通讯录用户查询服务（app 边端，移动端通讯录用，只读，带脱敏）
     - name: WorkflowService
       description: OA 工作流参与服务（app 边端，移动端）

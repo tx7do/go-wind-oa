@@ -28,15 +28,15 @@
     "multiTenant": "Multi-Tenant"
   },
   "footer": {
-    "copyright": "Copyright © 2021 - 2026 GoWind"
+    "copyright": "Copyright © 2021 - 2026 Fengxing"
   },
   "login": {
-    "headerTitle": "GoWind Admin",
-    "brandTitle": "GoWind Admin System",
-    "brandDesc": "Out-of-the-box enterprise-level admin system",
+    "headerTitle": "Fengxing Office Admin",
+    "brandTitle": "Fengxing Office Admin",
+    "brandDesc": "Out-of-the-box collaborative office management platform",
     "welcomeTitle": "Welcome Back",
     "welcomeSubtitle": "Please enter your account information to start managing your system",
-    "copyright": "Copyright © 2026 GoWind",
+    "copyright": "Copyright © 2026 Fengxing",
     "login": "Login",
     "register": "Register",
     "username": "Username",

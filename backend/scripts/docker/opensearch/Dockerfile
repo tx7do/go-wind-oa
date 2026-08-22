@@ -1,4 +1,4 @@
-# go-wind-cms 自定义 OpenSearch 镜像
+# go-wind-oa 自定义 OpenSearch 镜像
 #
 # 唯一目的：在官方 opensearchproject/opensearch 镜像之上安装 analysis-smartcn
 # 中文分词器插件，供前台全文检索（posts 索引，title/summary/content 字段）使用。

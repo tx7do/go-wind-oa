@@ -33,11 +33,11 @@ type OrgUnitServiceHTTPServer interface {
 
 func RegisterOrgUnitServiceHTTPServer(s *http.Server, srv OrgUnitServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/app/v1/org-units", _OrgUnitService_List3_HTTP_Handler(srv))
-	r.GET("/app/v1/org-units/{id}", _OrgUnitService_Get3_HTTP_Handler(srv))
+	r.GET("/app/v1/org-units", _OrgUnitService_List0_HTTP_Handler(srv))
+	r.GET("/app/v1/org-units/{id}", _OrgUnitService_Get0_HTTP_Handler(srv))
 }
 
-func _OrgUnitService_List3_HTTP_Handler(srv OrgUnitServiceHTTPServer) func(ctx http.Context) error {
+func _OrgUnitService_List0_HTTP_Handler(srv OrgUnitServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -56,7 +56,7 @@ func _OrgUnitService_List3_HTTP_Handler(srv OrgUnitServiceHTTPServer) func(ctx h
 	}
 }
 
-func _OrgUnitService_Get3_HTTP_Handler(srv OrgUnitServiceHTTPServer) func(ctx http.Context) error {
+func _OrgUnitService_Get0_HTTP_Handler(srv OrgUnitServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetOrgUnitRequest
 		if err := ctx.BindQuery(&in); err != nil {

@@ -18,15 +18,10 @@ import (
 	"github.com/tx7do/kratos-bootstrap/rpc"
 
 	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
-	commentV1 "go-wind-oa/api/gen/go/comment/service/v1"
-	contentV1 "go-wind-oa/api/gen/go/content/service/v1"
 	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
 	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
-	interactionV1 "go-wind-oa/api/gen/go/interaction/service/v1"
-	mediaV1 "go-wind-oa/api/gen/go/media/service/v1"
 	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
 	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
-	siteV1 "go-wind-oa/api/gen/go/site/service/v1"
 	storageV1 "go-wind-oa/api/gen/go/storage/service/v1"
 
 	"go-wind-oa/pkg/oss"
@@ -248,94 +243,4 @@ func NewFileServiceClient(ctx *bootstrap.Context, r registry.Discovery) storageV
 	}
 
 	return storageV1.NewFileServiceClient(cli)
-}
-
-func NewCommentServiceClient(ctx *bootstrap.Context, r registry.Discovery) commentV1.CommentServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return commentV1.NewCommentServiceClient(cli)
-}
-
-func NewInteractionServiceClient(ctx *bootstrap.Context, r registry.Discovery) interactionV1.InteractionServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return interactionV1.NewInteractionServiceClient(cli)
-}
-
-func NewCategoryServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.CategoryServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return contentV1.NewCategoryServiceClient(cli)
-}
-
-func NewPageServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.PageServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return contentV1.NewPageServiceClient(cli)
-}
-
-func NewSectionServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.SectionServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return contentV1.NewSectionServiceClient(cli)
-}
-
-func NewPostServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.PostServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return contentV1.NewPostServiceClient(cli)
-}
-
-func NewTagServiceClient(ctx *bootstrap.Context, r registry.Discovery) contentV1.TagServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return contentV1.NewTagServiceClient(cli)
-}
-
-func NewNavigationServiceClient(ctx *bootstrap.Context, r registry.Discovery) siteV1.NavigationServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return siteV1.NewNavigationServiceClient(cli)
-}
-
-func NewSiteSettingServiceClient(ctx *bootstrap.Context, r registry.Discovery) siteV1.SiteSettingServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return siteV1.NewSiteSettingServiceClient(cli)
-}
-
-func NewMediaAssetServiceClient(ctx *bootstrap.Context, r registry.Discovery) mediaV1.MediaAssetServiceClient {
-	cli, err := rpc.CreateGrpcClient(ctx.Context(), r, serviceid.NewDiscoveryName(serviceid.CoreService), ctx.GetConfig())
-	if err != nil {
-		return nil
-	}
-
-	return mediaV1.NewMediaAssetServiceClient(cli)
 }

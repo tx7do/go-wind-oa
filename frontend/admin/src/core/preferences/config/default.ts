@@ -19,7 +19,7 @@ const defaultPreferences: Preferences = {
     layout: "sidebar-nav",
     locale: "zh-CN",
     loginExpiredMode: "page",
-    name: "GoWind Admin",
+    name: "风行协同办公管理平台",
     version: "0.0.0",
     preferencesButtonPosition: "auto",
     watermark: false,
@@ -32,7 +32,7 @@ const defaultPreferences: Preferences = {
     styleType: "normal",
   },
   copyright: {
-    companyName: "GoWind",
+    companyName: "Fengxing",
     companySiteLink: "https://www.gowind.cloud",
     date: "2026",
     enable: true,

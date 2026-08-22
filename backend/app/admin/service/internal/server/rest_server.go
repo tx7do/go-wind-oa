@@ -25,8 +25,8 @@ import (
 
 	"go-wind-oa/pkg/metadata"
 	"go-wind-oa/pkg/middleware/auth"
-	applogging "go-wind-oa/pkg/middleware/logging"
 	entmiddleware "go-wind-oa/pkg/middleware/ent"
+	applogging "go-wind-oa/pkg/middleware/logging"
 )
 
 // NewRestMiddleware 创建中间件
@@ -114,8 +114,6 @@ func NewRestServer(
 	fileSvc *service.FileService,
 	fileTransferService *service.FileTransferService,
 
-	translatorService *service.TranslatorService,
-
 	internalMessageService *service.InternalMessageService,
 	internalMessageCategoryService *service.InternalMessageCategoryService,
 	internalMessageRecipientService *service.InternalMessageRecipientService,
@@ -134,22 +132,6 @@ func NewRestServer(
 	policyEvaluationLogService *service.PolicyEvaluationLogService,
 	operationAuditLogService *service.OperationAuditLogService,
 	permissionAuditLogService *service.PermissionAuditLogService,
-
-	commentService *service.CommentService,
-	interactionAdminService *service.InteractionAdminService,
-
-	postService *service.PostService,
-	categoryService *service.CategoryService,
-	tagService *service.TagService,
-	pageService *service.PageService,
-	sectionService *service.SectionService,
-
-	siteService *service.SiteService,
-	siteSettingService *service.SiteSettingService,
-	navigationService *service.NavigationService,
-	navigationItemService *service.NavigationItemService,
-
-	mediaAssetService *service.MediaAssetService,
 ) *http.Server {
 	cfg := ctx.GetConfig()
 
@@ -203,33 +185,16 @@ func NewRestServer(
 	adminV1.RegisterOutingServiceHTTPServer(srv, outingService)
 	adminV1.RegisterAttendanceServiceHTTPServer(srv, attendanceService)
 
-	adminV1.RegisterTranslatorServiceHTTPServer(srv, translatorService)
-
 	// 注册文件传输服务，用于处理文件上传下载等功能
 	// TODO 它不能够使用代码生成器生成的Handler，需要手动注册。代码生成器生成的Handler无法处理文件上传下载的请求。
 	// 但，代码生成器生成代码可以提供给OpenAPI使用。
 	registerFileTransferServiceHandler(srv, fileTransferService)
 	adminV1.RegisterFileServiceHTTPServer(srv, fileSvc)
 
-	adminV1.RegisterPostServiceHTTPServer(srv, postService)
-	adminV1.RegisterCategoryServiceHTTPServer(srv, categoryService)
-	adminV1.RegisterTagServiceHTTPServer(srv, tagService)
-	adminV1.RegisterCommentServiceHTTPServer(srv, commentService)
-	adminV1.RegisterInteractionAdminServiceHTTPServer(srv, interactionAdminService)
-	adminV1.RegisterPageServiceHTTPServer(srv, pageService)
-	adminV1.RegisterSectionServiceHTTPServer(srv, sectionService)
-
-	adminV1.RegisterSiteSettingServiceHTTPServer(srv, siteSettingService)
-	adminV1.RegisterSiteServiceHTTPServer(srv, siteService)
-	adminV1.RegisterNavigationServiceHTTPServer(srv, navigationService)
-	adminV1.RegisterNavigationItemServiceHTTPServer(srv, navigationItemService)
-
-	adminV1.RegisterMediaAssetServiceHTTPServer(srv, mediaAssetService)
-
 	if cfg.GetServer().GetRest().GetEnableSwagger() {
 		swaggerUI.RegisterSwaggerUIServerWithOption(
 			srv,
-			swaggerUI.WithTitle("GoWind Content Hub Admin API"),
+			swaggerUI.WithTitle("GoWind OA Admin API"),
 			swaggerUI.WithMemoryData(assets.OpenApiData, "yaml"),
 		)
 	}

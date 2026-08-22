@@ -30,10 +30,10 @@ type UserServiceHTTPServer interface {
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/app/v1/directory/users", _UserService_List8_HTTP_Handler(srv))
+	r.GET("/app/v1/directory/users", _UserService_List1_HTTP_Handler(srv))
 }
 
-func _UserService_List8_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+func _UserService_List1_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {

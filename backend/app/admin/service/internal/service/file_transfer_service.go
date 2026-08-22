@@ -15,7 +15,6 @@ import (
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	adminV1 "go-wind-oa/api/gen/go/admin/service/v1"
-	mediaV1 "go-wind-oa/api/gen/go/media/service/v1"
 	storageV1 "go-wind-oa/api/gen/go/storage/service/v1"
 
 	"go-wind-oa/pkg/middleware/auth"
@@ -30,21 +29,18 @@ type FileTransferService struct {
 
 	mc *oss.MinIOClient
 
-	fileServiceClient       storageV1.FileServiceClient
-	mediaAssetServiceClient mediaV1.MediaAssetServiceClient
+	fileServiceClient storageV1.FileServiceClient
 }
 
 func NewFileTransferService(
 	ctx *bootstrap.Context,
 	mc *oss.MinIOClient,
 	fileServiceClient storageV1.FileServiceClient,
-	mediaAssetServiceClient mediaV1.MediaAssetServiceClient,
 ) *FileTransferService {
 	return &FileTransferService{
-		log:                     ctx.NewLoggerHelper("file-transfer/service/admin-service"),
-		mc:                      mc,
-		fileServiceClient:       fileServiceClient,
-		mediaAssetServiceClient: mediaAssetServiceClient,
+		log:               ctx.NewLoggerHelper("file-transfer/service/admin-service"),
+		mc:                mc,
+		fileServiceClient: fileServiceClient,
 	}
 }
 
@@ -315,161 +311,4 @@ func (s *FileTransferService) mimeTypeToBucketName(mimeType string) string {
 	}
 
 	return "files"
-}
-
-func (s *FileTransferService) mimeTypeToAssetType(mimeType string) *mediaV1.MediaAsset_AssetType {
-	if mimeType == "" {
-		return trans.Ptr(mediaV1.MediaAsset_ASSET_TYPE_UNSPECIFIED)
-	}
-
-	mt := strings.ToLower(strings.TrimSpace(mimeType))
-	if idx := strings.Index(mt, ";"); idx >= 0 {
-		mt = strings.TrimSpace(mt[:idx])
-	}
-
-	if strings.HasPrefix(mt, "image/") {
-		return trans.Ptr(mediaV1.MediaAsset_ASSET_TYPE_IMAGE)
-	}
-
-	if strings.HasPrefix(mt, "video/") {
-		return trans.Ptr(mediaV1.MediaAsset_ASSET_TYPE_VIDEO)
-	}
-
-	if strings.HasPrefix(mt, "audio/") {
-		return trans.Ptr(mediaV1.MediaAsset_ASSET_TYPE_AUDIO)
-	}
-
-	if s.isArchiveMimeType(mt) {
-		return trans.Ptr(mediaV1.MediaAsset_ASSET_TYPE_ARCHIVE)
-	}
-
-	if s.isDocumentMimeType(mt) {
-		return trans.Ptr(mediaV1.MediaAsset_ASSET_TYPE_DOCUMENT)
-	}
-
-	return trans.Ptr(mediaV1.MediaAsset_ASSET_TYPE_OTHER)
-}
-
-func (s *FileTransferService) isDocumentMimeType(mimeType string) bool {
-	if strings.HasPrefix(mimeType, "application/pdf") {
-		return true
-	}
-
-	if strings.HasPrefix(mimeType, "application/msword") ||
-		strings.HasPrefix(mimeType, "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-		return true
-	}
-
-	if strings.HasPrefix(mimeType, "application/vnd.ms-excel") ||
-		strings.HasPrefix(mimeType, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-		return true
-	}
-
-	if strings.HasPrefix(mimeType, "application/vnd.ms-powerpoint") ||
-		strings.HasPrefix(mimeType, "application/vnd.openxmlformats-officedocument.presentationml.presentation") {
-		return true
-	}
-
-	return false
-}
-
-func (s *FileTransferService) isArchiveMimeType(mimeType string) bool {
-	switch mimeType {
-	case "application/zip",
-		"application/x-zip-compressed",
-		"multipart/x-zip",
-		"application/x-7z-compressed",
-		"application/x-tar",
-		"application/gzip",
-		"application/x-gzip",
-		"application/x-bzip2",
-		"application/x-bzip",
-		"application/x-xz",
-		"application/vnd.rar",
-		"application/x-rar-compressed",
-		"application/java-archive",
-		"application/zstd",
-		"application/x-zstd":
-		return true
-	default:
-		return false
-	}
-}
-
-func (s *FileTransferService) UploadMediaAsset(ctx context.Context, req *storageV1.UploadMediaAssetRequest) (*storageV1.UploadFileResponse, error) {
-	// 流式上传：reader 由 handler 通过 context 注入，不再从 proto 的 []byte 字段取。
-	reader, objectSize := oss.UploadReaderFromContext(ctx)
-	if reader == nil || objectSize <= 0 {
-		return nil, storageV1.ErrorUploadFailed("unknown file")
-	}
-
-	// 获取操作人信息
-	operator, err := auth.FromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	req.TenantId = trans.Ptr(operator.GetTenantId())
-	req.UserId = trans.Ptr(operator.GetUserId())
-
-	var bucketName = s.mimeTypeToBucketName(req.GetMimeType())
-
-	info, storagePath, downloadUrl, err := s.mc.UploadFile(
-		ctx,
-		bucketName,
-		"",
-		req.GetMimeType(),
-		reader, objectSize,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	var file *storageV1.File
-	if file, err = s.recordFile(
-		ctx,
-		operator.GetTenantId(), operator.GetUserId(),
-		req.GetSourceFileName(),
-		info, downloadUrl,
-	); err != nil {
-		// 元数据写入失败，回滚已上传的对象，避免孤儿文件
-		if delErr := s.mc.DeleteFile(ctx, bucketName, info.Key); delErr != nil {
-			s.log.Errorf("cleanup orphaned object after recordFile failure failed: %s", delErr.Error())
-		}
-		return nil, err
-	}
-
-	if _, err = s.mediaAssetServiceClient.Create(ctx, &mediaV1.CreateMediaAssetRequest{
-		Data: &mediaV1.MediaAsset{
-			FileId:           file.Id,
-			AltText:          req.AltText,
-			Title:            req.Title,
-			Caption:          req.Caption,
-			Url:              trans.Ptr(downloadUrl),
-			StoragePath:      trans.Ptr(storagePath),
-			Size:             trans.Ptr(uint64(info.Size)),
-			MimeType:         req.MimeType,
-			Filename:         req.SourceFileName,
-			Type:             s.mimeTypeToAssetType(req.GetMimeType()),
-			CreatedBy:        trans.Ptr(operator.GetUserId()),
-			ProcessingStatus: trans.Ptr(mediaV1.MediaAsset_PROCESSING_STATUS_COMPLETED),
-		},
-	}); err != nil {
-		// MediaAsset 创建失败，回滚已上传的对象及其 File 元数据，避免孤儿文件/悬空记录
-		if delErr := s.mc.DeleteFile(ctx, bucketName, info.Key); delErr != nil {
-			s.log.Errorf("cleanup orphaned object after mediaasset failure failed: %s", delErr.Error())
-		}
-		if file != nil && file.Id != nil {
-			if _, delErr := s.fileServiceClient.Delete(ctx, &storageV1.DeleteFileRequest{
-				QueryBy: &storageV1.DeleteFileRequest_Id{Id: file.GetId()},
-			}); delErr != nil {
-				s.log.Errorf("cleanup orphaned file record after mediaasset failure failed: %s", delErr.Error())
-			}
-		}
-		return nil, err
-	}
-
-	return &storageV1.UploadFileResponse{
-		ObjectName: trans.Ptr(downloadUrl),
-	}, nil
 }

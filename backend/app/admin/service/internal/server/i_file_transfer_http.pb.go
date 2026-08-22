@@ -32,7 +32,6 @@ func registerFileTransferServiceHandler(srv *http.Server, svc *service.FileTrans
 
 	r.GET("admin/v1/file/download", _FileTransferService_DownloadFile_HTTP_Handler(svc))
 
-	r.POST("admin/v1/file/asset/upload", _FileTransferService_UploadMediaAsset_HTTP_Handler(svc))
 }
 
 func _FileTransferService_PostUploadFile_HTTP_Handler(svc *service.FileTransferService) func(ctx http.Context) error {
@@ -350,68 +349,5 @@ func _FileTransferService_DownloadFile_HTTP_Handler(svc *service.FileTransferSer
 			return ctx.Result(500, err.Error())
 		}
 		return nil
-	}
-}
-
-func _FileTransferService_UploadMediaAsset_HTTP_Handler(svc *service.FileTransferService) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		http.SetOperation(ctx, adminV1.FileTransferService_UploadMediaAsset_FullMethodName)
-
-		var in storageV1.UploadMediaAssetRequest
-		var err error
-
-		file, header, err := ctx.Request().FormFile("file")
-		if err == nil {
-			defer file.Close()
-
-			// multipart 请求的 Content-Type 无注册编解码器，kratos 响应编码按
-			// Accept 回退 Content-Type 会报 CODEC 400——显式声明 Accept JSON。
-			ctx.Request().Header.Set("Accept", "application/json")
-
-			// 流式上传：multipart.File 作为 io.Reader 通过 context 注入，
-			// service 侧取出后直接喂给 minio-go PutObject（内部按 size 自动
-			// 分片），避免整文件载入 []byte 导致 OOM。
-			in.SourceFileName = trans.Ptr(header.Filename)
-			in.MimeType = trans.Ptr(header.Header.Get("Content-Type"))
-
-			if err = ctx.BindQuery(&in); err != nil {
-				return err
-			}
-
-			h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-				// 将上传 reader 注入业务 context，供 service 流式读取
-				ctx = oss.WithUploadReader(ctx, file, header.Size)
-
-				var resp *storageV1.UploadFileResponse
-				resp, err = svc.UploadMediaAsset(ctx, req.(*storageV1.UploadMediaAssetRequest))
-				return resp, err
-			})
-
-			out, err := h(ctx, &in)
-			if err != nil {
-				return err
-			}
-
-			reply := out.(*storageV1.UploadFileResponse)
-			return ctx.Result(200, reply)
-		}
-
-		if err = ctx.BindQuery(&in); err != nil {
-			return err
-		}
-
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			var resp *storageV1.UploadFileResponse
-			resp, err = svc.UploadMediaAsset(ctx, req.(*storageV1.UploadMediaAssetRequest))
-			return resp, err
-		})
-
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-
-		reply := out.(*storageV1.UploadFileResponse)
-		return ctx.Result(200, reply)
 	}
 }

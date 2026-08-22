@@ -32,13 +32,4 @@ var ProviderSet = wire.NewSet(
 	service.NewOrgUnitService,
 	service.NewUserService,
 	service.NewFileTransferService,
-
-	service.NewCategoryService,
-	service.NewTagService,
-	service.NewCommentService,
-	service.NewInteractionService,
-	service.NewPageService,
-	service.NewSectionService,
-	service.NewPostService,
-	service.NewNavigationService,
 )
