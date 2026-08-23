@@ -26,17 +26,24 @@ abstract class AuthService extends BaseService {
 /// 认证拦截器
 class AuthenticationInterceptor extends Interceptor {
   final AuthService Function() _authServiceFactory;
+  final Dio _dio;
   final bool _autoRefreshToken;
-  late Completer _refreshLock = Completer();
+
+  /// 单飞锁：非 null 表示一次刷新正在进行，后续 401 等其完成复用结果；
+  /// null 表示无刷新在进行。初始 null。
+  Completer<void>? _refreshLock;
 
   /// 创建认证拦截器实例
   /// [authServiceFactory] - 认证服务的懒工厂（推迟到首次请求时解析，
   ///   以规避 transport 初始化早于 repository 注册的顺序依赖）
+  /// [dio] - 持有 baseUrl 与完整拦截器链的原始实例，刷新后重试经此发出
   /// [autoRefreshToken] - 是否自动刷新令牌，默认为true
   AuthenticationInterceptor({
     required AuthService Function() authServiceFactory,
+    required Dio dio,
     bool autoRefreshToken = true,
   }) : _authServiceFactory = authServiceFactory,
+       _dio = dio,
        _autoRefreshToken = autoRefreshToken;
 
   @override
@@ -71,33 +78,30 @@ class AuthenticationInterceptor extends Interceptor {
       return handler.next(err);
     }
 
+    // 单次重试守卫：同一请求只允许刷新重试一次，避免 refresh 失败/401 循环。
+    if (err.requestOptions.extra['__authRetried'] == true) {
+      await _authServiceFactory().authenticationFailed();
+      return handler.next(err);
+    }
+
     try {
       // 尝试刷新令牌并重新发送请求
       final newToken = await _refreshToken();
       if (newToken == null) {
         // 刷新令牌失败，清除令牌并返回错误
-        // await _authServiceFactory().authenticationFailed();
+        await _authServiceFactory().authenticationFailed();
         return handler.next(err);
       }
 
-      // 使用新令牌重试请求
+      // 使用新令牌经原始 dio 实例重试（继承 baseUrl 与完整拦截器链）；
+      // onRequest 会再次以新 access token 填充 Authorization 头。
       final options = err.requestOptions;
       options.headers['Authorization'] = _makeBearerToken(
         accessToken: newToken,
       );
+      options.extra['__authRetried'] = true;
 
-      // 清除错误响应
-      // err.response = null;
-      final newException = DioException(
-        requestOptions: err.requestOptions,
-        error: err.error,
-        type: err.type,
-        // 不提供 response 参数，默认值为 null
-      );
-      err = newException;
-
-      // 重新发送请求
-      final response = await Dio().fetch(options);
+      final response = await _dio.fetch(options);
       return handler.resolve(response);
     } catch (e) {
       fatal('Error refreshing token: $e');
@@ -107,33 +111,31 @@ class AuthenticationInterceptor extends Interceptor {
     }
   }
 
-  /// 刷新令牌的方法，使用锁机制防止并发刷新
+  /// 刷新令牌的方法，使用单飞锁机制防止并发刷新。
+  ///
+  /// _refreshLock 为 null 表示无刷新在进行；非 null 表示一次刷新正在进行，
+  /// 后续 401 等待其完成后直接复用已更新的 access token。原实现用
+  /// `late Completer _refreshLock = Completer()`（初始未完成），首个调用者
+  /// 即落入等待分支，等待一个永不 complete 的 future——死锁，刷新链从未生效。
   Future<String?> _refreshToken() async {
     final auth = _authServiceFactory();
-    // 如果已经有刷新请求在进行，等待它完成
-    if (!_refreshLock.isCompleted) {
-      await _refreshLock.future;
+
+    // 已有刷新在进行，等待并复用结果
+    final pending = _refreshLock;
+    if (pending != null) {
+      await pending.future;
       return auth.getAccessToken();
     }
 
-    // 创建新的锁
-    final Completer newLock = Completer();
-    _refreshLock.complete();
-    _refreshLock = newLock;
-
+    // 自己作为首个调用者，持锁执行刷新
+    final lock = Completer<void>();
+    _refreshLock = lock;
     try {
-      // 尝试刷新令牌
       final newToken = await auth.refreshToken();
-      if (newToken != null) {
-        _refreshLock.complete();
-        return newToken;
-      }
-
-      _refreshLock.complete();
-      return null;
-    } catch (e) {
-      _refreshLock.complete();
-      rethrow;
+      return newToken;
+    } finally {
+      lock.complete();
+      _refreshLock = null;
     }
   }
 
