@@ -43,8 +43,11 @@ func NewRestMiddleware(
 	// add white list for authentication.
 	// GenerateCaptcha 和 VerifyCaptcha 必须在白名单中，因为登录需要验证码，
 	// 而获取验证码时用户尚无 token（鸡生蛋问题）。
+	// RefreshToken 必须免鉴权：刷新令牌的目的正是 access token 过期后用它换新 access，
+	// 若要求有效 access 才能访问，access 一到期刷新即被 401 拦截，刷新链失效、用户被踢回登录页。
 	rpc.AddWhiteList(
 		adminV1.OperationAuthenticationServiceLogin,
+		adminV1.OperationAuthenticationServiceRefreshToken,
 		adminV1.OperationAuthenticationServiceGenerateCaptcha,
 		adminV1.OperationAuthenticationServiceVerifyCaptcha,
 		adminV1.OperationAuthenticationServiceRegisterUser,
