@@ -115,7 +115,7 @@ func callerFromContext(ctx context.Context) (uint32, uint32, bool) {
 	}
 	tid := uint32(vc.TenantID())
 	uid := uint32(vc.UserID())
-	if tid == 0 || uid == 0 {
+	if uid == 0 {
 		return 0, 0, false
 	}
 	return tid, uid, true
