@@ -1233,6 +1233,221 @@ class S {
       args: [],
     );
   }
+
+  /// `个人信息`
+  String get profileTitle {
+    return Intl.message('个人信息', name: 'profileTitle', desc: '', args: []);
+  }
+
+  /// `账号信息`
+  String get profileAccountInfo {
+    return Intl.message('账号信息', name: 'profileAccountInfo', desc: '', args: []);
+  }
+
+  /// `可编辑信息`
+  String get profileEditableInfo {
+    return Intl.message(
+      '可编辑信息',
+      name: 'profileEditableInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `用户名`
+  String get profileUsername {
+    return Intl.message('用户名', name: 'profileUsername', desc: '', args: []);
+  }
+
+  /// `所属租户`
+  String get profileTenant {
+    return Intl.message('所属租户', name: 'profileTenant', desc: '', args: []);
+  }
+
+  /// `所属部门`
+  String get profileOrgUnit {
+    return Intl.message('所属部门', name: 'profileOrgUnit', desc: '', args: []);
+  }
+
+  /// `职位`
+  String get profilePosition {
+    return Intl.message('职位', name: 'profilePosition', desc: '', args: []);
+  }
+
+  /// `角色`
+  String get profileRoles {
+    return Intl.message('角色', name: 'profileRoles', desc: '', args: []);
+  }
+
+  /// `注册时间`
+  String get profileCreatedAt {
+    return Intl.message('注册时间', name: 'profileCreatedAt', desc: '', args: []);
+  }
+
+  /// `最近登录`
+  String get profileLastLogin {
+    return Intl.message('最近登录', name: 'profileLastLogin', desc: '', args: []);
+  }
+
+  /// `昵称`
+  String get profileNickname {
+    return Intl.message('昵称', name: 'profileNickname', desc: '', args: []);
+  }
+
+  /// `真实姓名`
+  String get profileRealname {
+    return Intl.message('真实姓名', name: 'profileRealname', desc: '', args: []);
+  }
+
+  /// `手机号`
+  String get profileMobile {
+    return Intl.message('手机号', name: 'profileMobile', desc: '', args: []);
+  }
+
+  /// `邮箱`
+  String get profileEmail {
+    return Intl.message('邮箱', name: 'profileEmail', desc: '', args: []);
+  }
+
+  /// `性别`
+  String get profileGender {
+    return Intl.message('性别', name: 'profileGender', desc: '', args: []);
+  }
+
+  /// `备注`
+  String get profileRemark {
+    return Intl.message('备注', name: 'profileRemark', desc: '', args: []);
+  }
+
+  /// `头像`
+  String get profileAvatar {
+    return Intl.message('头像', name: 'profileAvatar', desc: '', args: []);
+  }
+
+  /// `男`
+  String get genderMale {
+    return Intl.message('男', name: 'genderMale', desc: '', args: []);
+  }
+
+  /// `女`
+  String get genderFemale {
+    return Intl.message('女', name: 'genderFemale', desc: '', args: []);
+  }
+
+  /// `保密`
+  String get genderSecret {
+    return Intl.message('保密', name: 'genderSecret', desc: '', args: []);
+  }
+
+  /// `保存`
+  String get profileSave {
+    return Intl.message('保存', name: 'profileSave', desc: '', args: []);
+  }
+
+  /// `修改密码`
+  String get profileChangePassword {
+    return Intl.message(
+      '修改密码',
+      name: 'profileChangePassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `加载失败`
+  String get profileLoadFailed {
+    return Intl.message('加载失败', name: 'profileLoadFailed', desc: '', args: []);
+  }
+
+  /// `保存成功`
+  String get profileSaveSuccess {
+    return Intl.message('保存成功', name: 'profileSaveSuccess', desc: '', args: []);
+  }
+
+  /// `保存失败`
+  String get profileSaveFailed {
+    return Intl.message('保存失败', name: 'profileSaveFailed', desc: '', args: []);
+  }
+
+  /// `没有需要保存的更改`
+  String get profileSaveNothing {
+    return Intl.message(
+      '没有需要保存的更改',
+      name: 'profileSaveNothing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `修改密码`
+  String get changePasswordTitle {
+    return Intl.message(
+      '修改密码',
+      name: 'changePasswordTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `旧密码`
+  String get profileOldPassword {
+    return Intl.message('旧密码', name: 'profileOldPassword', desc: '', args: []);
+  }
+
+  /// `新密码`
+  String get profileNewPassword {
+    return Intl.message('新密码', name: 'profileNewPassword', desc: '', args: []);
+  }
+
+  /// `确认新密码`
+  String get profileConfirmPassword {
+    return Intl.message(
+      '确认新密码',
+      name: 'profileConfirmPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `两次输入的新密码不一致`
+  String get profilePasswordMismatch {
+    return Intl.message(
+      '两次输入的新密码不一致',
+      name: 'profilePasswordMismatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `新密码长度至少 6 位`
+  String get profilePasswordTooShort {
+    return Intl.message(
+      '新密码长度至少 6 位',
+      name: 'profilePasswordTooShort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `密码修改成功`
+  String get profilePasswordChanged {
+    return Intl.message(
+      '密码修改成功',
+      name: 'profilePasswordChanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `密码修改失败`
+  String get profilePasswordChangeFailed {
+    return Intl.message(
+      '密码修改失败',
+      name: 'profilePasswordChangeFailed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

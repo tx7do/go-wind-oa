@@ -22,4 +22,7 @@ class AppRoutePath {
   static const oaSealApplication = '/oa/seal-application';
   static const oaOuting = '/oa/outing';
   static const oaDirectory = '/oa/directory';
+  static const oaMe = '/oa/me';
+  static const oaProfile = '/oa/profile';
+  static const oaSettings = '/oa/settings';
 }

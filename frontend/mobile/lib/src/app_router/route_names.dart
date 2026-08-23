@@ -25,4 +25,9 @@ class RouteNames {
   static const String oaSealApplication = 'oa_seal_application';
   static const String oaOuting = 'oa_outing';
   static const String oaDirectory = 'oa_directory';
+
+  // OA 个人中心（“我的” Tab + 个人信息 / 设置 子页）
+  static const String oaMe = 'oa_me';
+  static const String oaProfile = 'oa_profile';
+  static const String oaSettings = 'oa_settings';
 }
