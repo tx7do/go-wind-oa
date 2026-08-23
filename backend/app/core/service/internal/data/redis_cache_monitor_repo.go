@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/redis/go-redis/v9"
@@ -12,6 +13,18 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+// sanitizeUTF8 规整 Redis 返回的字符串为合法 UTF-8。
+// Redis 的 INFO/SLOWLOG 输出可能携带任意字节（慢日志 args 尤甚，是被记录命令的原始参数），
+// 而 proto3 的 string 字段要求合法 UTF-8，否则 gRPC 在 marshal 响应时报
+// "string field contains invalid UTF-8"，整个监控视图随之 500。
+// 这里把无效字节序列替换为 U+FFFD，保证能落进 proto 字段而不丢结构。
+func sanitizeUTF8(s string) string {
+	if utf8.ValidString(s) {
+		return s
+	}
+	return strings.ToValidUTF8(s, "\ufffd")
+}
 
 // RedisCacheMonitorRepo 提供 Redis 运行时信息的只读聚合视图。
 // 数据来源为 Redis 的 INFO / DBSIZE / SLOWLOG GET 命令，全部为只读查询，不做任何写操作。
@@ -77,13 +90,18 @@ func mapSlowLogEntries(in []redis.SlowLog) []*redisCacheV1.SlowLogEntry {
 	out := make([]*redisCacheV1.SlowLogEntry, 0, len(in))
 	for i := range in {
 		s := &in[i]
+		// Args 是被记录命令的原始参数，可能含任意二进制字节，逐项规整为合法 UTF-8。
+		args := make([]string, len(s.Args))
+		for j, a := range s.Args {
+			args[j] = sanitizeUTF8(a)
+		}
 		out = append(out, &redisCacheV1.SlowLogEntry{
 			Id:            s.ID,
 			CreatedAt:     timestamppb.New(s.Time),
 			DurationUsec:  s.Duration.Microseconds(),
-			Args:          s.Args,
-			ClientAddr:    s.ClientAddr,
-			ClientName:    s.ClientName,
+			Args:          args,
+			ClientAddr:    sanitizeUTF8(s.ClientAddr),
+			ClientName:    sanitizeUTF8(s.ClientName),
 		})
 	}
 	return out
@@ -110,7 +128,7 @@ func parseInfoSections(raw string) []*redisCacheV1.InfoSection {
 				current = nil
 				continue
 			}
-			current = &redisCacheV1.InfoSection{Name: name}
+			current = &redisCacheV1.InfoSection{Name: sanitizeUTF8(name)}
 			sections = append(sections, current)
 			continue
 		}
@@ -124,8 +142,8 @@ func parseInfoSections(raw string) []*redisCacheV1.InfoSection {
 			continue
 		}
 		current.Entries = append(current.Entries, &redisCacheV1.InfoEntry{
-			Key:   line[:idx],
-			Value: line[idx+1:],
+			Key:   sanitizeUTF8(line[:idx]),
+			Value: sanitizeUTF8(line[idx+1:]),
 		})
 	}
 
