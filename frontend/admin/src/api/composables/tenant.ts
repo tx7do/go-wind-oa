@@ -1,4 +1,4 @@
-import { computed } from "vue";
+import { computed, toValue, type MaybeRefOrGetter } from "vue";
 import {
   useMutation,
   useQuery,
@@ -10,9 +10,7 @@ import type {
   identityservicev1_CreateTenantWithAdminUserRequest,
   identityservicev1_DeleteTenantRequest,
   identityservicev1_GetTenantRequest,
-  identityservicev1_GetTenantUsageRequest,
   identityservicev1_CleanupTenantDataRequest,
-  identityservicev1_TenantUsage,
   identityservicev1_ListTenantResponse,
   identityservicev1_Tenant,
   identityservicev1_Tenant_AuditStatus as Tenant_AuditStatus,
@@ -212,14 +210,20 @@ export function tenantAuditStatusToColor(tenantAuditStatus: Tenant_AuditStatus) 
 // ==============================
 // 租户用量查询
 // ==============================
-export function useGetTenantUsage(
-  req: identityservicev1_GetTenantUsageRequest,
-  options?: UseQueryOptions<identityservicev1_TenantUsage, Error>
-) {
-  return useQuery({
-    queryKey: ["getTenantUsage", req],
-    queryFn: () => apiClient.tenantService.GetUsage(req),
-    ...options,
+// 依赖查询：tenantId 来自响应式来源（编辑模式打开后才有真实租户 id）。
+// 通过 Vue Query 的 getter 选项形式，enabled/queryKey 随 id 响应式变化：
+// id 为 0 时 enabled=false 不发请求；id 就绪后自动以正确 key 发起查询。
+export function useGetTenantUsage(tenantId: MaybeRefOrGetter<number>) {
+  return useQuery(() => {
+    const id = toValue(tenantId);
+    return {
+      queryKey: ["getTenantUsage", id],
+      queryFn: () => {
+        if (!id) throw new Error("missing tenant id");
+        return apiClient.tenantService.GetUsage({ id });
+      },
+      enabled: !!id,
+    };
   });
 }
 

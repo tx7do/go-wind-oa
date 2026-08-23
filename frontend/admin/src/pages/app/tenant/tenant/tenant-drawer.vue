@@ -246,10 +246,10 @@ const { mutateAsync: updateTenantMut } = useUpdateTenant();
 const { mutateAsync: userExists } = useUserExists();
 
 // 编辑模式下加载租户用量数据（usageData）和清理 mutation。
-// usageQuery 在 setup 顶层声明，refetch 在 watch 中按需触发。
+// usageQuery 为依赖查询：enabled/queryKey 随 tenantIdForUsage 响应式变化，
+// 租户 id 就绪后自动发起请求，无需手动 refetch。
 const tenantIdForUsage = computed(() => data.value.row?.id ?? 0);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const usageQuery = useGetTenantUsage({ id: tenantIdForUsage.value } as any);
+const usageQuery = useGetTenantUsage(tenantIdForUsage);
 const usageData = computed(() => usageQuery.data.value);
 const cleanupLoading = ref(false);
 const { mutateAsync: cleanupMut } = useCleanupTenantData();
@@ -383,13 +383,6 @@ watch(visible, async (val) => {
         password: "",
         passwordConfirm: "",
       };
-
-      // 加载该租户的用量与配额对比数据
-      try {
-        await usageQuery.refetch();
-      } catch {
-        // 忽略错误
-      }
     } else {
       // 创建模式
       resetForm();
