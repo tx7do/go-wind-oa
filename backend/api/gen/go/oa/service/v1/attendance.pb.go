@@ -129,7 +129,7 @@ func (x AttendanceRecord_DayResult) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AttendanceRecord_DayResult.Descriptor instead.
 func (AttendanceRecord_DayResult) EnumDescriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{4, 0}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{12, 0}
 }
 
 // 节假日/调休日设置
@@ -360,6 +360,446 @@ func (x *ListHolidaysResponse) GetTotal() uint64 {
 	return 0
 }
 
+// 地理围栏
+type Geofence struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                          // ID
+	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                       // 围栏名称
+	Latitude      *float64               `protobuf:"fixed64,3,opt,name=latitude,proto3,oneof" json:"latitude,omitempty"`                             // 围栏中心纬度
+	Longitude     *float64               `protobuf:"fixed64,4,opt,name=longitude,proto3,oneof" json:"longitude,omitempty"`                           // 围栏中心经度
+	RadiusMeters  *float64               `protobuf:"fixed64,5,opt,name=radius_meters,json=radiusMeters,proto3,oneof" json:"radius_meters,omitempty"` // 围栏半径
+	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`             // 租户ID
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Geofence) Reset() {
+	*x = Geofence{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Geofence) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Geofence) ProtoMessage() {}
+
+func (x *Geofence) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Geofence.ProtoReflect.Descriptor instead.
+func (*Geofence) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Geofence) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *Geofence) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *Geofence) GetLatitude() float64 {
+	if x != nil && x.Latitude != nil {
+		return *x.Latitude
+	}
+	return 0
+}
+
+func (x *Geofence) GetLongitude() float64 {
+	if x != nil && x.Longitude != nil {
+		return *x.Longitude
+	}
+	return 0
+}
+
+func (x *Geofence) GetRadiusMeters() float64 {
+	if x != nil && x.RadiusMeters != nil {
+		return *x.RadiusMeters
+	}
+	return 0
+}
+
+func (x *Geofence) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
+func (x *Geofence) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+// 删除地理围栏 - 请求
+type DeleteGeofenceRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteGeofenceRequest) Reset() {
+	*x = DeleteGeofenceRequest{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteGeofenceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteGeofenceRequest) ProtoMessage() {}
+
+func (x *DeleteGeofenceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteGeofenceRequest.ProtoReflect.Descriptor instead.
+func (*DeleteGeofenceRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *DeleteGeofenceRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+// 查询地理围栏 - 请求
+type ListGeofencesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListGeofencesRequest) Reset() {
+	*x = ListGeofencesRequest{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListGeofencesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListGeofencesRequest) ProtoMessage() {}
+
+func (x *ListGeofencesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListGeofencesRequest.ProtoReflect.Descriptor instead.
+func (*ListGeofencesRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{6}
+}
+
+// 查询地理围栏 - 回应
+type ListGeofencesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*Geofence            `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListGeofencesResponse) Reset() {
+	*x = ListGeofencesResponse{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListGeofencesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListGeofencesResponse) ProtoMessage() {}
+
+func (x *ListGeofencesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListGeofencesResponse.ProtoReflect.Descriptor instead.
+func (*ListGeofencesResponse) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ListGeofencesResponse) GetItems() []*Geofence {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *ListGeofencesResponse) GetTotal() uint64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+// Wi-Fi 指纹白名单
+type WifiFingerprint struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                              // ID
+	Ssid          *string                `protobuf:"bytes,2,opt,name=ssid,proto3,oneof" json:"ssid,omitempty"`                           // SSID
+	Bssid         *string                `protobuf:"bytes,3,opt,name=bssid,proto3,oneof" json:"bssid,omitempty"`                         // BSSID
+	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"` // 租户ID
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WifiFingerprint) Reset() {
+	*x = WifiFingerprint{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WifiFingerprint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WifiFingerprint) ProtoMessage() {}
+
+func (x *WifiFingerprint) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WifiFingerprint.ProtoReflect.Descriptor instead.
+func (*WifiFingerprint) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *WifiFingerprint) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *WifiFingerprint) GetSsid() string {
+	if x != nil && x.Ssid != nil {
+		return *x.Ssid
+	}
+	return ""
+}
+
+func (x *WifiFingerprint) GetBssid() string {
+	if x != nil && x.Bssid != nil {
+		return *x.Bssid
+	}
+	return ""
+}
+
+func (x *WifiFingerprint) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
+func (x *WifiFingerprint) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+// 删除 Wi-Fi 指纹白名单 - 请求
+type DeleteWifiFingerprintRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteWifiFingerprintRequest) Reset() {
+	*x = DeleteWifiFingerprintRequest{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteWifiFingerprintRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteWifiFingerprintRequest) ProtoMessage() {}
+
+func (x *DeleteWifiFingerprintRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteWifiFingerprintRequest.ProtoReflect.Descriptor instead.
+func (*DeleteWifiFingerprintRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *DeleteWifiFingerprintRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+// 查询 Wi-Fi 指纹白名单 - 请求
+type ListWifiFingerprintsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListWifiFingerprintsRequest) Reset() {
+	*x = ListWifiFingerprintsRequest{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListWifiFingerprintsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListWifiFingerprintsRequest) ProtoMessage() {}
+
+func (x *ListWifiFingerprintsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListWifiFingerprintsRequest.ProtoReflect.Descriptor instead.
+func (*ListWifiFingerprintsRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{10}
+}
+
+// 查询 Wi-Fi 指纹白名单 - 回应
+type ListWifiFingerprintsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*WifiFingerprint     `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListWifiFingerprintsResponse) Reset() {
+	*x = ListWifiFingerprintsResponse{}
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListWifiFingerprintsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListWifiFingerprintsResponse) ProtoMessage() {}
+
+func (x *ListWifiFingerprintsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListWifiFingerprintsResponse.ProtoReflect.Descriptor instead.
+func (*ListWifiFingerprintsResponse) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *ListWifiFingerprintsResponse) GetItems() []*WifiFingerprint {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *ListWifiFingerprintsResponse) GetTotal() uint64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
 // 打卡记录（用户 x 工作日 唯一）
 type AttendanceRecord struct {
 	state             protoimpl.MessageState      `protogen:"open.v1"`
@@ -387,7 +827,7 @@ type AttendanceRecord struct {
 
 func (x *AttendanceRecord) Reset() {
 	*x = AttendanceRecord{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[4]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -399,7 +839,7 @@ func (x *AttendanceRecord) String() string {
 func (*AttendanceRecord) ProtoMessage() {}
 
 func (x *AttendanceRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[4]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -412,7 +852,7 @@ func (x *AttendanceRecord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttendanceRecord.ProtoReflect.Descriptor instead.
 func (*AttendanceRecord) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{4}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *AttendanceRecord) GetId() uint32 {
@@ -556,7 +996,7 @@ type AttendanceSetting struct {
 
 func (x *AttendanceSetting) Reset() {
 	*x = AttendanceSetting{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[5]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -568,7 +1008,7 @@ func (x *AttendanceSetting) String() string {
 func (*AttendanceSetting) ProtoMessage() {}
 
 func (x *AttendanceSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[5]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -581,7 +1021,7 @@ func (x *AttendanceSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttendanceSetting.ProtoReflect.Descriptor instead.
 func (*AttendanceSetting) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{5}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *AttendanceSetting) GetId() uint32 {
@@ -638,7 +1078,7 @@ type CheckInRequest struct {
 
 func (x *CheckInRequest) Reset() {
 	*x = CheckInRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[6]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -650,7 +1090,7 @@ func (x *CheckInRequest) String() string {
 func (*CheckInRequest) ProtoMessage() {}
 
 func (x *CheckInRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[6]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -663,7 +1103,7 @@ func (x *CheckInRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckInRequest.ProtoReflect.Descriptor instead.
 func (*CheckInRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{6}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CheckInRequest) GetLatitude() float64 {
@@ -698,7 +1138,7 @@ type GetMyAttendanceRecordsRequest struct {
 
 func (x *GetMyAttendanceRecordsRequest) Reset() {
 	*x = GetMyAttendanceRecordsRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[7]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -710,7 +1150,7 @@ func (x *GetMyAttendanceRecordsRequest) String() string {
 func (*GetMyAttendanceRecordsRequest) ProtoMessage() {}
 
 func (x *GetMyAttendanceRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[7]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -723,7 +1163,7 @@ func (x *GetMyAttendanceRecordsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMyAttendanceRecordsRequest.ProtoReflect.Descriptor instead.
 func (*GetMyAttendanceRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{7}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetMyAttendanceRecordsRequest) GetStartDate() *timestamppb.Timestamp {
@@ -753,7 +1193,7 @@ type ListAttendanceRecordsRequest struct {
 
 func (x *ListAttendanceRecordsRequest) Reset() {
 	*x = ListAttendanceRecordsRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[8]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -765,7 +1205,7 @@ func (x *ListAttendanceRecordsRequest) String() string {
 func (*ListAttendanceRecordsRequest) ProtoMessage() {}
 
 func (x *ListAttendanceRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[8]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -778,7 +1218,7 @@ func (x *ListAttendanceRecordsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAttendanceRecordsRequest.ProtoReflect.Descriptor instead.
 func (*ListAttendanceRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{8}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListAttendanceRecordsRequest) GetWorkDate() *timestamppb.Timestamp {
@@ -820,7 +1260,7 @@ type ListAttendanceRecordsResponse struct {
 
 func (x *ListAttendanceRecordsResponse) Reset() {
 	*x = ListAttendanceRecordsResponse{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[9]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -832,7 +1272,7 @@ func (x *ListAttendanceRecordsResponse) String() string {
 func (*ListAttendanceRecordsResponse) ProtoMessage() {}
 
 func (x *ListAttendanceRecordsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[9]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -845,7 +1285,7 @@ func (x *ListAttendanceRecordsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAttendanceRecordsResponse.ProtoReflect.Descriptor instead.
 func (*ListAttendanceRecordsResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{9}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ListAttendanceRecordsResponse) GetItems() []*AttendanceRecord {
@@ -872,7 +1312,7 @@ type RunDailySettlementRequest struct {
 
 func (x *RunDailySettlementRequest) Reset() {
 	*x = RunDailySettlementRequest{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[10]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -884,7 +1324,7 @@ func (x *RunDailySettlementRequest) String() string {
 func (*RunDailySettlementRequest) ProtoMessage() {}
 
 func (x *RunDailySettlementRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[10]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -897,7 +1337,7 @@ func (x *RunDailySettlementRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunDailySettlementRequest.ProtoReflect.Descriptor instead.
 func (*RunDailySettlementRequest) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{10}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *RunDailySettlementRequest) GetWorkDate() *timestamppb.Timestamp {
@@ -917,7 +1357,7 @@ type RunDailySettlementResponse struct {
 
 func (x *RunDailySettlementResponse) Reset() {
 	*x = RunDailySettlementResponse{}
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[11]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -929,7 +1369,7 @@ func (x *RunDailySettlementResponse) String() string {
 func (*RunDailySettlementResponse) ProtoMessage() {}
 
 func (x *RunDailySettlementResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_oa_service_v1_attendance_proto_msgTypes[11]
+	mi := &file_oa_service_v1_attendance_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -942,7 +1382,7 @@ func (x *RunDailySettlementResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunDailySettlementResponse.ProtoReflect.Descriptor instead.
 func (*RunDailySettlementResponse) Descriptor() ([]byte, []int) {
-	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{11}
+	return file_oa_service_v1_attendance_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *RunDailySettlementResponse) GetSettledCount() uint32 {
@@ -981,6 +1421,49 @@ const file_oa_service_v1_attendance_proto_rawDesc = "" +
 	"\x04year\x18\x01 \x01(\x05B\x17\xbaG\x14\x92\x02\x11年度，0=当年R\x04year\"Z\n" +
 	"\x14ListHolidaysResponse\x12,\n" +
 	"\x05items\x18\x01 \x03(\v2\x16.oa.service.v1.HolidayR\x05items\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x04R\x05total\"\xf9\x03\n" +
+	"\bGeofence\x12 \n" +
+	"\x02id\x18\x01 \x01(\rB\v\xe0A\x01\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12+\n" +
+	"\x04name\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f围栏名称H\x01R\x04name\x88\x01\x01\x129\n" +
+	"\blatitude\x18\x03 \x01(\x01B\x18\xbaG\x15\x92\x02\x12围栏中心纬度H\x02R\blatitude\x88\x01\x01\x12;\n" +
+	"\tlongitude\x18\x04 \x01(\x01B\x18\xbaG\x15\x92\x02\x12围栏中心经度H\x03R\tlongitude\x88\x01\x01\x12E\n" +
+	"\rradius_meters\x18\x05 \x01(\x01B\x1b\xbaG\x18\x92\x02\x15围栏半径（米）H\x04R\fradiusMeters\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18( \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x05R\btenantId\x88\x01\x01\x12S\n" +
+	"\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x06R\tcreatedAt\x88\x01\x01B\x05\n" +
+	"\x03_idB\a\n" +
+	"\x05_nameB\v\n" +
+	"\t_latitudeB\f\n" +
+	"\n" +
+	"_longitudeB\x10\n" +
+	"\x0e_radius_metersB\f\n" +
+	"\n" +
+	"_tenant_idB\r\n" +
+	"\v_created_at\"1\n" +
+	"\x15DeleteGeofenceRequest\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\rB\b\xbaG\x05\x92\x02\x02IDR\x02id\"\x16\n" +
+	"\x14ListGeofencesRequest\"\\\n" +
+	"\x15ListGeofencesResponse\x12-\n" +
+	"\x05items\x18\x01 \x03(\v2\x17.oa.service.v1.GeofenceR\x05items\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x04R\x05total\"\xf4\x02\n" +
+	"\x0fWifiFingerprint\x12 \n" +
+	"\x02id\x18\x01 \x01(\rB\v\xe0A\x01\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12D\n" +
+	"\x04ssid\x18\x02 \x01(\tB+\xbaG(\x92\x02%SSID（仅描述，不参与校验）H\x01R\x04ssid\x88\x01\x01\x12;\n" +
+	"\x05bssid\x18\x03 \x01(\tB \xbaG\x1d\x92\x02\x1aBSSID（校验比对键）H\x02R\x05bssid\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18( \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x03R\btenantId\x88\x01\x01\x12S\n" +
+	"\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x04R\tcreatedAt\x88\x01\x01B\x05\n" +
+	"\x03_idB\a\n" +
+	"\x05_ssidB\b\n" +
+	"\x06_bssidB\f\n" +
+	"\n" +
+	"_tenant_idB\r\n" +
+	"\v_created_at\"8\n" +
+	"\x1cDeleteWifiFingerprintRequest\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\rB\b\xbaG\x05\x92\x02\x02IDR\x02id\"\x1d\n" +
+	"\x1bListWifiFingerprintsRequest\"j\n" +
+	"\x1cListWifiFingerprintsResponse\x124\n" +
+	"\x05items\x18\x01 \x03(\v2\x1e.oa.service.v1.WifiFingerprintR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xeb\r\n" +
 	"\x10AttendanceRecord\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b记录IDH\x00R\x02id\x88\x01\x01\x12,\n" +
@@ -1079,7 +1562,8 @@ const file_oa_service_v1_attendance_proto_rawDesc = "" +
 	"\x19RunDailySettlementRequest\x12p\n" +
 	"\twork_date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB7\xbaG4\x92\x021结算日期（日期，零点），不传=今天R\bworkDate\"b\n" +
 	"\x1aRunDailySettlementResponse\x12D\n" +
-	"\rsettled_count\x18\x01 \x01(\rB\x1f\xbaG\x1c\x92\x02\x19结算/物化的记录数R\fsettledCount2\xd4\x06\n" +
+	"\rsettled_count\x18\x01 \x01(\rB\x1f\xbaG\x1c\x92\x02\x19结算/物化的记录数R\fsettledCount2\xef\n" +
+	"\n" +
 	"\x11AttendanceService\x12K\n" +
 	"\aCheckIn\x12\x1d.oa.service.v1.CheckInRequest\x1a\x1f.oa.service.v1.AttendanceRecord\"\x00\x12v\n" +
 	"\x16GetMyAttendanceRecords\x12,.oa.service.v1.GetMyAttendanceRecordsRequest\x1a,.oa.service.v1.ListAttendanceRecordsResponse\"\x00\x12t\n" +
@@ -1089,7 +1573,13 @@ const file_oa_service_v1_attendance_proto_rawDesc = "" +
 	"\x12RunDailySettlement\x12(.oa.service.v1.RunDailySettlementRequest\x1a).oa.service.v1.RunDailySettlementResponse\"\x00\x12A\n" +
 	"\rUpsertHoliday\x12\x16.oa.service.v1.Holiday\x1a\x16.google.protobuf.Empty\"\x00\x12N\n" +
 	"\rDeleteHoliday\x12#.oa.service.v1.DeleteHolidayRequest\x1a\x16.google.protobuf.Empty\"\x00\x12Y\n" +
-	"\fListHolidays\x12\".oa.service.v1.ListHolidaysRequest\x1a#.oa.service.v1.ListHolidaysResponse\"\x00B\xa4\x01\n" +
+	"\fListHolidays\x12\".oa.service.v1.ListHolidaysRequest\x1a#.oa.service.v1.ListHolidaysResponse\"\x00\x12C\n" +
+	"\x0eUpsertGeofence\x12\x17.oa.service.v1.Geofence\x1a\x16.google.protobuf.Empty\"\x00\x12P\n" +
+	"\x0eDeleteGeofence\x12$.oa.service.v1.DeleteGeofenceRequest\x1a\x16.google.protobuf.Empty\"\x00\x12\\\n" +
+	"\rListGeofences\x12#.oa.service.v1.ListGeofencesRequest\x1a$.oa.service.v1.ListGeofencesResponse\"\x00\x12Q\n" +
+	"\x15UpsertWifiFingerprint\x12\x1e.oa.service.v1.WifiFingerprint\x1a\x16.google.protobuf.Empty\"\x00\x12^\n" +
+	"\x15DeleteWifiFingerprint\x12+.oa.service.v1.DeleteWifiFingerprintRequest\x1a\x16.google.protobuf.Empty\"\x00\x12q\n" +
+	"\x14ListWifiFingerprints\x12*.oa.service.v1.ListWifiFingerprintsRequest\x1a+.oa.service.v1.ListWifiFingerprintsResponse\"\x00B\xa4\x01\n" +
 	"\x11com.oa.service.v1B\x0fAttendanceProtoP\x01Z(go-wind-oa/api/gen/go/oa/service/v1;oapb\xa2\x02\x03OSX\xaa\x02\rOa.Service.V1\xca\x02\rOa\\Service\\V1\xe2\x02\x19Oa\\Service\\V1\\GPBMetadata\xea\x02\x0fOa::Service::V1b\x06proto3"
 
 var (
@@ -1105,7 +1595,7 @@ func file_oa_service_v1_attendance_proto_rawDescGZIP() []byte {
 }
 
 var file_oa_service_v1_attendance_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_oa_service_v1_attendance_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_oa_service_v1_attendance_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_oa_service_v1_attendance_proto_goTypes = []any{
 	(Holiday_HolidayType)(0),              // 0: oa.service.v1.Holiday.HolidayType
 	(AttendanceRecord_DayResult)(0),       // 1: oa.service.v1.AttendanceRecord.DayResult
@@ -1113,58 +1603,82 @@ var file_oa_service_v1_attendance_proto_goTypes = []any{
 	(*DeleteHolidayRequest)(nil),          // 3: oa.service.v1.DeleteHolidayRequest
 	(*ListHolidaysRequest)(nil),           // 4: oa.service.v1.ListHolidaysRequest
 	(*ListHolidaysResponse)(nil),          // 5: oa.service.v1.ListHolidaysResponse
-	(*AttendanceRecord)(nil),              // 6: oa.service.v1.AttendanceRecord
-	(*AttendanceSetting)(nil),             // 7: oa.service.v1.AttendanceSetting
-	(*CheckInRequest)(nil),                // 8: oa.service.v1.CheckInRequest
-	(*GetMyAttendanceRecordsRequest)(nil), // 9: oa.service.v1.GetMyAttendanceRecordsRequest
-	(*ListAttendanceRecordsRequest)(nil),  // 10: oa.service.v1.ListAttendanceRecordsRequest
-	(*ListAttendanceRecordsResponse)(nil), // 11: oa.service.v1.ListAttendanceRecordsResponse
-	(*RunDailySettlementRequest)(nil),     // 12: oa.service.v1.RunDailySettlementRequest
-	(*RunDailySettlementResponse)(nil),    // 13: oa.service.v1.RunDailySettlementResponse
-	(*timestamppb.Timestamp)(nil),         // 14: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                 // 15: google.protobuf.Empty
+	(*Geofence)(nil),                      // 6: oa.service.v1.Geofence
+	(*DeleteGeofenceRequest)(nil),         // 7: oa.service.v1.DeleteGeofenceRequest
+	(*ListGeofencesRequest)(nil),          // 8: oa.service.v1.ListGeofencesRequest
+	(*ListGeofencesResponse)(nil),         // 9: oa.service.v1.ListGeofencesResponse
+	(*WifiFingerprint)(nil),               // 10: oa.service.v1.WifiFingerprint
+	(*DeleteWifiFingerprintRequest)(nil),  // 11: oa.service.v1.DeleteWifiFingerprintRequest
+	(*ListWifiFingerprintsRequest)(nil),   // 12: oa.service.v1.ListWifiFingerprintsRequest
+	(*ListWifiFingerprintsResponse)(nil),  // 13: oa.service.v1.ListWifiFingerprintsResponse
+	(*AttendanceRecord)(nil),              // 14: oa.service.v1.AttendanceRecord
+	(*AttendanceSetting)(nil),             // 15: oa.service.v1.AttendanceSetting
+	(*CheckInRequest)(nil),                // 16: oa.service.v1.CheckInRequest
+	(*GetMyAttendanceRecordsRequest)(nil), // 17: oa.service.v1.GetMyAttendanceRecordsRequest
+	(*ListAttendanceRecordsRequest)(nil),  // 18: oa.service.v1.ListAttendanceRecordsRequest
+	(*ListAttendanceRecordsResponse)(nil), // 19: oa.service.v1.ListAttendanceRecordsResponse
+	(*RunDailySettlementRequest)(nil),     // 20: oa.service.v1.RunDailySettlementRequest
+	(*RunDailySettlementResponse)(nil),    // 21: oa.service.v1.RunDailySettlementResponse
+	(*timestamppb.Timestamp)(nil),         // 22: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                 // 23: google.protobuf.Empty
 }
 var file_oa_service_v1_attendance_proto_depIdxs = []int32{
-	14, // 0: oa.service.v1.Holiday.date:type_name -> google.protobuf.Timestamp
+	22, // 0: oa.service.v1.Holiday.date:type_name -> google.protobuf.Timestamp
 	0,  // 1: oa.service.v1.Holiday.holiday_type:type_name -> oa.service.v1.Holiday.HolidayType
-	14, // 2: oa.service.v1.Holiday.created_at:type_name -> google.protobuf.Timestamp
+	22, // 2: oa.service.v1.Holiday.created_at:type_name -> google.protobuf.Timestamp
 	2,  // 3: oa.service.v1.ListHolidaysResponse.items:type_name -> oa.service.v1.Holiday
-	14, // 4: oa.service.v1.AttendanceRecord.work_date:type_name -> google.protobuf.Timestamp
-	14, // 5: oa.service.v1.AttendanceRecord.check_in_at:type_name -> google.protobuf.Timestamp
-	14, // 6: oa.service.v1.AttendanceRecord.check_out_at:type_name -> google.protobuf.Timestamp
-	1,  // 7: oa.service.v1.AttendanceRecord.day_result:type_name -> oa.service.v1.AttendanceRecord.DayResult
-	14, // 8: oa.service.v1.AttendanceRecord.created_at:type_name -> google.protobuf.Timestamp
-	14, // 9: oa.service.v1.AttendanceRecord.updated_at:type_name -> google.protobuf.Timestamp
-	14, // 10: oa.service.v1.AttendanceSetting.created_at:type_name -> google.protobuf.Timestamp
-	14, // 11: oa.service.v1.AttendanceSetting.updated_at:type_name -> google.protobuf.Timestamp
-	14, // 12: oa.service.v1.GetMyAttendanceRecordsRequest.start_date:type_name -> google.protobuf.Timestamp
-	14, // 13: oa.service.v1.GetMyAttendanceRecordsRequest.end_date:type_name -> google.protobuf.Timestamp
-	14, // 14: oa.service.v1.ListAttendanceRecordsRequest.work_date:type_name -> google.protobuf.Timestamp
-	6,  // 15: oa.service.v1.ListAttendanceRecordsResponse.items:type_name -> oa.service.v1.AttendanceRecord
-	14, // 16: oa.service.v1.RunDailySettlementRequest.work_date:type_name -> google.protobuf.Timestamp
-	8,  // 17: oa.service.v1.AttendanceService.CheckIn:input_type -> oa.service.v1.CheckInRequest
-	9,  // 18: oa.service.v1.AttendanceService.GetMyAttendanceRecords:input_type -> oa.service.v1.GetMyAttendanceRecordsRequest
-	10, // 19: oa.service.v1.AttendanceService.ListAttendanceRecords:input_type -> oa.service.v1.ListAttendanceRecordsRequest
-	15, // 20: oa.service.v1.AttendanceService.GetAttendanceSetting:input_type -> google.protobuf.Empty
-	7,  // 21: oa.service.v1.AttendanceService.UpdateAttendanceSetting:input_type -> oa.service.v1.AttendanceSetting
-	12, // 22: oa.service.v1.AttendanceService.RunDailySettlement:input_type -> oa.service.v1.RunDailySettlementRequest
-	2,  // 23: oa.service.v1.AttendanceService.UpsertHoliday:input_type -> oa.service.v1.Holiday
-	3,  // 24: oa.service.v1.AttendanceService.DeleteHoliday:input_type -> oa.service.v1.DeleteHolidayRequest
-	4,  // 25: oa.service.v1.AttendanceService.ListHolidays:input_type -> oa.service.v1.ListHolidaysRequest
-	6,  // 26: oa.service.v1.AttendanceService.CheckIn:output_type -> oa.service.v1.AttendanceRecord
-	11, // 27: oa.service.v1.AttendanceService.GetMyAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
-	11, // 28: oa.service.v1.AttendanceService.ListAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
-	7,  // 29: oa.service.v1.AttendanceService.GetAttendanceSetting:output_type -> oa.service.v1.AttendanceSetting
-	15, // 30: oa.service.v1.AttendanceService.UpdateAttendanceSetting:output_type -> google.protobuf.Empty
-	13, // 31: oa.service.v1.AttendanceService.RunDailySettlement:output_type -> oa.service.v1.RunDailySettlementResponse
-	15, // 32: oa.service.v1.AttendanceService.UpsertHoliday:output_type -> google.protobuf.Empty
-	15, // 33: oa.service.v1.AttendanceService.DeleteHoliday:output_type -> google.protobuf.Empty
-	5,  // 34: oa.service.v1.AttendanceService.ListHolidays:output_type -> oa.service.v1.ListHolidaysResponse
-	26, // [26:35] is the sub-list for method output_type
-	17, // [17:26] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	22, // 4: oa.service.v1.Geofence.created_at:type_name -> google.protobuf.Timestamp
+	6,  // 5: oa.service.v1.ListGeofencesResponse.items:type_name -> oa.service.v1.Geofence
+	22, // 6: oa.service.v1.WifiFingerprint.created_at:type_name -> google.protobuf.Timestamp
+	10, // 7: oa.service.v1.ListWifiFingerprintsResponse.items:type_name -> oa.service.v1.WifiFingerprint
+	22, // 8: oa.service.v1.AttendanceRecord.work_date:type_name -> google.protobuf.Timestamp
+	22, // 9: oa.service.v1.AttendanceRecord.check_in_at:type_name -> google.protobuf.Timestamp
+	22, // 10: oa.service.v1.AttendanceRecord.check_out_at:type_name -> google.protobuf.Timestamp
+	1,  // 11: oa.service.v1.AttendanceRecord.day_result:type_name -> oa.service.v1.AttendanceRecord.DayResult
+	22, // 12: oa.service.v1.AttendanceRecord.created_at:type_name -> google.protobuf.Timestamp
+	22, // 13: oa.service.v1.AttendanceRecord.updated_at:type_name -> google.protobuf.Timestamp
+	22, // 14: oa.service.v1.AttendanceSetting.created_at:type_name -> google.protobuf.Timestamp
+	22, // 15: oa.service.v1.AttendanceSetting.updated_at:type_name -> google.protobuf.Timestamp
+	22, // 16: oa.service.v1.GetMyAttendanceRecordsRequest.start_date:type_name -> google.protobuf.Timestamp
+	22, // 17: oa.service.v1.GetMyAttendanceRecordsRequest.end_date:type_name -> google.protobuf.Timestamp
+	22, // 18: oa.service.v1.ListAttendanceRecordsRequest.work_date:type_name -> google.protobuf.Timestamp
+	14, // 19: oa.service.v1.ListAttendanceRecordsResponse.items:type_name -> oa.service.v1.AttendanceRecord
+	22, // 20: oa.service.v1.RunDailySettlementRequest.work_date:type_name -> google.protobuf.Timestamp
+	16, // 21: oa.service.v1.AttendanceService.CheckIn:input_type -> oa.service.v1.CheckInRequest
+	17, // 22: oa.service.v1.AttendanceService.GetMyAttendanceRecords:input_type -> oa.service.v1.GetMyAttendanceRecordsRequest
+	18, // 23: oa.service.v1.AttendanceService.ListAttendanceRecords:input_type -> oa.service.v1.ListAttendanceRecordsRequest
+	23, // 24: oa.service.v1.AttendanceService.GetAttendanceSetting:input_type -> google.protobuf.Empty
+	15, // 25: oa.service.v1.AttendanceService.UpdateAttendanceSetting:input_type -> oa.service.v1.AttendanceSetting
+	20, // 26: oa.service.v1.AttendanceService.RunDailySettlement:input_type -> oa.service.v1.RunDailySettlementRequest
+	2,  // 27: oa.service.v1.AttendanceService.UpsertHoliday:input_type -> oa.service.v1.Holiday
+	3,  // 28: oa.service.v1.AttendanceService.DeleteHoliday:input_type -> oa.service.v1.DeleteHolidayRequest
+	4,  // 29: oa.service.v1.AttendanceService.ListHolidays:input_type -> oa.service.v1.ListHolidaysRequest
+	6,  // 30: oa.service.v1.AttendanceService.UpsertGeofence:input_type -> oa.service.v1.Geofence
+	7,  // 31: oa.service.v1.AttendanceService.DeleteGeofence:input_type -> oa.service.v1.DeleteGeofenceRequest
+	8,  // 32: oa.service.v1.AttendanceService.ListGeofences:input_type -> oa.service.v1.ListGeofencesRequest
+	10, // 33: oa.service.v1.AttendanceService.UpsertWifiFingerprint:input_type -> oa.service.v1.WifiFingerprint
+	11, // 34: oa.service.v1.AttendanceService.DeleteWifiFingerprint:input_type -> oa.service.v1.DeleteWifiFingerprintRequest
+	12, // 35: oa.service.v1.AttendanceService.ListWifiFingerprints:input_type -> oa.service.v1.ListWifiFingerprintsRequest
+	14, // 36: oa.service.v1.AttendanceService.CheckIn:output_type -> oa.service.v1.AttendanceRecord
+	19, // 37: oa.service.v1.AttendanceService.GetMyAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
+	19, // 38: oa.service.v1.AttendanceService.ListAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
+	15, // 39: oa.service.v1.AttendanceService.GetAttendanceSetting:output_type -> oa.service.v1.AttendanceSetting
+	23, // 40: oa.service.v1.AttendanceService.UpdateAttendanceSetting:output_type -> google.protobuf.Empty
+	21, // 41: oa.service.v1.AttendanceService.RunDailySettlement:output_type -> oa.service.v1.RunDailySettlementResponse
+	23, // 42: oa.service.v1.AttendanceService.UpsertHoliday:output_type -> google.protobuf.Empty
+	23, // 43: oa.service.v1.AttendanceService.DeleteHoliday:output_type -> google.protobuf.Empty
+	5,  // 44: oa.service.v1.AttendanceService.ListHolidays:output_type -> oa.service.v1.ListHolidaysResponse
+	23, // 45: oa.service.v1.AttendanceService.UpsertGeofence:output_type -> google.protobuf.Empty
+	23, // 46: oa.service.v1.AttendanceService.DeleteGeofence:output_type -> google.protobuf.Empty
+	9,  // 47: oa.service.v1.AttendanceService.ListGeofences:output_type -> oa.service.v1.ListGeofencesResponse
+	23, // 48: oa.service.v1.AttendanceService.UpsertWifiFingerprint:output_type -> google.protobuf.Empty
+	23, // 49: oa.service.v1.AttendanceService.DeleteWifiFingerprint:output_type -> google.protobuf.Empty
+	13, // 50: oa.service.v1.AttendanceService.ListWifiFingerprints:output_type -> oa.service.v1.ListWifiFingerprintsResponse
+	36, // [36:51] is the sub-list for method output_type
+	21, // [21:36] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_oa_service_v1_attendance_proto_init() }
@@ -1174,15 +1688,17 @@ func file_oa_service_v1_attendance_proto_init() {
 	}
 	file_oa_service_v1_attendance_proto_msgTypes[0].OneofWrappers = []any{}
 	file_oa_service_v1_attendance_proto_msgTypes[4].OneofWrappers = []any{}
-	file_oa_service_v1_attendance_proto_msgTypes[5].OneofWrappers = []any{}
 	file_oa_service_v1_attendance_proto_msgTypes[8].OneofWrappers = []any{}
+	file_oa_service_v1_attendance_proto_msgTypes[12].OneofWrappers = []any{}
+	file_oa_service_v1_attendance_proto_msgTypes[13].OneofWrappers = []any{}
+	file_oa_service_v1_attendance_proto_msgTypes[16].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_oa_service_v1_attendance_proto_rawDesc), len(file_oa_service_v1_attendance_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   12,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

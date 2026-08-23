@@ -1007,6 +1007,30 @@ export interface AttendanceService {
   ListHolidays(
     request: oaservicev1_ListHolidaysRequest,
   ): Promise<oaservicev1_ListHolidaysResponse>;
+  // 设置地理围栏（按 id 存在则覆盖）
+  UpsertGeofence(
+    request: oaservicev1_Geofence,
+  ): Promise<wellKnownEmpty>;
+  // 删除地理围栏
+  DeleteGeofence(
+    request: oaservicev1_DeleteGeofenceRequest,
+  ): Promise<wellKnownEmpty>;
+  // 查询地理围栏
+  ListGeofences(
+    request: oaservicev1_ListGeofencesRequest,
+  ): Promise<oaservicev1_ListGeofencesResponse>;
+  // 设置 Wi-Fi 指纹白名单（按 id 存在则覆盖）
+  UpsertWifiFingerprint(
+    request: oaservicev1_WifiFingerprint,
+  ): Promise<wellKnownEmpty>;
+  // 删除 Wi-Fi 指纹白名单
+  DeleteWifiFingerprint(
+    request: oaservicev1_DeleteWifiFingerprintRequest,
+  ): Promise<wellKnownEmpty>;
+  // 查询 Wi-Fi 指纹白名单
+  ListWifiFingerprints(
+    request: oaservicev1_ListWifiFingerprintsRequest,
+  ): Promise<oaservicev1_ListWifiFingerprintsResponse>;
 }
 
 export function createAttendanceServiceClient(
@@ -1107,6 +1131,60 @@ export function createAttendanceServiceClient(
         method: 'ListHolidays',
       }) as Promise<oaservicev1_ListHolidaysResponse>;
     },
+    UpsertGeofence(request) {
+      const path = `admin/v1/oa/attendance/geofences`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'AttendanceService',
+        method: 'UpsertGeofence',
+      }) as Promise<wellKnownEmpty>;
+    },
+    DeleteGeofence(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/attendance/geofences/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'AttendanceService',
+        method: 'DeleteGeofence',
+      }) as Promise<wellKnownEmpty>;
+    },
+    ListGeofences(_request) {
+      const path = `admin/v1/oa/attendance/geofences`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'AttendanceService',
+        method: 'ListGeofences',
+      }) as Promise<oaservicev1_ListGeofencesResponse>;
+    },
+    UpsertWifiFingerprint(request) {
+      const path = `admin/v1/oa/attendance/wifi-fingerprints`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'AttendanceService',
+        method: 'UpsertWifiFingerprint',
+      }) as Promise<wellKnownEmpty>;
+    },
+    DeleteWifiFingerprint(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/attendance/wifi-fingerprints/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'AttendanceService',
+        method: 'DeleteWifiFingerprint',
+      }) as Promise<wellKnownEmpty>;
+    },
+    ListWifiFingerprints(_request) {
+      const path = `admin/v1/oa/attendance/wifi-fingerprints`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'AttendanceService',
+        method: 'ListWifiFingerprints',
+      }) as Promise<oaservicev1_ListWifiFingerprintsResponse>;
+    },
   };
 }
 // 查询记录 - 请求（admin）
@@ -1206,6 +1284,60 @@ export type oaservicev1_ListHolidaysRequest = {
 // 查询节假日 - 回应
 export type oaservicev1_ListHolidaysResponse = {
   items: oaservicev1_Holiday[] | undefined;
+  total: number | undefined;
+};
+
+// 地理围栏
+export type oaservicev1_Geofence = {
+  createdAt?: wellKnownTimestamp;
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  latitude?: number;
+  longitude?: number;
+  name?: string;
+  radiusMeters?: number;
+  tenantId?: number;
+};
+
+// 删除地理围栏 - 请求
+export type oaservicev1_DeleteGeofenceRequest = {
+  id: number | undefined;
+};
+
+// 查询地理围栏 - 请求
+export type oaservicev1_ListGeofencesRequest = {
+};
+
+// 查询地理围栏 - 回应
+export type oaservicev1_ListGeofencesResponse = {
+  items: oaservicev1_Geofence[] | undefined;
+  total: number | undefined;
+};
+
+// Wi-Fi 指纹白名单
+export type oaservicev1_WifiFingerprint = {
+  bssid?: string;
+  createdAt?: wellKnownTimestamp;
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  ssid?: string;
+  tenantId?: number;
+};
+
+// 删除 Wi-Fi 指纹白名单 - 请求
+export type oaservicev1_DeleteWifiFingerprintRequest = {
+  id: number | undefined;
+};
+
+// 查询 Wi-Fi 指纹白名单 - 请求
+export type oaservicev1_ListWifiFingerprintsRequest = {
+};
+
+// 查询 Wi-Fi 指纹白名单 - 回应
+export type oaservicev1_ListWifiFingerprintsResponse = {
+  items: oaservicev1_WifiFingerprint[] | undefined;
   total: number | undefined;
 };
 

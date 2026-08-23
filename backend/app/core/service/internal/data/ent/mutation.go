@@ -21,6 +21,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/expenseapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/expenseitem"
 	"go-wind-oa/app/core/service/internal/data/ent/file"
+	"go-wind-oa/app/core/service/internal/data/ent/geofence"
 	"go-wind-oa/app/core/service/internal/data/ent/holiday"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
@@ -64,6 +65,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/userorgunit"
 	"go-wind-oa/app/core/service/internal/data/ent/userposition"
 	"go-wind-oa/app/core/service/internal/data/ent/userrole"
+	"go-wind-oa/app/core/service/internal/data/ent/wififingerprint"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowlog"
@@ -96,6 +98,7 @@ const (
 	TypeExpenseApplication       = "ExpenseApplication"
 	TypeExpenseItem              = "ExpenseItem"
 	TypeFile                     = "File"
+	TypeGeofence                 = "Geofence"
 	TypeHoliday                  = "Holiday"
 	TypeInternalMessage          = "InternalMessage"
 	TypeInternalMessageCategory  = "InternalMessageCategory"
@@ -138,6 +141,7 @@ const (
 	TypeUserOrgUnit              = "UserOrgUnit"
 	TypeUserPosition             = "UserPosition"
 	TypeUserRole                 = "UserRole"
+	TypeWifiFingerprint          = "WifiFingerprint"
 	TypeWorkflowDefinition       = "WorkflowDefinition"
 	TypeWorkflowInstance         = "WorkflowInstance"
 	TypeWorkflowLog              = "WorkflowLog"
@@ -19289,6 +19293,1252 @@ func (m *FileMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *FileMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown File edge %s", name)
+}
+
+// GeofenceMutation represents an operation that mutates the Geofence nodes in the graph.
+type GeofenceMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uint32
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	created_by       *uint32
+	addcreated_by    *int32
+	updated_by       *uint32
+	addupdated_by    *int32
+	deleted_by       *uint32
+	adddeleted_by    *int32
+	tenant_id        *uint32
+	addtenant_id     *int32
+	name             *string
+	latitude         *float64
+	addlatitude      *float64
+	longitude        *float64
+	addlongitude     *float64
+	radius_meters    *float64
+	addradius_meters *float64
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*Geofence, error)
+	predicates       []predicate.Geofence
+}
+
+var _ ent.Mutation = (*GeofenceMutation)(nil)
+
+// geofenceOption allows management of the mutation configuration using functional options.
+type geofenceOption func(*GeofenceMutation)
+
+// newGeofenceMutation creates new mutation for the Geofence entity.
+func newGeofenceMutation(c config, op Op, opts ...geofenceOption) *GeofenceMutation {
+	m := &GeofenceMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeGeofence,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withGeofenceID sets the ID field of the mutation.
+func withGeofenceID(id uint32) geofenceOption {
+	return func(m *GeofenceMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Geofence
+		)
+		m.oldValue = func(ctx context.Context) (*Geofence, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Geofence.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withGeofence sets the old Geofence of the mutation.
+func withGeofence(node *Geofence) geofenceOption {
+	return func(m *GeofenceMutation) {
+		m.oldValue = func(context.Context) (*Geofence, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m GeofenceMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m GeofenceMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Geofence entities.
+func (m *GeofenceMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *GeofenceMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *GeofenceMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Geofence.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *GeofenceMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *GeofenceMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *GeofenceMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[geofence.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *GeofenceMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[geofence.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *GeofenceMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, geofence.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *GeofenceMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *GeofenceMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *GeofenceMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[geofence.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *GeofenceMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[geofence.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *GeofenceMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, geofence.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *GeofenceMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *GeofenceMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *GeofenceMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[geofence.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *GeofenceMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[geofence.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *GeofenceMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, geofence.FieldDeletedAt)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *GeofenceMutation) SetCreatedBy(u uint32) {
+	m.created_by = &u
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *GeofenceMutation) CreatedBy() (r uint32, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds u to the "created_by" field.
+func (m *GeofenceMutation) AddCreatedBy(u int32) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += u
+	} else {
+		m.addcreated_by = &u
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *GeofenceMutation) AddedCreatedBy() (r int32, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *GeofenceMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[geofence.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *GeofenceMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[geofence.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *GeofenceMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, geofence.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *GeofenceMutation) SetUpdatedBy(u uint32) {
+	m.updated_by = &u
+	m.addupdated_by = nil
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *GeofenceMutation) UpdatedBy() (r uint32, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// AddUpdatedBy adds u to the "updated_by" field.
+func (m *GeofenceMutation) AddUpdatedBy(u int32) {
+	if m.addupdated_by != nil {
+		*m.addupdated_by += u
+	} else {
+		m.addupdated_by = &u
+	}
+}
+
+// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
+func (m *GeofenceMutation) AddedUpdatedBy() (r int32, exists bool) {
+	v := m.addupdated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *GeofenceMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	m.clearedFields[geofence.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *GeofenceMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[geofence.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *GeofenceMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	delete(m.clearedFields, geofence.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "deleted_by" field.
+func (m *GeofenceMutation) SetDeletedBy(u uint32) {
+	m.deleted_by = &u
+	m.adddeleted_by = nil
+}
+
+// DeletedBy returns the value of the "deleted_by" field in the mutation.
+func (m *GeofenceMutation) DeletedBy() (r uint32, exists bool) {
+	v := m.deleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "deleted_by" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// AddDeletedBy adds u to the "deleted_by" field.
+func (m *GeofenceMutation) AddDeletedBy(u int32) {
+	if m.adddeleted_by != nil {
+		*m.adddeleted_by += u
+	} else {
+		m.adddeleted_by = &u
+	}
+}
+
+// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
+func (m *GeofenceMutation) AddedDeletedBy() (r int32, exists bool) {
+	v := m.adddeleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (m *GeofenceMutation) ClearDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	m.clearedFields[geofence.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
+func (m *GeofenceMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[geofence.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" field.
+func (m *GeofenceMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	delete(m.clearedFields, geofence.FieldDeletedBy)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *GeofenceMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *GeofenceMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *GeofenceMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *GeofenceMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *GeofenceMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[geofence.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *GeofenceMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[geofence.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *GeofenceMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, geofence.FieldTenantID)
+}
+
+// SetName sets the "name" field.
+func (m *GeofenceMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *GeofenceMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *GeofenceMutation) ResetName() {
+	m.name = nil
+}
+
+// SetLatitude sets the "latitude" field.
+func (m *GeofenceMutation) SetLatitude(f float64) {
+	m.latitude = &f
+	m.addlatitude = nil
+}
+
+// Latitude returns the value of the "latitude" field in the mutation.
+func (m *GeofenceMutation) Latitude() (r float64, exists bool) {
+	v := m.latitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatitude returns the old "latitude" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldLatitude(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLatitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLatitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatitude: %w", err)
+	}
+	return oldValue.Latitude, nil
+}
+
+// AddLatitude adds f to the "latitude" field.
+func (m *GeofenceMutation) AddLatitude(f float64) {
+	if m.addlatitude != nil {
+		*m.addlatitude += f
+	} else {
+		m.addlatitude = &f
+	}
+}
+
+// AddedLatitude returns the value that was added to the "latitude" field in this mutation.
+func (m *GeofenceMutation) AddedLatitude() (r float64, exists bool) {
+	v := m.addlatitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLatitude resets all changes to the "latitude" field.
+func (m *GeofenceMutation) ResetLatitude() {
+	m.latitude = nil
+	m.addlatitude = nil
+}
+
+// SetLongitude sets the "longitude" field.
+func (m *GeofenceMutation) SetLongitude(f float64) {
+	m.longitude = &f
+	m.addlongitude = nil
+}
+
+// Longitude returns the value of the "longitude" field in the mutation.
+func (m *GeofenceMutation) Longitude() (r float64, exists bool) {
+	v := m.longitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLongitude returns the old "longitude" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldLongitude(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLongitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLongitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLongitude: %w", err)
+	}
+	return oldValue.Longitude, nil
+}
+
+// AddLongitude adds f to the "longitude" field.
+func (m *GeofenceMutation) AddLongitude(f float64) {
+	if m.addlongitude != nil {
+		*m.addlongitude += f
+	} else {
+		m.addlongitude = &f
+	}
+}
+
+// AddedLongitude returns the value that was added to the "longitude" field in this mutation.
+func (m *GeofenceMutation) AddedLongitude() (r float64, exists bool) {
+	v := m.addlongitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLongitude resets all changes to the "longitude" field.
+func (m *GeofenceMutation) ResetLongitude() {
+	m.longitude = nil
+	m.addlongitude = nil
+}
+
+// SetRadiusMeters sets the "radius_meters" field.
+func (m *GeofenceMutation) SetRadiusMeters(f float64) {
+	m.radius_meters = &f
+	m.addradius_meters = nil
+}
+
+// RadiusMeters returns the value of the "radius_meters" field in the mutation.
+func (m *GeofenceMutation) RadiusMeters() (r float64, exists bool) {
+	v := m.radius_meters
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRadiusMeters returns the old "radius_meters" field's value of the Geofence entity.
+// If the Geofence object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeofenceMutation) OldRadiusMeters(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRadiusMeters is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRadiusMeters requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRadiusMeters: %w", err)
+	}
+	return oldValue.RadiusMeters, nil
+}
+
+// AddRadiusMeters adds f to the "radius_meters" field.
+func (m *GeofenceMutation) AddRadiusMeters(f float64) {
+	if m.addradius_meters != nil {
+		*m.addradius_meters += f
+	} else {
+		m.addradius_meters = &f
+	}
+}
+
+// AddedRadiusMeters returns the value that was added to the "radius_meters" field in this mutation.
+func (m *GeofenceMutation) AddedRadiusMeters() (r float64, exists bool) {
+	v := m.addradius_meters
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRadiusMeters resets all changes to the "radius_meters" field.
+func (m *GeofenceMutation) ResetRadiusMeters() {
+	m.radius_meters = nil
+	m.addradius_meters = nil
+}
+
+// Where appends a list predicates to the GeofenceMutation builder.
+func (m *GeofenceMutation) Where(ps ...predicate.Geofence) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the GeofenceMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *GeofenceMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Geofence, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *GeofenceMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *GeofenceMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Geofence).
+func (m *GeofenceMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *GeofenceMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.created_at != nil {
+		fields = append(fields, geofence.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, geofence.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, geofence.FieldDeletedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, geofence.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, geofence.FieldUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		fields = append(fields, geofence.FieldDeletedBy)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, geofence.FieldTenantID)
+	}
+	if m.name != nil {
+		fields = append(fields, geofence.FieldName)
+	}
+	if m.latitude != nil {
+		fields = append(fields, geofence.FieldLatitude)
+	}
+	if m.longitude != nil {
+		fields = append(fields, geofence.FieldLongitude)
+	}
+	if m.radius_meters != nil {
+		fields = append(fields, geofence.FieldRadiusMeters)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *GeofenceMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case geofence.FieldCreatedAt:
+		return m.CreatedAt()
+	case geofence.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case geofence.FieldDeletedAt:
+		return m.DeletedAt()
+	case geofence.FieldCreatedBy:
+		return m.CreatedBy()
+	case geofence.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case geofence.FieldDeletedBy:
+		return m.DeletedBy()
+	case geofence.FieldTenantID:
+		return m.TenantID()
+	case geofence.FieldName:
+		return m.Name()
+	case geofence.FieldLatitude:
+		return m.Latitude()
+	case geofence.FieldLongitude:
+		return m.Longitude()
+	case geofence.FieldRadiusMeters:
+		return m.RadiusMeters()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *GeofenceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case geofence.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case geofence.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case geofence.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case geofence.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case geofence.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case geofence.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case geofence.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case geofence.FieldName:
+		return m.OldName(ctx)
+	case geofence.FieldLatitude:
+		return m.OldLatitude(ctx)
+	case geofence.FieldLongitude:
+		return m.OldLongitude(ctx)
+	case geofence.FieldRadiusMeters:
+		return m.OldRadiusMeters(ctx)
+	}
+	return nil, fmt.Errorf("unknown Geofence field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *GeofenceMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case geofence.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case geofence.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case geofence.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case geofence.FieldCreatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case geofence.FieldUpdatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case geofence.FieldDeletedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case geofence.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case geofence.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case geofence.FieldLatitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatitude(v)
+		return nil
+	case geofence.FieldLongitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLongitude(v)
+		return nil
+	case geofence.FieldRadiusMeters:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRadiusMeters(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Geofence field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *GeofenceMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_by != nil {
+		fields = append(fields, geofence.FieldCreatedBy)
+	}
+	if m.addupdated_by != nil {
+		fields = append(fields, geofence.FieldUpdatedBy)
+	}
+	if m.adddeleted_by != nil {
+		fields = append(fields, geofence.FieldDeletedBy)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, geofence.FieldTenantID)
+	}
+	if m.addlatitude != nil {
+		fields = append(fields, geofence.FieldLatitude)
+	}
+	if m.addlongitude != nil {
+		fields = append(fields, geofence.FieldLongitude)
+	}
+	if m.addradius_meters != nil {
+		fields = append(fields, geofence.FieldRadiusMeters)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *GeofenceMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case geofence.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case geofence.FieldUpdatedBy:
+		return m.AddedUpdatedBy()
+	case geofence.FieldDeletedBy:
+		return m.AddedDeletedBy()
+	case geofence.FieldTenantID:
+		return m.AddedTenantID()
+	case geofence.FieldLatitude:
+		return m.AddedLatitude()
+	case geofence.FieldLongitude:
+		return m.AddedLongitude()
+	case geofence.FieldRadiusMeters:
+		return m.AddedRadiusMeters()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *GeofenceMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case geofence.FieldCreatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case geofence.FieldUpdatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedBy(v)
+		return nil
+	case geofence.FieldDeletedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedBy(v)
+		return nil
+	case geofence.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	case geofence.FieldLatitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLatitude(v)
+		return nil
+	case geofence.FieldLongitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLongitude(v)
+		return nil
+	case geofence.FieldRadiusMeters:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRadiusMeters(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Geofence numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *GeofenceMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(geofence.FieldCreatedAt) {
+		fields = append(fields, geofence.FieldCreatedAt)
+	}
+	if m.FieldCleared(geofence.FieldUpdatedAt) {
+		fields = append(fields, geofence.FieldUpdatedAt)
+	}
+	if m.FieldCleared(geofence.FieldDeletedAt) {
+		fields = append(fields, geofence.FieldDeletedAt)
+	}
+	if m.FieldCleared(geofence.FieldCreatedBy) {
+		fields = append(fields, geofence.FieldCreatedBy)
+	}
+	if m.FieldCleared(geofence.FieldUpdatedBy) {
+		fields = append(fields, geofence.FieldUpdatedBy)
+	}
+	if m.FieldCleared(geofence.FieldDeletedBy) {
+		fields = append(fields, geofence.FieldDeletedBy)
+	}
+	if m.FieldCleared(geofence.FieldTenantID) {
+		fields = append(fields, geofence.FieldTenantID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *GeofenceMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *GeofenceMutation) ClearField(name string) error {
+	switch name {
+	case geofence.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case geofence.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case geofence.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case geofence.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case geofence.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case geofence.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case geofence.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	}
+	return fmt.Errorf("unknown Geofence nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *GeofenceMutation) ResetField(name string) error {
+	switch name {
+	case geofence.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case geofence.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case geofence.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case geofence.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case geofence.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case geofence.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case geofence.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case geofence.FieldName:
+		m.ResetName()
+		return nil
+	case geofence.FieldLatitude:
+		m.ResetLatitude()
+		return nil
+	case geofence.FieldLongitude:
+		m.ResetLongitude()
+		return nil
+	case geofence.FieldRadiusMeters:
+		m.ResetRadiusMeters()
+		return nil
+	}
+	return fmt.Errorf("unknown Geofence field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *GeofenceMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *GeofenceMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *GeofenceMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *GeofenceMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *GeofenceMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *GeofenceMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *GeofenceMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Geofence unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *GeofenceMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Geofence edge %s", name)
 }
 
 // HolidayMutation represents an operation that mutates the Holiday nodes in the graph.
@@ -83495,6 +84745,1045 @@ func (m *UserRoleMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserRoleMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown UserRole edge %s", name)
+}
+
+// WifiFingerprintMutation represents an operation that mutates the WifiFingerprint nodes in the graph.
+type WifiFingerprintMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uint32
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	created_by    *uint32
+	addcreated_by *int32
+	updated_by    *uint32
+	addupdated_by *int32
+	deleted_by    *uint32
+	adddeleted_by *int32
+	tenant_id     *uint32
+	addtenant_id  *int32
+	ssid          *string
+	bssid         *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*WifiFingerprint, error)
+	predicates    []predicate.WifiFingerprint
+}
+
+var _ ent.Mutation = (*WifiFingerprintMutation)(nil)
+
+// wififingerprintOption allows management of the mutation configuration using functional options.
+type wififingerprintOption func(*WifiFingerprintMutation)
+
+// newWifiFingerprintMutation creates new mutation for the WifiFingerprint entity.
+func newWifiFingerprintMutation(c config, op Op, opts ...wififingerprintOption) *WifiFingerprintMutation {
+	m := &WifiFingerprintMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeWifiFingerprint,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withWifiFingerprintID sets the ID field of the mutation.
+func withWifiFingerprintID(id uint32) wififingerprintOption {
+	return func(m *WifiFingerprintMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *WifiFingerprint
+		)
+		m.oldValue = func(ctx context.Context) (*WifiFingerprint, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().WifiFingerprint.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withWifiFingerprint sets the old WifiFingerprint of the mutation.
+func withWifiFingerprint(node *WifiFingerprint) wififingerprintOption {
+	return func(m *WifiFingerprintMutation) {
+		m.oldValue = func(context.Context) (*WifiFingerprint, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m WifiFingerprintMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m WifiFingerprintMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of WifiFingerprint entities.
+func (m *WifiFingerprintMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *WifiFingerprintMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *WifiFingerprintMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().WifiFingerprint.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *WifiFingerprintMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *WifiFingerprintMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the WifiFingerprint entity.
+// If the WifiFingerprint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WifiFingerprintMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *WifiFingerprintMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[wififingerprint.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *WifiFingerprintMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[wififingerprint.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *WifiFingerprintMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, wififingerprint.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *WifiFingerprintMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *WifiFingerprintMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the WifiFingerprint entity.
+// If the WifiFingerprint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WifiFingerprintMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *WifiFingerprintMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[wififingerprint.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *WifiFingerprintMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[wififingerprint.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *WifiFingerprintMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, wififingerprint.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *WifiFingerprintMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *WifiFingerprintMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the WifiFingerprint entity.
+// If the WifiFingerprint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WifiFingerprintMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *WifiFingerprintMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[wififingerprint.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *WifiFingerprintMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[wififingerprint.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *WifiFingerprintMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, wififingerprint.FieldDeletedAt)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *WifiFingerprintMutation) SetCreatedBy(u uint32) {
+	m.created_by = &u
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *WifiFingerprintMutation) CreatedBy() (r uint32, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the WifiFingerprint entity.
+// If the WifiFingerprint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WifiFingerprintMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds u to the "created_by" field.
+func (m *WifiFingerprintMutation) AddCreatedBy(u int32) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += u
+	} else {
+		m.addcreated_by = &u
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *WifiFingerprintMutation) AddedCreatedBy() (r int32, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *WifiFingerprintMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[wififingerprint.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *WifiFingerprintMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[wififingerprint.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *WifiFingerprintMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, wififingerprint.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *WifiFingerprintMutation) SetUpdatedBy(u uint32) {
+	m.updated_by = &u
+	m.addupdated_by = nil
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *WifiFingerprintMutation) UpdatedBy() (r uint32, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the WifiFingerprint entity.
+// If the WifiFingerprint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WifiFingerprintMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// AddUpdatedBy adds u to the "updated_by" field.
+func (m *WifiFingerprintMutation) AddUpdatedBy(u int32) {
+	if m.addupdated_by != nil {
+		*m.addupdated_by += u
+	} else {
+		m.addupdated_by = &u
+	}
+}
+
+// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
+func (m *WifiFingerprintMutation) AddedUpdatedBy() (r int32, exists bool) {
+	v := m.addupdated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *WifiFingerprintMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	m.clearedFields[wififingerprint.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *WifiFingerprintMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[wififingerprint.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *WifiFingerprintMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	delete(m.clearedFields, wififingerprint.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "deleted_by" field.
+func (m *WifiFingerprintMutation) SetDeletedBy(u uint32) {
+	m.deleted_by = &u
+	m.adddeleted_by = nil
+}
+
+// DeletedBy returns the value of the "deleted_by" field in the mutation.
+func (m *WifiFingerprintMutation) DeletedBy() (r uint32, exists bool) {
+	v := m.deleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "deleted_by" field's value of the WifiFingerprint entity.
+// If the WifiFingerprint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WifiFingerprintMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// AddDeletedBy adds u to the "deleted_by" field.
+func (m *WifiFingerprintMutation) AddDeletedBy(u int32) {
+	if m.adddeleted_by != nil {
+		*m.adddeleted_by += u
+	} else {
+		m.adddeleted_by = &u
+	}
+}
+
+// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
+func (m *WifiFingerprintMutation) AddedDeletedBy() (r int32, exists bool) {
+	v := m.adddeleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (m *WifiFingerprintMutation) ClearDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	m.clearedFields[wififingerprint.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
+func (m *WifiFingerprintMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[wififingerprint.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" field.
+func (m *WifiFingerprintMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	delete(m.clearedFields, wififingerprint.FieldDeletedBy)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *WifiFingerprintMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *WifiFingerprintMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the WifiFingerprint entity.
+// If the WifiFingerprint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WifiFingerprintMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *WifiFingerprintMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *WifiFingerprintMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *WifiFingerprintMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[wififingerprint.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *WifiFingerprintMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[wififingerprint.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *WifiFingerprintMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, wififingerprint.FieldTenantID)
+}
+
+// SetSsid sets the "ssid" field.
+func (m *WifiFingerprintMutation) SetSsid(s string) {
+	m.ssid = &s
+}
+
+// Ssid returns the value of the "ssid" field in the mutation.
+func (m *WifiFingerprintMutation) Ssid() (r string, exists bool) {
+	v := m.ssid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSsid returns the old "ssid" field's value of the WifiFingerprint entity.
+// If the WifiFingerprint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WifiFingerprintMutation) OldSsid(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSsid is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSsid requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSsid: %w", err)
+	}
+	return oldValue.Ssid, nil
+}
+
+// ResetSsid resets all changes to the "ssid" field.
+func (m *WifiFingerprintMutation) ResetSsid() {
+	m.ssid = nil
+}
+
+// SetBssid sets the "bssid" field.
+func (m *WifiFingerprintMutation) SetBssid(s string) {
+	m.bssid = &s
+}
+
+// Bssid returns the value of the "bssid" field in the mutation.
+func (m *WifiFingerprintMutation) Bssid() (r string, exists bool) {
+	v := m.bssid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBssid returns the old "bssid" field's value of the WifiFingerprint entity.
+// If the WifiFingerprint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WifiFingerprintMutation) OldBssid(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBssid is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBssid requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBssid: %w", err)
+	}
+	return oldValue.Bssid, nil
+}
+
+// ResetBssid resets all changes to the "bssid" field.
+func (m *WifiFingerprintMutation) ResetBssid() {
+	m.bssid = nil
+}
+
+// Where appends a list predicates to the WifiFingerprintMutation builder.
+func (m *WifiFingerprintMutation) Where(ps ...predicate.WifiFingerprint) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the WifiFingerprintMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *WifiFingerprintMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.WifiFingerprint, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *WifiFingerprintMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *WifiFingerprintMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (WifiFingerprint).
+func (m *WifiFingerprintMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *WifiFingerprintMutation) Fields() []string {
+	fields := make([]string, 0, 9)
+	if m.created_at != nil {
+		fields = append(fields, wififingerprint.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, wififingerprint.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, wififingerprint.FieldDeletedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, wififingerprint.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, wififingerprint.FieldUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		fields = append(fields, wififingerprint.FieldDeletedBy)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, wififingerprint.FieldTenantID)
+	}
+	if m.ssid != nil {
+		fields = append(fields, wififingerprint.FieldSsid)
+	}
+	if m.bssid != nil {
+		fields = append(fields, wififingerprint.FieldBssid)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *WifiFingerprintMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case wififingerprint.FieldCreatedAt:
+		return m.CreatedAt()
+	case wififingerprint.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case wififingerprint.FieldDeletedAt:
+		return m.DeletedAt()
+	case wififingerprint.FieldCreatedBy:
+		return m.CreatedBy()
+	case wififingerprint.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case wififingerprint.FieldDeletedBy:
+		return m.DeletedBy()
+	case wififingerprint.FieldTenantID:
+		return m.TenantID()
+	case wififingerprint.FieldSsid:
+		return m.Ssid()
+	case wififingerprint.FieldBssid:
+		return m.Bssid()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *WifiFingerprintMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case wififingerprint.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case wififingerprint.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case wififingerprint.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case wififingerprint.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case wififingerprint.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case wififingerprint.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case wififingerprint.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case wififingerprint.FieldSsid:
+		return m.OldSsid(ctx)
+	case wififingerprint.FieldBssid:
+		return m.OldBssid(ctx)
+	}
+	return nil, fmt.Errorf("unknown WifiFingerprint field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WifiFingerprintMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case wififingerprint.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case wififingerprint.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case wififingerprint.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case wififingerprint.FieldCreatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case wififingerprint.FieldUpdatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case wififingerprint.FieldDeletedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case wififingerprint.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case wififingerprint.FieldSsid:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSsid(v)
+		return nil
+	case wififingerprint.FieldBssid:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBssid(v)
+		return nil
+	}
+	return fmt.Errorf("unknown WifiFingerprint field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *WifiFingerprintMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_by != nil {
+		fields = append(fields, wififingerprint.FieldCreatedBy)
+	}
+	if m.addupdated_by != nil {
+		fields = append(fields, wififingerprint.FieldUpdatedBy)
+	}
+	if m.adddeleted_by != nil {
+		fields = append(fields, wififingerprint.FieldDeletedBy)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, wififingerprint.FieldTenantID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *WifiFingerprintMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case wififingerprint.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case wififingerprint.FieldUpdatedBy:
+		return m.AddedUpdatedBy()
+	case wififingerprint.FieldDeletedBy:
+		return m.AddedDeletedBy()
+	case wififingerprint.FieldTenantID:
+		return m.AddedTenantID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WifiFingerprintMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case wififingerprint.FieldCreatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case wififingerprint.FieldUpdatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedBy(v)
+		return nil
+	case wififingerprint.FieldDeletedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedBy(v)
+		return nil
+	case wififingerprint.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown WifiFingerprint numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *WifiFingerprintMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(wififingerprint.FieldCreatedAt) {
+		fields = append(fields, wififingerprint.FieldCreatedAt)
+	}
+	if m.FieldCleared(wififingerprint.FieldUpdatedAt) {
+		fields = append(fields, wififingerprint.FieldUpdatedAt)
+	}
+	if m.FieldCleared(wififingerprint.FieldDeletedAt) {
+		fields = append(fields, wififingerprint.FieldDeletedAt)
+	}
+	if m.FieldCleared(wififingerprint.FieldCreatedBy) {
+		fields = append(fields, wififingerprint.FieldCreatedBy)
+	}
+	if m.FieldCleared(wififingerprint.FieldUpdatedBy) {
+		fields = append(fields, wififingerprint.FieldUpdatedBy)
+	}
+	if m.FieldCleared(wififingerprint.FieldDeletedBy) {
+		fields = append(fields, wififingerprint.FieldDeletedBy)
+	}
+	if m.FieldCleared(wififingerprint.FieldTenantID) {
+		fields = append(fields, wififingerprint.FieldTenantID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *WifiFingerprintMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *WifiFingerprintMutation) ClearField(name string) error {
+	switch name {
+	case wififingerprint.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case wififingerprint.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case wififingerprint.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case wififingerprint.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case wififingerprint.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case wififingerprint.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case wififingerprint.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	}
+	return fmt.Errorf("unknown WifiFingerprint nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *WifiFingerprintMutation) ResetField(name string) error {
+	switch name {
+	case wififingerprint.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case wififingerprint.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case wififingerprint.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case wififingerprint.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case wififingerprint.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case wififingerprint.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case wififingerprint.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case wififingerprint.FieldSsid:
+		m.ResetSsid()
+		return nil
+	case wififingerprint.FieldBssid:
+		m.ResetBssid()
+		return nil
+	}
+	return fmt.Errorf("unknown WifiFingerprint field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *WifiFingerprintMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *WifiFingerprintMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *WifiFingerprintMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *WifiFingerprintMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *WifiFingerprintMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *WifiFingerprintMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *WifiFingerprintMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown WifiFingerprint unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *WifiFingerprintMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown WifiFingerprint edge %s", name)
 }
 
 // WorkflowDefinitionMutation represents an operation that mutates the WorkflowDefinition nodes in the graph.

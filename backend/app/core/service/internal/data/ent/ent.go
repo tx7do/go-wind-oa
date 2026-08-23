@@ -18,6 +18,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/expenseapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/expenseitem"
 	"go-wind-oa/app/core/service/internal/data/ent/file"
+	"go-wind-oa/app/core/service/internal/data/ent/geofence"
 	"go-wind-oa/app/core/service/internal/data/ent/holiday"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
@@ -60,6 +61,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/userorgunit"
 	"go-wind-oa/app/core/service/internal/data/ent/userposition"
 	"go-wind-oa/app/core/service/internal/data/ent/userrole"
+	"go-wind-oa/app/core/service/internal/data/ent/wififingerprint"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowlog"
@@ -142,6 +144,7 @@ func checkColumn(t, c string) error {
 			expenseapplication.Table:       expenseapplication.ValidColumn,
 			expenseitem.Table:              expenseitem.ValidColumn,
 			file.Table:                     file.ValidColumn,
+			geofence.Table:                 geofence.ValidColumn,
 			holiday.Table:                  holiday.ValidColumn,
 			internalmessage.Table:          internalmessage.ValidColumn,
 			internalmessagecategory.Table:  internalmessagecategory.ValidColumn,
@@ -184,6 +187,7 @@ func checkColumn(t, c string) error {
 			userorgunit.Table:              userorgunit.ValidColumn,
 			userposition.Table:             userposition.ValidColumn,
 			userrole.Table:                 userrole.ValidColumn,
+			wififingerprint.Table:          wififingerprint.ValidColumn,
 			workflowdefinition.Table:       workflowdefinition.ValidColumn,
 			workflowinstance.Table:         workflowinstance.ValidColumn,
 			workflowlog.Table:              workflowlog.ValidColumn,

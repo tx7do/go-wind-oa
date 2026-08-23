@@ -36,6 +36,8 @@ type Tx struct {
 	ExpenseItem *ExpenseItemClient
 	// File is the client for interacting with the File builders.
 	File *FileClient
+	// Geofence is the client for interacting with the Geofence builders.
+	Geofence *GeofenceClient
 	// Holiday is the client for interacting with the Holiday builders.
 	Holiday *HolidayClient
 	// InternalMessage is the client for interacting with the InternalMessage builders.
@@ -120,6 +122,8 @@ type Tx struct {
 	UserPosition *UserPositionClient
 	// UserRole is the client for interacting with the UserRole builders.
 	UserRole *UserRoleClient
+	// WifiFingerprint is the client for interacting with the WifiFingerprint builders.
+	WifiFingerprint *WifiFingerprintClient
 	// WorkflowDefinition is the client for interacting with the WorkflowDefinition builders.
 	WorkflowDefinition *WorkflowDefinitionClient
 	// WorkflowInstance is the client for interacting with the WorkflowInstance builders.
@@ -271,6 +275,7 @@ func (tx *Tx) init() {
 	tx.ExpenseApplication = NewExpenseApplicationClient(tx.config)
 	tx.ExpenseItem = NewExpenseItemClient(tx.config)
 	tx.File = NewFileClient(tx.config)
+	tx.Geofence = NewGeofenceClient(tx.config)
 	tx.Holiday = NewHolidayClient(tx.config)
 	tx.InternalMessage = NewInternalMessageClient(tx.config)
 	tx.InternalMessageCategory = NewInternalMessageCategoryClient(tx.config)
@@ -313,6 +318,7 @@ func (tx *Tx) init() {
 	tx.UserOrgUnit = NewUserOrgUnitClient(tx.config)
 	tx.UserPosition = NewUserPositionClient(tx.config)
 	tx.UserRole = NewUserRoleClient(tx.config)
+	tx.WifiFingerprint = NewWifiFingerprintClient(tx.config)
 	tx.WorkflowDefinition = NewWorkflowDefinitionClient(tx.config)
 	tx.WorkflowInstance = NewWorkflowInstanceClient(tx.config)
 	tx.WorkflowLog = NewWorkflowLogClient(tx.config)

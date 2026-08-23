@@ -60,4 +60,48 @@ service AttendanceService {
       get: "/admin/v1/oa/attendance/holidays"
     };
   }
+
+  // 设置地理围栏（按 id 存在则覆盖）
+  rpc UpsertGeofence(oa.service.v1.Geofence) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/oa/attendance/geofences"
+      body: "*"
+    };
+  }
+
+  // 删除地理围栏
+  rpc DeleteGeofence(oa.service.v1.DeleteGeofenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/oa/attendance/geofences/{id}"
+    };
+  }
+
+  // 查询地理围栏
+  rpc ListGeofences(oa.service.v1.ListGeofencesRequest) returns (oa.service.v1.ListGeofencesResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/attendance/geofences"
+    };
+  }
+
+  // 设置 Wi-Fi 指纹白名单（按 id 存在则覆盖）
+  rpc UpsertWifiFingerprint(oa.service.v1.WifiFingerprint) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/oa/attendance/wifi-fingerprints"
+      body: "*"
+    };
+  }
+
+  // 删除 Wi-Fi 指纹白名单
+  rpc DeleteWifiFingerprint(oa.service.v1.DeleteWifiFingerprintRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/oa/attendance/wifi-fingerprints/{id}"
+    };
+  }
+
+  // 查询 Wi-Fi 指纹白名单
+  rpc ListWifiFingerprints(oa.service.v1.ListWifiFingerprintsRequest) returns (oa.service.v1.ListWifiFingerprintsResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/attendance/wifi-fingerprints"
+    };
+  }
 }

@@ -21,29 +21,47 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationAttendanceServiceDeleteGeofence = "/admin.service.v1.AttendanceService/DeleteGeofence"
 const OperationAttendanceServiceDeleteHoliday = "/admin.service.v1.AttendanceService/DeleteHoliday"
+const OperationAttendanceServiceDeleteWifiFingerprint = "/admin.service.v1.AttendanceService/DeleteWifiFingerprint"
 const OperationAttendanceServiceGetAttendanceSetting = "/admin.service.v1.AttendanceService/GetAttendanceSetting"
 const OperationAttendanceServiceListAttendanceRecords = "/admin.service.v1.AttendanceService/ListAttendanceRecords"
+const OperationAttendanceServiceListGeofences = "/admin.service.v1.AttendanceService/ListGeofences"
 const OperationAttendanceServiceListHolidays = "/admin.service.v1.AttendanceService/ListHolidays"
+const OperationAttendanceServiceListWifiFingerprints = "/admin.service.v1.AttendanceService/ListWifiFingerprints"
 const OperationAttendanceServiceRunDailySettlement = "/admin.service.v1.AttendanceService/RunDailySettlement"
 const OperationAttendanceServiceUpdateAttendanceSetting = "/admin.service.v1.AttendanceService/UpdateAttendanceSetting"
+const OperationAttendanceServiceUpsertGeofence = "/admin.service.v1.AttendanceService/UpsertGeofence"
 const OperationAttendanceServiceUpsertHoliday = "/admin.service.v1.AttendanceService/UpsertHoliday"
+const OperationAttendanceServiceUpsertWifiFingerprint = "/admin.service.v1.AttendanceService/UpsertWifiFingerprint"
 
 type AttendanceServiceHTTPServer interface {
+	// DeleteGeofence 删除地理围栏
+	DeleteGeofence(context.Context, *v1.DeleteGeofenceRequest) (*emptypb.Empty, error)
 	// DeleteHoliday 删除节假日/调休日设置
 	DeleteHoliday(context.Context, *v1.DeleteHolidayRequest) (*emptypb.Empty, error)
+	// DeleteWifiFingerprint 删除 Wi-Fi 指纹白名单
+	DeleteWifiFingerprint(context.Context, *v1.DeleteWifiFingerprintRequest) (*emptypb.Empty, error)
 	// GetAttendanceSetting 读取考勤设置
 	GetAttendanceSetting(context.Context, *emptypb.Empty) (*v1.AttendanceSetting, error)
 	// ListAttendanceRecords 查询打卡记录（按工作日，可选用户）
 	ListAttendanceRecords(context.Context, *v1.ListAttendanceRecordsRequest) (*v1.ListAttendanceRecordsResponse, error)
+	// ListGeofences 查询地理围栏
+	ListGeofences(context.Context, *v1.ListGeofencesRequest) (*v1.ListGeofencesResponse, error)
 	// ListHolidays 查询年度节假日/调休日设置
 	ListHolidays(context.Context, *v1.ListHolidaysRequest) (*v1.ListHolidaysResponse, error)
+	// ListWifiFingerprints 查询 Wi-Fi 指纹白名单
+	ListWifiFingerprints(context.Context, *v1.ListWifiFingerprintsRequest) (*v1.ListWifiFingerprintsResponse, error)
 	// RunDailySettlement 工作日结算（物化旷工/请假，补结算未签退记录）
 	RunDailySettlement(context.Context, *v1.RunDailySettlementRequest) (*v1.RunDailySettlementResponse, error)
 	// UpdateAttendanceSetting 更新考勤设置
 	UpdateAttendanceSetting(context.Context, *v1.AttendanceSetting) (*emptypb.Empty, error)
+	// UpsertGeofence 设置地理围栏（按 id 存在则覆盖）
+	UpsertGeofence(context.Context, *v1.Geofence) (*emptypb.Empty, error)
 	// UpsertHoliday 设置节假日/调休日（按日期存在则覆盖）
 	UpsertHoliday(context.Context, *v1.Holiday) (*emptypb.Empty, error)
+	// UpsertWifiFingerprint 设置 Wi-Fi 指纹白名单（按 id 存在则覆盖）
+	UpsertWifiFingerprint(context.Context, *v1.WifiFingerprint) (*emptypb.Empty, error)
 }
 
 func RegisterAttendanceServiceHTTPServer(s *http.Server, srv AttendanceServiceHTTPServer) {
@@ -55,6 +73,12 @@ func RegisterAttendanceServiceHTTPServer(s *http.Server, srv AttendanceServiceHT
 	r.POST("/admin/v1/oa/attendance/holidays", _AttendanceService_UpsertHoliday0_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/oa/attendance/holidays/{id}", _AttendanceService_DeleteHoliday0_HTTP_Handler(srv))
 	r.GET("/admin/v1/oa/attendance/holidays", _AttendanceService_ListHolidays0_HTTP_Handler(srv))
+	r.POST("/admin/v1/oa/attendance/geofences", _AttendanceService_UpsertGeofence0_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/oa/attendance/geofences/{id}", _AttendanceService_DeleteGeofence0_HTTP_Handler(srv))
+	r.GET("/admin/v1/oa/attendance/geofences", _AttendanceService_ListGeofences0_HTTP_Handler(srv))
+	r.POST("/admin/v1/oa/attendance/wifi-fingerprints", _AttendanceService_UpsertWifiFingerprint0_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/oa/attendance/wifi-fingerprints/{id}", _AttendanceService_DeleteWifiFingerprint0_HTTP_Handler(srv))
+	r.GET("/admin/v1/oa/attendance/wifi-fingerprints", _AttendanceService_ListWifiFingerprints0_HTTP_Handler(srv))
 }
 
 func _AttendanceService_ListAttendanceRecords0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
@@ -202,21 +226,159 @@ func _AttendanceService_ListHolidays0_HTTP_Handler(srv AttendanceServiceHTTPServ
 	}
 }
 
+func _AttendanceService_UpsertGeofence0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.Geofence
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceUpsertGeofence)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpsertGeofence(ctx, req.(*v1.Geofence))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AttendanceService_DeleteGeofence0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.DeleteGeofenceRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceDeleteGeofence)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteGeofence(ctx, req.(*v1.DeleteGeofenceRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AttendanceService_ListGeofences0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.ListGeofencesRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceListGeofences)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListGeofences(ctx, req.(*v1.ListGeofencesRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.ListGeofencesResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AttendanceService_UpsertWifiFingerprint0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.WifiFingerprint
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceUpsertWifiFingerprint)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpsertWifiFingerprint(ctx, req.(*v1.WifiFingerprint))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AttendanceService_DeleteWifiFingerprint0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.DeleteWifiFingerprintRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceDeleteWifiFingerprint)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteWifiFingerprint(ctx, req.(*v1.DeleteWifiFingerprintRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AttendanceService_ListWifiFingerprints0_HTTP_Handler(srv AttendanceServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.ListWifiFingerprintsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAttendanceServiceListWifiFingerprints)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListWifiFingerprints(ctx, req.(*v1.ListWifiFingerprintsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.ListWifiFingerprintsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AttendanceServiceHTTPClient interface {
+	// DeleteGeofence 删除地理围栏
+	DeleteGeofence(ctx context.Context, req *v1.DeleteGeofenceRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// DeleteHoliday 删除节假日/调休日设置
 	DeleteHoliday(ctx context.Context, req *v1.DeleteHolidayRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// DeleteWifiFingerprint 删除 Wi-Fi 指纹白名单
+	DeleteWifiFingerprint(ctx context.Context, req *v1.DeleteWifiFingerprintRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// GetAttendanceSetting 读取考勤设置
 	GetAttendanceSetting(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *v1.AttendanceSetting, err error)
 	// ListAttendanceRecords 查询打卡记录（按工作日，可选用户）
 	ListAttendanceRecords(ctx context.Context, req *v1.ListAttendanceRecordsRequest, opts ...http.CallOption) (rsp *v1.ListAttendanceRecordsResponse, err error)
+	// ListGeofences 查询地理围栏
+	ListGeofences(ctx context.Context, req *v1.ListGeofencesRequest, opts ...http.CallOption) (rsp *v1.ListGeofencesResponse, err error)
 	// ListHolidays 查询年度节假日/调休日设置
 	ListHolidays(ctx context.Context, req *v1.ListHolidaysRequest, opts ...http.CallOption) (rsp *v1.ListHolidaysResponse, err error)
+	// ListWifiFingerprints 查询 Wi-Fi 指纹白名单
+	ListWifiFingerprints(ctx context.Context, req *v1.ListWifiFingerprintsRequest, opts ...http.CallOption) (rsp *v1.ListWifiFingerprintsResponse, err error)
 	// RunDailySettlement 工作日结算（物化旷工/请假，补结算未签退记录）
 	RunDailySettlement(ctx context.Context, req *v1.RunDailySettlementRequest, opts ...http.CallOption) (rsp *v1.RunDailySettlementResponse, err error)
 	// UpdateAttendanceSetting 更新考勤设置
 	UpdateAttendanceSetting(ctx context.Context, req *v1.AttendanceSetting, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// UpsertGeofence 设置地理围栏（按 id 存在则覆盖）
+	UpsertGeofence(ctx context.Context, req *v1.Geofence, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// UpsertHoliday 设置节假日/调休日（按日期存在则覆盖）
 	UpsertHoliday(ctx context.Context, req *v1.Holiday, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// UpsertWifiFingerprint 设置 Wi-Fi 指纹白名单（按 id 存在则覆盖）
+	UpsertWifiFingerprint(ctx context.Context, req *v1.WifiFingerprint, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type AttendanceServiceHTTPClientImpl struct {
@@ -227,12 +389,40 @@ func NewAttendanceServiceHTTPClient(client *http.Client) AttendanceServiceHTTPCl
 	return &AttendanceServiceHTTPClientImpl{client}
 }
 
+// DeleteGeofence 删除地理围栏
+func (c *AttendanceServiceHTTPClientImpl) DeleteGeofence(ctx context.Context, in *v1.DeleteGeofenceRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/oa/attendance/geofences/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAttendanceServiceDeleteGeofence))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // DeleteHoliday 删除节假日/调休日设置
 func (c *AttendanceServiceHTTPClientImpl) DeleteHoliday(ctx context.Context, in *v1.DeleteHolidayRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/admin/v1/oa/attendance/holidays/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAttendanceServiceDeleteHoliday))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// DeleteWifiFingerprint 删除 Wi-Fi 指纹白名单
+func (c *AttendanceServiceHTTPClientImpl) DeleteWifiFingerprint(ctx context.Context, in *v1.DeleteWifiFingerprintRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/oa/attendance/wifi-fingerprints/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAttendanceServiceDeleteWifiFingerprint))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
@@ -269,12 +459,40 @@ func (c *AttendanceServiceHTTPClientImpl) ListAttendanceRecords(ctx context.Cont
 	return &out, nil
 }
 
+// ListGeofences 查询地理围栏
+func (c *AttendanceServiceHTTPClientImpl) ListGeofences(ctx context.Context, in *v1.ListGeofencesRequest, opts ...http.CallOption) (*v1.ListGeofencesResponse, error) {
+	var out v1.ListGeofencesResponse
+	pattern := "/admin/v1/oa/attendance/geofences"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAttendanceServiceListGeofences))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // ListHolidays 查询年度节假日/调休日设置
 func (c *AttendanceServiceHTTPClientImpl) ListHolidays(ctx context.Context, in *v1.ListHolidaysRequest, opts ...http.CallOption) (*v1.ListHolidaysResponse, error) {
 	var out v1.ListHolidaysResponse
 	pattern := "/admin/v1/oa/attendance/holidays"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAttendanceServiceListHolidays))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// ListWifiFingerprints 查询 Wi-Fi 指纹白名单
+func (c *AttendanceServiceHTTPClientImpl) ListWifiFingerprints(ctx context.Context, in *v1.ListWifiFingerprintsRequest, opts ...http.CallOption) (*v1.ListWifiFingerprintsResponse, error) {
+	var out v1.ListWifiFingerprintsResponse
+	pattern := "/admin/v1/oa/attendance/wifi-fingerprints"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAttendanceServiceListWifiFingerprints))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -311,12 +529,40 @@ func (c *AttendanceServiceHTTPClientImpl) UpdateAttendanceSetting(ctx context.Co
 	return &out, nil
 }
 
+// UpsertGeofence 设置地理围栏（按 id 存在则覆盖）
+func (c *AttendanceServiceHTTPClientImpl) UpsertGeofence(ctx context.Context, in *v1.Geofence, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/oa/attendance/geofences"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAttendanceServiceUpsertGeofence))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // UpsertHoliday 设置节假日/调休日（按日期存在则覆盖）
 func (c *AttendanceServiceHTTPClientImpl) UpsertHoliday(ctx context.Context, in *v1.Holiday, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/admin/v1/oa/attendance/holidays"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAttendanceServiceUpsertHoliday))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// UpsertWifiFingerprint 设置 Wi-Fi 指纹白名单（按 id 存在则覆盖）
+func (c *AttendanceServiceHTTPClientImpl) UpsertWifiFingerprint(ctx context.Context, in *v1.WifiFingerprint, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/oa/attendance/wifi-fingerprints"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAttendanceServiceUpsertWifiFingerprint))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

@@ -58,3 +58,27 @@ func (s *AttendanceService) DeleteHoliday(ctx context.Context, req *oaV1.DeleteH
 func (s *AttendanceService) ListHolidays(ctx context.Context, req *oaV1.ListHolidaysRequest) (*oaV1.ListHolidaysResponse, error) {
 	return s.attendanceServiceClient.ListHolidays(ctx, req)
 }
+
+func (s *AttendanceService) UpsertGeofence(ctx context.Context, req *oaV1.Geofence) (*emptypb.Empty, error) {
+	return s.attendanceServiceClient.UpsertGeofence(ctx, req)
+}
+
+func (s *AttendanceService) DeleteGeofence(ctx context.Context, req *oaV1.DeleteGeofenceRequest) (*emptypb.Empty, error) {
+	return s.attendanceServiceClient.DeleteGeofence(ctx, req)
+}
+
+func (s *AttendanceService) ListGeofences(ctx context.Context, req *oaV1.ListGeofencesRequest) (*oaV1.ListGeofencesResponse, error) {
+	return s.attendanceServiceClient.ListGeofences(ctx, req)
+}
+
+func (s *AttendanceService) UpsertWifiFingerprint(ctx context.Context, req *oaV1.WifiFingerprint) (*emptypb.Empty, error) {
+	return s.attendanceServiceClient.UpsertWifiFingerprint(ctx, req)
+}
+
+func (s *AttendanceService) DeleteWifiFingerprint(ctx context.Context, req *oaV1.DeleteWifiFingerprintRequest) (*emptypb.Empty, error) {
+	return s.attendanceServiceClient.DeleteWifiFingerprint(ctx, req)
+}
+
+func (s *AttendanceService) ListWifiFingerprints(ctx context.Context, req *oaV1.ListWifiFingerprintsRequest) (*oaV1.ListWifiFingerprintsResponse, error) {
+	return s.attendanceServiceClient.ListWifiFingerprints(ctx, req)
+}

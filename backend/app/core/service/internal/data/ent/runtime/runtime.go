@@ -17,6 +17,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/expenseapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/expenseitem"
 	"go-wind-oa/app/core/service/internal/data/ent/file"
+	"go-wind-oa/app/core/service/internal/data/ent/geofence"
 	"go-wind-oa/app/core/service/internal/data/ent/holiday"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
@@ -60,6 +61,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/userorgunit"
 	"go-wind-oa/app/core/service/internal/data/ent/userposition"
 	"go-wind-oa/app/core/service/internal/data/ent/userrole"
+	"go-wind-oa/app/core/service/internal/data/ent/wififingerprint"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowlog"
@@ -477,6 +479,36 @@ func init() {
 	fileDescID := fileMixinFields0[0].Descriptor()
 	// file.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	file.IDValidator = fileDescID.Validators[0].(func(uint32) error)
+	geofenceMixin := schema.Geofence{}.Mixin()
+	geofence.Policy = privacy.NewPolicies(geofenceMixin[3], schema.Geofence{})
+	geofence.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := geofence.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	geofenceMixinFields0 := geofenceMixin[0].Fields()
+	_ = geofenceMixinFields0
+	geofenceMixinFields3 := geofenceMixin[3].Fields()
+	_ = geofenceMixinFields3
+	geofenceFields := schema.Geofence{}.Fields()
+	_ = geofenceFields
+	// geofenceDescTenantID is the schema descriptor for tenant_id field.
+	geofenceDescTenantID := geofenceMixinFields3[0].Descriptor()
+	// geofence.DefaultTenantID holds the default value on creation for the tenant_id field.
+	geofence.DefaultTenantID = geofenceDescTenantID.Default.(uint32)
+	// geofenceDescName is the schema descriptor for name field.
+	geofenceDescName := geofenceFields[0].Descriptor()
+	// geofence.DefaultName holds the default value on creation for the name field.
+	geofence.DefaultName = geofenceDescName.Default.(string)
+	// geofence.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	geofence.NameValidator = geofenceDescName.Validators[0].(func(string) error)
+	// geofenceDescID is the schema descriptor for id field.
+	geofenceDescID := geofenceMixinFields0[0].Descriptor()
+	// geofence.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	geofence.IDValidator = geofenceDescID.Validators[0].(func(uint32) error)
 	holidayMixin := schema.Holiday{}.Mixin()
 	holiday.Policy = privacy.NewPolicies(holidayMixin[3], schema.Holiday{})
 	holiday.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -1786,6 +1818,40 @@ func init() {
 	userroleDescID := userroleMixinFields0[0].Descriptor()
 	// userrole.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	userrole.IDValidator = userroleDescID.Validators[0].(func(uint32) error)
+	wififingerprintMixin := schema.WifiFingerprint{}.Mixin()
+	wififingerprint.Policy = privacy.NewPolicies(wififingerprintMixin[3], schema.WifiFingerprint{})
+	wififingerprint.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := wififingerprint.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	wififingerprintMixinFields0 := wififingerprintMixin[0].Fields()
+	_ = wififingerprintMixinFields0
+	wififingerprintMixinFields3 := wififingerprintMixin[3].Fields()
+	_ = wififingerprintMixinFields3
+	wififingerprintFields := schema.WifiFingerprint{}.Fields()
+	_ = wififingerprintFields
+	// wififingerprintDescTenantID is the schema descriptor for tenant_id field.
+	wififingerprintDescTenantID := wififingerprintMixinFields3[0].Descriptor()
+	// wififingerprint.DefaultTenantID holds the default value on creation for the tenant_id field.
+	wififingerprint.DefaultTenantID = wififingerprintDescTenantID.Default.(uint32)
+	// wififingerprintDescSsid is the schema descriptor for ssid field.
+	wififingerprintDescSsid := wififingerprintFields[0].Descriptor()
+	// wififingerprint.DefaultSsid holds the default value on creation for the ssid field.
+	wififingerprint.DefaultSsid = wififingerprintDescSsid.Default.(string)
+	// wififingerprint.SsidValidator is a validator for the "ssid" field. It is called by the builders before save.
+	wififingerprint.SsidValidator = wififingerprintDescSsid.Validators[0].(func(string) error)
+	// wififingerprintDescBssid is the schema descriptor for bssid field.
+	wififingerprintDescBssid := wififingerprintFields[1].Descriptor()
+	// wififingerprint.BssidValidator is a validator for the "bssid" field. It is called by the builders before save.
+	wififingerprint.BssidValidator = wififingerprintDescBssid.Validators[0].(func(string) error)
+	// wififingerprintDescID is the schema descriptor for id field.
+	wififingerprintDescID := wififingerprintMixinFields0[0].Descriptor()
+	// wififingerprint.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	wififingerprint.IDValidator = wififingerprintDescID.Validators[0].(func(uint32) error)
 	workflowdefinitionMixin := schema.WorkflowDefinition{}.Mixin()
 	workflowdefinition.Policy = privacy.NewPolicies(workflowdefinitionMixin[3], schema.WorkflowDefinition{})
 	workflowdefinition.Hooks[0] = func(next ent.Mutator) ent.Mutator {

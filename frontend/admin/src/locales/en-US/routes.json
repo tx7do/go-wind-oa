@@ -10,12 +10,13 @@
     "expense": "Expense Management",
     "approval": "Approval Center",
     "holidays": "Holidays",
+    "attendanceFence": "Attendance Geofence",
+    "attendanceWifi": "Attendance Wi-Fi Fingerprint",
     "businessTrip": "Business Trip Applications",
     "overtime": "Overtime Applications",
     "sealApplication": "Seal Applications",
     "outing": "Outing Applications",
-    "announcement": "Announcement",
-    "directory": "Directory"
+    "announcement": "Announcement"
   },
   "dashboard": {
     "title": "Dashboard",

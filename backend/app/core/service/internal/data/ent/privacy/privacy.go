@@ -399,6 +399,30 @@ func (f FileMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) 
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.FileMutation", m)
 }
 
+// The GeofenceQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type GeofenceQueryRuleFunc func(context.Context, *ent.GeofenceQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f GeofenceQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.GeofenceQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.GeofenceQuery", q)
+}
+
+// The GeofenceMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type GeofenceMutationRuleFunc func(context.Context, *ent.GeofenceMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f GeofenceMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.GeofenceMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.GeofenceMutation", m)
+}
+
 // The HolidayQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type HolidayQueryRuleFunc func(context.Context, *ent.HolidayQuery) error
@@ -1407,6 +1431,30 @@ func (f UserRoleMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutati
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.UserRoleMutation", m)
 }
 
+// The WifiFingerprintQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type WifiFingerprintQueryRuleFunc func(context.Context, *ent.WifiFingerprintQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f WifiFingerprintQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.WifiFingerprintQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.WifiFingerprintQuery", q)
+}
+
+// The WifiFingerprintMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type WifiFingerprintMutationRuleFunc func(context.Context, *ent.WifiFingerprintMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f WifiFingerprintMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.WifiFingerprintMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.WifiFingerprintMutation", m)
+}
+
 // The WorkflowDefinitionQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type WorkflowDefinitionQueryRuleFunc func(context.Context, *ent.WorkflowDefinitionQuery) error
@@ -1562,6 +1610,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.FileQuery:
 		return q.Filter(), nil
+	case *ent.GeofenceQuery:
+		return q.Filter(), nil
 	case *ent.HolidayQuery:
 		return q.Filter(), nil
 	case *ent.InternalMessageQuery:
@@ -1646,6 +1696,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.UserRoleQuery:
 		return q.Filter(), nil
+	case *ent.WifiFingerprintQuery:
+		return q.Filter(), nil
 	case *ent.WorkflowDefinitionQuery:
 		return q.Filter(), nil
 	case *ent.WorkflowInstanceQuery:
@@ -1684,6 +1736,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.ExpenseItemMutation:
 		return m.Filter(), nil
 	case *ent.FileMutation:
+		return m.Filter(), nil
+	case *ent.GeofenceMutation:
 		return m.Filter(), nil
 	case *ent.HolidayMutation:
 		return m.Filter(), nil
@@ -1768,6 +1822,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.UserPositionMutation:
 		return m.Filter(), nil
 	case *ent.UserRoleMutation:
+		return m.Filter(), nil
+	case *ent.WifiFingerprintMutation:
 		return m.Filter(), nil
 	case *ent.WorkflowDefinitionMutation:
 		return m.Filter(), nil

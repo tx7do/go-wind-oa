@@ -10,12 +10,13 @@
     "expense": "报销管理",
     "approval": "审批中心",
     "holidays": "节假日设置",
+    "attendanceFence": "考勤地理围栏",
+    "attendanceWifi": "考勤 Wi-Fi 指纹",
     "businessTrip": "出差申请",
     "overtime": "加班申请",
     "sealApplication": "用印申请",
     "outing": "外出申请",
-    "announcement": "公告发布",
-    "directory": "通讯录"
+    "announcement": "公告发布"
   },
   "dashboard": {
     "title": "概览",

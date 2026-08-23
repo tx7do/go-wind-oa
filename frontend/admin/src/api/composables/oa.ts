@@ -36,6 +36,10 @@ import type {
   oaservicev1_AttendanceSetting,
   oaservicev1_RunDailySettlementRequest,
   oaservicev1_RunDailySettlementResponse,
+  oaservicev1_Geofence,
+  oaservicev1_ListGeofencesResponse,
+  oaservicev1_WifiFingerprint,
+  oaservicev1_ListWifiFingerprintsResponse,
 } from "@/api/generated/admin/service/v1";
 import { type PaginationQuery } from "@/core/transport/rest";
 import { apiClient } from "@/api/client";
@@ -628,18 +632,84 @@ export function positionDisplayName(p?: identityservicev1_Position): string {
   return p.name || `#${p.id}`;
 }
 
-/** 通讯录成员列表：取全租户用户（noPaging）。 */
-export async function fetchDirectoryUsers() {
+// ==============================
+// 考勤地理围栏
+// ==============================
+
+export function useListGeofences(
+  options?: Omit<UseQueryOptions<oaservicev1_ListGeofencesResponse, Error>, "queryKey">
+) {
+  return useQuery({
+    queryKey: ["listGeofences"],
+    queryFn: () => apiClient.attendanceService.ListGeofences({}),
+    ...options,
+  });
+}
+
+export async function fetchListGeofences() {
   return queryClient.fetchQuery({
-    queryKey: ["directoryUsers"],
-    queryFn: () =>
-      apiClient.userService.List({
-        page: 1,
-        pageSize: 999,
-        noPaging: true,
-        sorting: undefined,
-      }),
+    queryKey: ["listGeofences"],
+    queryFn: () => apiClient.attendanceService.ListGeofences({}),
     staleTime: 0,
     retry: 0,
-  }) as Promise<identityservicev1_ListUserResponse>;
+  });
+}
+
+export function useUpsertGeofence(
+  options?: UseMutationOptions<Record<never, never>, Error, oaservicev1_Geofence>
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.attendanceService.UpsertGeofence(req),
+    ...options,
+  });
+}
+
+export function useDeleteGeofence(
+  options?: UseMutationOptions<Record<never, never>, Error, { id: number }>
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.attendanceService.DeleteGeofence(req),
+    ...options,
+  });
+}
+
+// ==============================
+// 考勤 Wi-Fi 指纹白名单
+// ==============================
+
+export function useListWifiFingerprints(
+  options?: Omit<UseQueryOptions<oaservicev1_ListWifiFingerprintsResponse, Error>, "queryKey">
+) {
+  return useQuery({
+    queryKey: ["listWifiFingerprints"],
+    queryFn: () => apiClient.attendanceService.ListWifiFingerprints({}),
+    ...options,
+  });
+}
+
+export async function fetchListWifiFingerprints() {
+  return queryClient.fetchQuery({
+    queryKey: ["listWifiFingerprints"],
+    queryFn: () => apiClient.attendanceService.ListWifiFingerprints({}),
+    staleTime: 0,
+    retry: 0,
+  });
+}
+
+export function useUpsertWifiFingerprint(
+  options?: UseMutationOptions<Record<never, never>, Error, oaservicev1_WifiFingerprint>
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.attendanceService.UpsertWifiFingerprint(req),
+    ...options,
+  });
+}
+
+export function useDeleteWifiFingerprint(
+  options?: UseMutationOptions<Record<never, never>, Error, { id: number }>
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.attendanceService.DeleteWifiFingerprint(req),
+    ...options,
+  });
 }

@@ -27,7 +27,7 @@ var File_admin_service_v1_i_attendance_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_attendance_proto_rawDesc = "" +
 	"\n" +
-	"#admin/service/v1/i_attendance.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1eoa/service/v1/attendance.proto2\xbb\a\n" +
+	"#admin/service/v1/i_attendance.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1eoa/service/v1/attendance.proto2\xf8\r\n" +
 	"\x11AttendanceService\x12\x9b\x01\n" +
 	"\x15ListAttendanceRecords\x12+.oa.service.v1.ListAttendanceRecordsRequest\x1a,.oa.service.v1.ListAttendanceRecordsResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/admin/v1/oa/attendance/records\x12z\n" +
 	"\x14GetAttendanceSetting\x12\x16.google.protobuf.Empty\x1a .oa.service.v1.AttendanceSetting\"(\x82\xd3\xe4\x93\x02\"\x12 /admin/v1/oa/attendance/settings\x12\x80\x01\n" +
@@ -35,7 +35,13 @@ const file_admin_service_v1_i_attendance_proto_rawDesc = "" +
 	"\x12RunDailySettlement\x12(.oa.service.v1.RunDailySettlementRequest\x1a).oa.service.v1.RunDailySettlementResponse\".\x82\xd3\xe4\x93\x02(:\x01*\"#/admin/v1/oa/attendance/settlements\x12l\n" +
 	"\rUpsertHoliday\x12\x16.oa.service.v1.Holiday\x1a\x16.google.protobuf.Empty\"+\x82\xd3\xe4\x93\x02%:\x01*\" /admin/v1/oa/attendance/holidays\x12{\n" +
 	"\rDeleteHoliday\x12#.oa.service.v1.DeleteHolidayRequest\x1a\x16.google.protobuf.Empty\"-\x82\xd3\xe4\x93\x02'*%/admin/v1/oa/attendance/holidays/{id}\x12\x81\x01\n" +
-	"\fListHolidays\x12\".oa.service.v1.ListHolidaysRequest\x1a#.oa.service.v1.ListHolidaysResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /admin/v1/oa/attendance/holidaysB\xba\x01\n" +
+	"\fListHolidays\x12\".oa.service.v1.ListHolidaysRequest\x1a#.oa.service.v1.ListHolidaysResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /admin/v1/oa/attendance/holidays\x12o\n" +
+	"\x0eUpsertGeofence\x12\x17.oa.service.v1.Geofence\x1a\x16.google.protobuf.Empty\",\x82\xd3\xe4\x93\x02&:\x01*\"!/admin/v1/oa/attendance/geofences\x12~\n" +
+	"\x0eDeleteGeofence\x12$.oa.service.v1.DeleteGeofenceRequest\x1a\x16.google.protobuf.Empty\".\x82\xd3\xe4\x93\x02(*&/admin/v1/oa/attendance/geofences/{id}\x12\x85\x01\n" +
+	"\rListGeofences\x12#.oa.service.v1.ListGeofencesRequest\x1a$.oa.service.v1.ListGeofencesResponse\")\x82\xd3\xe4\x93\x02#\x12!/admin/v1/oa/attendance/geofences\x12\x85\x01\n" +
+	"\x15UpsertWifiFingerprint\x12\x1e.oa.service.v1.WifiFingerprint\x1a\x16.google.protobuf.Empty\"4\x82\xd3\xe4\x93\x02.:\x01*\")/admin/v1/oa/attendance/wifi-fingerprints\x12\x94\x01\n" +
+	"\x15DeleteWifiFingerprint\x12+.oa.service.v1.DeleteWifiFingerprintRequest\x1a\x16.google.protobuf.Empty\"6\x82\xd3\xe4\x93\x020*./admin/v1/oa/attendance/wifi-fingerprints/{id}\x12\xa2\x01\n" +
+	"\x14ListWifiFingerprints\x12*.oa.service.v1.ListWifiFingerprintsRequest\x1a+.oa.service.v1.ListWifiFingerprintsResponse\"1\x82\xd3\xe4\x93\x02+\x12)/admin/v1/oa/attendance/wifi-fingerprintsB\xba\x01\n" +
 	"\x14com.admin.service.v1B\x10IAttendanceProtoP\x01Z.go-wind-oa/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_attendance_proto_goTypes = []any{
@@ -46,30 +52,50 @@ var file_admin_service_v1_i_attendance_proto_goTypes = []any{
 	(*v1.Holiday)(nil),                       // 4: oa.service.v1.Holiday
 	(*v1.DeleteHolidayRequest)(nil),          // 5: oa.service.v1.DeleteHolidayRequest
 	(*v1.ListHolidaysRequest)(nil),           // 6: oa.service.v1.ListHolidaysRequest
-	(*v1.ListAttendanceRecordsResponse)(nil), // 7: oa.service.v1.ListAttendanceRecordsResponse
-	(*v1.RunDailySettlementResponse)(nil),    // 8: oa.service.v1.RunDailySettlementResponse
-	(*v1.ListHolidaysResponse)(nil),          // 9: oa.service.v1.ListHolidaysResponse
+	(*v1.Geofence)(nil),                      // 7: oa.service.v1.Geofence
+	(*v1.DeleteGeofenceRequest)(nil),         // 8: oa.service.v1.DeleteGeofenceRequest
+	(*v1.ListGeofencesRequest)(nil),          // 9: oa.service.v1.ListGeofencesRequest
+	(*v1.WifiFingerprint)(nil),               // 10: oa.service.v1.WifiFingerprint
+	(*v1.DeleteWifiFingerprintRequest)(nil),  // 11: oa.service.v1.DeleteWifiFingerprintRequest
+	(*v1.ListWifiFingerprintsRequest)(nil),   // 12: oa.service.v1.ListWifiFingerprintsRequest
+	(*v1.ListAttendanceRecordsResponse)(nil), // 13: oa.service.v1.ListAttendanceRecordsResponse
+	(*v1.RunDailySettlementResponse)(nil),    // 14: oa.service.v1.RunDailySettlementResponse
+	(*v1.ListHolidaysResponse)(nil),          // 15: oa.service.v1.ListHolidaysResponse
+	(*v1.ListGeofencesResponse)(nil),         // 16: oa.service.v1.ListGeofencesResponse
+	(*v1.ListWifiFingerprintsResponse)(nil),  // 17: oa.service.v1.ListWifiFingerprintsResponse
 }
 var file_admin_service_v1_i_attendance_proto_depIdxs = []int32{
-	0, // 0: admin.service.v1.AttendanceService.ListAttendanceRecords:input_type -> oa.service.v1.ListAttendanceRecordsRequest
-	1, // 1: admin.service.v1.AttendanceService.GetAttendanceSetting:input_type -> google.protobuf.Empty
-	2, // 2: admin.service.v1.AttendanceService.UpdateAttendanceSetting:input_type -> oa.service.v1.AttendanceSetting
-	3, // 3: admin.service.v1.AttendanceService.RunDailySettlement:input_type -> oa.service.v1.RunDailySettlementRequest
-	4, // 4: admin.service.v1.AttendanceService.UpsertHoliday:input_type -> oa.service.v1.Holiday
-	5, // 5: admin.service.v1.AttendanceService.DeleteHoliday:input_type -> oa.service.v1.DeleteHolidayRequest
-	6, // 6: admin.service.v1.AttendanceService.ListHolidays:input_type -> oa.service.v1.ListHolidaysRequest
-	7, // 7: admin.service.v1.AttendanceService.ListAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
-	2, // 8: admin.service.v1.AttendanceService.GetAttendanceSetting:output_type -> oa.service.v1.AttendanceSetting
-	1, // 9: admin.service.v1.AttendanceService.UpdateAttendanceSetting:output_type -> google.protobuf.Empty
-	8, // 10: admin.service.v1.AttendanceService.RunDailySettlement:output_type -> oa.service.v1.RunDailySettlementResponse
-	1, // 11: admin.service.v1.AttendanceService.UpsertHoliday:output_type -> google.protobuf.Empty
-	1, // 12: admin.service.v1.AttendanceService.DeleteHoliday:output_type -> google.protobuf.Empty
-	9, // 13: admin.service.v1.AttendanceService.ListHolidays:output_type -> oa.service.v1.ListHolidaysResponse
-	7, // [7:14] is the sub-list for method output_type
-	0, // [0:7] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: admin.service.v1.AttendanceService.ListAttendanceRecords:input_type -> oa.service.v1.ListAttendanceRecordsRequest
+	1,  // 1: admin.service.v1.AttendanceService.GetAttendanceSetting:input_type -> google.protobuf.Empty
+	2,  // 2: admin.service.v1.AttendanceService.UpdateAttendanceSetting:input_type -> oa.service.v1.AttendanceSetting
+	3,  // 3: admin.service.v1.AttendanceService.RunDailySettlement:input_type -> oa.service.v1.RunDailySettlementRequest
+	4,  // 4: admin.service.v1.AttendanceService.UpsertHoliday:input_type -> oa.service.v1.Holiday
+	5,  // 5: admin.service.v1.AttendanceService.DeleteHoliday:input_type -> oa.service.v1.DeleteHolidayRequest
+	6,  // 6: admin.service.v1.AttendanceService.ListHolidays:input_type -> oa.service.v1.ListHolidaysRequest
+	7,  // 7: admin.service.v1.AttendanceService.UpsertGeofence:input_type -> oa.service.v1.Geofence
+	8,  // 8: admin.service.v1.AttendanceService.DeleteGeofence:input_type -> oa.service.v1.DeleteGeofenceRequest
+	9,  // 9: admin.service.v1.AttendanceService.ListGeofences:input_type -> oa.service.v1.ListGeofencesRequest
+	10, // 10: admin.service.v1.AttendanceService.UpsertWifiFingerprint:input_type -> oa.service.v1.WifiFingerprint
+	11, // 11: admin.service.v1.AttendanceService.DeleteWifiFingerprint:input_type -> oa.service.v1.DeleteWifiFingerprintRequest
+	12, // 12: admin.service.v1.AttendanceService.ListWifiFingerprints:input_type -> oa.service.v1.ListWifiFingerprintsRequest
+	13, // 13: admin.service.v1.AttendanceService.ListAttendanceRecords:output_type -> oa.service.v1.ListAttendanceRecordsResponse
+	2,  // 14: admin.service.v1.AttendanceService.GetAttendanceSetting:output_type -> oa.service.v1.AttendanceSetting
+	1,  // 15: admin.service.v1.AttendanceService.UpdateAttendanceSetting:output_type -> google.protobuf.Empty
+	14, // 16: admin.service.v1.AttendanceService.RunDailySettlement:output_type -> oa.service.v1.RunDailySettlementResponse
+	1,  // 17: admin.service.v1.AttendanceService.UpsertHoliday:output_type -> google.protobuf.Empty
+	1,  // 18: admin.service.v1.AttendanceService.DeleteHoliday:output_type -> google.protobuf.Empty
+	15, // 19: admin.service.v1.AttendanceService.ListHolidays:output_type -> oa.service.v1.ListHolidaysResponse
+	1,  // 20: admin.service.v1.AttendanceService.UpsertGeofence:output_type -> google.protobuf.Empty
+	1,  // 21: admin.service.v1.AttendanceService.DeleteGeofence:output_type -> google.protobuf.Empty
+	16, // 22: admin.service.v1.AttendanceService.ListGeofences:output_type -> oa.service.v1.ListGeofencesResponse
+	1,  // 23: admin.service.v1.AttendanceService.UpsertWifiFingerprint:output_type -> google.protobuf.Empty
+	1,  // 24: admin.service.v1.AttendanceService.DeleteWifiFingerprint:output_type -> google.protobuf.Empty
+	17, // 25: admin.service.v1.AttendanceService.ListWifiFingerprints:output_type -> oa.service.v1.ListWifiFingerprintsResponse
+	13, // [13:26] is the sub-list for method output_type
+	0,  // [0:13] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_admin_service_v1_i_attendance_proto_init() }

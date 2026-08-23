@@ -42,6 +42,24 @@ service AttendanceService {
 
   // 查询某年度的节假日/调休日设置（admin）
   rpc ListHolidays(ListHolidaysRequest) returns (ListHolidaysResponse) {}
+
+  // 设置地理围栏（admin，按 id 存在则覆盖）
+  rpc UpsertGeofence(Geofence) returns (google.protobuf.Empty) {}
+
+  // 删除地理围栏（admin）
+  rpc DeleteGeofence(DeleteGeofenceRequest) returns (google.protobuf.Empty) {}
+
+  // 查询本租户地理围栏（admin）
+  rpc ListGeofences(ListGeofencesRequest) returns (ListGeofencesResponse) {}
+
+  // 设置 Wi-Fi 指纹白名单（admin，按 id 存在则覆盖）
+  rpc UpsertWifiFingerprint(WifiFingerprint) returns (google.protobuf.Empty) {}
+
+  // 删除 Wi-Fi 指纹白名单（admin）
+  rpc DeleteWifiFingerprint(DeleteWifiFingerprintRequest) returns (google.protobuf.Empty) {}
+
+  // 查询本租户 Wi-Fi 指纹白名单（admin）
+  rpc ListWifiFingerprints(ListWifiFingerprintsRequest) returns (ListWifiFingerprintsResponse) {}
 }
 
 // 节假日/调休日设置
@@ -100,6 +118,102 @@ message ListHolidaysRequest {
 // 查询节假日 - 回应
 message ListHolidaysResponse {
   repeated Holiday items = 1;
+  uint64 total = 2;
+}
+
+// 地理围栏
+message Geofence {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "ID" }
+  ]; // ID
+
+  optional string name = 2 [
+    json_name = "name",
+    (gnostic.openapi.v3.property) = { description: "围栏名称" }
+  ]; // 围栏名称
+
+  optional double latitude = 3 [
+    json_name = "latitude",
+    (gnostic.openapi.v3.property) = { description: "围栏中心纬度" }
+  ]; // 围栏中心纬度
+
+  optional double longitude = 4 [
+    json_name = "longitude",
+    (gnostic.openapi.v3.property) = { description: "围栏中心经度" }
+  ]; // 围栏中心经度
+
+  optional double radius_meters = 5 [
+    json_name = "radiusMeters",
+    (gnostic.openapi.v3.property) = { description: "围栏半径（米）" }
+  ]; // 围栏半径
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
+}
+
+// 删除地理围栏 - 请求
+message DeleteGeofenceRequest {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "ID" }
+  ]; // ID
+}
+
+// 查询地理围栏 - 请求
+message ListGeofencesRequest {}
+
+// 查询地理围栏 - 回应
+message ListGeofencesResponse {
+  repeated Geofence items = 1;
+  uint64 total = 2;
+}
+
+// Wi-Fi 指纹白名单
+message WifiFingerprint {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "ID" }
+  ]; // ID
+
+  optional string ssid = 2 [
+    json_name = "ssid",
+    (gnostic.openapi.v3.property) = { description: "SSID（仅描述，不参与校验）" }
+  ]; // SSID
+
+  optional string bssid = 3 [
+    json_name = "bssid",
+    (gnostic.openapi.v3.property) = { description: "BSSID（校验比对键）" }
+  ]; // BSSID
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
+}
+
+// 删除 Wi-Fi 指纹白名单 - 请求
+message DeleteWifiFingerprintRequest {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "ID" }
+  ]; // ID
+}
+
+// 查询 Wi-Fi 指纹白名单 - 请求
+message ListWifiFingerprintsRequest {}
+
+// 查询 Wi-Fi 指纹白名单 - 回应
+message ListWifiFingerprintsResponse {
+  repeated WifiFingerprint items = 1;
   uint64 total = 2;
 }
 

@@ -24,6 +24,9 @@ type AttendanceService struct {
 	repo         *data.AttendanceRepo
 	leaveApp     *data.LeaveApplicationRepo
 	resolverRepo *data.WorkflowResolverRepo
+
+	geofenceRepo *data.GeofenceRepo
+	wifiRepo     *data.WifiFingerprintRepo
 }
 
 func NewAttendanceService(
@@ -31,12 +34,16 @@ func NewAttendanceService(
 	repo *data.AttendanceRepo,
 	leaveApp *data.LeaveApplicationRepo,
 	resolverRepo *data.WorkflowResolverRepo,
+	geofenceRepo *data.GeofenceRepo,
+	wifiRepo *data.WifiFingerprintRepo,
 ) *AttendanceService {
 	return &AttendanceService{
-		log:          ctx.NewLoggerHelper("attendance/service/core-service"),
-		repo:         repo,
-		leaveApp:     leaveApp,
-		resolverRepo: resolverRepo,
+		log:           ctx.NewLoggerHelper("attendance/service/core-service"),
+		repo:          repo,
+		leaveApp:      leaveApp,
+		resolverRepo:  resolverRepo,
+		geofenceRepo:  geofenceRepo,
+		wifiRepo:      wifiRepo,
 	}
 }
 
@@ -143,6 +150,10 @@ func (s *AttendanceService) CheckIn(ctx context.Context, req *oaV1.CheckInReques
 	tid, uid, ok := callerFromContext(ctx)
 	if !ok {
 		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+
+	if err := s.validateLocation(ctx, tid, req.GetLatitude(), req.GetLongitude(), req.GetWifiBssid()); err != nil {
+		return nil, err
 	}
 
 	now := time.Now()
@@ -367,4 +378,134 @@ func (s *AttendanceService) ListHolidays(ctx context.Context, req *oaV1.ListHoli
 		return nil, err
 	}
 	return &oaV1.ListHolidaysResponse{Items: items, Total: uint64(len(items))}, nil
+}
+
+// ===================== 地理围栏 / Wi-Fi 指纹 =====================
+
+// validateLocation 打卡地点校验：本租户配了地理围栏则打卡点须落在任一围栏半径内；
+// 配了 Wi-Fi 指纹白名单则打卡 BSSID 须命中任一条。两类都未配则放行（保持现状）。
+func (s *AttendanceService) validateLocation(ctx context.Context, tid uint32, lat, lon float64, bssid string) error {
+	geofences, err := s.geofenceRepo.ListByTenant(ctx, tid)
+	if err != nil {
+		return err
+	}
+	if len(geofences) > 0 {
+		if lat == 0 && lon == 0 {
+			return oaV1.ErrorForbidden("定位不可用，无法判定打卡范围")
+		}
+		inside := false
+		for _, f := range geofences {
+			if f.RadiusMeters <= 0 {
+				continue
+			}
+			if haversineMeters(lat, lon, f.Latitude, f.Longitude) <= f.RadiusMeters {
+				inside = true
+				break
+			}
+		}
+		if !inside {
+			return oaV1.ErrorForbidden("您不在允许的打卡范围内")
+		}
+	}
+
+	whitelist, err := s.wifiRepo.ListByTenant(ctx, tid)
+	if err != nil {
+		return err
+	}
+	if len(whitelist) > 0 {
+		if bssid == "" {
+			return oaV1.ErrorForbidden("当前 Wi-Fi 不可识别，无法判定打卡网络")
+		}
+		matched := false
+		for _, w := range whitelist {
+			if w.Bssid == bssid {
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			return oaV1.ErrorForbidden("当前 Wi-Fi 不在允许的打卡网络列表中")
+		}
+	}
+	return nil
+}
+
+// UpsertGeofence 设置地理围栏（按 id 存在则覆盖）。
+func (s *AttendanceService) UpsertGeofence(ctx context.Context, req *oaV1.Geofence) (*emptypb.Empty, error) {
+	tid, uid, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+	if err := s.geofenceRepo.Upsert(ctx, tid, uid, req.GetId(), req.GetName(), req.GetLatitude(), req.GetLongitude(), req.GetRadiusMeters()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// DeleteGeofence 删除地理围栏。
+func (s *AttendanceService) DeleteGeofence(ctx context.Context, req *oaV1.DeleteGeofenceRequest) (*emptypb.Empty, error) {
+	tid, _, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+	if req.GetId() == 0 {
+		return nil, oaV1.ErrorBadRequest("invalid parameter")
+	}
+	if err := s.geofenceRepo.Delete(ctx, tid, req.GetId()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// ListGeofences 查询本租户地理围栏。
+func (s *AttendanceService) ListGeofences(ctx context.Context, req *oaV1.ListGeofencesRequest) (*oaV1.ListGeofencesResponse, error) {
+	tid, _, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+	items, err := s.geofenceRepo.ListByTenantDTO(ctx, tid)
+	if err != nil {
+		return nil, err
+	}
+	return &oaV1.ListGeofencesResponse{Items: items, Total: uint64(len(items))}, nil
+}
+
+// UpsertWifiFingerprint 设置 Wi-Fi 指纹白名单（按 id 存在则覆盖）。
+func (s *AttendanceService) UpsertWifiFingerprint(ctx context.Context, req *oaV1.WifiFingerprint) (*emptypb.Empty, error) {
+	tid, uid, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+	if err := s.wifiRepo.Upsert(ctx, tid, uid, req.GetId(), req.GetSsid(), req.GetBssid()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// DeleteWifiFingerprint 删除 Wi-Fi 指纹白名单。
+func (s *AttendanceService) DeleteWifiFingerprint(ctx context.Context, req *oaV1.DeleteWifiFingerprintRequest) (*emptypb.Empty, error) {
+	tid, _, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+	if req.GetId() == 0 {
+		return nil, oaV1.ErrorBadRequest("invalid parameter")
+	}
+	if err := s.wifiRepo.Delete(ctx, tid, req.GetId()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// ListWifiFingerprints 查询本租户 Wi-Fi 指纹白名单。
+func (s *AttendanceService) ListWifiFingerprints(ctx context.Context, req *oaV1.ListWifiFingerprintsRequest) (*oaV1.ListWifiFingerprintsResponse, error) {
+	tid, _, ok := callerFromContext(ctx)
+	if !ok {
+		return nil, oaV1.ErrorForbidden("missing viewer context")
+	}
+	items, err := s.wifiRepo.ListByTenantDTO(ctx, tid)
+	if err != nil {
+		return nil, err
+	}
+	return &oaV1.ListWifiFingerprintsResponse{Items: items, Total: uint64(len(items))}, nil
 }

@@ -42,6 +42,9 @@ type ExpenseItem func(*sql.Selector)
 // File is the predicate function for file builders.
 type File func(*sql.Selector)
 
+// Geofence is the predicate function for geofence builders.
+type Geofence func(*sql.Selector)
+
 // Holiday is the predicate function for holiday builders.
 type Holiday func(*sql.Selector)
 
@@ -167,6 +170,9 @@ type UserPosition func(*sql.Selector)
 
 // UserRole is the predicate function for userrole builders.
 type UserRole func(*sql.Selector)
+
+// WifiFingerprint is the predicate function for wififingerprint builders.
+type WifiFingerprint func(*sql.Selector)
 
 // WorkflowDefinition is the predicate function for workflowdefinition builders.
 type WorkflowDefinition func(*sql.Selector)

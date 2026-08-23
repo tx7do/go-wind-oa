@@ -79,6 +79,26 @@ const oa: RouteRecordRaw[] = [
         component: () => import("@/pages/app/oa/attendance/holidays.vue"),
       },
       {
+        path: "attendance-fences",
+        name: "OaAttendanceFences",
+        meta: {
+          order: 3,
+          icon: "lucide:map-pin",
+          title: "routes.oa.attendanceFence",
+        },
+        component: () => import("@/pages/app/oa/attendance/fences.vue"),
+      },
+      {
+        path: "attendance-wifis",
+        name: "OaAttendanceWifis",
+        meta: {
+          order: 3,
+          icon: "lucide:wifi",
+          title: "routes.oa.attendanceWifi",
+        },
+        component: () => import("@/pages/app/oa/attendance/wifis.vue"),
+      },
+      {
         path: "leave/types",
         name: "OaLeaveTypes",
         meta: {
@@ -167,16 +187,6 @@ const oa: RouteRecordRaw[] = [
           title: "routes.oa.announcement",
         },
         component: () => import("@/pages/app/oa/announcement/index.vue"),
-      },
-      {
-        path: "directory",
-        name: "OaDirectoryManagement",
-        meta: {
-          order: 11,
-          icon: "lucide:contact",
-          title: "routes.oa.directory",
-        },
-        component: () => import("@/pages/app/oa/directory/index.vue"),
       },
     ],
   },

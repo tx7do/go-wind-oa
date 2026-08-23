@@ -681,6 +681,35 @@ var (
 			},
 		},
 	}
+	// OaGeofenceColumns holds the columns for the "oa_geofence" table.
+	OaGeofenceColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "name", Type: field.TypeString, Size: 64, Comment: "围栏名称（如 总部/分公司A）", Default: ""},
+		{Name: "latitude", Type: field.TypeFloat64, Comment: "围栏中心纬度"},
+		{Name: "longitude", Type: field.TypeFloat64, Comment: "围栏中心经度"},
+		{Name: "radius_meters", Type: field.TypeFloat64, Comment: "围栏半径（米）"},
+	}
+	// OaGeofenceTable holds the schema information for the "oa_geofence" table.
+	OaGeofenceTable = &schema.Table{
+		Name:       "oa_geofence",
+		Comment:    "OA 考勤地理围栏表（每租户可多条；打卡点落在任一围栏半径内即放行）",
+		Columns:    OaGeofenceColumns,
+		PrimaryKey: []*schema.Column{OaGeofenceColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_geofence_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaGeofenceColumns[7]},
+			},
+		},
+	}
 	// OaHolidayColumns holds the columns for the "oa_holiday" table.
 	OaHolidayColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -3388,6 +3417,33 @@ var (
 			},
 		},
 	}
+	// OaWifiFingerprintColumns holds the columns for the "oa_wifi_fingerprint" table.
+	OaWifiFingerprintColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "ssid", Type: field.TypeString, Size: 64, Comment: "SSID（仅描述，不参与校验）", Default: ""},
+		{Name: "bssid", Type: field.TypeString, Size: 64, Comment: "BSSID（校验比对键）"},
+	}
+	// OaWifiFingerprintTable holds the schema information for the "oa_wifi_fingerprint" table.
+	OaWifiFingerprintTable = &schema.Table{
+		Name:       "oa_wifi_fingerprint",
+		Comment:    "OA 考勤 Wi-Fi 指纹白名单表（打卡时 BSSID 命中任一条即放行）",
+		Columns:    OaWifiFingerprintColumns,
+		PrimaryKey: []*schema.Column{OaWifiFingerprintColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_wifi_fingerprint_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaWifiFingerprintColumns[7]},
+			},
+		},
+	}
 	// OaWorkflowDefinitionColumns holds the columns for the "oa_workflow_definition" table.
 	OaWorkflowDefinitionColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -3566,6 +3622,7 @@ var (
 		OaExpenseApplicationTable,
 		OaExpenseItemTable,
 		FilesTable,
+		OaGeofenceTable,
 		OaHolidayTable,
 		InternalMessagesTable,
 		InternalMessageCategoriesTable,
@@ -3608,6 +3665,7 @@ var (
 		SysUserOrgUnitsTable,
 		SysUserPositionsTable,
 		SysUserRolesTable,
+		OaWifiFingerprintTable,
 		OaWorkflowDefinitionTable,
 		OaWorkflowInstanceTable,
 		OaWorkflowLogTable,
@@ -3676,6 +3734,11 @@ func init() {
 	}
 	FilesTable.Annotation = &entsql.Annotation{
 		Table:     "files",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaGeofenceTable.Annotation = &entsql.Annotation{
+		Table:     "oa_geofence",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
@@ -3892,6 +3955,11 @@ func init() {
 	}
 	SysUserRolesTable.Annotation = &entsql.Annotation{
 		Table:     "sys_user_roles",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaWifiFingerprintTable.Annotation = &entsql.Annotation{
+		Table:     "oa_wifi_fingerprint",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

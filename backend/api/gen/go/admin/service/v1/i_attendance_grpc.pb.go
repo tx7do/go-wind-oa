@@ -28,6 +28,12 @@ const (
 	AttendanceService_UpsertHoliday_FullMethodName           = "/admin.service.v1.AttendanceService/UpsertHoliday"
 	AttendanceService_DeleteHoliday_FullMethodName           = "/admin.service.v1.AttendanceService/DeleteHoliday"
 	AttendanceService_ListHolidays_FullMethodName            = "/admin.service.v1.AttendanceService/ListHolidays"
+	AttendanceService_UpsertGeofence_FullMethodName          = "/admin.service.v1.AttendanceService/UpsertGeofence"
+	AttendanceService_DeleteGeofence_FullMethodName          = "/admin.service.v1.AttendanceService/DeleteGeofence"
+	AttendanceService_ListGeofences_FullMethodName           = "/admin.service.v1.AttendanceService/ListGeofences"
+	AttendanceService_UpsertWifiFingerprint_FullMethodName   = "/admin.service.v1.AttendanceService/UpsertWifiFingerprint"
+	AttendanceService_DeleteWifiFingerprint_FullMethodName   = "/admin.service.v1.AttendanceService/DeleteWifiFingerprint"
+	AttendanceService_ListWifiFingerprints_FullMethodName    = "/admin.service.v1.AttendanceService/ListWifiFingerprints"
 )
 
 // AttendanceServiceClient is the client API for AttendanceService service.
@@ -50,6 +56,18 @@ type AttendanceServiceClient interface {
 	DeleteHoliday(ctx context.Context, in *v1.DeleteHolidayRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 查询年度节假日/调休日设置
 	ListHolidays(ctx context.Context, in *v1.ListHolidaysRequest, opts ...grpc.CallOption) (*v1.ListHolidaysResponse, error)
+	// 设置地理围栏（按 id 存在则覆盖）
+	UpsertGeofence(ctx context.Context, in *v1.Geofence, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 删除地理围栏
+	DeleteGeofence(ctx context.Context, in *v1.DeleteGeofenceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 查询地理围栏
+	ListGeofences(ctx context.Context, in *v1.ListGeofencesRequest, opts ...grpc.CallOption) (*v1.ListGeofencesResponse, error)
+	// 设置 Wi-Fi 指纹白名单（按 id 存在则覆盖）
+	UpsertWifiFingerprint(ctx context.Context, in *v1.WifiFingerprint, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 删除 Wi-Fi 指纹白名单
+	DeleteWifiFingerprint(ctx context.Context, in *v1.DeleteWifiFingerprintRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 查询 Wi-Fi 指纹白名单
+	ListWifiFingerprints(ctx context.Context, in *v1.ListWifiFingerprintsRequest, opts ...grpc.CallOption) (*v1.ListWifiFingerprintsResponse, error)
 }
 
 type attendanceServiceClient struct {
@@ -130,6 +148,66 @@ func (c *attendanceServiceClient) ListHolidays(ctx context.Context, in *v1.ListH
 	return out, nil
 }
 
+func (c *attendanceServiceClient) UpsertGeofence(ctx context.Context, in *v1.Geofence, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AttendanceService_UpsertGeofence_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *attendanceServiceClient) DeleteGeofence(ctx context.Context, in *v1.DeleteGeofenceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AttendanceService_DeleteGeofence_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *attendanceServiceClient) ListGeofences(ctx context.Context, in *v1.ListGeofencesRequest, opts ...grpc.CallOption) (*v1.ListGeofencesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.ListGeofencesResponse)
+	err := c.cc.Invoke(ctx, AttendanceService_ListGeofences_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *attendanceServiceClient) UpsertWifiFingerprint(ctx context.Context, in *v1.WifiFingerprint, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AttendanceService_UpsertWifiFingerprint_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *attendanceServiceClient) DeleteWifiFingerprint(ctx context.Context, in *v1.DeleteWifiFingerprintRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AttendanceService_DeleteWifiFingerprint_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *attendanceServiceClient) ListWifiFingerprints(ctx context.Context, in *v1.ListWifiFingerprintsRequest, opts ...grpc.CallOption) (*v1.ListWifiFingerprintsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.ListWifiFingerprintsResponse)
+	err := c.cc.Invoke(ctx, AttendanceService_ListWifiFingerprints_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AttendanceServiceServer is the server API for AttendanceService service.
 // All implementations must embed UnimplementedAttendanceServiceServer
 // for forward compatibility.
@@ -150,6 +228,18 @@ type AttendanceServiceServer interface {
 	DeleteHoliday(context.Context, *v1.DeleteHolidayRequest) (*emptypb.Empty, error)
 	// 查询年度节假日/调休日设置
 	ListHolidays(context.Context, *v1.ListHolidaysRequest) (*v1.ListHolidaysResponse, error)
+	// 设置地理围栏（按 id 存在则覆盖）
+	UpsertGeofence(context.Context, *v1.Geofence) (*emptypb.Empty, error)
+	// 删除地理围栏
+	DeleteGeofence(context.Context, *v1.DeleteGeofenceRequest) (*emptypb.Empty, error)
+	// 查询地理围栏
+	ListGeofences(context.Context, *v1.ListGeofencesRequest) (*v1.ListGeofencesResponse, error)
+	// 设置 Wi-Fi 指纹白名单（按 id 存在则覆盖）
+	UpsertWifiFingerprint(context.Context, *v1.WifiFingerprint) (*emptypb.Empty, error)
+	// 删除 Wi-Fi 指纹白名单
+	DeleteWifiFingerprint(context.Context, *v1.DeleteWifiFingerprintRequest) (*emptypb.Empty, error)
+	// 查询 Wi-Fi 指纹白名单
+	ListWifiFingerprints(context.Context, *v1.ListWifiFingerprintsRequest) (*v1.ListWifiFingerprintsResponse, error)
 	mustEmbedUnimplementedAttendanceServiceServer()
 }
 
@@ -180,6 +270,24 @@ func (UnimplementedAttendanceServiceServer) DeleteHoliday(context.Context, *v1.D
 }
 func (UnimplementedAttendanceServiceServer) ListHolidays(context.Context, *v1.ListHolidaysRequest) (*v1.ListHolidaysResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListHolidays not implemented")
+}
+func (UnimplementedAttendanceServiceServer) UpsertGeofence(context.Context, *v1.Geofence) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpsertGeofence not implemented")
+}
+func (UnimplementedAttendanceServiceServer) DeleteGeofence(context.Context, *v1.DeleteGeofenceRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteGeofence not implemented")
+}
+func (UnimplementedAttendanceServiceServer) ListGeofences(context.Context, *v1.ListGeofencesRequest) (*v1.ListGeofencesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListGeofences not implemented")
+}
+func (UnimplementedAttendanceServiceServer) UpsertWifiFingerprint(context.Context, *v1.WifiFingerprint) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpsertWifiFingerprint not implemented")
+}
+func (UnimplementedAttendanceServiceServer) DeleteWifiFingerprint(context.Context, *v1.DeleteWifiFingerprintRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteWifiFingerprint not implemented")
+}
+func (UnimplementedAttendanceServiceServer) ListWifiFingerprints(context.Context, *v1.ListWifiFingerprintsRequest) (*v1.ListWifiFingerprintsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListWifiFingerprints not implemented")
 }
 func (UnimplementedAttendanceServiceServer) mustEmbedUnimplementedAttendanceServiceServer() {}
 func (UnimplementedAttendanceServiceServer) testEmbeddedByValue()                           {}
@@ -328,6 +436,114 @@ func _AttendanceService_ListHolidays_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AttendanceService_UpsertGeofence_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.Geofence)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttendanceServiceServer).UpsertGeofence(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttendanceService_UpsertGeofence_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttendanceServiceServer).UpsertGeofence(ctx, req.(*v1.Geofence))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AttendanceService_DeleteGeofence_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.DeleteGeofenceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttendanceServiceServer).DeleteGeofence(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttendanceService_DeleteGeofence_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttendanceServiceServer).DeleteGeofence(ctx, req.(*v1.DeleteGeofenceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AttendanceService_ListGeofences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.ListGeofencesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttendanceServiceServer).ListGeofences(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttendanceService_ListGeofences_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttendanceServiceServer).ListGeofences(ctx, req.(*v1.ListGeofencesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AttendanceService_UpsertWifiFingerprint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.WifiFingerprint)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttendanceServiceServer).UpsertWifiFingerprint(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttendanceService_UpsertWifiFingerprint_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttendanceServiceServer).UpsertWifiFingerprint(ctx, req.(*v1.WifiFingerprint))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AttendanceService_DeleteWifiFingerprint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.DeleteWifiFingerprintRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttendanceServiceServer).DeleteWifiFingerprint(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttendanceService_DeleteWifiFingerprint_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttendanceServiceServer).DeleteWifiFingerprint(ctx, req.(*v1.DeleteWifiFingerprintRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AttendanceService_ListWifiFingerprints_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.ListWifiFingerprintsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttendanceServiceServer).ListWifiFingerprints(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttendanceService_ListWifiFingerprints_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttendanceServiceServer).ListWifiFingerprints(ctx, req.(*v1.ListWifiFingerprintsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AttendanceService_ServiceDesc is the grpc.ServiceDesc for AttendanceService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -362,6 +578,30 @@ var AttendanceService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListHolidays",
 			Handler:    _AttendanceService_ListHolidays_Handler,
+		},
+		{
+			MethodName: "UpsertGeofence",
+			Handler:    _AttendanceService_UpsertGeofence_Handler,
+		},
+		{
+			MethodName: "DeleteGeofence",
+			Handler:    _AttendanceService_DeleteGeofence_Handler,
+		},
+		{
+			MethodName: "ListGeofences",
+			Handler:    _AttendanceService_ListGeofences_Handler,
+		},
+		{
+			MethodName: "UpsertWifiFingerprint",
+			Handler:    _AttendanceService_UpsertWifiFingerprint_Handler,
+		},
+		{
+			MethodName: "DeleteWifiFingerprint",
+			Handler:    _AttendanceService_DeleteWifiFingerprint_Handler,
+		},
+		{
+			MethodName: "ListWifiFingerprints",
+			Handler:    _AttendanceService_ListWifiFingerprints_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -106,4 +106,6 @@ var ProviderSet = wire.NewSet(
 	data.NewSealApplicationRepo,
 	data.NewOutingApplicationRepo,
 	data.NewAttendanceRepo,
+	data.NewGeofenceRepo,
+	data.NewWifiFingerprintRepo,
 )

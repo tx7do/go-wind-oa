@@ -561,6 +561,1002 @@ var _ interface {
 	ErrorName() string
 } = ListHolidaysResponseValidationError{}
 
+// Validate checks the field values on Geofence with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *Geofence) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Geofence with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in GeofenceMultiError, or nil
+// if none found.
+func (m *Geofence) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Geofence) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Id != nil {
+		// no validation rules for Id
+	}
+
+	if m.Name != nil {
+		// no validation rules for Name
+	}
+
+	if m.Latitude != nil {
+		// no validation rules for Latitude
+	}
+
+	if m.Longitude != nil {
+		// no validation rules for Longitude
+	}
+
+	if m.RadiusMeters != nil {
+		// no validation rules for RadiusMeters
+	}
+
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
+	if m.CreatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCreatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GeofenceValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GeofenceValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GeofenceValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GeofenceMultiError(errors)
+	}
+
+	return nil
+}
+
+// GeofenceMultiError is an error wrapping multiple validation errors returned
+// by Geofence.ValidateAll() if the designated constraints aren't met.
+type GeofenceMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GeofenceMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GeofenceMultiError) AllErrors() []error { return m }
+
+// GeofenceValidationError is the validation error returned by
+// Geofence.Validate if the designated constraints aren't met.
+type GeofenceValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GeofenceValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GeofenceValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GeofenceValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GeofenceValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GeofenceValidationError) ErrorName() string { return "GeofenceValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GeofenceValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGeofence.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GeofenceValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GeofenceValidationError{}
+
+// Validate checks the field values on DeleteGeofenceRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteGeofenceRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteGeofenceRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteGeofenceRequestMultiError, or nil if none found.
+func (m *DeleteGeofenceRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteGeofenceRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return DeleteGeofenceRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteGeofenceRequestMultiError is an error wrapping multiple validation
+// errors returned by DeleteGeofenceRequest.ValidateAll() if the designated
+// constraints aren't met.
+type DeleteGeofenceRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteGeofenceRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteGeofenceRequestMultiError) AllErrors() []error { return m }
+
+// DeleteGeofenceRequestValidationError is the validation error returned by
+// DeleteGeofenceRequest.Validate if the designated constraints aren't met.
+type DeleteGeofenceRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteGeofenceRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteGeofenceRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteGeofenceRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteGeofenceRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteGeofenceRequestValidationError) ErrorName() string {
+	return "DeleteGeofenceRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteGeofenceRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteGeofenceRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteGeofenceRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteGeofenceRequestValidationError{}
+
+// Validate checks the field values on ListGeofencesRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListGeofencesRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListGeofencesRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListGeofencesRequestMultiError, or nil if none found.
+func (m *ListGeofencesRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListGeofencesRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return ListGeofencesRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListGeofencesRequestMultiError is an error wrapping multiple validation
+// errors returned by ListGeofencesRequest.ValidateAll() if the designated
+// constraints aren't met.
+type ListGeofencesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListGeofencesRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListGeofencesRequestMultiError) AllErrors() []error { return m }
+
+// ListGeofencesRequestValidationError is the validation error returned by
+// ListGeofencesRequest.Validate if the designated constraints aren't met.
+type ListGeofencesRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListGeofencesRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListGeofencesRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListGeofencesRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListGeofencesRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListGeofencesRequestValidationError) ErrorName() string {
+	return "ListGeofencesRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListGeofencesRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListGeofencesRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListGeofencesRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListGeofencesRequestValidationError{}
+
+// Validate checks the field values on ListGeofencesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListGeofencesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListGeofencesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListGeofencesResponseMultiError, or nil if none found.
+func (m *ListGeofencesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListGeofencesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListGeofencesResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListGeofencesResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListGeofencesResponseValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return ListGeofencesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListGeofencesResponseMultiError is an error wrapping multiple validation
+// errors returned by ListGeofencesResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ListGeofencesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListGeofencesResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListGeofencesResponseMultiError) AllErrors() []error { return m }
+
+// ListGeofencesResponseValidationError is the validation error returned by
+// ListGeofencesResponse.Validate if the designated constraints aren't met.
+type ListGeofencesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListGeofencesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListGeofencesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListGeofencesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListGeofencesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListGeofencesResponseValidationError) ErrorName() string {
+	return "ListGeofencesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListGeofencesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListGeofencesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListGeofencesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListGeofencesResponseValidationError{}
+
+// Validate checks the field values on WifiFingerprint with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *WifiFingerprint) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on WifiFingerprint with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// WifiFingerprintMultiError, or nil if none found.
+func (m *WifiFingerprint) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *WifiFingerprint) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Id != nil {
+		// no validation rules for Id
+	}
+
+	if m.Ssid != nil {
+		// no validation rules for Ssid
+	}
+
+	if m.Bssid != nil {
+		// no validation rules for Bssid
+	}
+
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
+	if m.CreatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCreatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, WifiFingerprintValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, WifiFingerprintValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return WifiFingerprintValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return WifiFingerprintMultiError(errors)
+	}
+
+	return nil
+}
+
+// WifiFingerprintMultiError is an error wrapping multiple validation errors
+// returned by WifiFingerprint.ValidateAll() if the designated constraints
+// aren't met.
+type WifiFingerprintMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m WifiFingerprintMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m WifiFingerprintMultiError) AllErrors() []error { return m }
+
+// WifiFingerprintValidationError is the validation error returned by
+// WifiFingerprint.Validate if the designated constraints aren't met.
+type WifiFingerprintValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e WifiFingerprintValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e WifiFingerprintValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e WifiFingerprintValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e WifiFingerprintValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e WifiFingerprintValidationError) ErrorName() string { return "WifiFingerprintValidationError" }
+
+// Error satisfies the builtin error interface
+func (e WifiFingerprintValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sWifiFingerprint.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = WifiFingerprintValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = WifiFingerprintValidationError{}
+
+// Validate checks the field values on DeleteWifiFingerprintRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteWifiFingerprintRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteWifiFingerprintRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteWifiFingerprintRequestMultiError, or nil if none found.
+func (m *DeleteWifiFingerprintRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteWifiFingerprintRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return DeleteWifiFingerprintRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteWifiFingerprintRequestMultiError is an error wrapping multiple
+// validation errors returned by DeleteWifiFingerprintRequest.ValidateAll() if
+// the designated constraints aren't met.
+type DeleteWifiFingerprintRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteWifiFingerprintRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteWifiFingerprintRequestMultiError) AllErrors() []error { return m }
+
+// DeleteWifiFingerprintRequestValidationError is the validation error returned
+// by DeleteWifiFingerprintRequest.Validate if the designated constraints
+// aren't met.
+type DeleteWifiFingerprintRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteWifiFingerprintRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteWifiFingerprintRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteWifiFingerprintRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteWifiFingerprintRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteWifiFingerprintRequestValidationError) ErrorName() string {
+	return "DeleteWifiFingerprintRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteWifiFingerprintRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteWifiFingerprintRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteWifiFingerprintRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteWifiFingerprintRequestValidationError{}
+
+// Validate checks the field values on ListWifiFingerprintsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListWifiFingerprintsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListWifiFingerprintsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListWifiFingerprintsRequestMultiError, or nil if none found.
+func (m *ListWifiFingerprintsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListWifiFingerprintsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return ListWifiFingerprintsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListWifiFingerprintsRequestMultiError is an error wrapping multiple
+// validation errors returned by ListWifiFingerprintsRequest.ValidateAll() if
+// the designated constraints aren't met.
+type ListWifiFingerprintsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListWifiFingerprintsRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListWifiFingerprintsRequestMultiError) AllErrors() []error { return m }
+
+// ListWifiFingerprintsRequestValidationError is the validation error returned
+// by ListWifiFingerprintsRequest.Validate if the designated constraints
+// aren't met.
+type ListWifiFingerprintsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListWifiFingerprintsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListWifiFingerprintsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListWifiFingerprintsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListWifiFingerprintsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListWifiFingerprintsRequestValidationError) ErrorName() string {
+	return "ListWifiFingerprintsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListWifiFingerprintsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListWifiFingerprintsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListWifiFingerprintsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListWifiFingerprintsRequestValidationError{}
+
+// Validate checks the field values on ListWifiFingerprintsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListWifiFingerprintsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListWifiFingerprintsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListWifiFingerprintsResponseMultiError, or nil if none found.
+func (m *ListWifiFingerprintsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListWifiFingerprintsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListWifiFingerprintsResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListWifiFingerprintsResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListWifiFingerprintsResponseValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return ListWifiFingerprintsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListWifiFingerprintsResponseMultiError is an error wrapping multiple
+// validation errors returned by ListWifiFingerprintsResponse.ValidateAll() if
+// the designated constraints aren't met.
+type ListWifiFingerprintsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListWifiFingerprintsResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListWifiFingerprintsResponseMultiError) AllErrors() []error { return m }
+
+// ListWifiFingerprintsResponseValidationError is the validation error returned
+// by ListWifiFingerprintsResponse.Validate if the designated constraints
+// aren't met.
+type ListWifiFingerprintsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListWifiFingerprintsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListWifiFingerprintsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListWifiFingerprintsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListWifiFingerprintsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListWifiFingerprintsResponseValidationError) ErrorName() string {
+	return "ListWifiFingerprintsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListWifiFingerprintsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListWifiFingerprintsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListWifiFingerprintsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListWifiFingerprintsResponseValidationError{}
+
 // Validate checks the field values on AttendanceRecord with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.

@@ -152,6 +152,18 @@ func (f FileFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FileMutation", m)
 }
 
+// The GeofenceFunc type is an adapter to allow the use of ordinary
+// function as Geofence mutator.
+type GeofenceFunc func(context.Context, *ent.GeofenceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f GeofenceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.GeofenceMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GeofenceMutation", m)
+}
+
 // The HolidayFunc type is an adapter to allow the use of ordinary
 // function as Holiday mutator.
 type HolidayFunc func(context.Context, *ent.HolidayMutation) (ent.Value, error)
@@ -654,6 +666,18 @@ func (f UserRoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserRoleMutation", m)
+}
+
+// The WifiFingerprintFunc type is an adapter to allow the use of ordinary
+// function as WifiFingerprint mutator.
+type WifiFingerprintFunc func(context.Context, *ent.WifiFingerprintMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f WifiFingerprintFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.WifiFingerprintMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WifiFingerprintMutation", m)
 }
 
 // The WorkflowDefinitionFunc type is an adapter to allow the use of ordinary

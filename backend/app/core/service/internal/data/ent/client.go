@@ -23,6 +23,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/expenseapplication"
 	"go-wind-oa/app/core/service/internal/data/ent/expenseitem"
 	"go-wind-oa/app/core/service/internal/data/ent/file"
+	"go-wind-oa/app/core/service/internal/data/ent/geofence"
 	"go-wind-oa/app/core/service/internal/data/ent/holiday"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessage"
 	"go-wind-oa/app/core/service/internal/data/ent/internalmessagecategory"
@@ -65,6 +66,7 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/userorgunit"
 	"go-wind-oa/app/core/service/internal/data/ent/userposition"
 	"go-wind-oa/app/core/service/internal/data/ent/userrole"
+	"go-wind-oa/app/core/service/internal/data/ent/wififingerprint"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowlog"
@@ -105,6 +107,8 @@ type Client struct {
 	ExpenseItem *ExpenseItemClient
 	// File is the client for interacting with the File builders.
 	File *FileClient
+	// Geofence is the client for interacting with the Geofence builders.
+	Geofence *GeofenceClient
 	// Holiday is the client for interacting with the Holiday builders.
 	Holiday *HolidayClient
 	// InternalMessage is the client for interacting with the InternalMessage builders.
@@ -189,6 +193,8 @@ type Client struct {
 	UserPosition *UserPositionClient
 	// UserRole is the client for interacting with the UserRole builders.
 	UserRole *UserRoleClient
+	// WifiFingerprint is the client for interacting with the WifiFingerprint builders.
+	WifiFingerprint *WifiFingerprintClient
 	// WorkflowDefinition is the client for interacting with the WorkflowDefinition builders.
 	WorkflowDefinition *WorkflowDefinitionClient
 	// WorkflowInstance is the client for interacting with the WorkflowInstance builders.
@@ -220,6 +226,7 @@ func (c *Client) init() {
 	c.ExpenseApplication = NewExpenseApplicationClient(c.config)
 	c.ExpenseItem = NewExpenseItemClient(c.config)
 	c.File = NewFileClient(c.config)
+	c.Geofence = NewGeofenceClient(c.config)
 	c.Holiday = NewHolidayClient(c.config)
 	c.InternalMessage = NewInternalMessageClient(c.config)
 	c.InternalMessageCategory = NewInternalMessageCategoryClient(c.config)
@@ -262,6 +269,7 @@ func (c *Client) init() {
 	c.UserOrgUnit = NewUserOrgUnitClient(c.config)
 	c.UserPosition = NewUserPositionClient(c.config)
 	c.UserRole = NewUserRoleClient(c.config)
+	c.WifiFingerprint = NewWifiFingerprintClient(c.config)
 	c.WorkflowDefinition = NewWorkflowDefinitionClient(c.config)
 	c.WorkflowInstance = NewWorkflowInstanceClient(c.config)
 	c.WorkflowLog = NewWorkflowLogClient(c.config)
@@ -370,6 +378,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ExpenseApplication:       NewExpenseApplicationClient(cfg),
 		ExpenseItem:              NewExpenseItemClient(cfg),
 		File:                     NewFileClient(cfg),
+		Geofence:                 NewGeofenceClient(cfg),
 		Holiday:                  NewHolidayClient(cfg),
 		InternalMessage:          NewInternalMessageClient(cfg),
 		InternalMessageCategory:  NewInternalMessageCategoryClient(cfg),
@@ -412,6 +421,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		UserOrgUnit:              NewUserOrgUnitClient(cfg),
 		UserPosition:             NewUserPositionClient(cfg),
 		UserRole:                 NewUserRoleClient(cfg),
+		WifiFingerprint:          NewWifiFingerprintClient(cfg),
 		WorkflowDefinition:       NewWorkflowDefinitionClient(cfg),
 		WorkflowInstance:         NewWorkflowInstanceClient(cfg),
 		WorkflowLog:              NewWorkflowLogClient(cfg),
@@ -447,6 +457,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ExpenseApplication:       NewExpenseApplicationClient(cfg),
 		ExpenseItem:              NewExpenseItemClient(cfg),
 		File:                     NewFileClient(cfg),
+		Geofence:                 NewGeofenceClient(cfg),
 		Holiday:                  NewHolidayClient(cfg),
 		InternalMessage:          NewInternalMessageClient(cfg),
 		InternalMessageCategory:  NewInternalMessageCategoryClient(cfg),
@@ -489,6 +500,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		UserOrgUnit:              NewUserOrgUnitClient(cfg),
 		UserPosition:             NewUserPositionClient(cfg),
 		UserRole:                 NewUserRoleClient(cfg),
+		WifiFingerprint:          NewWifiFingerprintClient(cfg),
 		WorkflowDefinition:       NewWorkflowDefinitionClient(cfg),
 		WorkflowInstance:         NewWorkflowInstanceClient(cfg),
 		WorkflowLog:              NewWorkflowLogClient(cfg),
@@ -524,7 +536,7 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Api, c.ApiAuditLog, c.AttendanceRecord, c.AttendanceSetting,
 		c.BusinessTripApplication, c.DataAccessAuditLog, c.DictEntry, c.DictEntryI18n,
-		c.DictType, c.ExpenseApplication, c.ExpenseItem, c.File, c.Holiday,
+		c.DictType, c.ExpenseApplication, c.ExpenseItem, c.File, c.Geofence, c.Holiday,
 		c.InternalMessage, c.InternalMessageCategory, c.InternalMessageRecipient,
 		c.Language, c.LeaveApplication, c.LeaveBalance, c.LeaveType, c.LoginAuditLog,
 		c.LoginPolicy, c.Membership, c.MembershipOrgUnit, c.MembershipPosition,
@@ -534,7 +546,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PlanQuota, c.PolicyEvaluationLog, c.Position, c.Role, c.RoleMetadata,
 		c.RolePermission, c.SealApplication, c.Task, c.Tenant, c.User,
 		c.UserCredential, c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
-		c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
+		c.WifiFingerprint, c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog,
+		c.WorkflowTask,
 	} {
 		n.Use(hooks...)
 	}
@@ -546,7 +559,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Api, c.ApiAuditLog, c.AttendanceRecord, c.AttendanceSetting,
 		c.BusinessTripApplication, c.DataAccessAuditLog, c.DictEntry, c.DictEntryI18n,
-		c.DictType, c.ExpenseApplication, c.ExpenseItem, c.File, c.Holiday,
+		c.DictType, c.ExpenseApplication, c.ExpenseItem, c.File, c.Geofence, c.Holiday,
 		c.InternalMessage, c.InternalMessageCategory, c.InternalMessageRecipient,
 		c.Language, c.LeaveApplication, c.LeaveBalance, c.LeaveType, c.LoginAuditLog,
 		c.LoginPolicy, c.Membership, c.MembershipOrgUnit, c.MembershipPosition,
@@ -556,7 +569,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PlanQuota, c.PolicyEvaluationLog, c.Position, c.Role, c.RoleMetadata,
 		c.RolePermission, c.SealApplication, c.Task, c.Tenant, c.User,
 		c.UserCredential, c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
-		c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog, c.WorkflowTask,
+		c.WifiFingerprint, c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog,
+		c.WorkflowTask,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -589,6 +603,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.ExpenseItem.mutate(ctx, m)
 	case *FileMutation:
 		return c.File.mutate(ctx, m)
+	case *GeofenceMutation:
+		return c.Geofence.mutate(ctx, m)
 	case *HolidayMutation:
 		return c.Holiday.mutate(ctx, m)
 	case *InternalMessageMutation:
@@ -673,6 +689,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.UserPosition.mutate(ctx, m)
 	case *UserRoleMutation:
 		return c.UserRole.mutate(ctx, m)
+	case *WifiFingerprintMutation:
+		return c.WifiFingerprint.mutate(ctx, m)
 	case *WorkflowDefinitionMutation:
 		return c.WorkflowDefinition.mutate(ctx, m)
 	case *WorkflowInstanceMutation:
@@ -2387,6 +2405,140 @@ func (c *FileClient) mutate(ctx context.Context, m *FileMutation) (Value, error)
 		return (&FileDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown File mutation op: %q", m.Op())
+	}
+}
+
+// GeofenceClient is a client for the Geofence schema.
+type GeofenceClient struct {
+	config
+}
+
+// NewGeofenceClient returns a client for the Geofence from the given config.
+func NewGeofenceClient(c config) *GeofenceClient {
+	return &GeofenceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `geofence.Hooks(f(g(h())))`.
+func (c *GeofenceClient) Use(hooks ...Hook) {
+	c.hooks.Geofence = append(c.hooks.Geofence, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `geofence.Intercept(f(g(h())))`.
+func (c *GeofenceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Geofence = append(c.inters.Geofence, interceptors...)
+}
+
+// Create returns a builder for creating a Geofence entity.
+func (c *GeofenceClient) Create() *GeofenceCreate {
+	mutation := newGeofenceMutation(c.config, OpCreate)
+	return &GeofenceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Geofence entities.
+func (c *GeofenceClient) CreateBulk(builders ...*GeofenceCreate) *GeofenceCreateBulk {
+	return &GeofenceCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *GeofenceClient) MapCreateBulk(slice any, setFunc func(*GeofenceCreate, int)) *GeofenceCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &GeofenceCreateBulk{err: fmt.Errorf("calling to GeofenceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*GeofenceCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &GeofenceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Geofence.
+func (c *GeofenceClient) Update() *GeofenceUpdate {
+	mutation := newGeofenceMutation(c.config, OpUpdate)
+	return &GeofenceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *GeofenceClient) UpdateOne(_m *Geofence) *GeofenceUpdateOne {
+	mutation := newGeofenceMutation(c.config, OpUpdateOne, withGeofence(_m))
+	return &GeofenceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *GeofenceClient) UpdateOneID(id uint32) *GeofenceUpdateOne {
+	mutation := newGeofenceMutation(c.config, OpUpdateOne, withGeofenceID(id))
+	return &GeofenceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Geofence.
+func (c *GeofenceClient) Delete() *GeofenceDelete {
+	mutation := newGeofenceMutation(c.config, OpDelete)
+	return &GeofenceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *GeofenceClient) DeleteOne(_m *Geofence) *GeofenceDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *GeofenceClient) DeleteOneID(id uint32) *GeofenceDeleteOne {
+	builder := c.Delete().Where(geofence.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &GeofenceDeleteOne{builder}
+}
+
+// Query returns a query builder for Geofence.
+func (c *GeofenceClient) Query() *GeofenceQuery {
+	return &GeofenceQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeGeofence},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Geofence entity by its id.
+func (c *GeofenceClient) Get(ctx context.Context, id uint32) (*Geofence, error) {
+	return c.Query().Where(geofence.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *GeofenceClient) GetX(ctx context.Context, id uint32) *Geofence {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *GeofenceClient) Hooks() []Hook {
+	hooks := c.hooks.Geofence
+	return append(hooks[:len(hooks):len(hooks)], geofence.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *GeofenceClient) Interceptors() []Interceptor {
+	return c.inters.Geofence
+}
+
+func (c *GeofenceClient) mutate(ctx context.Context, m *GeofenceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&GeofenceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&GeofenceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&GeofenceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&GeofenceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Geofence mutation op: %q", m.Op())
 	}
 }
 
@@ -8205,6 +8357,140 @@ func (c *UserRoleClient) mutate(ctx context.Context, m *UserRoleMutation) (Value
 	}
 }
 
+// WifiFingerprintClient is a client for the WifiFingerprint schema.
+type WifiFingerprintClient struct {
+	config
+}
+
+// NewWifiFingerprintClient returns a client for the WifiFingerprint from the given config.
+func NewWifiFingerprintClient(c config) *WifiFingerprintClient {
+	return &WifiFingerprintClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `wififingerprint.Hooks(f(g(h())))`.
+func (c *WifiFingerprintClient) Use(hooks ...Hook) {
+	c.hooks.WifiFingerprint = append(c.hooks.WifiFingerprint, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `wififingerprint.Intercept(f(g(h())))`.
+func (c *WifiFingerprintClient) Intercept(interceptors ...Interceptor) {
+	c.inters.WifiFingerprint = append(c.inters.WifiFingerprint, interceptors...)
+}
+
+// Create returns a builder for creating a WifiFingerprint entity.
+func (c *WifiFingerprintClient) Create() *WifiFingerprintCreate {
+	mutation := newWifiFingerprintMutation(c.config, OpCreate)
+	return &WifiFingerprintCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of WifiFingerprint entities.
+func (c *WifiFingerprintClient) CreateBulk(builders ...*WifiFingerprintCreate) *WifiFingerprintCreateBulk {
+	return &WifiFingerprintCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *WifiFingerprintClient) MapCreateBulk(slice any, setFunc func(*WifiFingerprintCreate, int)) *WifiFingerprintCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &WifiFingerprintCreateBulk{err: fmt.Errorf("calling to WifiFingerprintClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*WifiFingerprintCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &WifiFingerprintCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for WifiFingerprint.
+func (c *WifiFingerprintClient) Update() *WifiFingerprintUpdate {
+	mutation := newWifiFingerprintMutation(c.config, OpUpdate)
+	return &WifiFingerprintUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WifiFingerprintClient) UpdateOne(_m *WifiFingerprint) *WifiFingerprintUpdateOne {
+	mutation := newWifiFingerprintMutation(c.config, OpUpdateOne, withWifiFingerprint(_m))
+	return &WifiFingerprintUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WifiFingerprintClient) UpdateOneID(id uint32) *WifiFingerprintUpdateOne {
+	mutation := newWifiFingerprintMutation(c.config, OpUpdateOne, withWifiFingerprintID(id))
+	return &WifiFingerprintUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for WifiFingerprint.
+func (c *WifiFingerprintClient) Delete() *WifiFingerprintDelete {
+	mutation := newWifiFingerprintMutation(c.config, OpDelete)
+	return &WifiFingerprintDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *WifiFingerprintClient) DeleteOne(_m *WifiFingerprint) *WifiFingerprintDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *WifiFingerprintClient) DeleteOneID(id uint32) *WifiFingerprintDeleteOne {
+	builder := c.Delete().Where(wififingerprint.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WifiFingerprintDeleteOne{builder}
+}
+
+// Query returns a query builder for WifiFingerprint.
+func (c *WifiFingerprintClient) Query() *WifiFingerprintQuery {
+	return &WifiFingerprintQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeWifiFingerprint},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a WifiFingerprint entity by its id.
+func (c *WifiFingerprintClient) Get(ctx context.Context, id uint32) (*WifiFingerprint, error) {
+	return c.Query().Where(wififingerprint.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WifiFingerprintClient) GetX(ctx context.Context, id uint32) *WifiFingerprint {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *WifiFingerprintClient) Hooks() []Hook {
+	hooks := c.hooks.WifiFingerprint
+	return append(hooks[:len(hooks):len(hooks)], wififingerprint.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *WifiFingerprintClient) Interceptors() []Interceptor {
+	return c.inters.WifiFingerprint
+}
+
+func (c *WifiFingerprintClient) mutate(ctx context.Context, m *WifiFingerprintMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&WifiFingerprintCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&WifiFingerprintUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&WifiFingerprintUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&WifiFingerprintDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown WifiFingerprint mutation op: %q", m.Op())
+	}
+}
+
 // WorkflowDefinitionClient is a client for the WorkflowDefinition schema.
 type WorkflowDefinitionClient struct {
 	config
@@ -8842,7 +9128,7 @@ type (
 	hooks struct {
 		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, BusinessTripApplication,
 		DataAccessAuditLog, DictEntry, DictEntryI18n, DictType, ExpenseApplication,
-		ExpenseItem, File, Holiday, InternalMessage, InternalMessageCategory,
+		ExpenseItem, File, Geofence, Holiday, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LeaveApplication, LeaveBalance, LeaveType,
 		LoginAuditLog, LoginPolicy, Membership, MembershipOrgUnit, MembershipPosition,
 		MembershipRole, Menu, OperationAuditLog, OrgUnit, OutingApplication,
@@ -8850,13 +9136,13 @@ type (
 		PermissionGroup, PermissionMenu, PermissionPolicy, Plan, PlanModule, PlanQuota,
 		PolicyEvaluationLog, Position, Role, RoleMetadata, RolePermission,
 		SealApplication, Task, Tenant, User, UserCredential, UserMfaFactor,
-		UserOrgUnit, UserPosition, UserRole, WorkflowDefinition, WorkflowInstance,
-		WorkflowLog, WorkflowTask []ent.Hook
+		UserOrgUnit, UserPosition, UserRole, WifiFingerprint, WorkflowDefinition,
+		WorkflowInstance, WorkflowLog, WorkflowTask []ent.Hook
 	}
 	inters struct {
 		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, BusinessTripApplication,
 		DataAccessAuditLog, DictEntry, DictEntryI18n, DictType, ExpenseApplication,
-		ExpenseItem, File, Holiday, InternalMessage, InternalMessageCategory,
+		ExpenseItem, File, Geofence, Holiday, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LeaveApplication, LeaveBalance, LeaveType,
 		LoginAuditLog, LoginPolicy, Membership, MembershipOrgUnit, MembershipPosition,
 		MembershipRole, Menu, OperationAuditLog, OrgUnit, OutingApplication,
@@ -8864,7 +9150,7 @@ type (
 		PermissionGroup, PermissionMenu, PermissionPolicy, Plan, PlanModule, PlanQuota,
 		PolicyEvaluationLog, Position, Role, RoleMetadata, RolePermission,
 		SealApplication, Task, Tenant, User, UserCredential, UserMfaFactor,
-		UserOrgUnit, UserPosition, UserRole, WorkflowDefinition, WorkflowInstance,
-		WorkflowLog, WorkflowTask []ent.Interceptor
+		UserOrgUnit, UserPosition, UserRole, WifiFingerprint, WorkflowDefinition,
+		WorkflowInstance, WorkflowLog, WorkflowTask []ent.Interceptor
 	}
 )
