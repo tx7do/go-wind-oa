@@ -2455,6 +2455,51 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/oa/attendance/geofences:
+        get:
+            tags:
+                - AttendanceService
+            description: 查询地理围栏
+            operationId: AttendanceService_ListGeofences
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.ListGeofencesResponse'
+        post:
+            tags:
+                - AttendanceService
+            description: 设置地理围栏（按 id 存在则覆盖）
+            operationId: AttendanceService_UpsertGeofence
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/oa.service.v1.Geofence'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/oa/attendance/geofences/{id}:
+        delete:
+            tags:
+                - AttendanceService
+            description: 删除地理围栏
+            operationId: AttendanceService_DeleteGeofence
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/oa/attendance/holidays:
         get:
             tags:
@@ -2587,6 +2632,51 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/oa.service.v1.RunDailySettlementResponse'
+    /admin/v1/oa/attendance/wifi-fingerprints:
+        get:
+            tags:
+                - AttendanceService
+            description: 查询 Wi-Fi 指纹白名单
+            operationId: AttendanceService_ListWifiFingerprints
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.ListWifiFingerprintsResponse'
+        post:
+            tags:
+                - AttendanceService
+            description: 设置 Wi-Fi 指纹白名单（按 id 存在则覆盖）
+            operationId: AttendanceService_UpsertWifiFingerprint
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/oa.service.v1.WifiFingerprint'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/oa/attendance/wifi-fingerprints/{id}:
+        delete:
+            tags:
+                - AttendanceService
+            description: 删除 Wi-Fi 指纹白名单
+            operationId: AttendanceService_DeleteWifiFingerprint
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/oa/business-trip/applications:
         get:
             tags:
@@ -9089,6 +9179,37 @@ components:
                     description: 创建时间
                     format: date-time
             description: 报销明细行
+        oa.service.v1.Geofence:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: ID
+                    format: uint32
+                name:
+                    type: string
+                    description: 围栏名称
+                latitude:
+                    type: number
+                    description: 围栏中心纬度
+                    format: double
+                longitude:
+                    type: number
+                    description: 围栏中心经度
+                    format: double
+                radiusMeters:
+                    type: number
+                    description: 围栏半径（米）
+                    format: double
+                tenantId:
+                    type: integer
+                    description: 租户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+            description: 地理围栏
         oa.service.v1.GetMyTasksResponse:
             type: object
             properties:
@@ -9379,6 +9500,16 @@ components:
                 total:
                     type: string
             description: 查询报销申请 - 回应
+        oa.service.v1.ListGeofencesResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/oa.service.v1.Geofence'
+                total:
+                    type: string
+            description: 查询地理围栏 - 回应
         oa.service.v1.ListHolidaysResponse:
             type: object
             properties:
@@ -9449,6 +9580,16 @@ components:
                 total:
                     type: string
             description: 查询用印申请 - 回应
+        oa.service.v1.ListWifiFingerprintsResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/oa.service.v1.WifiFingerprint'
+                total:
+                    type: string
+            description: 查询 Wi-Fi 指纹白名单 - 回应
         oa.service.v1.ListWorkflowDefinitionResponse:
             type: object
             properties:
@@ -9718,6 +9859,28 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新流程定义 - 请求
+        oa.service.v1.WifiFingerprint:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: ID
+                    format: uint32
+                ssid:
+                    type: string
+                    description: SSID（仅描述，不参与校验）
+                bssid:
+                    type: string
+                    description: BSSID（校验比对键）
+                tenantId:
+                    type: integer
+                    description: 租户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+            description: Wi-Fi 指纹白名单
         oa.service.v1.WorkflowDefinition:
             type: object
             properties:
