@@ -1,66 +1,66 @@
 import type {
-  dashboardservicev1_ActionDistributionResponse as ActionDistributionResponse,
-  dashboardservicev1_DashboardOverviewResponse as DashboardOverviewResponse,
-  dashboardservicev1_LoginTrendResponse as LoginTrendResponse,
-  dashboardservicev1_StatusDistributionResponse as StatusDistributionResponse,
+  dashboardservicev1_OaDashboardOverviewResponse as OaDashboardOverviewResponse,
+  dashboardservicev1_OaTrendResponse as OaTrendResponse,
+  dashboardservicev1_OaDistributionResponse as OaDistributionResponse,
 } from "@/api/generated/admin/service/v1";
 import { useQuery, type UseQueryOptions } from "@tanstack/vue-query";
 import { apiClient } from "@/api/client";
 
 // =====================================================
-// 首页分析概览（只读聚合统计）
+// OA 分析概览（只读聚合统计：工作流工单计数 / 审批趋势 / 状态·考勤分布）
 // =====================================================
 
 // ------------------------------
-// 1. 概览统计卡片
+// 1. OA 概览统计卡片（工单总数 / 待办任务数 / 今日新增工单 / 今日审批操作数）
 // ------------------------------
-export function useDashboardOverview(
-  options?: UseQueryOptions<DashboardOverviewResponse, Error>
+export function useOaDashboardOverview(
+  options?: UseQueryOptions<OaDashboardOverviewResponse, Error>
 ) {
   return useQuery({
-    queryKey: ["dashboardOverview"],
+    queryKey: ["oaDashboardOverview"],
     queryFn: () => apiClient.dashboardService.GetOverview({}),
     ...options,
   });
 }
 
 // ------------------------------
-// 2. 近 N 天登录趋势
+// 2. 近 N 天每日新增工单趋势
 // ------------------------------
-export function useLoginTrend(
+export function useOaTrend(
   days: number,
-  options?: UseQueryOptions<LoginTrendResponse, Error>
+  options?: UseQueryOptions<OaTrendResponse, Error>
 ) {
   return useQuery({
-    queryKey: ["loginTrend", days],
-    queryFn: () => apiClient.dashboardService.GetLoginTrend({ days }),
+    queryKey: ["oaTrend", days],
+    queryFn: () => apiClient.dashboardService.GetOaTrend({ days }),
     ...options,
   });
 }
 
 // ------------------------------
-// 3. 操作审计按 action 分布
+// 3. 工单按 instance_status 分布
 // ------------------------------
-export function useOperationActionDistribution(
-  options?: UseQueryOptions<ActionDistributionResponse, Error>
+export function useOaInstanceStatusDistribution(
+  options?: UseQueryOptions<OaDistributionResponse, Error>
 ) {
   return useQuery({
-    queryKey: ["operationActionDistribution"],
+    queryKey: ["oaInstanceStatusDistribution"],
     queryFn: () =>
-      apiClient.dashboardService.GetOperationActionDistribution({}),
+      apiClient.dashboardService.GetOaInstanceStatusDistribution({}),
     ...options,
   });
 }
 
 // ------------------------------
-// 4. 登录审计按 status 分布
+// 4. 考勤记录按 day_result 分布
 // ------------------------------
-export function useLoginStatusDistribution(
-  options?: UseQueryOptions<StatusDistributionResponse, Error>
+export function useOaAttendanceDayResultDistribution(
+  options?: UseQueryOptions<OaDistributionResponse, Error>
 ) {
   return useQuery({
-    queryKey: ["loginStatusDistribution"],
-    queryFn: () => apiClient.dashboardService.GetLoginStatusDistribution({}),
+    queryKey: ["oaAttendanceDayResultDistribution"],
+    queryFn: () =>
+      apiClient.dashboardService.GetOaAttendanceDayResultDistribution({}),
     ...options,
   });
 }

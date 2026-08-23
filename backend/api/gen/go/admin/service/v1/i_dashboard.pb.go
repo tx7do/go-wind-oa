@@ -28,31 +28,31 @@ var File_admin_service_v1_i_dashboard_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_dashboard_proto_rawDesc = "" +
 	"\n" +
-	"\"admin/service/v1/i_dashboard.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a&dashboard/service/v1/i_dashboard.proto2\xe9\x04\n" +
-	"\x10DashboardService\x12|\n" +
-	"\vGetOverview\x12\x16.google.protobuf.Empty\x1a/.dashboard.service.v1.DashboardOverviewResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/admin/v1/dashboard/overview\x12\x8e\x01\n" +
-	"\rGetLoginTrend\x12*.dashboard.service.v1.GetLoginTrendRequest\x1a(.dashboard.service.v1.LoginTrendResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/admin/v1/dashboard/login-trend\x12\xa5\x01\n" +
-	"\x1eGetOperationActionDistribution\x12\x16.google.protobuf.Empty\x1a0.dashboard.service.v1.ActionDistributionResponse\"9\x82\xd3\xe4\x93\x023\x121/admin/v1/dashboard/operation-action-distribution\x12\x9d\x01\n" +
-	"\x1aGetLoginStatusDistribution\x12\x16.google.protobuf.Empty\x1a0.dashboard.service.v1.StatusDistributionResponse\"5\x82\xd3\xe4\x93\x02/\x12-/admin/v1/dashboard/login-status-distributionB\xb9\x01\n" +
+	"\"admin/service/v1/i_dashboard.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a&dashboard/service/v1/i_dashboard.proto2\xf4\x04\n" +
+	"\x10DashboardService\x12\x81\x01\n" +
+	"\vGetOverview\x12\x16.google.protobuf.Empty\x1a1.dashboard.service.v1.OaDashboardOverviewResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/admin/v1/dashboard/oa-overview\x12\x82\x01\n" +
+	"\n" +
+	"GetOaTrend\x12'.dashboard.service.v1.GetOaTrendRequest\x1a%.dashboard.service.v1.OaTrendResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/admin/v1/dashboard/oa-trend\x12\xa4\x01\n" +
+	"\x1fGetOaInstanceStatusDistribution\x12\x16.google.protobuf.Empty\x1a,.dashboard.service.v1.OaDistributionResponse\";\x82\xd3\xe4\x93\x025\x123/admin/v1/dashboard/oa-instance-status-distribution\x12\xaf\x01\n" +
+	"$GetOaAttendanceDayResultDistribution\x12\x16.google.protobuf.Empty\x1a,.dashboard.service.v1.OaDistributionResponse\"A\x82\xd3\xe4\x93\x02;\x129/admin/v1/dashboard/oa-attendance-day-result-distributionB\xb9\x01\n" +
 	"\x14com.admin.service.v1B\x0fIDashboardProtoP\x01Z.go-wind-oa/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_dashboard_proto_goTypes = []any{
-	(*emptypb.Empty)(nil),                 // 0: google.protobuf.Empty
-	(*v1.GetLoginTrendRequest)(nil),       // 1: dashboard.service.v1.GetLoginTrendRequest
-	(*v1.DashboardOverviewResponse)(nil),  // 2: dashboard.service.v1.DashboardOverviewResponse
-	(*v1.LoginTrendResponse)(nil),         // 3: dashboard.service.v1.LoginTrendResponse
-	(*v1.ActionDistributionResponse)(nil), // 4: dashboard.service.v1.ActionDistributionResponse
-	(*v1.StatusDistributionResponse)(nil), // 5: dashboard.service.v1.StatusDistributionResponse
+	(*emptypb.Empty)(nil),                  // 0: google.protobuf.Empty
+	(*v1.GetOaTrendRequest)(nil),           // 1: dashboard.service.v1.GetOaTrendRequest
+	(*v1.OaDashboardOverviewResponse)(nil), // 2: dashboard.service.v1.OaDashboardOverviewResponse
+	(*v1.OaTrendResponse)(nil),             // 3: dashboard.service.v1.OaTrendResponse
+	(*v1.OaDistributionResponse)(nil),      // 4: dashboard.service.v1.OaDistributionResponse
 }
 var file_admin_service_v1_i_dashboard_proto_depIdxs = []int32{
 	0, // 0: admin.service.v1.DashboardService.GetOverview:input_type -> google.protobuf.Empty
-	1, // 1: admin.service.v1.DashboardService.GetLoginTrend:input_type -> dashboard.service.v1.GetLoginTrendRequest
-	0, // 2: admin.service.v1.DashboardService.GetOperationActionDistribution:input_type -> google.protobuf.Empty
-	0, // 3: admin.service.v1.DashboardService.GetLoginStatusDistribution:input_type -> google.protobuf.Empty
-	2, // 4: admin.service.v1.DashboardService.GetOverview:output_type -> dashboard.service.v1.DashboardOverviewResponse
-	3, // 5: admin.service.v1.DashboardService.GetLoginTrend:output_type -> dashboard.service.v1.LoginTrendResponse
-	4, // 6: admin.service.v1.DashboardService.GetOperationActionDistribution:output_type -> dashboard.service.v1.ActionDistributionResponse
-	5, // 7: admin.service.v1.DashboardService.GetLoginStatusDistribution:output_type -> dashboard.service.v1.StatusDistributionResponse
+	1, // 1: admin.service.v1.DashboardService.GetOaTrend:input_type -> dashboard.service.v1.GetOaTrendRequest
+	0, // 2: admin.service.v1.DashboardService.GetOaInstanceStatusDistribution:input_type -> google.protobuf.Empty
+	0, // 3: admin.service.v1.DashboardService.GetOaAttendanceDayResultDistribution:input_type -> google.protobuf.Empty
+	2, // 4: admin.service.v1.DashboardService.GetOverview:output_type -> dashboard.service.v1.OaDashboardOverviewResponse
+	3, // 5: admin.service.v1.DashboardService.GetOaTrend:output_type -> dashboard.service.v1.OaTrendResponse
+	4, // 6: admin.service.v1.DashboardService.GetOaInstanceStatusDistribution:output_type -> dashboard.service.v1.OaDistributionResponse
+	4, // 7: admin.service.v1.DashboardService.GetOaAttendanceDayResultDistribution:output_type -> dashboard.service.v1.OaDistributionResponse
 	4, // [4:8] is the sub-list for method output_type
 	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

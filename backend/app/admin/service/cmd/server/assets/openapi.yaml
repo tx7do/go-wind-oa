@@ -336,25 +336,51 @@ paths:
                                 $ref: '#/components/schemas/authentication.service.v1.VerifyCaptchaResponse'
             security:
                 - {}
-    /admin/v1/dashboard/login-status-distribution:
+    /admin/v1/dashboard/oa-attendance-day-result-distribution:
         get:
             tags:
                 - DashboardService
-            description: 登录审计按 status 分布
-            operationId: DashboardService_GetLoginStatusDistribution
+            description: 考勤记录按 day_result 分布
+            operationId: DashboardService_GetOaAttendanceDayResultDistribution
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/dashboard.service.v1.StatusDistributionResponse'
-    /admin/v1/dashboard/login-trend:
+                                $ref: '#/components/schemas/dashboard.service.v1.OaDistributionResponse'
+    /admin/v1/dashboard/oa-instance-status-distribution:
         get:
             tags:
                 - DashboardService
-            description: 获取近 N 天每日登录次数趋势
-            operationId: DashboardService_GetLoginTrend
+            description: 工单按 instance_status 分布
+            operationId: DashboardService_GetOaInstanceStatusDistribution
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/dashboard.service.v1.OaDistributionResponse'
+    /admin/v1/dashboard/oa-overview:
+        get:
+            tags:
+                - DashboardService
+            description: 获取 OA 概览统计
+            operationId: DashboardService_GetOverview
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/dashboard.service.v1.OaDashboardOverviewResponse'
+    /admin/v1/dashboard/oa-trend:
+        get:
+            tags:
+                - DashboardService
+            description: 获取近 N 天每日新增工单趋势
+            operationId: DashboardService_GetOaTrend
             parameters:
                 - name: days
                   in: query
@@ -367,33 +393,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/dashboard.service.v1.LoginTrendResponse'
-    /admin/v1/dashboard/operation-action-distribution:
-        get:
-            tags:
-                - DashboardService
-            description: 操作审计按 action 分布
-            operationId: DashboardService_GetOperationActionDistribution
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/dashboard.service.v1.ActionDistributionResponse'
-    /admin/v1/dashboard/overview:
-        get:
-            tags:
-                - DashboardService
-            description: 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
-            operationId: DashboardService_GetOverview
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/dashboard.service.v1.DashboardOverviewResponse'
+                                $ref: '#/components/schemas/dashboard.service.v1.OaTrendResponse'
     /admin/v1/data-access-audit-logs:
         get:
             tags:
@@ -6911,7 +6911,43 @@ components:
                     type: string
                 rpId:
                     type: string
-        dashboard.service.v1.ActionDistributionResponse:
+        dashboard.service.v1.DistributionItem:
+            type: object
+            properties:
+                label:
+                    title: 分组标签
+                    type: string
+                    description: 枚举值字符串，由前端做 i18n 映射
+                count:
+                    title: 计数
+                    type: integer
+                    format: uint32
+            description: 通用分布项
+        dashboard.service.v1.OaDashboardOverviewResponse:
+            type: object
+            properties:
+                workflowInstanceCount:
+                    title: 工单总数
+                    type: integer
+                    description: 工作流实例总数（软删/租户隔离由 Policy 处理）
+                    format: uint32
+                pendingTaskCount:
+                    title: 待办任务数
+                    type: integer
+                    description: 处于 PENDING 状态的工作流任务数
+                    format: uint32
+                todayNewInstanceCount:
+                    title: 今日新增工单
+                    type: integer
+                    description: 今日创建的工作流实例数
+                    format: uint32
+                todayWorkflowActionCount:
+                    title: 今日审批操作数
+                    type: integer
+                    description: 今日工作流日志记录的审批动作数
+                    format: uint32
+            description: OA 概览统计卡片
+        dashboard.service.v1.OaDistributionResponse:
             type: object
             properties:
                 items:
@@ -6919,41 +6955,8 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/dashboard.service.v1.DistributionItem'
-            description: 操作审计 action 分布响应
-        dashboard.service.v1.DashboardOverviewResponse:
-            type: object
-            properties:
-                userCount:
-                    title: 用户总数
-                    type: integer
-                    description: 活跃用户计数（软删/租户隔离由 Policy 处理）
-                    format: uint32
-                roleCount:
-                    title: 角色总数
-                    type: integer
-                    format: uint32
-                todayLoginCount:
-                    title: 今日登录次数
-                    type: integer
-                    format: uint32
-                todayOperationCount:
-                    title: 今日操作审计条数
-                    type: integer
-                    format: uint32
-            description: 概览统计卡片
-        dashboard.service.v1.DistributionItem:
-            type: object
-            properties:
-                label:
-                    title: 分组标签
-                    type: string
-                    description: action/status 枚举值字符串，由前端做 i18n 映射
-                count:
-                    title: 计数
-                    type: integer
-                    format: uint32
-            description: 通用分布项
-        dashboard.service.v1.LoginTrendResponse:
+            description: OA 分布响应
+        dashboard.service.v1.OaTrendResponse:
             type: object
             properties:
                 points:
@@ -6961,16 +6964,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/dashboard.service.v1.TrendPoint'
-            description: 登录趋势响应
-        dashboard.service.v1.StatusDistributionResponse:
-            type: object
-            properties:
-                items:
-                    title: 分布项列表
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/dashboard.service.v1.DistributionItem'
-            description: 登录审计 status 分布响应
+            description: 工单趋势响应
         dashboard.service.v1.TrendPoint:
             type: object
             properties:
@@ -6979,7 +6973,7 @@ components:
                     type: string
                     description: 格式 YYYY-MM-DD
                 count:
-                    title: 当日登录次数
+                    title: 当日新增工单数
                     type: integer
                     format: uint32
             description: 单日趋势点
@@ -11113,7 +11107,7 @@ tags:
     - name: BusinessTripService
       description: OA 出差申请管理服务（admin 边端）
     - name: DashboardService
-      description: 后台首页分析概览服务（HTTP BFF，转发 core DashboardService）
+      description: 后台首页 OA 分析概览服务（HTTP BFF，转发 core DashboardService）
     - name: DataAccessAuditLogService
       description: 数据访问审计日志管理服务
     - name: DictEntryService

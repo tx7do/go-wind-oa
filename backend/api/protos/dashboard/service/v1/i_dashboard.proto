@@ -6,58 +6,53 @@ import "gnostic/openapi/v3/annotations.proto";
 
 import "google/protobuf/empty.proto";
 
-// 后台首页分析概览服务（core 侧 gRPC，admin BFF 转发）
-// 为 admin 分析页提供只读聚合统计（用户/角色计数、登录趋势、审计分布）。
+// 后台首页 OA 分析概览服务（core 侧 gRPC，admin BFF 转发）
+// 为 admin 分析页提供只读 OA 业务聚合统计（工作流工单计数、审批趋势、状态/考勤分布）。
 service DashboardService {
-  // 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
-  rpc GetOverview (google.protobuf.Empty) returns (DashboardOverviewResponse);
+  // 获取 OA 概览统计（工单总数 / 待办任务数 / 今日新增工单 / 今日审批操作数）
+  rpc GetOverview (google.protobuf.Empty) returns (OaDashboardOverviewResponse);
 
-  // 获取近 N 天每日登录次数趋势
-  rpc GetLoginTrend (GetLoginTrendRequest) returns (LoginTrendResponse);
+  // 获取近 N 天每日新增工单趋势
+  rpc GetOaTrend (GetOaTrendRequest) returns (OaTrendResponse);
 
-  // 操作审计按 action 分布
-  rpc GetOperationActionDistribution (google.protobuf.Empty) returns (ActionDistributionResponse);
+  // 工单按 instance_status 分布
+  rpc GetOaInstanceStatusDistribution (google.protobuf.Empty) returns (OaDistributionResponse);
 
-  // 登录审计按 status 分布
-  rpc GetLoginStatusDistribution (google.protobuf.Empty) returns (StatusDistributionResponse);
+  // 考勤记录按 day_result 分布
+  rpc GetOaAttendanceDayResultDistribution (google.protobuf.Empty) returns (OaDistributionResponse);
 }
 
-// 概览统计卡片
-message DashboardOverviewResponse {
-  optional uint32 user_count = 1 [(gnostic.openapi.v3.property) = {title: "用户总数", description: "活跃用户计数（软删/租户隔离由 Policy 处理）"}];
-  optional uint32 role_count = 2 [(gnostic.openapi.v3.property) = {title: "角色总数"}];
-  optional uint32 today_login_count = 3 [(gnostic.openapi.v3.property) = {title: "今日登录次数"}];
-  optional uint32 today_operation_count = 4 [(gnostic.openapi.v3.property) = {title: "今日操作审计条数"}];
+// OA 概览统计卡片
+message OaDashboardOverviewResponse {
+  optional uint32 workflow_instance_count = 1 [(gnostic.openapi.v3.property) = {title: "工单总数", description: "工作流实例总数（软删/租户隔离由 Policy 处理）"}];
+  optional uint32 pending_task_count = 2 [(gnostic.openapi.v3.property) = {title: "待办任务数", description: "处于 PENDING 状态的工作流任务数"}];
+  optional uint32 today_new_instance_count = 3 [(gnostic.openapi.v3.property) = {title: "今日新增工单", description: "今日创建的工作流实例数"}];
+  optional uint32 today_workflow_action_count = 4 [(gnostic.openapi.v3.property) = {title: "今日审批操作数", description: "今日工作流日志记录的审批动作数"}];
 }
 
-// 登录趋势查询参数
-message GetLoginTrendRequest {
+// 工单趋势查询参数
+message GetOaTrendRequest {
   optional uint32 days = 1 [(gnostic.openapi.v3.property) = {title: "统计天数", description: "近 N 天，默认 7"}];
 }
 
-// 登录趋势响应
-message LoginTrendResponse {
+// 工单趋势响应
+message OaTrendResponse {
   repeated TrendPoint points = 1 [(gnostic.openapi.v3.property) = {title: "趋势点列表"}];
 }
 
 // 单日趋势点
 message TrendPoint {
   optional string date = 1 [(gnostic.openapi.v3.property) = {title: "日期", description: "格式 YYYY-MM-DD"}];
-  optional uint32 count = 2 [(gnostic.openapi.v3.property) = {title: "当日登录次数"}];
+  optional uint32 count = 2 [(gnostic.openapi.v3.property) = {title: "当日新增工单数"}];
 }
 
-// 操作审计 action 分布响应
-message ActionDistributionResponse {
-  repeated DistributionItem items = 1 [(gnostic.openapi.v3.property) = {title: "分布项列表"}];
-}
-
-// 登录审计 status 分布响应
-message StatusDistributionResponse {
+// OA 分布响应
+message OaDistributionResponse {
   repeated DistributionItem items = 1 [(gnostic.openapi.v3.property) = {title: "分布项列表"}];
 }
 
 // 通用分布项
 message DistributionItem {
-  optional string label = 1 [(gnostic.openapi.v3.property) = {title: "分组标签", description: "action/status 枚举值字符串，由前端做 i18n 映射"}];
+  optional string label = 1 [(gnostic.openapi.v3.property) = {title: "分组标签", description: "枚举值字符串，由前端做 i18n 映射"}];
   optional uint32 count = 2 [(gnostic.openapi.v3.property) = {title: "计数"}];
 }

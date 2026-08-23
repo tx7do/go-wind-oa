@@ -12,7 +12,7 @@ import (
 	dashboardV1 "go-wind-oa/api/gen/go/dashboard/service/v1"
 )
 
-// DashboardService 为 admin 分析页提供只读聚合统计（gRPC，由 admin BFF 转发）。
+// DashboardService 为 admin 分析页提供只读 OA 聚合统计（gRPC，由 admin BFF 转发）。
 // 多租户隔离由 ent Policy + viewer 元数据自动完成。
 type DashboardService struct {
 	dashboardV1.UnimplementedDashboardServiceServer
@@ -32,39 +32,41 @@ func NewDashboardService(
 	}
 }
 
-// GetOverview 返回四张概览卡的计数。
-func (s *DashboardService) GetOverview(ctx context.Context, _ *emptypb.Empty) (*dashboardV1.DashboardOverviewResponse, error) {
-	userCount, err := s.dashboardRepo.CountActiveUsers(ctx)
+// GetOverview 返回四张 OA 概览卡的计数。
+func (s *DashboardService) GetOverview(ctx context.Context, _ *emptypb.Empty) (*dashboardV1.OaDashboardOverviewResponse, error) {
+	instanceCount, err := s.dashboardRepo.CountWorkflowInstances(ctx)
 	if err != nil {
 		return nil, err
 	}
-	roleCount, err := s.dashboardRepo.CountRoles(ctx)
+	pendingTaskCount, err := s.dashboardRepo.CountPendingTasks(ctx)
 	if err != nil {
 		return nil, err
 	}
-	todayLoginCount, err := s.dashboardRepo.CountTodayLogins(ctx)
+	todayNewInstanceCount, err := s.dashboardRepo.CountTodayNewInstances(ctx)
 	if err != nil {
 		return nil, err
 	}
-	todayOperationCount, err := s.dashboardRepo.CountTodayOperations(ctx)
+	todayWorkflowActionCount, err := s.dashboardRepo.CountTodayWorkflowActions(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	userCountVal, roleCountVal := uint32(userCount), uint32(roleCount)
-	todayLoginCountVal, todayOperationCountVal := uint32(todayLoginCount), uint32(todayOperationCount)
-	return &dashboardV1.DashboardOverviewResponse{
-		UserCount:           &userCountVal,
-		RoleCount:           &roleCountVal,
-		TodayLoginCount:     &todayLoginCountVal,
-		TodayOperationCount: &todayOperationCountVal,
+	instanceCountVal := uint32(instanceCount)
+	pendingTaskCountVal := uint32(pendingTaskCount)
+	todayNewInstanceCountVal := uint32(todayNewInstanceCount)
+	todayWorkflowActionCountVal := uint32(todayWorkflowActionCount)
+	return &dashboardV1.OaDashboardOverviewResponse{
+		WorkflowInstanceCount:     &instanceCountVal,
+		PendingTaskCount:          &pendingTaskCountVal,
+		TodayNewInstanceCount:     &todayNewInstanceCountVal,
+		TodayWorkflowActionCount: &todayWorkflowActionCountVal,
 	}, nil
 }
 
-// GetLoginTrend 返回近 days 天每日登录次数趋势，按日期升序、缺日补零。
-func (s *DashboardService) GetLoginTrend(ctx context.Context, req *dashboardV1.GetLoginTrendRequest) (*dashboardV1.LoginTrendResponse, error) {
+// GetOaTrend 返回近 days 天每日新增工单数趋势，按日期升序、缺日补零。
+func (s *DashboardService) GetOaTrend(ctx context.Context, req *dashboardV1.GetOaTrendRequest) (*dashboardV1.OaTrendResponse, error) {
 	days := int(req.GetDays())
-	rows, err := s.dashboardRepo.LoginTrend(ctx, days)
+	rows, err := s.dashboardRepo.InstanceCreationTrend(ctx, days)
 	if err != nil {
 		return nil, err
 	}
@@ -77,41 +79,41 @@ func (s *DashboardService) GetLoginTrend(ctx context.Context, req *dashboardV1.G
 			Count: &count,
 		})
 	}
-	return &dashboardV1.LoginTrendResponse{Points: points}, nil
+	return &dashboardV1.OaTrendResponse{Points: points}, nil
 }
 
-// GetOperationActionDistribution 返回操作审计按 action 的分布。
-func (s *DashboardService) GetOperationActionDistribution(ctx context.Context, _ *emptypb.Empty) (*dashboardV1.ActionDistributionResponse, error) {
-	rows, err := s.dashboardRepo.OperationActionDistribution(ctx)
+// GetOaInstanceStatusDistribution 返回工单按 instance_status 的分布。
+func (s *DashboardService) GetOaInstanceStatusDistribution(ctx context.Context, _ *emptypb.Empty) (*dashboardV1.OaDistributionResponse, error) {
+	rows, err := s.dashboardRepo.InstanceStatusDistribution(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	items := make([]*dashboardV1.DistributionItem, 0, len(rows))
 	for _, r := range rows {
-		label, count := r.Action, uint32(r.Count)
+		label, count := r.InstanceStatus, uint32(r.Count)
 		items = append(items, &dashboardV1.DistributionItem{
 			Label: &label,
 			Count: &count,
 		})
 	}
-	return &dashboardV1.ActionDistributionResponse{Items: items}, nil
+	return &dashboardV1.OaDistributionResponse{Items: items}, nil
 }
 
-// GetLoginStatusDistribution 返回登录审计按 status 的分布。
-func (s *DashboardService) GetLoginStatusDistribution(ctx context.Context, _ *emptypb.Empty) (*dashboardV1.StatusDistributionResponse, error) {
-	rows, err := s.dashboardRepo.LoginStatusDistribution(ctx)
+// GetOaAttendanceDayResultDistribution 返回考勤记录按 day_result 的分布。
+func (s *DashboardService) GetOaAttendanceDayResultDistribution(ctx context.Context, _ *emptypb.Empty) (*dashboardV1.OaDistributionResponse, error) {
+	rows, err := s.dashboardRepo.AttendanceDayResultDistribution(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	items := make([]*dashboardV1.DistributionItem, 0, len(rows))
 	for _, r := range rows {
-		label, count := r.Status, uint32(r.Count)
+		label, count := r.DayResult, uint32(r.Count)
 		items = append(items, &dashboardV1.DistributionItem{
 			Label: &label,
 			Count: &count,
 		})
 	}
-	return &dashboardV1.StatusDistributionResponse{Items: items}, nil
+	return &dashboardV1.OaDistributionResponse{Items: items}, nil
 }

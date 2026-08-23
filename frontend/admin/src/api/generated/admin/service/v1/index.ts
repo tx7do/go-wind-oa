@@ -1477,24 +1477,24 @@ export type oaservicev1_GetBusinessTripApplicationRequest = {
   id: number | undefined;
 };
 
-// 后台首页分析概览服务（HTTP BFF，转发 core DashboardService）
+// 后台首页 OA 分析概览服务（HTTP BFF，转发 core DashboardService）
 export interface DashboardService {
-  // 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
+  // 获取 OA 概览统计
   GetOverview(
     request: wellKnownEmpty,
-  ): Promise<dashboardservicev1_DashboardOverviewResponse>;
-  // 获取近 N 天每日登录次数趋势
-  GetLoginTrend(
-    request: dashboardservicev1_GetLoginTrendRequest,
-  ): Promise<dashboardservicev1_LoginTrendResponse>;
-  // 操作审计按 action 分布
-  GetOperationActionDistribution(
+  ): Promise<dashboardservicev1_OaDashboardOverviewResponse>;
+  // 获取近 N 天每日新增工单趋势
+  GetOaTrend(
+    request: dashboardservicev1_GetOaTrendRequest,
+  ): Promise<dashboardservicev1_OaTrendResponse>;
+  // 工单按 instance_status 分布
+  GetOaInstanceStatusDistribution(
     request: wellKnownEmpty,
-  ): Promise<dashboardservicev1_ActionDistributionResponse>;
-  // 登录审计按 status 分布
-  GetLoginStatusDistribution(
+  ): Promise<dashboardservicev1_OaDistributionResponse>;
+  // 考勤记录按 day_result 分布
+  GetOaAttendanceDayResultDistribution(
     request: wellKnownEmpty,
-  ): Promise<dashboardservicev1_StatusDistributionResponse>;
+  ): Promise<dashboardservicev1_OaDistributionResponse>;
 }
 
 export function createDashboardServiceClient(
@@ -1502,15 +1502,15 @@ export function createDashboardServiceClient(
 ): DashboardService {
   return {
     GetOverview(_request) {
-      const path = `admin/v1/dashboard/overview`;
+      const path = `admin/v1/dashboard/oa-overview`;
       const body = null;
       return transport.unary(path, 'GET', body, {
         service: 'DashboardService',
         method: 'GetOverview',
-      }) as Promise<dashboardservicev1_DashboardOverviewResponse>;
+      }) as Promise<dashboardservicev1_OaDashboardOverviewResponse>;
     },
-    GetLoginTrend(request) {
-      const path = `admin/v1/dashboard/login-trend`;
+    GetOaTrend(request) {
+      const path = `admin/v1/dashboard/oa-trend`;
       const body = null;
       const queryParams: string[] = [];
       if (request.days) {
@@ -1524,42 +1524,42 @@ export function createDashboardServiceClient(
       }
       return transport.unary(uri, 'GET', body, {
         service: 'DashboardService',
-        method: 'GetLoginTrend',
-      }) as Promise<dashboardservicev1_LoginTrendResponse>;
+        method: 'GetOaTrend',
+      }) as Promise<dashboardservicev1_OaTrendResponse>;
     },
-    GetOperationActionDistribution(_request) {
-      const path = `admin/v1/dashboard/operation-action-distribution`;
+    GetOaInstanceStatusDistribution(_request) {
+      const path = `admin/v1/dashboard/oa-instance-status-distribution`;
       const body = null;
       return transport.unary(path, 'GET', body, {
         service: 'DashboardService',
-        method: 'GetOperationActionDistribution',
-      }) as Promise<dashboardservicev1_ActionDistributionResponse>;
+        method: 'GetOaInstanceStatusDistribution',
+      }) as Promise<dashboardservicev1_OaDistributionResponse>;
     },
-    GetLoginStatusDistribution(_request) {
-      const path = `admin/v1/dashboard/login-status-distribution`;
+    GetOaAttendanceDayResultDistribution(_request) {
+      const path = `admin/v1/dashboard/oa-attendance-day-result-distribution`;
       const body = null;
       return transport.unary(path, 'GET', body, {
         service: 'DashboardService',
-        method: 'GetLoginStatusDistribution',
-      }) as Promise<dashboardservicev1_StatusDistributionResponse>;
+        method: 'GetOaAttendanceDayResultDistribution',
+      }) as Promise<dashboardservicev1_OaDistributionResponse>;
     },
   };
 }
-// 概览统计卡片
-export type dashboardservicev1_DashboardOverviewResponse = {
-  roleCount?: number;
-  todayLoginCount?: number;
-  todayOperationCount?: number;
-  userCount?: number;
+// OA 概览统计卡片
+export type dashboardservicev1_OaDashboardOverviewResponse = {
+  pendingTaskCount?: number;
+  todayNewInstanceCount?: number;
+  todayWorkflowActionCount?: number;
+  workflowInstanceCount?: number;
 };
 
-// 登录趋势查询参数
-export type dashboardservicev1_GetLoginTrendRequest = {
+// 工单趋势查询参数
+export type dashboardservicev1_GetOaTrendRequest = {
   days?: number;
 };
 
-// 登录趋势响应
-export type dashboardservicev1_LoginTrendResponse = {
+// 工单趋势响应
+export type dashboardservicev1_OaTrendResponse = {
   points: dashboardservicev1_TrendPoint[] | undefined;
 };
 
@@ -1569,8 +1569,8 @@ export type dashboardservicev1_TrendPoint = {
   date?: string;
 };
 
-// 操作审计 action 分布响应
-export type dashboardservicev1_ActionDistributionResponse = {
+// OA 分布响应
+export type dashboardservicev1_OaDistributionResponse = {
   items: dashboardservicev1_DistributionItem[] | undefined;
 };
 
@@ -1578,11 +1578,6 @@ export type dashboardservicev1_ActionDistributionResponse = {
 export type dashboardservicev1_DistributionItem = {
   count?: number;
   label?: string;
-};
-
-// 登录审计 status 分布响应
-export type dashboardservicev1_StatusDistributionResponse = {
-  items: dashboardservicev1_DistributionItem[] | undefined;
 };
 
 // 数据访问审计日志管理服务

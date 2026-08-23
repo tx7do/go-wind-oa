@@ -3,19 +3,14 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  dashboardservicev1_ActionDistributionResponse as ActionDistributionResponse,
-  dashboardservicev1_StatusDistributionResponse as StatusDistributionResponse,
-} from "@/api/generated/admin/service/v1";
+import type { dashboardservicev1_OaDistributionResponse as OaDistributionResponse } from "@/api/generated/admin/service/v1";
 
 import { EchartsUI, EchartsUIType, useEcharts } from "@/plugins/echarts";
 import { $t } from "@/core/i18n";
 import { usePreferences } from "@/core/preferences";
 
-type DistributionData = ActionDistributionResponse | StatusDistributionResponse;
-
 const props = defineProps<{
-  data?: DistributionData;
+  data?: OaDistributionResponse;
   titleKey: string;
 }>();
 
@@ -23,8 +18,8 @@ const chartRef = ref<EchartsUIType>();
 const { renderEcharts } = useEcharts(chartRef);
 const { isDark } = usePreferences();
 
-// 通用环形分布图，供操作类型分布与登录状态分布共用。
-// 后端返回 items：{ label, count }，label 为枚举名（CREATE/UPDATE、SUCCESS/FAILED…）。
+// 通用环形分布图，供工单状态分布与考勤日结果分布共用。
+// 后端返回 items：{ label, count }，label 为枚举名（PENDING/APPROVED…、NORMAL/LATE…）。
 const chartOptions = computed(() => {
   const items = props.data?.items ?? [];
   return {

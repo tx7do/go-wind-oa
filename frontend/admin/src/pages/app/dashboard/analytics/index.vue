@@ -19,11 +19,11 @@
       </el-col>
     </el-row>
 
-    <!-- Login Trend Chart -->
+    <!-- OA Instance Trend Chart -->
     <el-card shadow="hover" class="mb-5">
       <template #header>
         <div class="card-header-tabs">
-          <span class="card-title">{{ $t("pages.dashboard.loginTrend") }}</span>
+          <span class="card-title">{{ $t("pages.dashboard.oaTrend") }}</span>
         </div>
       </template>
       <div class="chart-container chart-container-trend">
@@ -36,12 +36,12 @@
       <el-col :xs="24" :sm="24" :md="12">
         <el-card shadow="hover">
           <template #header>
-            <span class="card-title">{{ $t("pages.dashboard.operationActionDistribution") }}</span>
+            <span class="card-title">{{ $t("pages.dashboard.instanceStatusDistribution") }}</span>
           </template>
           <div class="chart-container chart-container-small">
             <AnalyticsDistribution
-              :data="actionDistQuery.data.value"
-              title-key="pages.dashboard.operationActionDistribution"
+              :data="instanceStatusDistQuery.data.value"
+              title-key="pages.dashboard.instanceStatusDistribution"
             />
           </div>
         </el-card>
@@ -49,12 +49,12 @@
       <el-col :xs="24" :sm="24" :md="12">
         <el-card shadow="hover">
           <template #header>
-            <span class="card-title">{{ $t("pages.dashboard.loginStatusDistribution") }}</span>
+            <span class="card-title">{{ $t("pages.dashboard.attendanceDayResultDistribution") }}</span>
           </template>
           <div class="chart-container chart-container-small">
             <AnalyticsDistribution
-              :data="statusDistQuery.data.value"
-              title-key="pages.dashboard.loginStatusDistribution"
+              :data="attendanceDistQuery.data.value"
+              title-key="pages.dashboard.attendanceDayResultDistribution"
             />
           </div>
         </el-card>
@@ -67,10 +67,10 @@
 import SvgIcon from "@/components/SvgIcon/index.vue";
 import { $t } from "@/core/i18n";
 import {
-  useDashboardOverview,
-  useLoginStatusDistribution,
-  useLoginTrend,
-  useOperationActionDistribution,
+  useOaAttendanceDayResultDistribution,
+  useOaDashboardOverview,
+  useOaInstanceStatusDistribution,
+  useOaTrend,
 } from "@/api/composables/dashboard";
 import AnalyticsTrends from "./analytics-trends.vue";
 import AnalyticsDistribution from "./analytics-distribution.vue";
@@ -78,7 +78,11 @@ import AnalyticsDistribution from "./analytics-distribution.vue";
 // 概览卡：每张卡由描述符声明其数据字段、标题 i18n 键与图标，
 // 数值从后端 GetOverview 对应字段读取。字段名与响应类型严格对齐，
 // 避免之前按下标硬绑图标/数据的脆弱写法。
-type OverviewField = "userCount" | "roleCount" | "todayLoginCount" | "todayOperationCount";
+type OverviewField =
+  | "workflowInstanceCount"
+  | "pendingTaskCount"
+  | "todayNewInstanceCount"
+  | "todayWorkflowActionCount";
 
 interface OverviewDescriptor {
   field: OverviewField;
@@ -87,22 +91,30 @@ interface OverviewDescriptor {
 }
 
 const overviewDescriptors: OverviewDescriptor[] = [
-  { field: "userCount", titleKey: "pages.dashboard.userCount", icon: "svg:color_card" },
-  { field: "roleCount", titleKey: "pages.dashboard.roleCount", icon: "svg:color_cake" },
   {
-    field: "todayLoginCount",
-    titleKey: "pages.dashboard.todayLoginCount",
+    field: "workflowInstanceCount",
+    titleKey: "pages.dashboard.workflowInstanceCount",
+    icon: "svg:color_card",
+  },
+  {
+    field: "pendingTaskCount",
+    titleKey: "pages.dashboard.pendingTaskCount",
+    icon: "svg:color_cake",
+  },
+  {
+    field: "todayNewInstanceCount",
+    titleKey: "pages.dashboard.todayNewInstanceCount",
     icon: "svg:color_download",
   },
   {
-    field: "todayOperationCount",
-    titleKey: "pages.dashboard.todayOperationCount",
+    field: "todayWorkflowActionCount",
+    titleKey: "pages.dashboard.todayWorkflowActionCount",
     icon: "svg:color_bell",
   },
 ];
 
 // 数据未就绪（加载/出错）时返回空数组，待数据到达后由 computed 自动填充。
-const overviewQuery = useDashboardOverview();
+const overviewQuery = useOaDashboardOverview();
 
 const overviewItems = computed(() => {
   const d = overviewQuery.data.value;
@@ -116,9 +128,9 @@ const overviewItems = computed(() => {
   }));
 });
 
-const trendQuery = useLoginTrend(7);
-const actionDistQuery = useOperationActionDistribution();
-const statusDistQuery = useLoginStatusDistribution();
+const trendQuery = useOaTrend(7);
+const instanceStatusDistQuery = useOaInstanceStatusDistribution();
+const attendanceDistQuery = useOaAttendanceDayResultDistribution();
 </script>
 
 <style lang="scss" scoped>

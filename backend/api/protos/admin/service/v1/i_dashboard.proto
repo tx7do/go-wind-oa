@@ -9,33 +9,33 @@ import "gnostic/openapi/v3/annotations.proto";
 
 import "dashboard/service/v1/i_dashboard.proto";
 
-// 后台首页分析概览服务（HTTP BFF，转发 core DashboardService）
+// 后台首页 OA 分析概览服务（HTTP BFF，转发 core DashboardService）
 service DashboardService {
-  // 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
-  rpc GetOverview (google.protobuf.Empty) returns (dashboard.service.v1.DashboardOverviewResponse) {
+  // 获取 OA 概览统计
+  rpc GetOverview (google.protobuf.Empty) returns (dashboard.service.v1.OaDashboardOverviewResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/dashboard/overview"
+      get: "/admin/v1/dashboard/oa-overview"
     };
   }
 
-  // 获取近 N 天每日登录次数趋势
-  rpc GetLoginTrend (dashboard.service.v1.GetLoginTrendRequest) returns (dashboard.service.v1.LoginTrendResponse) {
+  // 获取近 N 天每日新增工单趋势
+  rpc GetOaTrend (dashboard.service.v1.GetOaTrendRequest) returns (dashboard.service.v1.OaTrendResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/dashboard/login-trend"
+      get: "/admin/v1/dashboard/oa-trend"
     };
   }
 
-  // 操作审计按 action 分布
-  rpc GetOperationActionDistribution (google.protobuf.Empty) returns (dashboard.service.v1.ActionDistributionResponse) {
+  // 工单按 instance_status 分布
+  rpc GetOaInstanceStatusDistribution (google.protobuf.Empty) returns (dashboard.service.v1.OaDistributionResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/dashboard/operation-action-distribution"
+      get: "/admin/v1/dashboard/oa-instance-status-distribution"
     };
   }
 
-  // 登录审计按 status 分布
-  rpc GetLoginStatusDistribution (google.protobuf.Empty) returns (dashboard.service.v1.StatusDistributionResponse) {
+  // 考勤记录按 day_result 分布
+  rpc GetOaAttendanceDayResultDistribution (google.protobuf.Empty) returns (dashboard.service.v1.OaDistributionResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/dashboard/login-status-distribution"
+      get: "/admin/v1/dashboard/oa-attendance-day-result-distribution"
     };
   }
 }

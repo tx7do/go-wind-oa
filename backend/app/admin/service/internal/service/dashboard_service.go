@@ -11,7 +11,7 @@ import (
 	dashboardV1 "go-wind-oa/api/gen/go/dashboard/service/v1"
 )
 
-// DashboardService 为分析页提供只读聚合统计（HTTP BFF，转发 core DashboardService）。
+// DashboardService 为分析页提供只读 OA 聚合统计（HTTP BFF，转发 core DashboardService）。
 type DashboardService struct {
 	adminV1.DashboardServiceHTTPServer
 
@@ -27,18 +27,18 @@ func NewDashboardService(ctx *bootstrap.Context, dashboardServiceClient dashboar
 	}
 }
 
-func (s *DashboardService) GetOverview(ctx context.Context, req *emptypb.Empty) (*dashboardV1.DashboardOverviewResponse, error) {
+func (s *DashboardService) GetOverview(ctx context.Context, req *emptypb.Empty) (*dashboardV1.OaDashboardOverviewResponse, error) {
 	return s.dashboardServiceClient.GetOverview(ctx, req)
 }
 
-func (s *DashboardService) GetLoginTrend(ctx context.Context, req *dashboardV1.GetLoginTrendRequest) (*dashboardV1.LoginTrendResponse, error) {
-	return s.dashboardServiceClient.GetLoginTrend(ctx, req)
+func (s *DashboardService) GetOaTrend(ctx context.Context, req *dashboardV1.GetOaTrendRequest) (*dashboardV1.OaTrendResponse, error) {
+	return s.dashboardServiceClient.GetOaTrend(ctx, req)
 }
 
-func (s *DashboardService) GetOperationActionDistribution(ctx context.Context, req *emptypb.Empty) (*dashboardV1.ActionDistributionResponse, error) {
-	return s.dashboardServiceClient.GetOperationActionDistribution(ctx, req)
+func (s *DashboardService) GetOaInstanceStatusDistribution(ctx context.Context, req *emptypb.Empty) (*dashboardV1.OaDistributionResponse, error) {
+	return s.dashboardServiceClient.GetOaInstanceStatusDistribution(ctx, req)
 }
 
-func (s *DashboardService) GetLoginStatusDistribution(ctx context.Context, req *emptypb.Empty) (*dashboardV1.StatusDistributionResponse, error) {
-	return s.dashboardServiceClient.GetLoginStatusDistribution(ctx, req)
+func (s *DashboardService) GetOaAttendanceDayResultDistribution(ctx context.Context, req *emptypb.Empty) (*dashboardV1.OaDistributionResponse, error) {
+	return s.dashboardServiceClient.GetOaAttendanceDayResultDistribution(ctx, req)
 }

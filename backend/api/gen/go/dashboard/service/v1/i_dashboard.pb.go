@@ -23,31 +23,31 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 概览统计卡片
-type DashboardOverviewResponse struct {
-	state               protoimpl.MessageState `protogen:"open.v1"`
-	UserCount           *uint32                `protobuf:"varint,1,opt,name=user_count,json=userCount,proto3,oneof" json:"user_count,omitempty"`
-	RoleCount           *uint32                `protobuf:"varint,2,opt,name=role_count,json=roleCount,proto3,oneof" json:"role_count,omitempty"`
-	TodayLoginCount     *uint32                `protobuf:"varint,3,opt,name=today_login_count,json=todayLoginCount,proto3,oneof" json:"today_login_count,omitempty"`
-	TodayOperationCount *uint32                `protobuf:"varint,4,opt,name=today_operation_count,json=todayOperationCount,proto3,oneof" json:"today_operation_count,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+// OA 概览统计卡片
+type OaDashboardOverviewResponse struct {
+	state                    protoimpl.MessageState `protogen:"open.v1"`
+	WorkflowInstanceCount    *uint32                `protobuf:"varint,1,opt,name=workflow_instance_count,json=workflowInstanceCount,proto3,oneof" json:"workflow_instance_count,omitempty"`
+	PendingTaskCount         *uint32                `protobuf:"varint,2,opt,name=pending_task_count,json=pendingTaskCount,proto3,oneof" json:"pending_task_count,omitempty"`
+	TodayNewInstanceCount    *uint32                `protobuf:"varint,3,opt,name=today_new_instance_count,json=todayNewInstanceCount,proto3,oneof" json:"today_new_instance_count,omitempty"`
+	TodayWorkflowActionCount *uint32                `protobuf:"varint,4,opt,name=today_workflow_action_count,json=todayWorkflowActionCount,proto3,oneof" json:"today_workflow_action_count,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
-func (x *DashboardOverviewResponse) Reset() {
-	*x = DashboardOverviewResponse{}
+func (x *OaDashboardOverviewResponse) Reset() {
+	*x = OaDashboardOverviewResponse{}
 	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DashboardOverviewResponse) String() string {
+func (x *OaDashboardOverviewResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DashboardOverviewResponse) ProtoMessage() {}
+func (*OaDashboardOverviewResponse) ProtoMessage() {}
 
-func (x *DashboardOverviewResponse) ProtoReflect() protoreflect.Message {
+func (x *OaDashboardOverviewResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -59,61 +59,61 @@ func (x *DashboardOverviewResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DashboardOverviewResponse.ProtoReflect.Descriptor instead.
-func (*DashboardOverviewResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use OaDashboardOverviewResponse.ProtoReflect.Descriptor instead.
+func (*OaDashboardOverviewResponse) Descriptor() ([]byte, []int) {
 	return file_dashboard_service_v1_i_dashboard_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *DashboardOverviewResponse) GetUserCount() uint32 {
-	if x != nil && x.UserCount != nil {
-		return *x.UserCount
+func (x *OaDashboardOverviewResponse) GetWorkflowInstanceCount() uint32 {
+	if x != nil && x.WorkflowInstanceCount != nil {
+		return *x.WorkflowInstanceCount
 	}
 	return 0
 }
 
-func (x *DashboardOverviewResponse) GetRoleCount() uint32 {
-	if x != nil && x.RoleCount != nil {
-		return *x.RoleCount
+func (x *OaDashboardOverviewResponse) GetPendingTaskCount() uint32 {
+	if x != nil && x.PendingTaskCount != nil {
+		return *x.PendingTaskCount
 	}
 	return 0
 }
 
-func (x *DashboardOverviewResponse) GetTodayLoginCount() uint32 {
-	if x != nil && x.TodayLoginCount != nil {
-		return *x.TodayLoginCount
+func (x *OaDashboardOverviewResponse) GetTodayNewInstanceCount() uint32 {
+	if x != nil && x.TodayNewInstanceCount != nil {
+		return *x.TodayNewInstanceCount
 	}
 	return 0
 }
 
-func (x *DashboardOverviewResponse) GetTodayOperationCount() uint32 {
-	if x != nil && x.TodayOperationCount != nil {
-		return *x.TodayOperationCount
+func (x *OaDashboardOverviewResponse) GetTodayWorkflowActionCount() uint32 {
+	if x != nil && x.TodayWorkflowActionCount != nil {
+		return *x.TodayWorkflowActionCount
 	}
 	return 0
 }
 
-// 登录趋势查询参数
-type GetLoginTrendRequest struct {
+// 工单趋势查询参数
+type GetOaTrendRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Days          *uint32                `protobuf:"varint,1,opt,name=days,proto3,oneof" json:"days,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetLoginTrendRequest) Reset() {
-	*x = GetLoginTrendRequest{}
+func (x *GetOaTrendRequest) Reset() {
+	*x = GetOaTrendRequest{}
 	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetLoginTrendRequest) String() string {
+func (x *GetOaTrendRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetLoginTrendRequest) ProtoMessage() {}
+func (*GetOaTrendRequest) ProtoMessage() {}
 
-func (x *GetLoginTrendRequest) ProtoReflect() protoreflect.Message {
+func (x *GetOaTrendRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -125,40 +125,40 @@ func (x *GetLoginTrendRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetLoginTrendRequest.ProtoReflect.Descriptor instead.
-func (*GetLoginTrendRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetOaTrendRequest.ProtoReflect.Descriptor instead.
+func (*GetOaTrendRequest) Descriptor() ([]byte, []int) {
 	return file_dashboard_service_v1_i_dashboard_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetLoginTrendRequest) GetDays() uint32 {
+func (x *GetOaTrendRequest) GetDays() uint32 {
 	if x != nil && x.Days != nil {
 		return *x.Days
 	}
 	return 0
 }
 
-// 登录趋势响应
-type LoginTrendResponse struct {
+// 工单趋势响应
+type OaTrendResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Points        []*TrendPoint          `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LoginTrendResponse) Reset() {
-	*x = LoginTrendResponse{}
+func (x *OaTrendResponse) Reset() {
+	*x = OaTrendResponse{}
 	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LoginTrendResponse) String() string {
+func (x *OaTrendResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LoginTrendResponse) ProtoMessage() {}
+func (*OaTrendResponse) ProtoMessage() {}
 
-func (x *LoginTrendResponse) ProtoReflect() protoreflect.Message {
+func (x *OaTrendResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -170,12 +170,12 @@ func (x *LoginTrendResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LoginTrendResponse.ProtoReflect.Descriptor instead.
-func (*LoginTrendResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use OaTrendResponse.ProtoReflect.Descriptor instead.
+func (*OaTrendResponse) Descriptor() ([]byte, []int) {
 	return file_dashboard_service_v1_i_dashboard_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *LoginTrendResponse) GetPoints() []*TrendPoint {
+func (x *OaTrendResponse) GetPoints() []*TrendPoint {
 	if x != nil {
 		return x.Points
 	}
@@ -235,28 +235,28 @@ func (x *TrendPoint) GetCount() uint32 {
 	return 0
 }
 
-// 操作审计 action 分布响应
-type ActionDistributionResponse struct {
+// OA 分布响应
+type OaDistributionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*DistributionItem    `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ActionDistributionResponse) Reset() {
-	*x = ActionDistributionResponse{}
+func (x *OaDistributionResponse) Reset() {
+	*x = OaDistributionResponse{}
 	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ActionDistributionResponse) String() string {
+func (x *OaDistributionResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ActionDistributionResponse) ProtoMessage() {}
+func (*OaDistributionResponse) ProtoMessage() {}
 
-func (x *ActionDistributionResponse) ProtoReflect() protoreflect.Message {
+func (x *OaDistributionResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -268,57 +268,12 @@ func (x *ActionDistributionResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ActionDistributionResponse.ProtoReflect.Descriptor instead.
-func (*ActionDistributionResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use OaDistributionResponse.ProtoReflect.Descriptor instead.
+func (*OaDistributionResponse) Descriptor() ([]byte, []int) {
 	return file_dashboard_service_v1_i_dashboard_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *ActionDistributionResponse) GetItems() []*DistributionItem {
-	if x != nil {
-		return x.Items
-	}
-	return nil
-}
-
-// 登录审计 status 分布响应
-type StatusDistributionResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Items         []*DistributionItem    `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *StatusDistributionResponse) Reset() {
-	*x = StatusDistributionResponse{}
-	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *StatusDistributionResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*StatusDistributionResponse) ProtoMessage() {}
-
-func (x *StatusDistributionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use StatusDistributionResponse.ProtoReflect.Descriptor instead.
-func (*StatusDistributionResponse) Descriptor() ([]byte, []int) {
-	return file_dashboard_service_v1_i_dashboard_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *StatusDistributionResponse) GetItems() []*DistributionItem {
+func (x *OaDistributionResponse) GetItems() []*DistributionItem {
 	if x != nil {
 		return x.Items
 	}
@@ -336,7 +291,7 @@ type DistributionItem struct {
 
 func (x *DistributionItem) Reset() {
 	*x = DistributionItem{}
-	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[6]
+	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -348,7 +303,7 @@ func (x *DistributionItem) String() string {
 func (*DistributionItem) ProtoMessage() {}
 
 func (x *DistributionItem) ProtoReflect() protoreflect.Message {
-	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[6]
+	mi := &file_dashboard_service_v1_i_dashboard_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -361,7 +316,7 @@ func (x *DistributionItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DistributionItem.ProtoReflect.Descriptor instead.
 func (*DistributionItem) Descriptor() ([]byte, []int) {
-	return file_dashboard_service_v1_i_dashboard_proto_rawDescGZIP(), []int{6}
+	return file_dashboard_service_v1_i_dashboard_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DistributionItem) GetLabel() string {
@@ -382,43 +337,40 @@ var File_dashboard_service_v1_i_dashboard_proto protoreflect.FileDescriptor
 
 const file_dashboard_service_v1_i_dashboard_proto_rawDesc = "" +
 	"\n" +
-	"&dashboard/service/v1/i_dashboard.proto\x12\x14dashboard.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xb8\x03\n" +
-	"\x19DashboardOverviewResponse\x12t\n" +
-	"\n" +
-	"user_count\x18\x01 \x01(\rBP\xbaGMJ\f用户总数\x92\x02<活跃用户计数（软删/租户隔离由 Policy 处理）H\x00R\tuserCount\x88\x01\x01\x125\n" +
-	"\n" +
-	"role_count\x18\x02 \x01(\rB\x11\xbaG\x0eJ\f角色总数H\x01R\troleCount\x88\x01\x01\x12H\n" +
-	"\x11today_login_count\x18\x03 \x01(\rB\x17\xbaG\x14J\x12今日登录次数H\x02R\x0ftodayLoginCount\x88\x01\x01\x12V\n" +
-	"\x15today_operation_count\x18\x04 \x01(\rB\x1d\xbaG\x1aJ\x18今日操作审计条数H\x03R\x13todayOperationCount\x88\x01\x01B\r\n" +
-	"\v_user_countB\r\n" +
-	"\v_role_countB\x14\n" +
-	"\x12_today_login_countB\x18\n" +
-	"\x16_today_operation_count\"b\n" +
-	"\x14GetLoginTrendRequest\x12A\n" +
+	"&dashboard/service/v1/i_dashboard.proto\x12\x14dashboard.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xa2\x05\n" +
+	"\x1bOaDashboardOverviewResponse\x12\x90\x01\n" +
+	"\x17workflow_instance_count\x18\x01 \x01(\rBS\xbaGPJ\f工单总数\x92\x02?工作流实例总数（软删/租户隔离由 Policy 处理）H\x00R\x15workflowInstanceCount\x88\x01\x01\x12t\n" +
+	"\x12pending_task_count\x18\x02 \x01(\rBA\xbaG>J\x0f待办任务数\x92\x02*处于 PENDING 状态的工作流任务数H\x01R\x10pendingTaskCount\x88\x01\x01\x12y\n" +
+	"\x18today_new_instance_count\x18\x03 \x01(\rB;\xbaG8J\x12今日新增工单\x92\x02!今日创建的工作流实例数H\x02R\x15todayNewInstanceCount\x88\x01\x01\x12\x8e\x01\n" +
+	"\x1btoday_workflow_action_count\x18\x04 \x01(\rBJ\xbaGGJ\x15今日审批操作数\x92\x02-今日工作流日志记录的审批动作数H\x03R\x18todayWorkflowActionCount\x88\x01\x01B\x1a\n" +
+	"\x18_workflow_instance_countB\x15\n" +
+	"\x13_pending_task_countB\x1b\n" +
+	"\x19_today_new_instance_countB\x1e\n" +
+	"\x1c_today_workflow_action_count\"_\n" +
+	"\x11GetOaTrendRequest\x12A\n" +
 	"\x04days\x18\x01 \x01(\rB(\xbaG%J\f统计天数\x92\x02\x14近 N 天，默认 7H\x00R\x04days\x88\x01\x01B\a\n" +
-	"\x05_days\"d\n" +
-	"\x12LoginTrendResponse\x12N\n" +
-	"\x06points\x18\x01 \x03(\v2 .dashboard.service.v1.TrendPointB\x14\xbaG\x11J\x0f趋势点列表R\x06points\"\x8d\x01\n" +
+	"\x05_days\"a\n" +
+	"\x0fOaTrendResponse\x12N\n" +
+	"\x06points\x18\x01 \x03(\v2 .dashboard.service.v1.TrendPointB\x14\xbaG\x11J\x0f趋势点列表R\x06points\"\x90\x01\n" +
 	"\n" +
 	"TrendPoint\x128\n" +
-	"\x04date\x18\x01 \x01(\tB\x1f\xbaG\x1cJ\x06日期\x92\x02\x11格式 YYYY-MM-DDH\x00R\x04date\x88\x01\x01\x122\n" +
-	"\x05count\x18\x02 \x01(\rB\x17\xbaG\x14J\x12当日登录次数H\x01R\x05count\x88\x01\x01B\a\n" +
+	"\x04date\x18\x01 \x01(\tB\x1f\xbaG\x1cJ\x06日期\x92\x02\x11格式 YYYY-MM-DDH\x00R\x04date\x88\x01\x01\x125\n" +
+	"\x05count\x18\x02 \x01(\rB\x1a\xbaG\x17J\x15当日新增工单数H\x01R\x05count\x88\x01\x01B\a\n" +
 	"\x05_dateB\b\n" +
-	"\x06_count\"p\n" +
-	"\x1aActionDistributionResponse\x12R\n" +
-	"\x05items\x18\x01 \x03(\v2&.dashboard.service.v1.DistributionItemB\x14\xbaG\x11J\x0f分布项列表R\x05items\"p\n" +
-	"\x1aStatusDistributionResponse\x12R\n" +
-	"\x05items\x18\x01 \x03(\v2&.dashboard.service.v1.DistributionItemB\x14\xbaG\x11J\x0f分布项列表R\x05items\"\xba\x01\n" +
-	"\x10DistributionItem\x12j\n" +
-	"\x05label\x18\x01 \x01(\tBO\xbaGLJ\f分组标签\x92\x02;action/status 枚举值字符串，由前端做 i18n 映射H\x00R\x05label\x88\x01\x01\x12&\n" +
+	"\x06_count\"l\n" +
+	"\x16OaDistributionResponse\x12R\n" +
+	"\x05items\x18\x01 \x03(\v2&.dashboard.service.v1.DistributionItemB\x14\xbaG\x11J\x0f分布项列表R\x05items\"\xac\x01\n" +
+	"\x10DistributionItem\x12\\\n" +
+	"\x05label\x18\x01 \x01(\tBA\xbaG>J\f分组标签\x92\x02-枚举值字符串，由前端做 i18n 映射H\x00R\x05label\x88\x01\x01\x12&\n" +
 	"\x05count\x18\x02 \x01(\rB\v\xbaG\bJ\x06计数H\x01R\x05count\x88\x01\x01B\b\n" +
 	"\x06_labelB\b\n" +
-	"\x06_count2\xa5\x03\n" +
-	"\x10DashboardService\x12V\n" +
-	"\vGetOverview\x12\x16.google.protobuf.Empty\x1a/.dashboard.service.v1.DashboardOverviewResponse\x12e\n" +
-	"\rGetLoginTrend\x12*.dashboard.service.v1.GetLoginTrendRequest\x1a(.dashboard.service.v1.LoginTrendResponse\x12j\n" +
-	"\x1eGetOperationActionDistribution\x12\x16.google.protobuf.Empty\x1a0.dashboard.service.v1.ActionDistributionResponse\x12f\n" +
-	"\x1aGetLoginStatusDistribution\x12\x16.google.protobuf.Empty\x1a0.dashboard.service.v1.StatusDistributionResponseB\xd3\x01\n" +
+	"\x06_count2\xa1\x03\n" +
+	"\x10DashboardService\x12X\n" +
+	"\vGetOverview\x12\x16.google.protobuf.Empty\x1a1.dashboard.service.v1.OaDashboardOverviewResponse\x12\\\n" +
+	"\n" +
+	"GetOaTrend\x12'.dashboard.service.v1.GetOaTrendRequest\x1a%.dashboard.service.v1.OaTrendResponse\x12g\n" +
+	"\x1fGetOaInstanceStatusDistribution\x12\x16.google.protobuf.Empty\x1a,.dashboard.service.v1.OaDistributionResponse\x12l\n" +
+	"$GetOaAttendanceDayResultDistribution\x12\x16.google.protobuf.Empty\x1a,.dashboard.service.v1.OaDistributionResponseB\xd3\x01\n" +
 	"\x18com.dashboard.service.v1B\x0fIDashboardProtoP\x01Z4go-wind-oa/api/gen/go/dashboard/service/v1;servicev1\xa2\x02\x03DSX\xaa\x02\x14Dashboard.Service.V1\xca\x02\x14Dashboard\\Service\\V1\xe2\x02 Dashboard\\Service\\V1\\GPBMetadata\xea\x02\x16Dashboard::Service::V1b\x06proto3"
 
 var (
@@ -433,34 +385,32 @@ func file_dashboard_service_v1_i_dashboard_proto_rawDescGZIP() []byte {
 	return file_dashboard_service_v1_i_dashboard_proto_rawDescData
 }
 
-var file_dashboard_service_v1_i_dashboard_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_dashboard_service_v1_i_dashboard_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_dashboard_service_v1_i_dashboard_proto_goTypes = []any{
-	(*DashboardOverviewResponse)(nil),  // 0: dashboard.service.v1.DashboardOverviewResponse
-	(*GetLoginTrendRequest)(nil),       // 1: dashboard.service.v1.GetLoginTrendRequest
-	(*LoginTrendResponse)(nil),         // 2: dashboard.service.v1.LoginTrendResponse
-	(*TrendPoint)(nil),                 // 3: dashboard.service.v1.TrendPoint
-	(*ActionDistributionResponse)(nil), // 4: dashboard.service.v1.ActionDistributionResponse
-	(*StatusDistributionResponse)(nil), // 5: dashboard.service.v1.StatusDistributionResponse
-	(*DistributionItem)(nil),           // 6: dashboard.service.v1.DistributionItem
-	(*emptypb.Empty)(nil),              // 7: google.protobuf.Empty
+	(*OaDashboardOverviewResponse)(nil), // 0: dashboard.service.v1.OaDashboardOverviewResponse
+	(*GetOaTrendRequest)(nil),           // 1: dashboard.service.v1.GetOaTrendRequest
+	(*OaTrendResponse)(nil),             // 2: dashboard.service.v1.OaTrendResponse
+	(*TrendPoint)(nil),                  // 3: dashboard.service.v1.TrendPoint
+	(*OaDistributionResponse)(nil),      // 4: dashboard.service.v1.OaDistributionResponse
+	(*DistributionItem)(nil),            // 5: dashboard.service.v1.DistributionItem
+	(*emptypb.Empty)(nil),               // 6: google.protobuf.Empty
 }
 var file_dashboard_service_v1_i_dashboard_proto_depIdxs = []int32{
-	3, // 0: dashboard.service.v1.LoginTrendResponse.points:type_name -> dashboard.service.v1.TrendPoint
-	6, // 1: dashboard.service.v1.ActionDistributionResponse.items:type_name -> dashboard.service.v1.DistributionItem
-	6, // 2: dashboard.service.v1.StatusDistributionResponse.items:type_name -> dashboard.service.v1.DistributionItem
-	7, // 3: dashboard.service.v1.DashboardService.GetOverview:input_type -> google.protobuf.Empty
-	1, // 4: dashboard.service.v1.DashboardService.GetLoginTrend:input_type -> dashboard.service.v1.GetLoginTrendRequest
-	7, // 5: dashboard.service.v1.DashboardService.GetOperationActionDistribution:input_type -> google.protobuf.Empty
-	7, // 6: dashboard.service.v1.DashboardService.GetLoginStatusDistribution:input_type -> google.protobuf.Empty
-	0, // 7: dashboard.service.v1.DashboardService.GetOverview:output_type -> dashboard.service.v1.DashboardOverviewResponse
-	2, // 8: dashboard.service.v1.DashboardService.GetLoginTrend:output_type -> dashboard.service.v1.LoginTrendResponse
-	4, // 9: dashboard.service.v1.DashboardService.GetOperationActionDistribution:output_type -> dashboard.service.v1.ActionDistributionResponse
-	5, // 10: dashboard.service.v1.DashboardService.GetLoginStatusDistribution:output_type -> dashboard.service.v1.StatusDistributionResponse
-	7, // [7:11] is the sub-list for method output_type
-	3, // [3:7] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	3, // 0: dashboard.service.v1.OaTrendResponse.points:type_name -> dashboard.service.v1.TrendPoint
+	5, // 1: dashboard.service.v1.OaDistributionResponse.items:type_name -> dashboard.service.v1.DistributionItem
+	6, // 2: dashboard.service.v1.DashboardService.GetOverview:input_type -> google.protobuf.Empty
+	1, // 3: dashboard.service.v1.DashboardService.GetOaTrend:input_type -> dashboard.service.v1.GetOaTrendRequest
+	6, // 4: dashboard.service.v1.DashboardService.GetOaInstanceStatusDistribution:input_type -> google.protobuf.Empty
+	6, // 5: dashboard.service.v1.DashboardService.GetOaAttendanceDayResultDistribution:input_type -> google.protobuf.Empty
+	0, // 6: dashboard.service.v1.DashboardService.GetOverview:output_type -> dashboard.service.v1.OaDashboardOverviewResponse
+	2, // 7: dashboard.service.v1.DashboardService.GetOaTrend:output_type -> dashboard.service.v1.OaTrendResponse
+	4, // 8: dashboard.service.v1.DashboardService.GetOaInstanceStatusDistribution:output_type -> dashboard.service.v1.OaDistributionResponse
+	4, // 9: dashboard.service.v1.DashboardService.GetOaAttendanceDayResultDistribution:output_type -> dashboard.service.v1.OaDistributionResponse
+	6, // [6:10] is the sub-list for method output_type
+	2, // [2:6] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_dashboard_service_v1_i_dashboard_proto_init() }
@@ -471,14 +421,14 @@ func file_dashboard_service_v1_i_dashboard_proto_init() {
 	file_dashboard_service_v1_i_dashboard_proto_msgTypes[0].OneofWrappers = []any{}
 	file_dashboard_service_v1_i_dashboard_proto_msgTypes[1].OneofWrappers = []any{}
 	file_dashboard_service_v1_i_dashboard_proto_msgTypes[3].OneofWrappers = []any{}
-	file_dashboard_service_v1_i_dashboard_proto_msgTypes[6].OneofWrappers = []any{}
+	file_dashboard_service_v1_i_dashboard_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_dashboard_service_v1_i_dashboard_proto_rawDesc), len(file_dashboard_service_v1_i_dashboard_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

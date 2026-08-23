@@ -3,20 +3,20 @@
 </template>
 
 <script lang="ts" setup>
-import type { dashboardservicev1_LoginTrendResponse as LoginTrendResponse } from "@/api/generated/admin/service/v1";
+import type { dashboardservicev1_OaTrendResponse as OaTrendResponse } from "@/api/generated/admin/service/v1";
 
 import { EchartsUI, EchartsUIType, useEcharts } from "@/plugins/echarts";
 import { usePreferences } from "@/core/preferences";
 
 const props = defineProps<{
-  data?: LoginTrendResponse;
+  data?: OaTrendResponse;
 }>();
 
 const chartRef = ref<EchartsUIType>();
 const { renderEcharts } = useEcharts(chartRef);
 const { isDark } = usePreferences();
 
-// 登录趋势单折线。数据由父组件从后端 GetLoginTrend 拉取后下发；
+// 工单新增趋势单折线。数据由父组件从后端 GetOaTrend 拉取后下发；
 // 后端已按日补零、升序返回 points。
 const chartOptions = computed(() => {
   const points = props.data?.points ?? [];

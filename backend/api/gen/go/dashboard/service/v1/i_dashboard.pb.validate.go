@@ -35,58 +35,58 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on DashboardOverviewResponse with the rules
-// defined in the proto definition for this message. If any rules are
+// Validate checks the field values on OaDashboardOverviewResponse with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *DashboardOverviewResponse) Validate() error {
+func (m *OaDashboardOverviewResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on DashboardOverviewResponse with the
+// ValidateAll checks the field values on OaDashboardOverviewResponse with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// DashboardOverviewResponseMultiError, or nil if none found.
-func (m *DashboardOverviewResponse) ValidateAll() error {
+// OaDashboardOverviewResponseMultiError, or nil if none found.
+func (m *OaDashboardOverviewResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *DashboardOverviewResponse) validate(all bool) error {
+func (m *OaDashboardOverviewResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	if m.UserCount != nil {
-		// no validation rules for UserCount
+	if m.WorkflowInstanceCount != nil {
+		// no validation rules for WorkflowInstanceCount
 	}
 
-	if m.RoleCount != nil {
-		// no validation rules for RoleCount
+	if m.PendingTaskCount != nil {
+		// no validation rules for PendingTaskCount
 	}
 
-	if m.TodayLoginCount != nil {
-		// no validation rules for TodayLoginCount
+	if m.TodayNewInstanceCount != nil {
+		// no validation rules for TodayNewInstanceCount
 	}
 
-	if m.TodayOperationCount != nil {
-		// no validation rules for TodayOperationCount
+	if m.TodayWorkflowActionCount != nil {
+		// no validation rules for TodayWorkflowActionCount
 	}
 
 	if len(errors) > 0 {
-		return DashboardOverviewResponseMultiError(errors)
+		return OaDashboardOverviewResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// DashboardOverviewResponseMultiError is an error wrapping multiple validation
-// errors returned by DashboardOverviewResponse.ValidateAll() if the
-// designated constraints aren't met.
-type DashboardOverviewResponseMultiError []error
+// OaDashboardOverviewResponseMultiError is an error wrapping multiple
+// validation errors returned by OaDashboardOverviewResponse.ValidateAll() if
+// the designated constraints aren't met.
+type OaDashboardOverviewResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m DashboardOverviewResponseMultiError) Error() string {
+func (m OaDashboardOverviewResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -95,11 +95,12 @@ func (m DashboardOverviewResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m DashboardOverviewResponseMultiError) AllErrors() []error { return m }
+func (m OaDashboardOverviewResponseMultiError) AllErrors() []error { return m }
 
-// DashboardOverviewResponseValidationError is the validation error returned by
-// DashboardOverviewResponse.Validate if the designated constraints aren't met.
-type DashboardOverviewResponseValidationError struct {
+// OaDashboardOverviewResponseValidationError is the validation error returned
+// by OaDashboardOverviewResponse.Validate if the designated constraints
+// aren't met.
+type OaDashboardOverviewResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -107,24 +108,24 @@ type DashboardOverviewResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e DashboardOverviewResponseValidationError) Field() string { return e.field }
+func (e OaDashboardOverviewResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e DashboardOverviewResponseValidationError) Reason() string { return e.reason }
+func (e OaDashboardOverviewResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e DashboardOverviewResponseValidationError) Cause() error { return e.cause }
+func (e OaDashboardOverviewResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e DashboardOverviewResponseValidationError) Key() bool { return e.key }
+func (e OaDashboardOverviewResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e DashboardOverviewResponseValidationError) ErrorName() string {
-	return "DashboardOverviewResponseValidationError"
+func (e OaDashboardOverviewResponseValidationError) ErrorName() string {
+	return "OaDashboardOverviewResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e DashboardOverviewResponseValidationError) Error() string {
+func (e OaDashboardOverviewResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -136,14 +137,14 @@ func (e DashboardOverviewResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sDashboardOverviewResponse.%s: %s%s",
+		"invalid %sOaDashboardOverviewResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = DashboardOverviewResponseValidationError{}
+var _ error = OaDashboardOverviewResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -151,24 +152,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = DashboardOverviewResponseValidationError{}
+} = OaDashboardOverviewResponseValidationError{}
 
-// Validate checks the field values on GetLoginTrendRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetLoginTrendRequest) Validate() error {
+// Validate checks the field values on GetOaTrendRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetOaTrendRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetLoginTrendRequest with the rules
+// ValidateAll checks the field values on GetOaTrendRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// GetLoginTrendRequestMultiError, or nil if none found.
-func (m *GetLoginTrendRequest) ValidateAll() error {
+// GetOaTrendRequestMultiError, or nil if none found.
+func (m *GetOaTrendRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetLoginTrendRequest) validate(all bool) error {
+func (m *GetOaTrendRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -180,19 +181,19 @@ func (m *GetLoginTrendRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return GetLoginTrendRequestMultiError(errors)
+		return GetOaTrendRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetLoginTrendRequestMultiError is an error wrapping multiple validation
-// errors returned by GetLoginTrendRequest.ValidateAll() if the designated
-// constraints aren't met.
-type GetLoginTrendRequestMultiError []error
+// GetOaTrendRequestMultiError is an error wrapping multiple validation errors
+// returned by GetOaTrendRequest.ValidateAll() if the designated constraints
+// aren't met.
+type GetOaTrendRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetLoginTrendRequestMultiError) Error() string {
+func (m GetOaTrendRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -201,11 +202,11 @@ func (m GetLoginTrendRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetLoginTrendRequestMultiError) AllErrors() []error { return m }
+func (m GetOaTrendRequestMultiError) AllErrors() []error { return m }
 
-// GetLoginTrendRequestValidationError is the validation error returned by
-// GetLoginTrendRequest.Validate if the designated constraints aren't met.
-type GetLoginTrendRequestValidationError struct {
+// GetOaTrendRequestValidationError is the validation error returned by
+// GetOaTrendRequest.Validate if the designated constraints aren't met.
+type GetOaTrendRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -213,24 +214,24 @@ type GetLoginTrendRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetLoginTrendRequestValidationError) Field() string { return e.field }
+func (e GetOaTrendRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetLoginTrendRequestValidationError) Reason() string { return e.reason }
+func (e GetOaTrendRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetLoginTrendRequestValidationError) Cause() error { return e.cause }
+func (e GetOaTrendRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetLoginTrendRequestValidationError) Key() bool { return e.key }
+func (e GetOaTrendRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetLoginTrendRequestValidationError) ErrorName() string {
-	return "GetLoginTrendRequestValidationError"
+func (e GetOaTrendRequestValidationError) ErrorName() string {
+	return "GetOaTrendRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetLoginTrendRequestValidationError) Error() string {
+func (e GetOaTrendRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -242,14 +243,14 @@ func (e GetLoginTrendRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetLoginTrendRequest.%s: %s%s",
+		"invalid %sGetOaTrendRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetLoginTrendRequestValidationError{}
+var _ error = GetOaTrendRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -257,24 +258,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetLoginTrendRequestValidationError{}
+} = GetOaTrendRequestValidationError{}
 
-// Validate checks the field values on LoginTrendResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *LoginTrendResponse) Validate() error {
+// Validate checks the field values on OaTrendResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *OaTrendResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on LoginTrendResponse with the rules
+// ValidateAll checks the field values on OaTrendResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// LoginTrendResponseMultiError, or nil if none found.
-func (m *LoginTrendResponse) ValidateAll() error {
+// OaTrendResponseMultiError, or nil if none found.
+func (m *OaTrendResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *LoginTrendResponse) validate(all bool) error {
+func (m *OaTrendResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -288,7 +289,7 @@ func (m *LoginTrendResponse) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, LoginTrendResponseValidationError{
+					errors = append(errors, OaTrendResponseValidationError{
 						field:  fmt.Sprintf("Points[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -296,7 +297,7 @@ func (m *LoginTrendResponse) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, LoginTrendResponseValidationError{
+					errors = append(errors, OaTrendResponseValidationError{
 						field:  fmt.Sprintf("Points[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -305,7 +306,7 @@ func (m *LoginTrendResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return LoginTrendResponseValidationError{
+				return OaTrendResponseValidationError{
 					field:  fmt.Sprintf("Points[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -316,19 +317,19 @@ func (m *LoginTrendResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return LoginTrendResponseMultiError(errors)
+		return OaTrendResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// LoginTrendResponseMultiError is an error wrapping multiple validation errors
-// returned by LoginTrendResponse.ValidateAll() if the designated constraints
+// OaTrendResponseMultiError is an error wrapping multiple validation errors
+// returned by OaTrendResponse.ValidateAll() if the designated constraints
 // aren't met.
-type LoginTrendResponseMultiError []error
+type OaTrendResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m LoginTrendResponseMultiError) Error() string {
+func (m OaTrendResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -337,11 +338,11 @@ func (m LoginTrendResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m LoginTrendResponseMultiError) AllErrors() []error { return m }
+func (m OaTrendResponseMultiError) AllErrors() []error { return m }
 
-// LoginTrendResponseValidationError is the validation error returned by
-// LoginTrendResponse.Validate if the designated constraints aren't met.
-type LoginTrendResponseValidationError struct {
+// OaTrendResponseValidationError is the validation error returned by
+// OaTrendResponse.Validate if the designated constraints aren't met.
+type OaTrendResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -349,24 +350,22 @@ type LoginTrendResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e LoginTrendResponseValidationError) Field() string { return e.field }
+func (e OaTrendResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e LoginTrendResponseValidationError) Reason() string { return e.reason }
+func (e OaTrendResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e LoginTrendResponseValidationError) Cause() error { return e.cause }
+func (e OaTrendResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e LoginTrendResponseValidationError) Key() bool { return e.key }
+func (e OaTrendResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e LoginTrendResponseValidationError) ErrorName() string {
-	return "LoginTrendResponseValidationError"
-}
+func (e OaTrendResponseValidationError) ErrorName() string { return "OaTrendResponseValidationError" }
 
 // Error satisfies the builtin error interface
-func (e LoginTrendResponseValidationError) Error() string {
+func (e OaTrendResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -378,14 +377,14 @@ func (e LoginTrendResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sLoginTrendResponse.%s: %s%s",
+		"invalid %sOaTrendResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = LoginTrendResponseValidationError{}
+var _ error = OaTrendResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -393,7 +392,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = LoginTrendResponseValidationError{}
+} = OaTrendResponseValidationError{}
 
 // Validate checks the field values on TrendPoint with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
@@ -502,22 +501,22 @@ var _ interface {
 	ErrorName() string
 } = TrendPointValidationError{}
 
-// Validate checks the field values on ActionDistributionResponse with the
-// rules defined in the proto definition for this message. If any rules are
+// Validate checks the field values on OaDistributionResponse with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ActionDistributionResponse) Validate() error {
+func (m *OaDistributionResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ActionDistributionResponse with the
-// rules defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on OaDistributionResponse with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// ActionDistributionResponseMultiError, or nil if none found.
-func (m *ActionDistributionResponse) ValidateAll() error {
+// OaDistributionResponseMultiError, or nil if none found.
+func (m *OaDistributionResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ActionDistributionResponse) validate(all bool) error {
+func (m *OaDistributionResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -531,7 +530,7 @@ func (m *ActionDistributionResponse) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ActionDistributionResponseValidationError{
+					errors = append(errors, OaDistributionResponseValidationError{
 						field:  fmt.Sprintf("Items[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -539,7 +538,7 @@ func (m *ActionDistributionResponse) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, ActionDistributionResponseValidationError{
+					errors = append(errors, OaDistributionResponseValidationError{
 						field:  fmt.Sprintf("Items[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -548,7 +547,7 @@ func (m *ActionDistributionResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return ActionDistributionResponseValidationError{
+				return OaDistributionResponseValidationError{
 					field:  fmt.Sprintf("Items[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -559,19 +558,19 @@ func (m *ActionDistributionResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return ActionDistributionResponseMultiError(errors)
+		return OaDistributionResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// ActionDistributionResponseMultiError is an error wrapping multiple
-// validation errors returned by ActionDistributionResponse.ValidateAll() if
-// the designated constraints aren't met.
-type ActionDistributionResponseMultiError []error
+// OaDistributionResponseMultiError is an error wrapping multiple validation
+// errors returned by OaDistributionResponse.ValidateAll() if the designated
+// constraints aren't met.
+type OaDistributionResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ActionDistributionResponseMultiError) Error() string {
+func (m OaDistributionResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -580,11 +579,11 @@ func (m ActionDistributionResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ActionDistributionResponseMultiError) AllErrors() []error { return m }
+func (m OaDistributionResponseMultiError) AllErrors() []error { return m }
 
-// ActionDistributionResponseValidationError is the validation error returned
-// by ActionDistributionResponse.Validate if the designated constraints aren't met.
-type ActionDistributionResponseValidationError struct {
+// OaDistributionResponseValidationError is the validation error returned by
+// OaDistributionResponse.Validate if the designated constraints aren't met.
+type OaDistributionResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -592,24 +591,24 @@ type ActionDistributionResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ActionDistributionResponseValidationError) Field() string { return e.field }
+func (e OaDistributionResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ActionDistributionResponseValidationError) Reason() string { return e.reason }
+func (e OaDistributionResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ActionDistributionResponseValidationError) Cause() error { return e.cause }
+func (e OaDistributionResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ActionDistributionResponseValidationError) Key() bool { return e.key }
+func (e OaDistributionResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ActionDistributionResponseValidationError) ErrorName() string {
-	return "ActionDistributionResponseValidationError"
+func (e OaDistributionResponseValidationError) ErrorName() string {
+	return "OaDistributionResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ActionDistributionResponseValidationError) Error() string {
+func (e OaDistributionResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -621,14 +620,14 @@ func (e ActionDistributionResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sActionDistributionResponse.%s: %s%s",
+		"invalid %sOaDistributionResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ActionDistributionResponseValidationError{}
+var _ error = OaDistributionResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -636,143 +635,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ActionDistributionResponseValidationError{}
-
-// Validate checks the field values on StatusDistributionResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *StatusDistributionResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on StatusDistributionResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// StatusDistributionResponseMultiError, or nil if none found.
-func (m *StatusDistributionResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *StatusDistributionResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	for idx, item := range m.GetItems() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, StatusDistributionResponseValidationError{
-						field:  fmt.Sprintf("Items[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, StatusDistributionResponseValidationError{
-						field:  fmt.Sprintf("Items[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return StatusDistributionResponseValidationError{
-					field:  fmt.Sprintf("Items[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if len(errors) > 0 {
-		return StatusDistributionResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// StatusDistributionResponseMultiError is an error wrapping multiple
-// validation errors returned by StatusDistributionResponse.ValidateAll() if
-// the designated constraints aren't met.
-type StatusDistributionResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m StatusDistributionResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m StatusDistributionResponseMultiError) AllErrors() []error { return m }
-
-// StatusDistributionResponseValidationError is the validation error returned
-// by StatusDistributionResponse.Validate if the designated constraints aren't met.
-type StatusDistributionResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e StatusDistributionResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e StatusDistributionResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e StatusDistributionResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e StatusDistributionResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e StatusDistributionResponseValidationError) ErrorName() string {
-	return "StatusDistributionResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e StatusDistributionResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sStatusDistributionResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = StatusDistributionResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = StatusDistributionResponseValidationError{}
+} = OaDistributionResponseValidationError{}
 
 // Validate checks the field values on DistributionItem with the rules defined
 // in the proto definition for this message. If any rules are violated, the

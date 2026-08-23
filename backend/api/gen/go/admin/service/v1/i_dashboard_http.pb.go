@@ -21,28 +21,28 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationDashboardServiceGetLoginStatusDistribution = "/admin.service.v1.DashboardService/GetLoginStatusDistribution"
-const OperationDashboardServiceGetLoginTrend = "/admin.service.v1.DashboardService/GetLoginTrend"
-const OperationDashboardServiceGetOperationActionDistribution = "/admin.service.v1.DashboardService/GetOperationActionDistribution"
+const OperationDashboardServiceGetOaAttendanceDayResultDistribution = "/admin.service.v1.DashboardService/GetOaAttendanceDayResultDistribution"
+const OperationDashboardServiceGetOaInstanceStatusDistribution = "/admin.service.v1.DashboardService/GetOaInstanceStatusDistribution"
+const OperationDashboardServiceGetOaTrend = "/admin.service.v1.DashboardService/GetOaTrend"
 const OperationDashboardServiceGetOverview = "/admin.service.v1.DashboardService/GetOverview"
 
 type DashboardServiceHTTPServer interface {
-	// GetLoginStatusDistribution 登录审计按 status 分布
-	GetLoginStatusDistribution(context.Context, *emptypb.Empty) (*v1.StatusDistributionResponse, error)
-	// GetLoginTrend 获取近 N 天每日登录次数趋势
-	GetLoginTrend(context.Context, *v1.GetLoginTrendRequest) (*v1.LoginTrendResponse, error)
-	// GetOperationActionDistribution 操作审计按 action 分布
-	GetOperationActionDistribution(context.Context, *emptypb.Empty) (*v1.ActionDistributionResponse, error)
-	// GetOverview 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
-	GetOverview(context.Context, *emptypb.Empty) (*v1.DashboardOverviewResponse, error)
+	// GetOaAttendanceDayResultDistribution 考勤记录按 day_result 分布
+	GetOaAttendanceDayResultDistribution(context.Context, *emptypb.Empty) (*v1.OaDistributionResponse, error)
+	// GetOaInstanceStatusDistribution 工单按 instance_status 分布
+	GetOaInstanceStatusDistribution(context.Context, *emptypb.Empty) (*v1.OaDistributionResponse, error)
+	// GetOaTrend 获取近 N 天每日新增工单趋势
+	GetOaTrend(context.Context, *v1.GetOaTrendRequest) (*v1.OaTrendResponse, error)
+	// GetOverview 获取 OA 概览统计
+	GetOverview(context.Context, *emptypb.Empty) (*v1.OaDashboardOverviewResponse, error)
 }
 
 func RegisterDashboardServiceHTTPServer(s *http.Server, srv DashboardServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/dashboard/overview", _DashboardService_GetOverview0_HTTP_Handler(srv))
-	r.GET("/admin/v1/dashboard/login-trend", _DashboardService_GetLoginTrend0_HTTP_Handler(srv))
-	r.GET("/admin/v1/dashboard/operation-action-distribution", _DashboardService_GetOperationActionDistribution0_HTTP_Handler(srv))
-	r.GET("/admin/v1/dashboard/login-status-distribution", _DashboardService_GetLoginStatusDistribution0_HTTP_Handler(srv))
+	r.GET("/admin/v1/dashboard/oa-overview", _DashboardService_GetOverview0_HTTP_Handler(srv))
+	r.GET("/admin/v1/dashboard/oa-trend", _DashboardService_GetOaTrend0_HTTP_Handler(srv))
+	r.GET("/admin/v1/dashboard/oa-instance-status-distribution", _DashboardService_GetOaInstanceStatusDistribution0_HTTP_Handler(srv))
+	r.GET("/admin/v1/dashboard/oa-attendance-day-result-distribution", _DashboardService_GetOaAttendanceDayResultDistribution0_HTTP_Handler(srv))
 }
 
 func _DashboardService_GetOverview0_HTTP_Handler(srv DashboardServiceHTTPServer) func(ctx http.Context) error {
@@ -59,77 +59,77 @@ func _DashboardService_GetOverview0_HTTP_Handler(srv DashboardServiceHTTPServer)
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.DashboardOverviewResponse)
+		reply := out.(*v1.OaDashboardOverviewResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
-func _DashboardService_GetLoginTrend0_HTTP_Handler(srv DashboardServiceHTTPServer) func(ctx http.Context) error {
+func _DashboardService_GetOaTrend0_HTTP_Handler(srv DashboardServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in v1.GetLoginTrendRequest
+		var in v1.GetOaTrendRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationDashboardServiceGetLoginTrend)
+		http.SetOperation(ctx, OperationDashboardServiceGetOaTrend)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetLoginTrend(ctx, req.(*v1.GetLoginTrendRequest))
+			return srv.GetOaTrend(ctx, req.(*v1.GetOaTrendRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.LoginTrendResponse)
+		reply := out.(*v1.OaTrendResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
-func _DashboardService_GetOperationActionDistribution0_HTTP_Handler(srv DashboardServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in emptypb.Empty
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationDashboardServiceGetOperationActionDistribution)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetOperationActionDistribution(ctx, req.(*emptypb.Empty))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*v1.ActionDistributionResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _DashboardService_GetLoginStatusDistribution0_HTTP_Handler(srv DashboardServiceHTTPServer) func(ctx http.Context) error {
+func _DashboardService_GetOaInstanceStatusDistribution0_HTTP_Handler(srv DashboardServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in emptypb.Empty
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationDashboardServiceGetLoginStatusDistribution)
+		http.SetOperation(ctx, OperationDashboardServiceGetOaInstanceStatusDistribution)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetLoginStatusDistribution(ctx, req.(*emptypb.Empty))
+			return srv.GetOaInstanceStatusDistribution(ctx, req.(*emptypb.Empty))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.StatusDistributionResponse)
+		reply := out.(*v1.OaDistributionResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _DashboardService_GetOaAttendanceDayResultDistribution0_HTTP_Handler(srv DashboardServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in emptypb.Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationDashboardServiceGetOaAttendanceDayResultDistribution)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetOaAttendanceDayResultDistribution(ctx, req.(*emptypb.Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.OaDistributionResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
 type DashboardServiceHTTPClient interface {
-	// GetLoginStatusDistribution 登录审计按 status 分布
-	GetLoginStatusDistribution(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *v1.StatusDistributionResponse, err error)
-	// GetLoginTrend 获取近 N 天每日登录次数趋势
-	GetLoginTrend(ctx context.Context, req *v1.GetLoginTrendRequest, opts ...http.CallOption) (rsp *v1.LoginTrendResponse, err error)
-	// GetOperationActionDistribution 操作审计按 action 分布
-	GetOperationActionDistribution(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *v1.ActionDistributionResponse, err error)
-	// GetOverview 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
-	GetOverview(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *v1.DashboardOverviewResponse, err error)
+	// GetOaAttendanceDayResultDistribution 考勤记录按 day_result 分布
+	GetOaAttendanceDayResultDistribution(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *v1.OaDistributionResponse, err error)
+	// GetOaInstanceStatusDistribution 工单按 instance_status 分布
+	GetOaInstanceStatusDistribution(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *v1.OaDistributionResponse, err error)
+	// GetOaTrend 获取近 N 天每日新增工单趋势
+	GetOaTrend(ctx context.Context, req *v1.GetOaTrendRequest, opts ...http.CallOption) (rsp *v1.OaTrendResponse, err error)
+	// GetOverview 获取 OA 概览统计
+	GetOverview(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *v1.OaDashboardOverviewResponse, err error)
 }
 
 type DashboardServiceHTTPClientImpl struct {
@@ -140,12 +140,12 @@ func NewDashboardServiceHTTPClient(client *http.Client) DashboardServiceHTTPClie
 	return &DashboardServiceHTTPClientImpl{client}
 }
 
-// GetLoginStatusDistribution 登录审计按 status 分布
-func (c *DashboardServiceHTTPClientImpl) GetLoginStatusDistribution(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*v1.StatusDistributionResponse, error) {
-	var out v1.StatusDistributionResponse
-	pattern := "/admin/v1/dashboard/login-status-distribution"
+// GetOaAttendanceDayResultDistribution 考勤记录按 day_result 分布
+func (c *DashboardServiceHTTPClientImpl) GetOaAttendanceDayResultDistribution(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*v1.OaDistributionResponse, error) {
+	var out v1.OaDistributionResponse
+	pattern := "/admin/v1/dashboard/oa-attendance-day-result-distribution"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationDashboardServiceGetLoginStatusDistribution))
+	opts = append(opts, http.Operation(OperationDashboardServiceGetOaAttendanceDayResultDistribution))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -154,12 +154,12 @@ func (c *DashboardServiceHTTPClientImpl) GetLoginStatusDistribution(ctx context.
 	return &out, nil
 }
 
-// GetLoginTrend 获取近 N 天每日登录次数趋势
-func (c *DashboardServiceHTTPClientImpl) GetLoginTrend(ctx context.Context, in *v1.GetLoginTrendRequest, opts ...http.CallOption) (*v1.LoginTrendResponse, error) {
-	var out v1.LoginTrendResponse
-	pattern := "/admin/v1/dashboard/login-trend"
+// GetOaInstanceStatusDistribution 工单按 instance_status 分布
+func (c *DashboardServiceHTTPClientImpl) GetOaInstanceStatusDistribution(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*v1.OaDistributionResponse, error) {
+	var out v1.OaDistributionResponse
+	pattern := "/admin/v1/dashboard/oa-instance-status-distribution"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationDashboardServiceGetLoginTrend))
+	opts = append(opts, http.Operation(OperationDashboardServiceGetOaInstanceStatusDistribution))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -168,12 +168,12 @@ func (c *DashboardServiceHTTPClientImpl) GetLoginTrend(ctx context.Context, in *
 	return &out, nil
 }
 
-// GetOperationActionDistribution 操作审计按 action 分布
-func (c *DashboardServiceHTTPClientImpl) GetOperationActionDistribution(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*v1.ActionDistributionResponse, error) {
-	var out v1.ActionDistributionResponse
-	pattern := "/admin/v1/dashboard/operation-action-distribution"
+// GetOaTrend 获取近 N 天每日新增工单趋势
+func (c *DashboardServiceHTTPClientImpl) GetOaTrend(ctx context.Context, in *v1.GetOaTrendRequest, opts ...http.CallOption) (*v1.OaTrendResponse, error) {
+	var out v1.OaTrendResponse
+	pattern := "/admin/v1/dashboard/oa-trend"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationDashboardServiceGetOperationActionDistribution))
+	opts = append(opts, http.Operation(OperationDashboardServiceGetOaTrend))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -182,10 +182,10 @@ func (c *DashboardServiceHTTPClientImpl) GetOperationActionDistribution(ctx cont
 	return &out, nil
 }
 
-// GetOverview 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
-func (c *DashboardServiceHTTPClientImpl) GetOverview(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*v1.DashboardOverviewResponse, error) {
-	var out v1.DashboardOverviewResponse
-	pattern := "/admin/v1/dashboard/overview"
+// GetOverview 获取 OA 概览统计
+func (c *DashboardServiceHTTPClientImpl) GetOverview(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*v1.OaDashboardOverviewResponse, error) {
+	var out v1.OaDashboardOverviewResponse
+	pattern := "/admin/v1/dashboard/oa-overview"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationDashboardServiceGetOverview))
 	opts = append(opts, http.PathTemplate(pattern))

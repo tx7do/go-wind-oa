@@ -21,26 +21,26 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	DashboardService_GetOverview_FullMethodName                    = "/admin.service.v1.DashboardService/GetOverview"
-	DashboardService_GetLoginTrend_FullMethodName                  = "/admin.service.v1.DashboardService/GetLoginTrend"
-	DashboardService_GetOperationActionDistribution_FullMethodName = "/admin.service.v1.DashboardService/GetOperationActionDistribution"
-	DashboardService_GetLoginStatusDistribution_FullMethodName     = "/admin.service.v1.DashboardService/GetLoginStatusDistribution"
+	DashboardService_GetOverview_FullMethodName                          = "/admin.service.v1.DashboardService/GetOverview"
+	DashboardService_GetOaTrend_FullMethodName                           = "/admin.service.v1.DashboardService/GetOaTrend"
+	DashboardService_GetOaInstanceStatusDistribution_FullMethodName      = "/admin.service.v1.DashboardService/GetOaInstanceStatusDistribution"
+	DashboardService_GetOaAttendanceDayResultDistribution_FullMethodName = "/admin.service.v1.DashboardService/GetOaAttendanceDayResultDistribution"
 )
 
 // DashboardServiceClient is the client API for DashboardService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// 后台首页分析概览服务（HTTP BFF，转发 core DashboardService）
+// 后台首页 OA 分析概览服务（HTTP BFF，转发 core DashboardService）
 type DashboardServiceClient interface {
-	// 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
-	GetOverview(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.DashboardOverviewResponse, error)
-	// 获取近 N 天每日登录次数趋势
-	GetLoginTrend(ctx context.Context, in *v1.GetLoginTrendRequest, opts ...grpc.CallOption) (*v1.LoginTrendResponse, error)
-	// 操作审计按 action 分布
-	GetOperationActionDistribution(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.ActionDistributionResponse, error)
-	// 登录审计按 status 分布
-	GetLoginStatusDistribution(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.StatusDistributionResponse, error)
+	// 获取 OA 概览统计
+	GetOverview(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.OaDashboardOverviewResponse, error)
+	// 获取近 N 天每日新增工单趋势
+	GetOaTrend(ctx context.Context, in *v1.GetOaTrendRequest, opts ...grpc.CallOption) (*v1.OaTrendResponse, error)
+	// 工单按 instance_status 分布
+	GetOaInstanceStatusDistribution(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.OaDistributionResponse, error)
+	// 考勤记录按 day_result 分布
+	GetOaAttendanceDayResultDistribution(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.OaDistributionResponse, error)
 }
 
 type dashboardServiceClient struct {
@@ -51,9 +51,9 @@ func NewDashboardServiceClient(cc grpc.ClientConnInterface) DashboardServiceClie
 	return &dashboardServiceClient{cc}
 }
 
-func (c *dashboardServiceClient) GetOverview(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.DashboardOverviewResponse, error) {
+func (c *dashboardServiceClient) GetOverview(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.OaDashboardOverviewResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.DashboardOverviewResponse)
+	out := new(v1.OaDashboardOverviewResponse)
 	err := c.cc.Invoke(ctx, DashboardService_GetOverview_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -61,30 +61,30 @@ func (c *dashboardServiceClient) GetOverview(ctx context.Context, in *emptypb.Em
 	return out, nil
 }
 
-func (c *dashboardServiceClient) GetLoginTrend(ctx context.Context, in *v1.GetLoginTrendRequest, opts ...grpc.CallOption) (*v1.LoginTrendResponse, error) {
+func (c *dashboardServiceClient) GetOaTrend(ctx context.Context, in *v1.GetOaTrendRequest, opts ...grpc.CallOption) (*v1.OaTrendResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.LoginTrendResponse)
-	err := c.cc.Invoke(ctx, DashboardService_GetLoginTrend_FullMethodName, in, out, cOpts...)
+	out := new(v1.OaTrendResponse)
+	err := c.cc.Invoke(ctx, DashboardService_GetOaTrend_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dashboardServiceClient) GetOperationActionDistribution(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.ActionDistributionResponse, error) {
+func (c *dashboardServiceClient) GetOaInstanceStatusDistribution(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.OaDistributionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.ActionDistributionResponse)
-	err := c.cc.Invoke(ctx, DashboardService_GetOperationActionDistribution_FullMethodName, in, out, cOpts...)
+	out := new(v1.OaDistributionResponse)
+	err := c.cc.Invoke(ctx, DashboardService_GetOaInstanceStatusDistribution_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dashboardServiceClient) GetLoginStatusDistribution(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.StatusDistributionResponse, error) {
+func (c *dashboardServiceClient) GetOaAttendanceDayResultDistribution(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.OaDistributionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.StatusDistributionResponse)
-	err := c.cc.Invoke(ctx, DashboardService_GetLoginStatusDistribution_FullMethodName, in, out, cOpts...)
+	out := new(v1.OaDistributionResponse)
+	err := c.cc.Invoke(ctx, DashboardService_GetOaAttendanceDayResultDistribution_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -95,16 +95,16 @@ func (c *dashboardServiceClient) GetLoginStatusDistribution(ctx context.Context,
 // All implementations must embed UnimplementedDashboardServiceServer
 // for forward compatibility.
 //
-// 后台首页分析概览服务（HTTP BFF，转发 core DashboardService）
+// 后台首页 OA 分析概览服务（HTTP BFF，转发 core DashboardService）
 type DashboardServiceServer interface {
-	// 获取概览统计（用户总数 / 角色总数 / 今日登录次数 / 今日操作审计条数）
-	GetOverview(context.Context, *emptypb.Empty) (*v1.DashboardOverviewResponse, error)
-	// 获取近 N 天每日登录次数趋势
-	GetLoginTrend(context.Context, *v1.GetLoginTrendRequest) (*v1.LoginTrendResponse, error)
-	// 操作审计按 action 分布
-	GetOperationActionDistribution(context.Context, *emptypb.Empty) (*v1.ActionDistributionResponse, error)
-	// 登录审计按 status 分布
-	GetLoginStatusDistribution(context.Context, *emptypb.Empty) (*v1.StatusDistributionResponse, error)
+	// 获取 OA 概览统计
+	GetOverview(context.Context, *emptypb.Empty) (*v1.OaDashboardOverviewResponse, error)
+	// 获取近 N 天每日新增工单趋势
+	GetOaTrend(context.Context, *v1.GetOaTrendRequest) (*v1.OaTrendResponse, error)
+	// 工单按 instance_status 分布
+	GetOaInstanceStatusDistribution(context.Context, *emptypb.Empty) (*v1.OaDistributionResponse, error)
+	// 考勤记录按 day_result 分布
+	GetOaAttendanceDayResultDistribution(context.Context, *emptypb.Empty) (*v1.OaDistributionResponse, error)
 	mustEmbedUnimplementedDashboardServiceServer()
 }
 
@@ -115,17 +115,17 @@ type DashboardServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedDashboardServiceServer struct{}
 
-func (UnimplementedDashboardServiceServer) GetOverview(context.Context, *emptypb.Empty) (*v1.DashboardOverviewResponse, error) {
+func (UnimplementedDashboardServiceServer) GetOverview(context.Context, *emptypb.Empty) (*v1.OaDashboardOverviewResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetOverview not implemented")
 }
-func (UnimplementedDashboardServiceServer) GetLoginTrend(context.Context, *v1.GetLoginTrendRequest) (*v1.LoginTrendResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetLoginTrend not implemented")
+func (UnimplementedDashboardServiceServer) GetOaTrend(context.Context, *v1.GetOaTrendRequest) (*v1.OaTrendResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetOaTrend not implemented")
 }
-func (UnimplementedDashboardServiceServer) GetOperationActionDistribution(context.Context, *emptypb.Empty) (*v1.ActionDistributionResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetOperationActionDistribution not implemented")
+func (UnimplementedDashboardServiceServer) GetOaInstanceStatusDistribution(context.Context, *emptypb.Empty) (*v1.OaDistributionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetOaInstanceStatusDistribution not implemented")
 }
-func (UnimplementedDashboardServiceServer) GetLoginStatusDistribution(context.Context, *emptypb.Empty) (*v1.StatusDistributionResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetLoginStatusDistribution not implemented")
+func (UnimplementedDashboardServiceServer) GetOaAttendanceDayResultDistribution(context.Context, *emptypb.Empty) (*v1.OaDistributionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetOaAttendanceDayResultDistribution not implemented")
 }
 func (UnimplementedDashboardServiceServer) mustEmbedUnimplementedDashboardServiceServer() {}
 func (UnimplementedDashboardServiceServer) testEmbeddedByValue()                          {}
@@ -166,56 +166,56 @@ func _DashboardService_GetOverview_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DashboardService_GetLoginTrend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetLoginTrendRequest)
+func _DashboardService_GetOaTrend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.GetOaTrendRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DashboardServiceServer).GetLoginTrend(ctx, in)
+		return srv.(DashboardServiceServer).GetOaTrend(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: DashboardService_GetLoginTrend_FullMethodName,
+		FullMethod: DashboardService_GetOaTrend_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DashboardServiceServer).GetLoginTrend(ctx, req.(*v1.GetLoginTrendRequest))
+		return srv.(DashboardServiceServer).GetOaTrend(ctx, req.(*v1.GetOaTrendRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DashboardService_GetOperationActionDistribution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DashboardService_GetOaInstanceStatusDistribution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DashboardServiceServer).GetOperationActionDistribution(ctx, in)
+		return srv.(DashboardServiceServer).GetOaInstanceStatusDistribution(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: DashboardService_GetOperationActionDistribution_FullMethodName,
+		FullMethod: DashboardService_GetOaInstanceStatusDistribution_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DashboardServiceServer).GetOperationActionDistribution(ctx, req.(*emptypb.Empty))
+		return srv.(DashboardServiceServer).GetOaInstanceStatusDistribution(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DashboardService_GetLoginStatusDistribution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DashboardService_GetOaAttendanceDayResultDistribution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DashboardServiceServer).GetLoginStatusDistribution(ctx, in)
+		return srv.(DashboardServiceServer).GetOaAttendanceDayResultDistribution(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: DashboardService_GetLoginStatusDistribution_FullMethodName,
+		FullMethod: DashboardService_GetOaAttendanceDayResultDistribution_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DashboardServiceServer).GetLoginStatusDistribution(ctx, req.(*emptypb.Empty))
+		return srv.(DashboardServiceServer).GetOaAttendanceDayResultDistribution(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -232,16 +232,16 @@ var DashboardService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _DashboardService_GetOverview_Handler,
 		},
 		{
-			MethodName: "GetLoginTrend",
-			Handler:    _DashboardService_GetLoginTrend_Handler,
+			MethodName: "GetOaTrend",
+			Handler:    _DashboardService_GetOaTrend_Handler,
 		},
 		{
-			MethodName: "GetOperationActionDistribution",
-			Handler:    _DashboardService_GetOperationActionDistribution_Handler,
+			MethodName: "GetOaInstanceStatusDistribution",
+			Handler:    _DashboardService_GetOaInstanceStatusDistribution_Handler,
 		},
 		{
-			MethodName: "GetLoginStatusDistribution",
-			Handler:    _DashboardService_GetLoginStatusDistribution_Handler,
+			MethodName: "GetOaAttendanceDayResultDistribution",
+			Handler:    _DashboardService_GetOaAttendanceDayResultDistribution_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
