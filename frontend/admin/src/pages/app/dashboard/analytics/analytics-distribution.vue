@@ -12,6 +12,7 @@ import { usePreferences } from "@/core/preferences";
 const props = defineProps<{
   data?: OaDistributionResponse;
   titleKey: string;
+  enumKeyPrefix: string;
 }>();
 
 const chartRef = ref<EchartsUIType>();
@@ -19,7 +20,7 @@ const { renderEcharts } = useEcharts(chartRef);
 const { isDark } = usePreferences();
 
 // 通用环形分布图，供工单状态分布与考勤日结果分布共用。
-// 后端返回 items：{ label, count }，label 为枚举名（PENDING/APPROVED…、NORMAL/LATE…）。
+// 后端返回 items：{ label, count }，label 为枚举名；渲染时经 enumKeyPrefix 命名空间做 i18n 映射。
 const chartOptions = computed(() => {
   const items = props.data?.items ?? [];
   return {
@@ -41,7 +42,7 @@ const chartOptions = computed(() => {
         avoidLabelOverlap: false,
         color: ["#4080ff", "#36d399", "#f7ba1e", "#958ce2"],
         data: items.map((it) => ({
-          name: it.label,
+          name: $t(`${props.enumKeyPrefix}.${it.label}`),
           value: it.count,
         })),
         emphasis: {

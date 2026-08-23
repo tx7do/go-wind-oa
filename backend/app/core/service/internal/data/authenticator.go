@@ -229,7 +229,7 @@ func (a *Authenticator) CreateUserToken(
 	}
 
 	// CreateTranslation Refresh Token
-	if refreshToken, err = a.newRefreshToken(); refreshToken == "" || err != nil {
+	if refreshToken, err = a.newRefreshToken(clientType, tokenPayload); refreshToken == "" || err != nil {
 		return "", "", authenticationV1.ErrorServiceUnavailable("create refresh token failed")
 	}
 
@@ -455,13 +455,72 @@ func (a *Authenticator) newAccessToken(
 }
 
 // newRefreshToken 创建刷新令牌
-func (a *Authenticator) newRefreshToken() (refreshToken string, err error) {
-	refreshToken, err = jwtutil.NewRefreshToken()
+//
+// 刷新令牌为自描述 JWT：携带 uid/jti（与访问令牌共用同一对 jti）及 cat=rt
+// 类别声明，过期时间为刷新令牌专属时长。刷新发生在访问令牌过期之后，身份
+// 无法来自访问令牌 claims，必须由刷新令牌自身携带；Redis 中
+// rt:{ct}:{uid}:{jti} 键上的原子比对仍是最终授权凭据。
+func (a *Authenticator) newRefreshToken(
+	clientType authenticationV1.ClientType,
+	tokenPayload *authenticationV1.UserTokenPayload,
+) (refreshToken string, err error) {
+	if tokenPayload == nil {
+		a.log.Error("token payload is nil")
+		return "", authenticationV1.ErrorBadRequest("token payload is nil")
+	}
+
+	expTime := time.Now().Add(a.GetRefreshTokenExpires(clientType))
+	authClaims := jwt.NewUserTokenAuthClaims(tokenPayload, &expTime)
+	(*authClaims)[jwt.ClaimFieldTokenCategory] = jwt.TokenCategoryRefreshToken
+
+	authenticator, err := a.getAuthenticator(clientType)
+	if err != nil {
+		return "", err
+	}
+
+	refreshToken, err = authenticator.CreateIdentity(*authClaims)
 	if err != nil {
 		a.log.Error("create refresh token failed: [%v]", err)
 		return "", authenticationV1.ErrorServiceUnavailable("create refresh token failed")
 	}
 	return refreshToken, nil
+}
+
+// ParseRefreshToken 解析并校验刷新令牌（签名、类别、过期），返回其中的身份载荷。
+// 供刷新链在请求未携带 userId/jti 时，从刷新令牌自身提取可信身份。
+func (a *Authenticator) ParseRefreshToken(
+	_ context.Context,
+	clientType authenticationV1.ClientType,
+	refreshToken string,
+) (*authenticationV1.UserTokenPayload, error) {
+	if refreshToken == "" {
+		return nil, authenticationV1.ErrorIncorrectRefreshToken("refresh token is empty")
+	}
+
+	authenticator, err := a.getAuthenticator(clientType)
+	if err != nil {
+		return nil, err
+	}
+
+	claims, err := authenticator.AuthenticateToken(refreshToken)
+	if err != nil {
+		return nil, authenticationV1.ErrorIncorrectRefreshToken("invalid refresh token: [%v]", err)
+	}
+
+	if jwt.IsTokenExpired(claims) {
+		return nil, authenticationV1.ErrorIncorrectRefreshToken("refresh token is expired")
+	}
+
+	if category, _ := claims.GetString(jwt.ClaimFieldTokenCategory); category != jwt.TokenCategoryRefreshToken {
+		return nil, authenticationV1.ErrorIncorrectRefreshToken("token is not a refresh token")
+	}
+
+	payload, err := jwt.NewUserTokenPayloadWithClaims(claims)
+	if err != nil || payload == nil || payload.GetUserId() == 0 || payload.GetJti() == "" {
+		return nil, authenticationV1.ErrorIncorrectRefreshToken("refresh token payload incomplete")
+	}
+
+	return payload, nil
 }
 
 // newJwtId 创建 JWT ID

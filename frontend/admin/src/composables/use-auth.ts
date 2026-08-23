@@ -131,6 +131,9 @@ async function login(
   onSuccess?: () => Promise<void> | void
 ): Promise<{ userInfo: null | UserInfo } | null> {
   let userInfo: null | UserInfo = null;
+  // MFA 分支要在请求后透传 redirect 到挑战页；请求返回后路由可能被副作用
+  // 先行更新（响应式时序竞态）丢掉 query，故必须在发起请求前捕获。
+  const redirectAtEntry = (router.currentRoute.value.query.redirect as string) || "";
   try {
     loginLoading.value = true;
     const accessStore = useAccessStore();
@@ -151,9 +154,8 @@ async function login(
     // 不写任何 token，记录 operation_id 并跳转 MFA 挑战页（路由守卫亦据此强制跳转）。
     if ((resp as any).mfa_operation_id) {
       accessStore.mfaOperationId = (resp as any).mfa_operation_id as string;
-      // 携带当前 redirect 到挑战页，验证通过后回到原目标页
-      const redirect = (router.currentRoute.value.query.redirect as string) || "";
-      await router.push({ name: "MfaChallenge", query: redirect ? { redirect } : {} });
+      // 携带 redirect 到挑战页（用请求前捕获值），验证通过后回到原目标页
+      await router.push({ name: "MfaChallenge", query: redirectAtEntry ? { redirect: redirectAtEntry } : {} });
       return { userInfo: null };
     }
 

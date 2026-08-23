@@ -289,7 +289,11 @@ SELECT setval('internal_message_categories_id_seq', (SELECT MAX(id) FROM interna
 
 -- ============================================================
 -- OA 业务域 demo 数据
--- 仅用于演示/冒烟，所有 tenant_id=1，用户引用基座 user id=2
+-- 仅用于演示/冒烟。数据分两组，按调用者 tenant_id 隔离，互不可见：
+--   · 租户管理员组：tenant_id=1，user/created_by/assignee=2（账号 tenant_admin）
+--   · 平台超管组：  tenant_id=0，user/created_by/assignee=1（账号 admin）
+-- OA「我的」列表均按 WHERE tenant_id=调用者tid AND (user/created_by/assignee)=调用者uid 过滤，
+-- 故每组数据仅对对应账号可见。下方先列租户管理员组，再列平台超管组。
 -- ============================================================
 
 -- ----------------------------
@@ -452,6 +456,174 @@ INSERT INTO public.oa_seal_application (tenant_id, purpose, seal_type, file_coun
     (1, '合同用印', 'CONTRACT_SEAL', 2, '法务部李经理', 'PENDING', NULL, now(), now(), 2, 2),
     (1, '公文用印', 'OFFICIAL_SEAL', 1, '行政部王主管', 'REJECTED', NULL, now(), now(), 2, 2),
     (1, '财务报表用印', 'FINANCE_SEAL', 1, '财务部张总监', 'APPROVED', NULL, now(), now(), 2, 2);
+SELECT setval('oa_seal_application_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_seal_application));
+
+-- ############################################################
+-- # 平台超管测试组（tenant_id=0、user/created_by/assignee=1） #
+-- # 仅 admin 账号登录后可见，供 Flutter app 端测试。           #
+-- # 结构与上方租户管理员组对称，仅 tenant_id 与身份字段不同。   #
+-- ############################################################
+
+-- ----------------------------
+-- oa_attendance_setting 考勤设置（超管组，每租户一行）
+-- ----------------------------
+INSERT INTO public.oa_attendance_setting (tenant_id, work_start_time, work_end_time, created_at, updated_at, created_by, updated_by)
+VALUES (0, '09:00', '18:00', now(), now(), 1, 1);
+SELECT setval('oa_attendance_setting_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_attendance_setting));
+
+-- ----------------------------
+-- oa_leave_type 请假类型（超管组，ANNUAL/SICK/PERSONAL）
+-- ----------------------------
+INSERT INTO public.oa_leave_type (tenant_id, code, name, remark, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 'ANNUAL', '年假', '法定年休假', now(), now(), 1, 1),
+    (0, 'SICK', '病假', '医疗期病假', now(), now(), 1, 1),
+    (0, 'PERSONAL', '事假', '个人事务假', now(), now(), 1, 1);
+SELECT setval('oa_leave_type_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_leave_type));
+
+-- ----------------------------
+-- oa_holiday 2026 节假日（超管组）
+-- ----------------------------
+INSERT INTO public.oa_holiday (tenant_id, date, holiday_type, name, created_at, updated_at, created_by, updated_by) VALUES
+    (0, '2026-01-01', 'HOLIDAY', '元旦', now(), now(), 1, 1),
+    (0, '2026-02-16', 'HOLIDAY', '春节', now(), now(), 1, 1),
+    (0, '2026-02-17', 'HOLIDAY', '春节', now(), now(), 1, 1),
+    (0, '2026-02-18', 'HOLIDAY', '春节', now(), now(), 1, 1),
+    (0, '2026-02-15', 'WORKDAY', '春节调休上班', now(), now(), 1, 1),
+    (0, '2026-02-28', 'WORKDAY', '春节调休上班', now(), now(), 1, 1),
+    (0, '2026-04-04', 'HOLIDAY', '清明节', now(), now(), 1, 1),
+    (0, '2026-05-01', 'HOLIDAY', '劳动节', now(), now(), 1, 1),
+    (0, '2026-10-01', 'HOLIDAY', '国庆节', now(), now(), 1, 1),
+    (0, '2026-10-02', 'HOLIDAY', '国庆节', now(), now(), 1, 1);
+SELECT setval('oa_holiday_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_holiday));
+
+-- ----------------------------
+-- oa_workflow_definition 工作流定义（超管组，六域各一条，ENABLED）
+-- ----------------------------
+INSERT INTO public.oa_workflow_definition (tenant_id, code, version, node_config, form_schema, definition_status, remark, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 'LEAVE', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '请假流程', now(), now(), 1, 1),
+    (0, 'EXPENSE', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '报销流程', now(), now(), 1, 1),
+    (0, 'BUSINESS_TRIP', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '出差流程', now(), now(), 1, 1),
+    (0, 'OUTING', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '外出流程', now(), now(), 1, 1),
+    (0, 'OVERTIME', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '加班流程', now(), now(), 1, 1),
+    (0, 'SEAL_APPLICATION', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '用印流程', now(), now(), 1, 1);
+SELECT setval('oa_workflow_definition_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_definition));
+
+-- ----------------------------
+-- oa_workflow_instance 工作流实例（超管组，引用上方超管组定义；状态混合）
+-- ----------------------------
+INSERT INTO public.oa_workflow_instance (tenant_id, definition_id, instance_status, current_node_index, form_data, business_type, business_id, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 7, 'PENDING', 0, '{}', 'LEAVE', 5, now(), now(), 1, 1),
+    (0, 8, 'APPROVED', 1, '{}', 'EXPENSE', 4, now(), now(), 1, 1),
+    (0, 9, 'REJECTED', 1, '{}', 'BUSINESS_TRIP', 4, now(), now(), 1, 1),
+    (0, 10, 'PENDING', 0, '{}', 'OUTING', 4, now(), now(), 1, 1);
+SELECT setval('oa_workflow_instance_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_instance));
+
+-- ----------------------------
+-- oa_workflow_task 审批任务（超管组，引用上方实例；部分指派 user=1 填充待办）
+-- ----------------------------
+INSERT INTO public.oa_workflow_task (tenant_id, instance_id, node_index, assignee_user_id, task_status, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 5, 0, 1, 'PENDING', now(), now(), 1, 1),
+    (0, 6, 0, 1, 'APPROVED', now(), now(), 1, 1),
+    (0, 7, 0, 1, 'REJECTED', now(), now(), 1, 1),
+    (0, 8, 0, NULL, 'PENDING', now(), now(), 1, 1);
+SELECT setval('oa_workflow_task_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_task));
+
+-- ----------------------------
+-- oa_workflow_log 审批日志（超管组，引用上方实例）
+-- ----------------------------
+INSERT INTO public.oa_workflow_log (tenant_id, instance_id, node_index, log_action, comment, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 5, 0, 'SUBMIT', '申请人提交请假申请', now(), now(), 1, 1),
+    (0, 6, 0, 'SUBMIT', '申请人提交报销申请', now(), now(), 1, 1),
+    (0, 6, 1, 'APPROVE', '主管同意', now(), now(), 1, 1),
+    (0, 7, 0, 'SUBMIT', '申请人提交出差申请', now(), now(), 1, 1),
+    (0, 7, 1, 'REJECT', '主管驳回：行程不合理', now(), now(), 1, 1);
+SELECT setval('oa_workflow_log_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_log));
+
+-- ----------------------------
+-- oa_attendance_record 考勤记录（超管组，user=1，近期工作日，状态混合）
+-- ----------------------------
+INSERT INTO public.oa_attendance_record (tenant_id, user_id, work_date, check_in_at, check_in_latitude, check_in_longitude, check_in_wifi_bssid, check_out_at, check_out_latitude, check_out_longitude, check_out_wifi_bssid, day_result, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 1, '2026-08-17', '2026-08-17 08:55:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-08-17 18:02:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 1, 1),
+    (0, 1, '2026-08-18', '2026-08-18 10:12:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-08-18 18:05:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'LATE', now(), now(), 1, 1),
+    (0, 1, '2026-08-19', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ABSENT', now(), now(), 1, 1),
+    (0, 1, '2026-08-20', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ON_LEAVE', now(), now(), 1, 1),
+    (0, 1, '2026-08-21', '2026-08-21 08:58:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-08-21 18:00:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 1, 1);
+SELECT setval('oa_attendance_record_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_attendance_record));
+
+-- ----------------------------
+-- oa_leave_balance 请假额度（超管组，user=1，每类型一行，year=2026）
+-- ----------------------------
+INSERT INTO public.oa_leave_balance (tenant_id, user_id, leave_type_id, year, total_days, used_days, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 1, 4, 2026, 5, 1, now(), now(), 1, 1),
+    (0, 1, 5, 2026, 10, 0, now(), now(), 1, 1),
+    (0, 1, 6, 2026, 0, 0, now(), now(), 1, 1);
+SELECT setval('oa_leave_balance_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_leave_balance));
+
+-- ----------------------------
+-- oa_leave_application 请假申请（超管组，引用 leave_type；状态混合；部分挂实例）
+-- ----------------------------
+INSERT INTO public.oa_leave_application (tenant_id, leave_type_id, start_date, end_date, days, reason, start_half, end_half, leave_status, instance_id, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 4, '2026-08-20', '2026-08-20', 1, '家中有事', 0, 1, 'PENDING', 5, now(), now(), 1, 1),
+    (0, 5, '2026-09-01', '2026-09-02', 2, '感冒发烧', 0, 1, 'REJECTED', NULL, now(), now(), 1, 1),
+    (0, 6, '2026-10-05', '2026-10-05', 1, '办理证件', 0, 1, 'APPROVED', NULL, now(), now(), 1, 1),
+    (0, 4, '2026-11-01', '2026-11-01', 1, '事假一天', 0, 1, 'WITHDRAWN', NULL, now(), now(), 1, 1);
+SELECT setval('oa_leave_application_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_leave_application));
+
+-- ----------------------------
+-- oa_expense_application 报销申请（超管组，状态混合；部分挂实例）
+-- ----------------------------
+INSERT INTO public.oa_expense_application (tenant_id, title, total_amount, expense_status, instance_id, created_at, updated_at, created_by, updated_by) VALUES
+    (0, '差旅费报销-北京', 1500, 'APPROVED', 6, now(), now(), 1, 1),
+    (0, '办公用品采购', 320, 'PENDING', NULL, now(), now(), 1, 1),
+    (0, '会议费报销', 800, 'REJECTED', NULL, now(), now(), 1, 1);
+SELECT setval('oa_expense_application_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_expense_application));
+
+-- ----------------------------
+-- oa_expense_item 报销明细（超管组，引用上方报销单；每单两条）
+-- ----------------------------
+INSERT INTO public.oa_expense_item (tenant_id, expense_application_id, category, amount, expense_date, description, invoice_file_id, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 4, '住宿', 700, '2026-08-15', '北京酒店一晚', NULL, now(), now(), 1, 1),
+    (0, 4, '餐饮', 300, '2026-08-15', '会议工作餐', NULL, now(), now(), 1, 1),
+    (0, 5, '办公用品', 320, '2026-08-16', '打印纸和墨盒', NULL, now(), now(), 1, 1),
+    (0, 5, '住宿', 700, '2026-08-16', '住宿费', NULL, now(), now(), 1, 1),
+    (0, 6, '会议', 500, '2026-08-10', '场地租赁费', NULL, now(), now(), 1, 1),
+    (0, 6, '餐饮', 300, '2026-08-10', '会议工作餐', NULL, now(), now(), 1, 1);
+SELECT setval('oa_expense_item_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_expense_item));
+
+-- ----------------------------
+-- oa_business_trip_application 出差申请（超管组，状态混合）
+-- ----------------------------
+INSERT INTO public.oa_business_trip_application (tenant_id, title, destination, start_date, end_date, itinerary, trip_status, instance_id, created_at, updated_at, created_by, updated_by) VALUES
+    (0, '北京客户拜访', '北京市朝阳区', '2026-09-10', '2026-09-11', '拜访客户A洽谈合作', 'REJECTED', 7, now(), now(), 1, 1),
+    (0, '上海技术交流', '上海市浦东新区', '2026-10-01', '2026-10-02', '参加技术峰会', 'PENDING', NULL, now(), now(), 1, 1),
+    (0, '广州分公司支持', '广州市天河区', '2026-11-05', '2026-11-06', '协助分公司系统上线', 'APPROVED', NULL, now(), now(), 1, 1);
+SELECT setval('oa_business_trip_application_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_business_trip_application));
+
+-- ----------------------------
+-- oa_outing_application 外出申请（超管组，状态混合）
+-- ----------------------------
+INSERT INTO public.oa_outing_application (tenant_id, reason, destination, start_time, end_time, outing_status, instance_id, created_at, updated_at, created_by, updated_by) VALUES
+    (0, '拜访客户', '北京市海淀区中关村', '2026-08-22 09:00:00', '2026-08-22 12:00:00', 'PENDING', 8, now(), now(), 1, 1),
+    (0, '参加会议', '上海市徐汇区某会议中心', '2026-09-05 13:00:00', '2026-09-05 18:00:00', 'REJECTED', NULL, now(), now(), 1, 1),
+    (0, '现场技术支持', '深圳市南山区科技园', '2026-10-10 09:00:00', '2026-10-10 17:00:00', 'APPROVED', NULL, now(), now(), 1, 1);
+SELECT setval('oa_outing_application_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_outing_application));
+
+-- ----------------------------
+-- oa_overtime_application 加班申请（超管组，状态混合；compensation_type 混合）
+-- ----------------------------
+INSERT INTO public.oa_overtime_application (tenant_id, reason, start_time, end_time, compensation_type, overtime_status, instance_id, created_at, updated_at, created_by, updated_by) VALUES
+    (0, '版本发布前紧急修复', '2026-08-22 18:30:00', '2026-08-22 22:00:00', 'COMP_LEAVE', 'PENDING', NULL, now(), now(), 1, 1),
+    (0, '系统迁移', '2026-09-01 18:00:00', '2026-09-01 23:00:00', 'OVERTIME_PAY', 'APPROVED', NULL, now(), now(), 1, 1),
+    (0, '客户故障处理', '2026-10-01 18:00:00', '2026-10-01 20:00:00', 'COMP_LEAVE', 'REJECTED', NULL, now(), now(), 1, 1);
+SELECT setval('oa_overtime_application_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_overtime_application));
+
+-- ----------------------------
+-- oa_seal_application 用印申请（超管组，状态混合；seal_type 混合）
+-- ----------------------------
+INSERT INTO public.oa_seal_application (tenant_id, purpose, seal_type, file_count, recipient, seal_status, instance_id, created_at, updated_at, created_by, updated_by) VALUES
+    (0, '合同用印', 'CONTRACT_SEAL', 2, '法务部李经理', 'PENDING', NULL, now(), now(), 1, 1),
+    (0, '公文用印', 'OFFICIAL_SEAL', 1, '行政部王主管', 'REJECTED', NULL, now(), now(), 1, 1),
+    (0, '财务报表用印', 'FINANCE_SEAL', 1, '财务部张总监', 'APPROVED', NULL, now(), now(), 1, 1);
 SELECT setval('oa_seal_application_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_seal_application));
 
 -- 套餐目录种子（三版本：免费/标准/企业，移植自 go-wind-admin）

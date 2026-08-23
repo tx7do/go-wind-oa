@@ -308,6 +308,23 @@ func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req
 		return nil, authenticationV1.ErrorBadRequest("invalid request")
 	}
 
+	// 刷新发生在访问令牌过期之后，BFF 侧无法从（已过期的）访问令牌 claims 提供
+	// 身份。userId/jti 缺失时从刷新令牌自身解析——刷新令牌是带签名的自描述 JWT，
+	// 解析通过签名校验后才可信；最终授权仍由 VerifyRefreshToken 在 Redis 上原子比对。
+	if req.GetUserId() == 0 || req.GetJti() == "" {
+		payload, err := s.authenticator.ParseRefreshToken(ctx, req.GetClientType(), req.GetRefreshToken())
+		if err != nil {
+			s.log.Errorf("parse refresh token failed: [%s]", err.Error())
+			return nil, authenticationV1.ErrorIncorrectRefreshToken("invalid refresh token")
+		}
+		if req.GetUserId() == 0 {
+			req.UserId = trans.Ptr(payload.GetUserId())
+		}
+		if req.GetJti() == "" {
+			req.Jti = payload.Jti
+		}
+	}
+
 	// 首先验证刷新令牌——在任何数据库查询之前。
 	// user_id 和 jti 必须来自已验证的令牌绑定，而非请求体中不可信的输入。
 	if err := s.authenticator.VerifyRefreshToken(ctx, req.GetClientType(), req.GetUserId(), req.GetJti(), req.GetRefreshToken()); err != nil {

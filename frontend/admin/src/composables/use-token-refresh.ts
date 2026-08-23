@@ -1,3 +1,5 @@
+import { START_LOCATION } from "vue-router";
+
 import { refreshToken as refreshTokenService } from "@/api/composables";
 import { LOGIN_PATH } from "@/constants";
 import { preferences } from "@/core/preferences";
@@ -146,14 +148,28 @@ export async function logoutToLoginPage(redirect: boolean = true): Promise<void>
 
   globalSSEClient.close();
 
-  console.log("currentRoute", router.currentRoute.value);
-  if (router.currentRoute.value.path === LOGIN_PATH) return;
+  const cur = router.currentRoute.value;
+  console.log("currentRoute", cur);
+  if (cur.path === LOGIN_PATH) return;
+
+  // 整页重载进行中（首次导航未完成，currentRoute 仍是 START_LOCATION）时，
+  // 地址栏 URL（可能带着完好的 ?redirect=...）尚未被消费。此时若照常
+  // replace 到登录页，redirect 会被写成 "%2F"，把原目标冲掉 → 下次登录
+  // 成功落到首页。直接返回，交给待完成的首次导航/守卫自行落位。
+  if (cur === START_LOCATION) return;
+
+  // 已解析但未注册的路径（name 未定义，如 "/"）不携带有效回跳目标；
+  // 写 redirect="%2F" 同样会冲掉登录页 URL 上原有的目标。直接去登录页。
+  if (cur.name === undefined && (cur.path === "/" || cur.path === "")) {
+    await router.replace({ path: LOGIN_PATH });
+    return;
+  }
 
   await router.replace({
     path: LOGIN_PATH,
     query: redirect
       ? {
-          redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+          redirect: encodeURIComponent(cur.fullPath),
         }
       : {},
   });

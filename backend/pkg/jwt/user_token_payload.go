@@ -15,14 +15,24 @@ import (
 )
 
 const (
-	ClaimFieldUserName  = authn.ClaimFieldSubject // 用户名
-	ClaimFieldUserID    = "uid"                   // 用户 ID
-	ClaimFieldTenantID  = "tid"                   // 租户 ID
-	ClaimFieldClientID  = "cid"                   // 客户端 ID
-	ClaimFieldDeviceID  = "did"                   // 设备 ID
-	ClaimFieldRoleCodes = "roc"                   // 角色码列表
-	ClaimFieldDataScope = "ds"                    // 数据范围
-	ClaimFieldOrgUnitID = "ouid"                  // 组织单元 ID
+	ClaimFieldUserName     = authn.ClaimFieldSubject // 用户名
+	ClaimFieldUserID       = "uid"                   // 用户 ID
+	ClaimFieldTenantID     = "tid"                   // 租户 ID
+	ClaimFieldClientID     = "cid"                   // 客户端 ID
+	ClaimFieldDeviceID     = "did"                   // 设备 ID
+	ClaimFieldRoleCodes    = "roc"                   // 角色码列表
+	ClaimFieldDataScope    = "ds"                    // 数据范围
+	ClaimFieldOrgUnitID    = "ouid"                  // 组织单元 ID
+	ClaimFieldTokenCategory = "cat"                  // 令牌类别（at / rt）
+)
+
+const (
+	// TokenCategoryAccessToken 访问令牌类别值
+	TokenCategoryAccessToken = "at"
+
+	// TokenCategoryRefreshToken 刷新令牌类别值；访问令牌不携带 cat 声明，
+	// 刷新令牌解析时据此拒绝把访问令牌冒充刷新令牌使用。
+	TokenCategoryRefreshToken = "rt"
 )
 
 const (

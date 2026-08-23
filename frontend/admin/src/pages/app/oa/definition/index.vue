@@ -7,9 +7,9 @@
           size="small"
           effect="dark"
           round
-          :color="definitionStatusColor(scope.row.definition_status)"
+          :color="definitionStatusColor(scope.row.definitionStatus)"
         >
-          {{ definitionStatusLabel(scope.row.definition_status) }}
+          {{ definitionStatusLabel(scope.row.definitionStatus) }}
         </ElTag>
       </template>
       <!-- 操作列：查看 / 启用/禁用切换 -->
@@ -131,7 +131,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
     tableAttrs: { border: true, stripe: false },
     columns: [
       {
-        prop: "name",
+        prop: "remark",
         label: $t("pages.oa.definition.colName"),
         minWidth: 200,
       },
@@ -146,7 +146,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
         width: 90,
       },
       {
-        prop: "definition_status",
+        prop: "definitionStatus",
         label: $t("pages.oa.definition.colStatus"),
         width: 120,
         slotName: "definition_status",
@@ -158,7 +158,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
         slotName: "operation",
       },
       {
-        prop: "created_at",
+        prop: "createdAt",
         label: $t("pages.oa.definition.colCreatedAt"),
         width: 160,
         cellType: "date",

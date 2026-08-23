@@ -38,17 +38,9 @@ func (s *AuthenticationService) Login(ctx context.Context, req *authenticationV1
 		return nil, authenticationV1.ErrorBadRequest("invalid request")
 	}
 
+	// refresh_token 授权不再从 access claims 取身份（Login 在白名单内，无 claims；
+	// 且刷新语义上 access 往往已过期）——身份由 core 从刷新令牌自身解析。
 	req.ClientType = trans.Ptr(authenticationV1.ClientType_app)
-
-	if req.GetGrantType() == authenticationV1.GrantType_refresh_token {
-		operator, err := auth.FromContext(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Jti = operator.Jti
-		req.UserId = trans.Ptr(operator.GetUserId())
-	}
 
 	return s.authenticationServiceClient.Login(ctx, req)
 }
@@ -67,19 +59,17 @@ func (s *AuthenticationService) Logout(ctx context.Context, _ *emptypb.Empty) (*
 }
 
 // RefreshToken 刷新认证令牌
+//
+// 刷新发生在访问令牌过期之后，本端点在鉴权白名单内（无 access claims），
+// 不得依赖 auth.FromContext 取身份——否则白名单下必然 401。此处仅强制
+// ClientType 与 grant_type 后透传，身份由 core 从刷新令牌自身解析。
 func (s *AuthenticationService) RefreshToken(ctx context.Context, req *authenticationV1.LoginRequest) (*authenticationV1.LoginResponse, error) {
 	if req == nil {
 		return nil, authenticationV1.ErrorBadRequest("invalid request")
 	}
 
-	operator, err := auth.FromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	req.ClientType = trans.Ptr(authenticationV1.ClientType_app)
-	req.UserId = trans.Ptr(operator.GetUserId())
-	req.Jti = operator.Jti
+	req.GrantType = authenticationV1.GrantType_refresh_token
 
 	return s.authenticationServiceClient.RefreshToken(ctx, req)
 }

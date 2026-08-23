@@ -273,5 +273,23 @@
       "TERMINATED": "解聘",
       "EXPIRED": "已过期"
     }
+  },
+  "attendance": {
+    "dayResult": {
+      "PENDING": "未结算",
+      "NORMAL": "正常",
+      "LATE": "迟到",
+      "EARLY_LEAVE": "早退",
+      "ABSENT": "旷工",
+      "ON_LEAVE": "请假"
+    }
+  },
+  "workflowInstance": {
+    "instanceStatus": {
+      "PENDING": "进行中",
+      "APPROVED": "已通过",
+      "REJECTED": "已驳回",
+      "WITHDRAWN": "已撤回"
+    }
   }
 }

@@ -273,5 +273,23 @@
       "TERMINATED": "Terminated",
       "EXPIRED": "Expired"
     }
+  },
+  "attendance": {
+    "dayResult": {
+      "PENDING": "Pending",
+      "NORMAL": "Normal",
+      "LATE": "Late",
+      "EARLY_LEAVE": "Early Leave",
+      "ABSENT": "Absent",
+      "ON_LEAVE": "On Leave"
+    }
+  },
+  "workflowInstance": {
+    "instanceStatus": {
+      "PENDING": "In Progress",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "WITHDRAWN": "Withdrawn"
+    }
   }
 }

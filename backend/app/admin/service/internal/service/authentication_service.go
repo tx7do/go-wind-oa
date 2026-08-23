@@ -118,15 +118,7 @@ func (s *AuthenticationService) Login(ctx context.Context, req *authenticationV1
 
 	req.ClientType = trans.Ptr(authenticationV1.ClientType_admin)
 
-	if req.GetGrantType() == authenticationV1.GrantType_refresh_token {
-		operator, err := auth.FromContext(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Jti = operator.Jti
-		req.UserId = trans.Ptr(operator.GetUserId())
-	} else if req.GetGrantType() == authenticationV1.GrantType_password {
+	if req.GetGrantType() == authenticationV1.GrantType_password {
 		// ===== 强制验证码（仅密码授权；通过 HTTP Header 传递，避免改动 proto/前端生成代码）=====
 		if !s.verifyLoginCaptcha(ctx) {
 			return nil, authenticationV1.ErrorBadRequest("invalid or missing captcha")
@@ -150,19 +142,17 @@ func (s *AuthenticationService) Logout(ctx context.Context, _ *emptypb.Empty) (*
 }
 
 // RefreshToken 刷新令牌
+//
+// 刷新发生在访问令牌过期之后，本端点在鉴权白名单内（无 access claims），
+// 不得依赖 auth.FromContext 取身份——否则白名单下必然 401。此处仅强制
+// ClientType 与 grant_type 后透传，身份由 core 从刷新令牌自身解析。
 func (s *AuthenticationService) RefreshToken(ctx context.Context, req *authenticationV1.LoginRequest) (*authenticationV1.LoginResponse, error) {
 	if req == nil {
 		return nil, authenticationV1.ErrorBadRequest("invalid request")
 	}
 
-	operator, err := auth.FromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	req.ClientType = trans.Ptr(authenticationV1.ClientType_admin)
-	req.UserId = trans.Ptr(operator.GetUserId())
-	req.Jti = operator.Jti
+	req.GrantType = authenticationV1.GrantType_refresh_token
 
 	return s.authenticationServiceClient.RefreshToken(ctx, req)
 }

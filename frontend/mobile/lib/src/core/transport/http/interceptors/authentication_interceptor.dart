@@ -73,6 +73,15 @@ class AuthenticationInterceptor extends Interceptor {
       return;
     }
 
+    // 刷新请求自身的失败不得再进入刷新链：刷新链持锁期间发出刷新请求，
+    // 若该请求的 401 再次触发 _refreshToken，会去等待尚未释放的锁——
+    // 而锁又要等刷新请求返回才释放，循环等待死锁，导致
+    // doAuthenticationFailed（清令牌+跳登录）永远执行不到。
+    // 刷新失败统一交由上层 AuthenticationService.refreshToken 处理登出。
+    if (_isRefreshRequest(err.requestOptions)) {
+      return handler.next(err);
+    }
+
     // 如果不需要自动刷新令牌或不是401错误，则直接传递错误
     if (!_autoRefreshToken || err.response?.statusCode != 401) {
       return handler.next(err);
@@ -142,5 +151,10 @@ class AuthenticationInterceptor extends Interceptor {
   /// 创建Bearer令牌
   _makeBearerToken({String? accessToken}) {
     return "Bearer ${accessToken ?? ""}";
+  }
+
+  /// 判断请求是否为刷新令牌请求本身
+  bool _isRefreshRequest(RequestOptions options) {
+    return options.path.contains('refresh-token');
   }
 }

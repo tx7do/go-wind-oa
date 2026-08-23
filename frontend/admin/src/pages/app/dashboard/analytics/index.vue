@@ -42,6 +42,7 @@
             <AnalyticsDistribution
               :data="instanceStatusDistQuery.data.value"
               title-key="pages.dashboard.instanceStatusDistribution"
+              enum-key-prefix="enum.workflowInstance.instanceStatus"
             />
           </div>
         </el-card>
@@ -55,6 +56,7 @@
             <AnalyticsDistribution
               :data="attendanceDistQuery.data.value"
               title-key="pages.dashboard.attendanceDayResultDistribution"
+              enum-key-prefix="enum.attendance.dayResult"
             />
           </div>
         </el-card>
