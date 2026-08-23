@@ -3,10 +3,7 @@ BEGIN;
 SET LOCAL search_path = public, pg_catalog;
 
 -- 一次性清理相关表并重置自增（包含外键依赖）
-TRUNCATE TABLE public.sys_tenants,
-               public.sys_users,
-               public.sys_user_credentials,
-               public.sys_org_units,
+TRUNCATE TABLE public.sys_org_units,
                public.sys_positions,
                public.sys_memberships,
                public.sys_membership_roles,
