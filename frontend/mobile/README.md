@@ -1,6 +1,6 @@
-# CMS Flutter App
+# go-wind-oa Mobile (Flutter)
 
-A CMS Flutter project.
+协同办公系统（OA）移动端，基于 Flutter。架构与开发规范见 [AGENTS.md](./AGENTS.md) 与 [docs/](./docs/)。
 
 ## Flutter 常用命令
 

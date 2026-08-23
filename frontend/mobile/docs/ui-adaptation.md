@@ -1,6 +1,6 @@
 # UI 适配规范
 
-本文档描述 GoWind CMS Flutter 端的多端 UI 适配策略，涵盖断点体系、布局切换、尺寸适配、字体配置等内容。
+本文档描述 go-wind-oa 移动端（Flutter）的多端 UI 适配策略，涵盖断点体系、布局切换、尺寸适配、字体配置等内容。
 
 ---
 
@@ -239,47 +239,14 @@ fontWeight: FontWeight.bold   // → Bold (700)
 
 ---
 
-## 7. 典型页面适配示例
+## 7. 典型适配示例
 
-### 7.1 首页（HomePage）
+> go-wind-oa 移动端实际部署目标是手机端，业务页基本以 `isMobile ? mobileValue : webValue` 的三元 ScreenUtil idiom 直接写尺寸（如下例），较少消费 `ResponsiveLayout`/`WebContentCenter`（这两个是基座遗产，当前 `features/` 下无消费方）。
 
-```dart
-// 直接使用 ResponsiveLayout 分发
-class HomePage extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return ResponsiveLayout(
-      mobileBody: HomeMobileView(),  // NestedScrollView + TabBarView
-      webBody: HomeWebView(),        // 顶部导航 + 左右双栏
-    );
-  }
-}
-```
-
-### 7.2 文章详情页（PostDetailPage）
-
-同一组件内部通过 `isMobile` 参数区分：
+### 7.1 尺寸的三元条件（实际使用模式）
 
 ```dart
-Widget _buildView(BuildContext context, {required bool isMobile}) {
-  return Scaffold(
-    body: Column(
-      children: [
-        Expanded(
-          child: isMobile
-              ? _buildMobileBody(context, post, comments)
-              : _buildWebBody(context, post, comments),
-        ),
-        _CommentInputBar(isMobile: isMobile),
-      ],
-    ),
-  );
-}
-```
-
-### 7.3 内容卡片（PostCard）
-
-```dart
-// 三元条件贯穿每个尺寸属性
+// 三元条件贯穿每个尺寸属性：手机端带 ScreenUtil 后缀，Web 端固定值
 Container(
   padding: EdgeInsets.all(isMobile ? 16.w : 16),
   child: Column(
@@ -289,6 +256,19 @@ Container(
       Text(style: TextStyle(fontSize: isMobile ? 14.sp : 14)),
     ],
   ),
+)
+```
+
+**规律：** `isMobile` 为 `true` 时用 `.sp/.w/.h/.r`（ScreenUtil 等比缩放），为 `false` 时用固定 `double` 值。
+
+### 7.2 ResponsiveLayout（基座保留，当前无业务消费方）
+
+`ResponsiveLayout` 在基座中定义并可用，但 OA 业务页目前未使用它做 mobile/web 双视图分发。若后续某页需要 Web 端差异化布局，仍可按基座约定使用：
+
+```dart
+ResponsiveLayout(
+  mobileBody: _buildMobileView(),
+  webBody: _buildWebView(),
 )
 ```
 

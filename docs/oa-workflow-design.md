@@ -23,7 +23,7 @@
 | 加班 | oa_overtime_application | OVERTIME v1 流程，审批终态仅同步状态 | 已实现 |
 | 用印 | oa_seal_application | SEAL_APPLICATION v1 流程，审批终态仅同步状态 | 已实现 |
 | 外出 | oa_outing_application | OUTING v1 流程，审批终态仅同步状态 | 已实现 |
-| 考勤 | oa_attendance_record / oa_attendance_setting / oa_holiday | — | 已实现 |
+| 考勤 | oa_attendance_record / oa_attendance_setting / oa_holiday / oa_geofence / oa_wifi_fingerprint | — | 已实现 |
 | 站内信 | internal_message / internal_message_category / internal_message_recipient | — | 已实现 |
 | 公告发布 | （复用 internal_message，无独立表） | — | 已实现 |
 | 通讯录 | （复用 identity.org_unit/user，无独立表） | — | 已实现（app 侧只读 wrapper，带 redact 脱敏） |
@@ -55,19 +55,23 @@
 
 #### 鉴权服务端（AuthenticationService，以 CMS 为基座裁剪）
 
-- 令牌机制完整保留自 CMS：JWT access token（admin/app 两套独立 key，`configs/authenticator.yaml`）+ 不透明 refresh token，Redis String key 存储（前缀 `goa:`），刷新轮换经 Lua 脚本原子「验 RT→删 RT→删 AT」，支持黑名单（`bl:{jti}`）与按 jti/用户撤销。
+- 令牌机制：access token 与 refresh token 均为 JWT（admin/app 两套独立 key，`configs/authenticator.yaml`），Redis 键统一前缀 `go_wind_oa:`。access token 经 Redis 缓存校验当前有效 token（`at:{ct}:{uid}`），支持黑名单（`bl:{jti}`）与按 jti/用户撤销。refresh token 为**自描述 JWT**——携带 uid/jti（与对应 access token 共用同一 jti 对）及 `cat=rt` 类别声明，过期时间取 RT 专属时长；Redis 中仍以 `rt:{ct}:{uid}` 键存该 RT 作为最终授权凭据，刷新轮换经 Lua 脚本原子「比对 RT→删 RT→删 AT」。刷新链身份由 RT 自身携带：刷新请求不依赖调用方上下文提供 userId/jti，`Authenticator.ParseRefreshToken` 从 RT 提取可信身份（签名/类别/过期校验通过）后交原子轮换完成。旧「不透明 RT」模式下 RT 不携带身份、刷新须从请求上下文取身份，致使刷新链在 BFF 边端被截断——此为刷新链修复的根因。
 - 登录链路：password grant → `FindUserCredential`（AES 解密 → bcrypt 校验，恒定时间防用户名枚举）→ 用户状态检查 → 签发令牌对。密码传输格式与双端前端共享 `crypto.DefaultAESKey`（AES-CBC，key=IV，PKCS7，base64）。
 - RBAC：登录要求用户有角色且角色含 `sys:access_backend` 权限码。identity/permission 域落地后改用真实角色表。
-- 种子数据：服务启动时 `sys_users` 为空则建立初始管理员 `admin/admin`（tenant 1 默认租户，bcrypt 入库）。不可用 tenant 0（平台域）：OA 各服务的 callerFromContext 对 tid==0 一律 fail-closed 拒绝，种子必须落在真实租户上。
-- 裁剪掉的 CMS 能力：租户解析（OA v1 单租户 tenant 0，`tenant_code` 忽略）、`RegisterUser` / `WhoAmI`（双端 BFF 未暴露对应端点，落 Unimplemented）。
+- 种子数据：core 启动种子 `admin/admin`（`configs/data.yaml`，bcrypt 入库）落 tenant 1 真实租户。`callerFromContext`（`workflow_service.go`）**仅对 `uid==0` fail-closed，不检查 `tid==0`**——即 tenant 0 的平台超管只要 uid 非 0 即经 viewer 放行，可访问多数 OA 端点（列表/详情/待办/考勤/额度等）。`backend/sql/postgresql-demo-data.sql` 因此提供平台超管测试组（`tenant_id=0`、`user/created_by/assignee=1`，账号 `admin`），与 tenant 1 租户管理员组（`tenant_id=1`、`user=2`）并列，用于验证两端可见性隔离。
+- 原文档称「裁剪掉」的三项能力现均已实现：
+  - **租户解析**：`doGrantTypePassword`（`authentication_service.go:203-215`）按 `tenant_code` 经 `tenantRepo.Get` 定位租户（空则视 tenant 0 平台域），查不到或非启用统一返回同一文案防枚举，解析出的 tenantID 限定后续凭证查询范围。
+  - **`RegisterUser`**：完整实现（`authentication_service.go:397-469`），事务内建用户 + 凭证 + 分配租户管理员角色；admin BFF 已将其加入白名单暴露（见 §2.2）。
+  - **`WhoAmI`**：完整实现（`authentication_service.go:527-549`），从 viewer 上下文解析调用者身份并查其 username，不接受客户端传入标识。
+  - 实际未实现的是 `client_credentials` grant（`doGrantTypeClientCredentials` 恒返回 `invalid grant type`）。
 
 ### 2.2 admin-service（HTTP 边端，管理后台转发）
 
 `backend/app/admin/service/`，`appid = serviceid.AdminService`，consul key `go-wind-oa/admin/service`。
 
 - `internal/server/rest_server.go`：创建 HTTP server，中间件链 `logging → auth.Server + authz.Server（白名单匹配）→ entmiddleware.Server()`。**auth 必须在 ent 之前**：`auth.Server` 对非白名单请求注入 `OperatorMetadata`，`entmiddleware.Server` 据此构建 `UserViewer`，`TenantPrivacy` 策略才生效；顺序颠倒则 ent 兜底 `SystemViewer`，租户隔离失效。
-  - 注册 HTTP 服务（`adminV1.Register*HTTPServer`）：AuthenticationService、InternalMessageService / Category / Recipient、WorkflowService。
-  - 白名单：`Login` / `GenerateCaptcha` / `VerifyCaptcha` 经 `rpc.AddWhiteList` 放行。
+  - 注册 HTTP 服务（`adminV1.Register*HTTPServer`）：§3 admin wrapper 清单所示全部 wrapper 均注册 HTTP server（平台管理 + OA 业务 + 站内信 + 鉴权 + 文件传输），实现层为 `internal/service/` 转发层（HTTP → gRPC core）。
+  - 白名单（`rpc.AddWhiteList`，5 项）：`OperationAuthenticationServiceLogin` / `OperationAuthenticationServiceRefreshToken` / `OperationAuthenticationServiceGenerateCaptcha` / `OperationAuthenticationServiceVerifyCaptcha` / `OperationAuthenticationServiceRegisterUser`。RefreshToken 与 RegisterUser 在内即放行，故刷新链在 BFF 边端不被 401 拦截（自描述 RT 机制见 §2.1）。
 - `internal/data/`：data 层持 gRPC 客户端打 core-service（经服务发现定位 `CoreService`）。ProviderSet 见 `data/providers/wire_set.go`。
 - `internal/service/`：转发层 service（各方法为 HTTP 请求 → gRPC 调 core）。
 - `cmd/server/assets/`：`openapi.yaml` 由 `buf.admin.openapi.gen.yaml` 生成，`assets.go` embed 供 Swagger UI。
@@ -76,7 +80,7 @@
 
 `backend/app/app/service/`，`appid = serviceid.AppService`，consul key `go-wind-oa/app/service`。
 
-- `internal/server/rest_server.go`：同 admin 中间件链与白名单模式。注册 HTTP 服务：AuthenticationService、WorkflowService。白名单仅 `OperationAuthenticationServiceLogin`。
+- `internal/server/rest_server.go`：同 admin 中间件链与白名单模式。注册 HTTP 服务：§3 app wrapper 清单所示全部 wrapper 均注册 HTTP server。白名单（2 项）：`OperationAuthenticationServiceLogin` / `OperationAuthenticationServiceRefreshToken`。
 - app BFF 匿名请求按 Host→租户 domain 解析（fail-closed）。`LoginRequest.tenant_code` 的 json_name 是蛇形（传 tenantCode 会被静默忽略）。
 - `internal/data/`：data 层持 `NewAuthenticationServiceClient` + `NewWorkflowServiceClient`（打 core-service）。ProviderSet 见 `data/providers/wire_set.go`。
 - `cmd/server/assets/`：`openapi.yaml` 由 `buf.app.openapi.gen.yaml` 生成。
@@ -94,8 +98,8 @@
 | 域 | 包名 | 内容 | 性质 |
 |---|---|---|---|
 | `oa/service/v1/` | `oa.service.v1` | `attendance.proto` + `business_trip.proto` + `expense.proto` + `leave.proto` + `oa_error.proto` + `outing.proto` + `overtime.proto` + `seal_application.proto` + `workflow.proto` | core 纯 gRPC，**无 http annotation** |
-| `admin/service/v1/` | `admin.service.v1` | OA 业务 wrapper（`i_attendance`/`i_business_trip`/`i_expense`/`i_leave`/`i_outing`/`i_overtime`/`i_seal_application`/`i_workflow`）+ 站内信 wrapper（`i_internal_message`/`i_internal_message_category`/`i_internal_message_recipient`）+ 鉴权 wrapper（`i_authentication`）+ CMS 保留域 wrapper（`admin_doc`/`admin_error` 及继承自 CMS 的 `api`/`category`/`comment`/`dict_*`/`file*`/`language`/`media_asset`/`menu`/`navigation*`/`org_unit`/`page`/`permission*`/`position`/`post`/`role`/`section`/`site*`/`tag`/`task`/`tenant`/`translator`/`user`/`user_profile`/`admin_portal`/`*_audit_log` 等，完整清单见仓内 `protos/admin/service/v1`） | HTTP wrapper，引用 oa.service.v1 / internal_message.service.v1 / authentication.service.v1 / identity.service.v1 消息类型 |
-| `app/service/v1/` | `app.service.v1` | OA 业务 wrapper（`i_attendance`/`i_business_trip`/`i_expense`/`i_leave`/`i_outing`/`i_overtime`/`i_seal_application`/`i_workflow`）+ 站内信 wrapper（`i_internal_message`）+ 鉴权 wrapper（`i_authentication`）+ 只读通讯录 wrapper（`i_org_unit`/`i_user`，带 `redact` 脱敏）+ `i_user_profile` + CMS 保留域 wrapper（`app_doc`/`app_error` 及 `category`/`comment`/`file_transfer`/`interaction`/`navigation`/`page`/`post`/`section`/`tag` 等，完整清单见仓内 `protos/app/service/v1`） | HTTP wrapper，引用 oa.service.v1 / internal_message.service.v1 / authentication.service.v1 / identity.service.v1 消息类型 |
+| `admin/service/v1/` | `admin.service.v1` | 实际 wrapper 清单（全量，见仓内 `protos/admin/service/v1`）：`i_admin_portal`/`i_api`/`i_api_audit_log`/`i_attendance`/`i_authentication`/`i_business_trip`/`i_dashboard`/`i_data_access_audit_log`/`i_dict_entry`/`i_dict_type`/`i_expense`/`i_file`/`i_file_transfer`/`i_internal_message`/`i_internal_message_category`/`i_internal_message_recipient`/`i_language`/`i_leave`/`i_login_audit_log`/`i_login_policy`/`i_menu`/`i_mfa`/`i_operation_audit_log`/`i_org_unit`/`i_outing`/`i_overtime`/`i_permission`/`i_permission_audit_log`/`i_permission_group`/`i_plan`/`i_plan_module`/`i_plan_quota`/`i_policy_evaluation_log`/`i_position`/`i_redis_cache_monitor`/`i_role`/`i_seal_application`/`i_task`/`i_tenant`/`i_user`/`i_user_profile`/`i_workflow`，另含 `admin_doc`/`admin_error`。其中 OA 业务域 wrapper（`i_attendance`/`i_business_trip`/`i_expense`/`i_leave`/`i_outing`/`i_overtime`/`i_seal_application`/`i_workflow`）引用 `oa.service.v1`，站内信 wrapper（`i_internal_message*`）引用 `internal_message.service.v1`，鉴权 wrapper（`i_authentication`）引用 `authentication.service.v1`，通讯录/用户 wrapper（`i_org_unit`/`i_user`/`i_user_profile`）引用 `identity.service.v1`；其余为平台管理（套餐/配额/字典/菜单/角色/权限/审计日志/MFA/登录策略/仪表盘/Redis 监控等）wrapper，引用 `identity.service.v1` 等共享消息类型。CMS 业务域（原 category/comment/post/section/tag/page/navigation/site 等）已从该目录移除，不再生成对应 client。 | HTTP wrapper |
+| `app/service/v1/` | `app.service.v1` | 实际 wrapper 清单（全量，见仓内 `protos/app/service/v1`）：`i_attendance`/`i_authentication`/`i_business_trip`/`i_expense`/`i_file_transfer`/`i_internal_message`/`i_leave`/`i_org_unit`/`i_outing`/`i_overtime`/`i_seal_application`/`i_user`/`i_user_profile`/`i_workflow`，另含 `app_doc`/`app_error`。其中 OA 业务域 wrapper（`i_attendance`/`i_business_trip`/`i_expense`/`i_leave`/`i_outing`/`i_overtime`/`i_seal_application`/`i_workflow`）引用 `oa.service.v1`，站内信 wrapper（`i_internal_message`）引用 `internal_message.service.v1`，鉴权 wrapper（`i_authentication`）引用 `authentication.service.v1`，只读通讯录 wrapper（`i_org_unit`/`i_user`，带 `redact` 脱敏）与用户资料 wrapper（`i_user_profile`）引用 `identity.service.v1`，文件传输 wrapper（`i_file_transfer`）引用 `storage.service.v1`。CMS 业务域（原 category/comment/post/section/tag/page/navigation 等）已从该目录移除，不再生成对应 client。 | HTTP wrapper |
 | `internal_message/service/v1/` | `internal_message.service.v1` | 4 档（CMS 原样保留） | 站内信消息类型，core 注册 gRPC |
 | `authentication/service/v1/` | `authentication.service.v1` | 9 档（CMS 原样保留） | 鉴权消息类型，admin/app wrapper 引用 |
 | `identity/service/v1/` | `identity.service.v1` | `user.proto` + `types.proto`（CMS 原样保留） | authentication 的传递闭包依赖 |
@@ -229,7 +233,7 @@ multipart 三要点（修复记录）：请求头补 `Accept: application/json`�
 
 ## 8. 考勤子系统
 
-表：`oa_attendance_record` / `oa_attendance_setting` / `oa_holiday`。
+表：`oa_attendance_record` / `oa_attendance_setting` / `oa_holiday` / `oa_geofence` / `oa_wifi_fingerprint`。
 
 ### 8.1 打卡与结算
 
@@ -250,6 +254,17 @@ multipart 三要点（修复记录）：请求头补 `Accept: application/json`�
 ### 8.3 每日定时结算
 
 `AttendanceScheduler`（wire 注入常驻 goroutine）每 30 分钟检查，本地 00:30 后为「昨日」跑全租户结算。补结算仅处理仍 PENDING 的记录（幂等）。
+
+### 8.4 打卡地理围栏与 Wi-Fi 指纹白名单
+
+表：`oa_geofence`（name / latitude / longitude / radius_meters，**圆形围栏**——圆心+半径，非多边形）、`oa_wifi_fingerprint`（ssid 仅描述用、bssid 为比对键）。两表均 `mixin.TenantID[uint32]{}` 租户隔离，`(tenant_id)` 非唯一索引。
+
+- **门控**：`CheckIn` 在落打卡记录前调 `validateLocation`，分围栏与 Wi-Fi 两支，各自独立判定。**任一支对应的租户表为空则该支放行；两表皆空则完全放行**（特性休眠，开箱默认不限制）：
+  - 围栏支：`geofenceRepo.ListByTenant` 取租户全部围栏。有围栏时，若打卡点 `lat==0 && lon==0` → 403「定位不可用，无法判定打卡范围」；否则将 WGS-84 打卡点经 `wgs84ToGcj02` 转入 GCJ-02，逐围栏 `haversineMeters` 球面距离比对 `radius_meters`，落在任一围栏半径内放行，否则 403「您不在允许的打卡范围内」。
+  - Wi-Fi 支：`wifiRepo.ListByTenant` 取租户白名单。有白名单时，`bssid==""` → 403「当前 Wi-Fi 不可识别」；否则线性比对 `w.Bssid`，命中放行，否则 403「当前 Wi-Fi 不在允许的打卡网络列表中」。
+- **坐标系统一**：移动端 GPS（`geolocator`，WGS-84）与管理端围栏坐标（高德地图圈选产出，GCJ-02、原样入库）异源；后端比对前经 `geo.go` 的 `wgs84ToGcj02` 把打卡点转 GCJ-02，使两侧在同一坐标系下度量。
+- **管理端配置**：core 暴露 `UpsertGeofence`/`DeleteGeofence`/`ListGeofences` 与 `UpsertWifiFingerprint`/`DeleteWifiFingerprint`/`ListWifiFingerprints` 六个 gRPC（`oa.service.v1`），经 admin BFF HTTP wrapper 转发。admin 后台围栏页用 `AmapCirclePicker`（高德 `AMap.Map` + `CircleEditor` 圈选圆心半径）配置；**未配置高德 Key/安全码时降级为三个数值输入框（纬度/经度/半径）手填**（`use-amap.ts` 读 `VITE_AMAP_KEY`/`VITE_AMAP_SECURITY_CODE`，缺失即 `AMAP_NOT_CONFIGURED` 触发降级）。Wi-Fi 白名单页为纯文本 SSID/BSSID 输入。
+- **移动端无改动**：`attendance_service.dart` 仍以 `geolocator` 取 GPS、`network_info_plus` 尽力取 BSSID 提交；越界/非白名单时收上述 403，消息文本经 `Status` 分支原样透传给用户。
 
 ---
 
@@ -292,7 +307,17 @@ multipart 三要点（修复记录）：请求头补 `Accept: application/json`�
 
 ### 10.1 管理后台 TS 客户端
 
-`buf.admin.typescript.gen.yaml` 生成 `frontend/admin/src/api/generated/admin/service/v1/index.ts`，含 `ApiClient.workflowService` / `authenticationService` / `internalMessageService` 等。Composables（`src/api/composables/{oa,auth}.ts`）封装为 Vue Query hooks。类型名带包前缀（`oaservicev1_*` / `authenticationservicev1_*`）。
+`buf.admin.typescript.gen.yaml` 生成 `frontend/admin/src/api/generated/admin/service/v1/index.ts`，内含 42 个 `create*ServiceClient` 工厂函数，按域归类如下（与 §3 admin wrapper 清单一一对应）：
+
+| 域 | client 函数 |
+|---|---|
+| OA 业务 | `createAttendanceService` / `createBusinessTripService` / `createExpenseService` / `createLeaveService` / `createOutingService` / `createOvertimeService` / `createSealApplicationService` / `createWorkflowService` |
+| 站内信 | `createInternalMessageService` / `createInternalMessageCategoryService` / `createInternalMessageRecipientService` |
+| 鉴权 | `createAuthenticationService` |
+| identity 平台管理 | `createAdminPortalService` / `createApiService` / `createApiAuditLogService` / `createDashboardService` / `createDataAccessAuditLogService` / `createDictEntryService` / `createDictTypeService` / `createLanguageService` / `createLoginAuditLogService` / `createLoginPolicyService` / `createMenuService` / `createMfaService` / `createOperationAuditLogService` / `createOrgUnitService` / `createPermissionService` / `createPermissionAuditLogService` / `createPermissionGroupService` / `createPlanService` / `createPlanModuleService` / `createPlanQuotaService` / `createPolicyEvaluationLogService` / `createPositionService` / `createRedisCacheMonitorService` / `createRoleService` / `createTaskService` / `createTenantService` / `createUserService` / `createUserProfileService` |
+| 文件传输 | `createFileService` / `createFileTransferService` |
+
+Composables（`src/api/composables/`）将上述 client 封装为 Vue Query hooks。类型名带包前缀（`oaservicev1_*` / `authenticationservicev1_*` / `identityservicev1_*` / `storageservicev1_*`），与 §10.2 所述 Dart 客户端同理。
 
 ### 10.2 移动端 Dart 客户端
 
