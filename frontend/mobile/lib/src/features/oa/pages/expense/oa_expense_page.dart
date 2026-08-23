@@ -5,6 +5,8 @@ import 'package:flutter_app/src/features/oa/services/expense_service.dart';
 import 'package:flutter_app/src/features/oa/services/file_upload_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:flutter_app/generated/l10n.dart';
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 import 'package:image_picker/image_picker.dart';
 
 /// 报销申请页（含多行费用明细）。
@@ -120,22 +122,25 @@ class _OaExpensePageState extends State<OaExpensePage> {
   }
 
   static String _statusLabel(
-      oaApi.OaServiceV1ExpenseApplication$ExpenseStatus? s) {
+      oaApi.OaServiceV1ExpenseApplication$ExpenseStatus? s, S loc) {
     switch (s) {
       case oaApi.OaServiceV1ExpenseApplication$ExpenseStatus.approved:
-        return '已通过';
+        return loc.oaInstanceStatusApproved;
+      case oaApi.OaServiceV1ExpenseApplication$ExpenseStatus.pending:
+        return loc.oaInstanceStatusPending;
       case oaApi.OaServiceV1ExpenseApplication$ExpenseStatus.rejected:
-        return '已驳回';
+        return loc.oaInstanceStatusRejected;
       case oaApi.OaServiceV1ExpenseApplication$ExpenseStatus.withdrawn:
-        return '已撤回';
+        return loc.oaInstanceStatusWithdrawn;
       default:
-        return '审批中';
+        return '-';
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -198,10 +203,10 @@ class _OaExpensePageState extends State<OaExpensePage> {
                     dense: true,
                     title: Text(a.title ?? ''),
                     subtitle: Text(
-                        '${a.items?.length ?? 0} 项明细    ${a.createdAt ?? ''}',
+                        '${a.items?.length ?? 0} 项明细    ${DateTimeUtils.formatDateTime(a.createdAt)}',
                         style: const TextStyle(fontSize: 12)),
                     trailing: Text(
-                        '${a.totalAmount ?? 0}\n${_statusLabel(a.expenseStatus)}',
+                        '${a.totalAmount ?? 0}\n${_statusLabel(a.expenseStatus, loc)}',
                         textAlign: TextAlign.end),
                   )),
           ],

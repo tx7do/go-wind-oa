@@ -6,6 +6,7 @@ import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/src/app_router/route_names.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
 import 'package:go_router/go_router.dart';
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 工作流任务列表页（三 Tab：“待我审批” / “已办” / “我发起的”）。
 ///
@@ -209,7 +210,7 @@ class _OaTaskListPageState extends State<OaTaskListPage>
                     label: const Text('撤回'),
                   )
                 : Text(
-                    '${row.createdAt ?? ''}',
+                    DateTimeUtils.formatDateTime(row.createdAt),
                     style: const TextStyle(fontSize: 11),
                   ),
           );
@@ -252,7 +253,7 @@ class _OaTaskListPageState extends State<OaTaskListPage>
               style: const TextStyle(fontSize: 12),
             ),
             trailing: Text(
-              '${row.createdAt ?? ''}',
+              DateTimeUtils.formatDateTime(row.createdAt),
               style: const TextStyle(fontSize: 11),
             ),
             onTap: tappable && taskId > 0

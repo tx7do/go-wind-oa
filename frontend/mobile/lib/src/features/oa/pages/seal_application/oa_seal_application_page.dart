@@ -4,6 +4,7 @@ import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/seal_application_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:flutter_app/generated/l10n.dart';
 
 /// 用印申请页。
 ///
@@ -78,22 +79,25 @@ class _OaSealApplicationPageState extends State<OaSealApplicationPage> {
   }
 
   static String _statusLabel(
-      oaApi.OaServiceV1SealApplication$SealStatus? s) {
+      oaApi.OaServiceV1SealApplication$SealStatus? s, S loc) {
     switch (s) {
       case oaApi.OaServiceV1SealApplication$SealStatus.approved:
-        return '已通过';
+        return loc.oaInstanceStatusApproved;
+      case oaApi.OaServiceV1SealApplication$SealStatus.pending:
+        return loc.oaInstanceStatusPending;
       case oaApi.OaServiceV1SealApplication$SealStatus.rejected:
-        return '已驳回';
+        return loc.oaInstanceStatusRejected;
       case oaApi.OaServiceV1SealApplication$SealStatus.withdrawn:
-        return '已撤回';
+        return loc.oaInstanceStatusWithdrawn;
       default:
-        return '审批中';
+        return '-';
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -118,19 +122,19 @@ class _OaSealApplicationPageState extends State<OaSealApplicationPage> {
               initialValue: _sealType,
               decoration: const InputDecoration(
                   labelText: '印章类型', border: OutlineInputBorder()),
-              items: const [
+              items: [
                 DropdownMenuItem(
                     value: oaApi.OaServiceV1SealApplication$SealType.officialSeal,
-                    child: Text('公章')),
+                    child: Text(loc.oaSealTypeOfficialSeal)),
                 DropdownMenuItem(
                     value: oaApi.OaServiceV1SealApplication$SealType.contractSeal,
-                    child: Text('合同章')),
+                    child: Text(loc.oaSealTypeContractSeal)),
                 DropdownMenuItem(
                     value: oaApi.OaServiceV1SealApplication$SealType.financeSeal,
-                    child: Text('财务章')),
+                    child: Text(loc.oaSealTypeFinanceSeal)),
                 DropdownMenuItem(
                     value: oaApi.OaServiceV1SealApplication$SealType.legalSeal,
-                    child: Text('法人章')),
+                    child: Text(loc.oaSealTypeLegalSeal)),
               ],
               onChanged: (v) => setState(() => _sealType = v ?? _sealType),
               validator: (v) => v == null ? 'required' : null,
@@ -163,7 +167,7 @@ class _OaSealApplicationPageState extends State<OaSealApplicationPage> {
                     title: Text(a.purpose ?? ''),
                     subtitle: Text(a.recipient ?? '',
                         maxLines: 1, overflow: TextOverflow.ellipsis),
-                    trailing: Text(_statusLabel(a.sealStatus)),
+                    trailing: Text(_statusLabel(a.sealStatus, loc)),
                   )),
           ],
         ),

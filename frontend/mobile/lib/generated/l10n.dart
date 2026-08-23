@@ -1448,6 +1448,236 @@ class S {
       args: [],
     );
   }
+
+  /// `进行中`
+  String get oaInstanceStatusPending {
+    return Intl.message(
+      '进行中',
+      name: 'oaInstanceStatusPending',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `已通过`
+  String get oaInstanceStatusApproved {
+    return Intl.message(
+      '已通过',
+      name: 'oaInstanceStatusApproved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `已驳回`
+  String get oaInstanceStatusRejected {
+    return Intl.message(
+      '已驳回',
+      name: 'oaInstanceStatusRejected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `已撤回`
+  String get oaInstanceStatusWithdrawn {
+    return Intl.message(
+      '已撤回',
+      name: 'oaInstanceStatusWithdrawn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `未结算`
+  String get oaAttendanceDayResultPending {
+    return Intl.message(
+      '未结算',
+      name: 'oaAttendanceDayResultPending',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `正常`
+  String get oaAttendanceDayResultNormal {
+    return Intl.message(
+      '正常',
+      name: 'oaAttendanceDayResultNormal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `迟到`
+  String get oaAttendanceDayResultLate {
+    return Intl.message(
+      '迟到',
+      name: 'oaAttendanceDayResultLate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `早退`
+  String get oaAttendanceDayResultEarlyLeave {
+    return Intl.message(
+      '早退',
+      name: 'oaAttendanceDayResultEarlyLeave',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `旷工`
+  String get oaAttendanceDayResultAbsent {
+    return Intl.message(
+      '旷工',
+      name: 'oaAttendanceDayResultAbsent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `请假`
+  String get oaAttendanceDayResultOnLeave {
+    return Intl.message(
+      '请假',
+      name: 'oaAttendanceDayResultOnLeave',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `已通过`
+  String get oaTaskStatusApproved {
+    return Intl.message(
+      '已通过',
+      name: 'oaTaskStatusApproved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `已取消`
+  String get oaTaskStatusCancelled {
+    return Intl.message(
+      '已取消',
+      name: 'oaTaskStatusCancelled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `进行中`
+  String get oaTaskStatusPending {
+    return Intl.message('进行中', name: 'oaTaskStatusPending', desc: '', args: []);
+  }
+
+  /// `已驳回`
+  String get oaTaskStatusRejected {
+    return Intl.message(
+      '已驳回',
+      name: 'oaTaskStatusRejected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `已提交`
+  String get oaLogActionSubmit {
+    return Intl.message('已提交', name: 'oaLogActionSubmit', desc: '', args: []);
+  }
+
+  /// `已审批通过`
+  String get oaLogActionApprove {
+    return Intl.message(
+      '已审批通过',
+      name: 'oaLogActionApprove',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `已审批驳回`
+  String get oaLogActionReject {
+    return Intl.message('已审批驳回', name: 'oaLogActionReject', desc: '', args: []);
+  }
+
+  /// `已转办`
+  String get oaLogActionForward {
+    return Intl.message('已转办', name: 'oaLogActionForward', desc: '', args: []);
+  }
+
+  /// `已撤回`
+  String get oaLogActionWithdraw {
+    return Intl.message('已撤回', name: 'oaLogActionWithdraw', desc: '', args: []);
+  }
+
+  /// `上午`
+  String get oaHalfOfDayAm {
+    return Intl.message('上午', name: 'oaHalfOfDayAm', desc: '', args: []);
+  }
+
+  /// `下午`
+  String get oaHalfOfDayPm {
+    return Intl.message('下午', name: 'oaHalfOfDayPm', desc: '', args: []);
+  }
+
+  /// `调休`
+  String get oaCompensationTypeCompLeave {
+    return Intl.message(
+      '调休',
+      name: 'oaCompensationTypeCompLeave',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `加班费`
+  String get oaCompensationTypeOvertimePay {
+    return Intl.message(
+      '加班费',
+      name: 'oaCompensationTypeOvertimePay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `公章`
+  String get oaSealTypeOfficialSeal {
+    return Intl.message(
+      '公章',
+      name: 'oaSealTypeOfficialSeal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `合同章`
+  String get oaSealTypeContractSeal {
+    return Intl.message(
+      '合同章',
+      name: 'oaSealTypeContractSeal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `财务章`
+  String get oaSealTypeFinanceSeal {
+    return Intl.message(
+      '财务章',
+      name: 'oaSealTypeFinanceSeal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `法人章`
+  String get oaSealTypeLegalSeal {
+    return Intl.message('法人章', name: 'oaSealTypeLegalSeal', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

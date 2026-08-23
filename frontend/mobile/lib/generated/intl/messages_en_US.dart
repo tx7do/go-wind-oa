@@ -175,6 +175,22 @@ class MessageLookup extends MessageLookupByLibrary {
     "noSearchResults": m4,
     "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
     "oaAttendanceCheckIn": MessageLookupByLibrary.simpleMessage("Check In"),
+    "oaAttendanceDayResultAbsent": MessageLookupByLibrary.simpleMessage(
+      "Absent",
+    ),
+    "oaAttendanceDayResultEarlyLeave": MessageLookupByLibrary.simpleMessage(
+      "Early Leave",
+    ),
+    "oaAttendanceDayResultLate": MessageLookupByLibrary.simpleMessage("Late"),
+    "oaAttendanceDayResultNormal": MessageLookupByLibrary.simpleMessage(
+      "Normal",
+    ),
+    "oaAttendanceDayResultOnLeave": MessageLookupByLibrary.simpleMessage(
+      "On Leave",
+    ),
+    "oaAttendanceDayResultPending": MessageLookupByLibrary.simpleMessage(
+      "Pending",
+    ),
     "oaAttendanceHint": MessageLookupByLibrary.simpleMessage(
       "Check-in verifies your location and Wi-Fi against the company fence whitelist.",
     ),
@@ -198,6 +214,31 @@ class MessageLookup extends MessageLookupByLibrary {
       "Submitting…",
     ),
     "oaAttendanceTitle": MessageLookupByLibrary.simpleMessage("Attendance"),
+    "oaCompensationTypeCompLeave": MessageLookupByLibrary.simpleMessage(
+      "Compensatory Leave",
+    ),
+    "oaCompensationTypeOvertimePay": MessageLookupByLibrary.simpleMessage(
+      "Overtime Pay",
+    ),
+    "oaHalfOfDayAm": MessageLookupByLibrary.simpleMessage("AM"),
+    "oaHalfOfDayPm": MessageLookupByLibrary.simpleMessage("PM"),
+    "oaInstanceStatusApproved": MessageLookupByLibrary.simpleMessage(
+      "Approved",
+    ),
+    "oaInstanceStatusPending": MessageLookupByLibrary.simpleMessage(
+      "In Progress",
+    ),
+    "oaInstanceStatusRejected": MessageLookupByLibrary.simpleMessage(
+      "Rejected",
+    ),
+    "oaInstanceStatusWithdrawn": MessageLookupByLibrary.simpleMessage(
+      "Withdrawn",
+    ),
+    "oaLogActionApprove": MessageLookupByLibrary.simpleMessage("Approved"),
+    "oaLogActionForward": MessageLookupByLibrary.simpleMessage("Forwarded"),
+    "oaLogActionReject": MessageLookupByLibrary.simpleMessage("Rejected"),
+    "oaLogActionSubmit": MessageLookupByLibrary.simpleMessage("Submitted"),
+    "oaLogActionWithdraw": MessageLookupByLibrary.simpleMessage("Withdrawn"),
     "oaNotificationsEmpty": MessageLookupByLibrary.simpleMessage(
       "No internal message notifications.",
     ),
@@ -206,6 +247,18 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "oaNotificationsTitle": MessageLookupByLibrary.simpleMessage(
       "Notifications",
+    ),
+    "oaSealTypeContractSeal": MessageLookupByLibrary.simpleMessage(
+      "Contract Seal",
+    ),
+    "oaSealTypeFinanceSeal": MessageLookupByLibrary.simpleMessage(
+      "Finance Seal",
+    ),
+    "oaSealTypeLegalSeal": MessageLookupByLibrary.simpleMessage(
+      "Legal Representative Seal",
+    ),
+    "oaSealTypeOfficialSeal": MessageLookupByLibrary.simpleMessage(
+      "Official Seal",
     ),
     "oaSubmitApplyDefinitionCode": MessageLookupByLibrary.simpleMessage(
       "Definition Code",
@@ -263,6 +316,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "oaTaskListTitleSubmitted": MessageLookupByLibrary.simpleMessage(
       "My Submissions",
     ),
+    "oaTaskStatusApproved": MessageLookupByLibrary.simpleMessage("Approved"),
+    "oaTaskStatusCancelled": MessageLookupByLibrary.simpleMessage("Cancelled"),
+    "oaTaskStatusPending": MessageLookupByLibrary.simpleMessage("In Progress"),
+    "oaTaskStatusRejected": MessageLookupByLibrary.simpleMessage("Rejected"),
     "pageNotFound": MessageLookupByLibrary.simpleMessage("Page Not Found"),
     "pageNotFoundDesc": MessageLookupByLibrary.simpleMessage(
       "Sorry, the page you are looking for does not exist or has been moved.",

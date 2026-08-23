@@ -4,6 +4,8 @@ import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/business_trip_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:flutter_app/generated/l10n.dart';
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 出差申请页。
 ///
@@ -104,22 +106,25 @@ class _OaBusinessTripPageState extends State<OaBusinessTripPage> {
   }
 
   static String _statusLabel(
-      oaApi.OaServiceV1BusinessTripApplication$BusinessTripStatus? s) {
+      oaApi.OaServiceV1BusinessTripApplication$BusinessTripStatus? s, S loc) {
     switch (s) {
       case oaApi.OaServiceV1BusinessTripApplication$BusinessTripStatus.approved:
-        return '已通过';
+        return loc.oaInstanceStatusApproved;
+      case oaApi.OaServiceV1BusinessTripApplication$BusinessTripStatus.pending:
+        return loc.oaInstanceStatusPending;
       case oaApi.OaServiceV1BusinessTripApplication$BusinessTripStatus.rejected:
-        return '已驳回';
+        return loc.oaInstanceStatusRejected;
       case oaApi.OaServiceV1BusinessTripApplication$BusinessTripStatus.withdrawn:
-        return '已撤回';
+        return loc.oaInstanceStatusWithdrawn;
       default:
-        return '审批中';
+        return '-';
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -154,7 +159,7 @@ class _OaBusinessTripPageState extends State<OaBusinessTripPage> {
                     onPressed: () => _pickDate(isStart: true),
                     child: Text(_startDate == null
                         ? '开始日期'
-                        : _startDate!.toString().split(' ').first),
+                        : DateTimeUtils.formatDateDt(_startDate)),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -163,7 +168,7 @@ class _OaBusinessTripPageState extends State<OaBusinessTripPage> {
                     onPressed: () => _pickDate(isStart: false),
                     child: Text(_endDate == null
                         ? '结束日期'
-                        : _endDate!.toString().split(' ').first),
+                        : DateTimeUtils.formatDateDt(_endDate)),
                   ),
                 ),
               ],
@@ -196,9 +201,9 @@ class _OaBusinessTripPageState extends State<OaBusinessTripPage> {
                     dense: true,
                     title: Text(a.title ?? ''),
                     subtitle: Text(
-                        '${a.destination ?? ''} ${(a.startDate ?? '').split('T').first} ~ ${(a.endDate ?? '').split('T').first}',
+                        '${a.destination ?? ''} ${DateTimeUtils.formatDate(a.startDate)} ~ ${DateTimeUtils.formatDate(a.endDate)}',
                         maxLines: 1, overflow: TextOverflow.ellipsis),
-                    trailing: Text(_statusLabel(a.tripStatus)),
+                    trailing: Text(_statusLabel(a.tripStatus, loc)),
                   )),
           ],
         ),

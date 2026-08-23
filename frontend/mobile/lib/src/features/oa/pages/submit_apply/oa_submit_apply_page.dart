@@ -6,6 +6,7 @@ import 'package:flutter_app/generated/l10n.dart';
 import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/workflow_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 提交工作流申请页。
 ///
@@ -353,7 +354,7 @@ class _OaSubmitApplyPageState extends State<OaSubmitApplyPage> {
               ),
               child: Text(d == null
                   ? '请选择日期'
-                  : '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}'),
+                  : DateTimeUtils.formatDateDt(d)),
             ),
           ),
         );

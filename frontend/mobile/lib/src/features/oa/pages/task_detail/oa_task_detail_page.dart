@@ -6,6 +6,7 @@ import 'package:flutter_app/generated/l10n.dart';
 import 'package:flutter_app/src/features/oa/services/workflow_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 任务详情页。
 ///
@@ -179,24 +180,6 @@ class _OaTaskDetailPageState extends State<OaTaskDetailPage> {
   }
 }
 
-/// 审批历史动作 → 展示文案。
-String logActionLabel(oaApi.OaServiceV1WorkflowLog$LogAction? action) {
-  switch (action) {
-    case oaApi.OaServiceV1WorkflowLog$LogAction.submit:
-      return '已提交';
-    case oaApi.OaServiceV1WorkflowLog$LogAction.approve:
-      return '已审批通过';
-    case oaApi.OaServiceV1WorkflowLog$LogAction.reject:
-      return '已审批驳回';
-    case oaApi.OaServiceV1WorkflowLog$LogAction.forward:
-      return '已转办';
-    case oaApi.OaServiceV1WorkflowLog$LogAction.withdraw:
-      return '已撤回';
-    default:
-      return '-';
-  }
-}
-
 /// 详情内容渲染：任务信息（节点/状态）、申请表单数据（只读 JSON 文本）、审批历史。
 ///
 /// 表单数据与历史轨迹均为只读展示，引擎不解释表单字段语义。
@@ -208,6 +191,21 @@ class _DetailContent extends StatelessWidget {
   const _DetailContent(
       {required this.detail, required this.theme, required this.loc});
 
+  String _taskStatusLabel(oaApi.OaServiceV1WorkflowTask$TaskStatus? s) {
+    switch (s) {
+      case oaApi.OaServiceV1WorkflowTask$TaskStatus.approved:
+        return loc.oaTaskStatusApproved;
+      case oaApi.OaServiceV1WorkflowTask$TaskStatus.cancelled:
+        return loc.oaTaskStatusCancelled;
+      case oaApi.OaServiceV1WorkflowTask$TaskStatus.pending:
+        return loc.oaTaskStatusPending;
+      case oaApi.OaServiceV1WorkflowTask$TaskStatus.rejected:
+        return loc.oaTaskStatusRejected;
+      default:
+        return '-';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final logs = detail.logs ?? <oaApi.OaServiceV1WorkflowLog>[];
@@ -217,7 +215,7 @@ class _DetailContent extends StatelessWidget {
         Text(loc.oaTaskDetailSummaryTitle,
             style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
-        Text('节点: ${task?.nodeIndex ?? '-'}    任务状态: ${task?.taskStatus ?? '-'}',
+        Text('节点: ${task?.nodeIndex ?? '-'}    任务状态: ${_taskStatusLabel(task?.taskStatus)}',
             style: theme.textTheme.bodyMedium),
         const SizedBox(height: 16),
         Text(loc.oaTaskDetailFormDataTitle,
@@ -233,7 +231,7 @@ class _DetailContent extends StatelessWidget {
               style: TextStyle(
                   color: theme.colorScheme.onSurface.withAlpha(120)))
         else
-          ...logs.map((e) => _HistoryRow(entry: e, theme: theme)),
+          ...logs.map((e) => _HistoryRow(entry: e, theme: theme, loc: loc)),
       ],
     );
   }
@@ -242,16 +240,35 @@ class _DetailContent extends StatelessWidget {
 class _HistoryRow extends StatelessWidget {
   final oaApi.OaServiceV1WorkflowLog entry;
   final ThemeData theme;
+  final S loc;
 
-  const _HistoryRow({required this.entry, required this.theme});
+  const _HistoryRow(
+      {required this.entry, required this.theme, required this.loc});
+
+  String _logActionLabel(oaApi.OaServiceV1WorkflowLog$LogAction? action) {
+    switch (action) {
+      case oaApi.OaServiceV1WorkflowLog$LogAction.submit:
+        return loc.oaLogActionSubmit;
+      case oaApi.OaServiceV1WorkflowLog$LogAction.approve:
+        return loc.oaLogActionApprove;
+      case oaApi.OaServiceV1WorkflowLog$LogAction.reject:
+        return loc.oaLogActionReject;
+      case oaApi.OaServiceV1WorkflowLog$LogAction.forward:
+        return loc.oaLogActionForward;
+      case oaApi.OaServiceV1WorkflowLog$LogAction.withdraw:
+        return loc.oaLogActionWithdraw;
+      default:
+        return '-';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final ts = entry.createdAt ?? '-';
+    final ts = DateTimeUtils.formatDateTime(entry.createdAt);
     return Card(
       child: ListTile(
         dense: true,
-        title: Text(logActionLabel(entry.logAction),
+        title: Text(_logActionLabel(entry.logAction),
             style: theme.textTheme.bodyMedium),
         subtitle: Text(
             '${ts}\n${entry.comment ?? '-'}',

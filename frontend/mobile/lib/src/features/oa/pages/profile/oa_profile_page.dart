@@ -5,6 +5,7 @@ import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/user_profile_service.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 个人信息页（全屏，[AppBackButton] 返回）。
 ///
@@ -103,8 +104,10 @@ class _OaProfilePageState extends State<OaProfilePage> {
               (_server!.positionNames ?? const []).join(' / ')),
           _readOnlyField(theme, loc.profileRoles,
               (_server!.roleNames ?? const []).join(' / ')),
-          _readOnlyField(theme, loc.profileCreatedAt, _server!.createdAt),
-          _readOnlyField(theme, loc.profileLastLogin, _server!.lastLoginAt),
+          _readOnlyField(theme, loc.profileCreatedAt,
+              DateTimeUtils.formatDateTime(_server!.createdAt)),
+          _readOnlyField(theme, loc.profileLastLogin,
+              DateTimeUtils.formatDateTime(_server!.lastLoginAt)),
           const SizedBox(height: 16),
           _sectionTitle(theme, loc.profileEditableInfo),
           TextField(

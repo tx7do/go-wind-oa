@@ -4,6 +4,8 @@ import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/leave_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:flutter_app/generated/l10n.dart';
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 请假申请页。
 ///
@@ -113,22 +115,26 @@ class _OaLeavePageState extends State<OaLeavePage> {
     }
   }
 
-  static String _statusLabel(oaApi.OaServiceV1LeaveApplication$LeaveStatus? s) {
+  static String _statusLabel(
+      oaApi.OaServiceV1LeaveApplication$LeaveStatus? s, S loc) {
     switch (s) {
       case oaApi.OaServiceV1LeaveApplication$LeaveStatus.approved:
-        return '已通过';
+        return loc.oaInstanceStatusApproved;
+      case oaApi.OaServiceV1LeaveApplication$LeaveStatus.pending:
+        return loc.oaInstanceStatusPending;
       case oaApi.OaServiceV1LeaveApplication$LeaveStatus.rejected:
-        return '已驳回';
+        return loc.oaInstanceStatusRejected;
       case oaApi.OaServiceV1LeaveApplication$LeaveStatus.withdrawn:
-        return '已撤回';
+        return loc.oaInstanceStatusWithdrawn;
       default:
-        return '审批中';
+        return '-';
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -161,13 +167,13 @@ class _OaLeavePageState extends State<OaLeavePage> {
                         onPressed: () => _pickDate(isStart: true),
                         child: Text(_startDate == null
                             ? '开始日期'
-                            : _startDate!.toString().split(' ').first),
+                            : DateTimeUtils.formatDateDt(_startDate)),
                       ),
                       const SizedBox(height: 6),
                       SegmentedButton<oaApi.OaServiceV1HalfOfDay>(
-                        segments: const [
-                          ButtonSegment(value: oaApi.OaServiceV1HalfOfDay.am, label: Text('上午起')),
-                          ButtonSegment(value: oaApi.OaServiceV1HalfOfDay.pm, label: Text('下午起')),
+                        segments: [
+                          ButtonSegment(value: oaApi.OaServiceV1HalfOfDay.am, label: Text('${loc.oaHalfOfDayAm}起')),
+                          ButtonSegment(value: oaApi.OaServiceV1HalfOfDay.pm, label: Text('${loc.oaHalfOfDayPm}起')),
                         ],
                         selected: {_startHalf},
                         onSelectionChanged: (v) =>
@@ -185,13 +191,13 @@ class _OaLeavePageState extends State<OaLeavePage> {
                         onPressed: () => _pickDate(isStart: false),
                         child: Text(_endDate == null
                             ? '结束日期'
-                            : _endDate!.toString().split(' ').first),
+                            : DateTimeUtils.formatDateDt(_endDate)),
                       ),
                       const SizedBox(height: 6),
                       SegmentedButton<oaApi.OaServiceV1HalfOfDay>(
-                        segments: const [
-                          ButtonSegment(value: oaApi.OaServiceV1HalfOfDay.am, label: Text('上午止')),
-                          ButtonSegment(value: oaApi.OaServiceV1HalfOfDay.pm, label: Text('下午止')),
+                        segments: [
+                          ButtonSegment(value: oaApi.OaServiceV1HalfOfDay.am, label: Text('${loc.oaHalfOfDayAm}止')),
+                          ButtonSegment(value: oaApi.OaServiceV1HalfOfDay.pm, label: Text('${loc.oaHalfOfDayPm}止')),
                         ],
                         selected: {_endHalf},
                         onSelectionChanged: (v) =>
@@ -250,10 +256,10 @@ class _OaLeavePageState extends State<OaLeavePage> {
               ..._applications.map((a) => ListTile(
                     dense: true,
                     title: Text(
-                        '${a.leaveTypeName ?? ''} ${(a.startDate ?? '').split('T').first} ~ ${(a.endDate ?? '').split('T').first}（${_fmtDays(a.days)} 天）'),
+                        '${a.leaveTypeName ?? ''} ${DateTimeUtils.formatDate(a.startDate)} ~ ${DateTimeUtils.formatDate(a.endDate)}（${_fmtDays(a.days)} 天）'),
                     subtitle: Text(a.reason ?? '',
                         maxLines: 1, overflow: TextOverflow.ellipsis),
-                    trailing: Text(_statusLabel(a.leaveStatus)),
+                    trailing: Text(_statusLabel(a.leaveStatus, loc)),
                   )),
           ],
         ),

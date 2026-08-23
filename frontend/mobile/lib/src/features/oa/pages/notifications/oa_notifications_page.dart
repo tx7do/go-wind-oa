@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/generated/l10n.dart';
 import 'package:flutter_app/src/features/oa/services/notification_service.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 站内信收件箱页。
 ///
@@ -78,7 +79,7 @@ class _OaNotificationsPageState extends State<OaNotificationsPage> {
             title: Text(row.title ?? '',
                 maxLines: 1, overflow: TextOverflow.ellipsis),
             subtitle: Text(
-              '${row.senderName ?? ''} · ${row.createdAt ?? ''}',
+              '${row.senderName ?? ''} · ${DateTimeUtils.formatDateTime(row.createdAt)}',
               style: const TextStyle(fontSize: 12),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

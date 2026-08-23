@@ -120,7 +120,6 @@ dependencies:
 
   flutter_screenutil: ^5.9.3
   flutter_easyloading: ^3.0.5
-  jiffy: ^6.4.5
   flutter_native_splash: ^2.4.6
 
   retrofit: ^4.9.2

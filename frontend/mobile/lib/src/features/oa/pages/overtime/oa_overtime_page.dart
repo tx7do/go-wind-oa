@@ -4,6 +4,8 @@ import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/overtime_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:flutter_app/generated/l10n.dart';
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 加班申请页。
 ///
@@ -98,22 +100,25 @@ class _OaOvertimePageState extends State<OaOvertimePage> {
   }
 
   static String _statusLabel(
-      oaApi.OaServiceV1OvertimeApplication$OvertimeStatus? s) {
+      oaApi.OaServiceV1OvertimeApplication$OvertimeStatus? s, S loc) {
     switch (s) {
       case oaApi.OaServiceV1OvertimeApplication$OvertimeStatus.approved:
-        return '已通过';
+        return loc.oaInstanceStatusApproved;
+      case oaApi.OaServiceV1OvertimeApplication$OvertimeStatus.pending:
+        return loc.oaInstanceStatusPending;
       case oaApi.OaServiceV1OvertimeApplication$OvertimeStatus.rejected:
-        return '已驳回';
+        return loc.oaInstanceStatusRejected;
       case oaApi.OaServiceV1OvertimeApplication$OvertimeStatus.withdrawn:
-        return '已撤回';
+        return loc.oaInstanceStatusWithdrawn;
       default:
-        return '审批中';
+        return '-';
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -141,7 +146,7 @@ class _OaOvertimePageState extends State<OaOvertimePage> {
                     onPressed: () => _pickTime(isStart: true),
                     child: Text(_startTime == null
                         ? '开始时间'
-                        : _startTime!.toString().split(' ').first),
+                        : DateTimeUtils.formatDateTimeDt(_startTime)),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -150,7 +155,7 @@ class _OaOvertimePageState extends State<OaOvertimePage> {
                     onPressed: () => _pickTime(isStart: false),
                     child: Text(_endTime == null
                         ? '结束时间'
-                        : _endTime!.toString().split(' ').first),
+                        : DateTimeUtils.formatDateTimeDt(_endTime)),
                   ),
                 ),
               ],
@@ -160,13 +165,13 @@ class _OaOvertimePageState extends State<OaOvertimePage> {
               initialValue: _compensation,
               decoration: const InputDecoration(
                   labelText: '补偿方式', border: OutlineInputBorder()),
-              items: const [
+              items: [
                 DropdownMenuItem(
                     value: oaApi.OaServiceV1OvertimeApplication$CompensationType.compLeave,
-                    child: Text('调休')),
+                    child: Text(loc.oaCompensationTypeCompLeave)),
                 DropdownMenuItem(
                     value: oaApi.OaServiceV1OvertimeApplication$CompensationType.overtimePay,
-                    child: Text('加班费')),
+                    child: Text(loc.oaCompensationTypeOvertimePay)),
               ],
               onChanged: (v) => setState(() => _compensation = v ?? _compensation),
               validator: (v) => v == null ? 'required' : null,
@@ -190,9 +195,9 @@ class _OaOvertimePageState extends State<OaOvertimePage> {
                     dense: true,
                     title: Text(a.reason ?? ''),
                     subtitle: Text(
-                        '${(a.startTime ?? '').split('T').first} ~ ${(a.endTime ?? '').split('T').first}',
+                        '${DateTimeUtils.formatDateTime(a.startTime)} ~ ${DateTimeUtils.formatDateTime(a.endTime)}',
                         maxLines: 1, overflow: TextOverflow.ellipsis),
-                    trailing: Text(_statusLabel(a.overtimeStatus)),
+                    trailing: Text(_statusLabel(a.overtimeStatus, loc)),
                   )),
           ],
         ),

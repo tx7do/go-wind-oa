@@ -4,6 +4,7 @@ import 'package:flutter_app/generated/l10n.dart';
 import 'package:flutter_app/src/features/oa/services/attendance_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 考勤打卡页。
 ///
@@ -76,25 +77,28 @@ class _OaAttendancePageState extends State<OaAttendancePage> {
       return (loc.errorOccurred, scheme.error);
     }
     if (record.checkOutAt != null) {
-      return ('下班签退成功，当日结算：${dayResultLabel(record.dayResult)}', scheme.primary);
+      return ('下班签退成功，当日结算：${dayResultLabel(record.dayResult, loc)}', scheme.primary);
     }
-    return ('上班签到成功 ${record.checkInAt ?? ''}', scheme.primary);
+    return ('上班签到成功 ${DateTimeUtils.formatDateTime(record.checkInAt)}', scheme.primary);
   }
 
-  static String dayResultLabel(oaApi.OaServiceV1AttendanceRecord$DayResult? r) {
+  static String dayResultLabel(
+      oaApi.OaServiceV1AttendanceRecord$DayResult? r, S loc) {
     switch (r) {
       case oaApi.OaServiceV1AttendanceRecord$DayResult.normal:
-        return '正常';
+        return loc.oaAttendanceDayResultNormal;
       case oaApi.OaServiceV1AttendanceRecord$DayResult.late_:
-        return '迟到';
+        return loc.oaAttendanceDayResultLate;
       case oaApi.OaServiceV1AttendanceRecord$DayResult.earlyLeave:
-        return '早退';
+        return loc.oaAttendanceDayResultEarlyLeave;
       case oaApi.OaServiceV1AttendanceRecord$DayResult.absent:
-        return '旷工';
+        return loc.oaAttendanceDayResultAbsent;
       case oaApi.OaServiceV1AttendanceRecord$DayResult.onLeave:
-        return '请假';
+        return loc.oaAttendanceDayResultOnLeave;
+      case oaApi.OaServiceV1AttendanceRecord$DayResult.pending:
+        return loc.oaAttendanceDayResultPending;
       default:
-        return '待结算';
+        return '-';
     }
   }
 
@@ -167,16 +171,15 @@ class _OaAttendancePageState extends State<OaAttendancePage> {
                       separatorBuilder: (_, __) => const Divider(height: 1),
                       itemBuilder: (context, i) {
                         final r = _records[i];
-                        final date = (r.workDate ?? '').split('T').first;
                         return ListTile(
                           dense: true,
-                          title: Text(date),
+                          title: Text(DateTimeUtils.formatDate(r.workDate)),
                           subtitle: Text(
-                            '签到 ${(r.checkInAt ?? '-').split('T').last.split('.').first}    '
-                            '签退 ${(r.checkOutAt ?? '-').split('T').last.split('.').first}',
+                            '签到 ${DateTimeUtils.formatDateTime(r.checkInAt)}    '
+                            '签退 ${DateTimeUtils.formatDateTime(r.checkOutAt)}',
                             style: const TextStyle(fontSize: 12),
                           ),
-                          trailing: Text(dayResultLabel(r.dayResult)),
+                          trailing: Text(dayResultLabel(r.dayResult, loc)),
                         );
                       },
                     ),

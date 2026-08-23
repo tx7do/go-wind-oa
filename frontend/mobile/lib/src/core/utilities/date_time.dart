@@ -1,7 +1,4 @@
-import 'package:jiffy/jiffy.dart';
-// import 'package:ntp/ntp.dart';
-
-// import 'package:flutter_app/src/core/constants/index.dart';
+import 'package:intl/intl.dart';
 
 /// 日期时间工具集
 class DateTimeUtils {
@@ -12,9 +9,6 @@ class DateTimeUtils {
   static init() async {
     // NTP对时
     // DateTimeUtil.refreshNTPOffset();
-
-    // 设置日期的本地化
-    // await Jiffy.setLocale(LocalStorage.currentLanguage);
   }
 
   /// 刷新NTF时间偏移量
@@ -47,35 +41,53 @@ class DateTimeUtils {
     return utc() ~/ 1000;
   }
 
-  static String formatLastTime(DateTime dateTime) {
-    int diff = Jiffy.now().diff(
-      Jiffy.parseFromDateTime(dateTime),
-      unit: Unit.day,
-    ) as int;
-    if (diff > 6) {
-      // 2022-01-22
-      return Jiffy.parseFromDateTime(dateTime).format(pattern: 'y-MM-dd');
-    } else if (diff > 2) {
-      // 星期二 09:18
-      return Jiffy.parseFromDateTime(dateTime).format(pattern: 'EEEE HH:mm');
-    } else {
-      return Jiffy.parseFromDateTime(dateTime).startOf(Unit.minute).fromNow();
+  /// 将服务端返回的日期时间字符串格式化为当前 locale 下的展示文案。
+  ///
+  /// 后端日期字段统一以 RFC3339（如 `2026-08-23T15:30:00Z`）下发，此处由
+  /// [DateTime.parse] 解析后用 [DateFormat] 按当前 locale 渲染，避免直接
+  /// `.split('T')` / `.toString()` 漏出原始格式或英文月份。locale 由
+  /// `flutter_intl` 在 `S.load` 中通过 `Intl.defaultLocale` 设定，`DateFormat`
+  /// 默认构造即沿用该 locale，无需显式传参。
+  ///
+  /// 解析失败或入参为空时返回 `-`，绝不向上抛。
+  static String formatDateTime(String? raw) {
+    if (raw == null || raw.isEmpty) return '-';
+    try {
+      final dt = DateTime.parse(raw);
+      return DateFormat.yMd().add_Hm().format(dt.toLocal());
+    } catch (_) {
+      return '-';
     }
   }
 
-  static String formatCustomDateHeader(DateTime dt) {
-    int diff = Jiffy.now().diff(
-      Jiffy.parseFromDateTime(dt),
-      unit: Unit.day,
-    ) as int;
-    if (diff > 6) {
-      // 2022-01-22 11:58
-      return Jiffy.parseFromDateTime(dt).format(pattern: 'y-MM-dd HH:mm');
-    } else if (diff > 2) {
-      // 星期二 09:18
-      return Jiffy.parseFromDateTime(dt).format(pattern: 'EEEE HH:mm');
-    } else {
-      return Jiffy.parseFromDateTime(dt).startOf(Unit.minute).fromNow();
+  /// [DateTime] 入参的重载，用于本地产出的日期（如 [showDatePicker] 回填值）。
+  static String formatDateTimeDt(DateTime? dt) {
+    if (dt == null) return '-';
+    try {
+      return DateFormat.yMd().add_Hm().format(dt);
+    } catch (_) {
+      return '-';
+    }
+  }
+
+  /// 仅日期（无时间）的 locale 化展示，用于日期范围、请假起止等不含时分秒的字段。
+  static String formatDate(String? raw) {
+    if (raw == null || raw.isEmpty) return '-';
+    try {
+      final dt = DateTime.parse(raw);
+      return DateFormat.yMd().format(dt.toLocal());
+    } catch (_) {
+      return '-';
+    }
+  }
+
+  /// [DateTime] 入参的重载，用于本地产出的日期（如 [showDatePicker] 回填值）。
+  static String formatDateDt(DateTime? dt) {
+    if (dt == null) return '-';
+    try {
+      return DateFormat.yMd().format(dt);
+    } catch (_) {
+      return '-';
     }
   }
 }

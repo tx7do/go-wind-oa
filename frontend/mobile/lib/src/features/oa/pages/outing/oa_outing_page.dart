@@ -4,6 +4,8 @@ import 'package:flutter_app/src/core/widgets/app_back_button.dart';
 import 'package:flutter_app/src/features/oa/services/outing_service.dart';
 import 'package:flutter_app/src/core/transport/http/status.dart';
 import 'package:flutter_app/generated/api/app/service/v1/index.dart' as oaApi;
+import 'package:flutter_app/generated/l10n.dart';
+import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 外出申请页。
 ///
@@ -99,22 +101,25 @@ class _OaOutingPageState extends State<OaOutingPage> {
   }
 
   static String _statusLabel(
-      oaApi.OaServiceV1OutingApplication$OutingStatus? s) {
+      oaApi.OaServiceV1OutingApplication$OutingStatus? s, S loc) {
     switch (s) {
       case oaApi.OaServiceV1OutingApplication$OutingStatus.approved:
-        return '已通过';
+        return loc.oaInstanceStatusApproved;
+      case oaApi.OaServiceV1OutingApplication$OutingStatus.pending:
+        return loc.oaInstanceStatusPending;
       case oaApi.OaServiceV1OutingApplication$OutingStatus.rejected:
-        return '已驳回';
+        return loc.oaInstanceStatusRejected;
       case oaApi.OaServiceV1OutingApplication$OutingStatus.withdrawn:
-        return '已撤回';
+        return loc.oaInstanceStatusWithdrawn;
       default:
-        return '审批中';
+        return '-';
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -150,7 +155,7 @@ class _OaOutingPageState extends State<OaOutingPage> {
                     onPressed: () => _pickTime(isStart: true),
                     child: Text(_startTime == null
                         ? '开始时间'
-                        : _startTime!.toString().split(' ').first),
+                        : DateTimeUtils.formatDateTimeDt(_startTime)),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -159,7 +164,7 @@ class _OaOutingPageState extends State<OaOutingPage> {
                     onPressed: () => _pickTime(isStart: false),
                     child: Text(_endTime == null
                         ? '结束时间'
-                        : _endTime!.toString().split(' ').first),
+                        : DateTimeUtils.formatDateTimeDt(_endTime)),
                   ),
                 ),
               ],
@@ -183,9 +188,9 @@ class _OaOutingPageState extends State<OaOutingPage> {
                     dense: true,
                     title: Text(a.destination ?? ''),
                     subtitle: Text(
-                        '${(a.startTime ?? '').split('T').first} ~ ${(a.endTime ?? '').split('T').first}',
+                        '${DateTimeUtils.formatDateTime(a.startTime)} ~ ${DateTimeUtils.formatDateTime(a.endTime)}',
                         maxLines: 1, overflow: TextOverflow.ellipsis),
-                    trailing: Text(_statusLabel(a.outingStatus)),
+                    trailing: Text(_statusLabel(a.outingStatus, loc)),
                   )),
           ],
         ),
