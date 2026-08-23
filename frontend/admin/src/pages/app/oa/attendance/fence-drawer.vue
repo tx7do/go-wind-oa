@@ -2,20 +2,14 @@
   <ProModal
     v-model:visible="visible"
     title="新建围栏"
-    :config="{ component: 'drawer', drawer: { size: DRAWER_WIDTH, closeOnClickModal: false } }"
+    :config="{ component: 'drawer', drawer: { size: WIDE_DRAWER_WIDTH, closeOnClickModal: false } }"
   >
     <ElForm label-width="90px">
       <ElFormItem label="名称">
         <ElInput v-model="form.name" />
       </ElFormItem>
-      <ElFormItem label="纬度">
-        <ElInputNumber v-model="form.latitude" :precision="6" :step="0.000001" :controls="false" style="width: 100%" />
-      </ElFormItem>
-      <ElFormItem label="经度">
-        <ElInputNumber v-model="form.longitude" :precision="6" :step="0.000001" :controls="false" style="width: 100%" />
-      </ElFormItem>
-      <ElFormItem label="半径(米)">
-        <ElInputNumber v-model="form.radiusMeters" :min="1" :precision="0" :step="1" :controls="false" style="width: 100%" />
+      <ElFormItem label="位置">
+        <AmapCirclePicker v-model="geoValue" />
       </ElFormItem>
     </ElForm>
     <template #footer>
@@ -28,17 +22,39 @@
 </template>
 
 <script lang="ts" setup>
-import { ElButton, ElForm, ElFormItem, ElInput, ElInputNumber, ElMessage } from "element-plus";
-import { reactive, ref } from "vue";
+import { ElButton, ElForm, ElFormItem, ElInput, ElMessage } from "element-plus";
+import { reactive, ref, watch } from "vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
+import AmapCirclePicker from "@/components/AmapCirclePicker/index.vue";
 import { useUpsertGeofence } from "@/api/composables";
-import { DRAWER_WIDTH } from "@/constants";
+
+// 围栏抽屉含地图，需比通用抽屉更宽；不改全局 DRAWER_WIDTH 以免影响其他抽屉。
+const WIDE_DRAWER_WIDTH = "720px";
 
 const emit = defineEmits(["success"]);
 
 const visible = ref(false);
 const saving = ref(false);
 const form = reactive({ name: "", latitude: 0, longitude: 0, radiusMeters: 100 });
+
+// 地图组件的双向绑定值。center 为 [经度, 纬度]，与表单的 longitude/latitude 对应。
+const geoValue = ref<{ center: [number, number] | null; radius: number }>({
+  center: null,
+  radius: 100,
+});
+
+// 地图圈选 → 回填表单字段。
+watch(
+  geoValue,
+  (v) => {
+    if (v.center) {
+      form.longitude = v.center[0];
+      form.latitude = v.center[1];
+    }
+    form.radiusMeters = v.radius;
+  },
+  { deep: true }
+);
 
 const upsertMutation = useUpsertGeofence({
   onSuccess: () => {
@@ -58,6 +74,14 @@ function handleClose() {
 }
 
 function save() {
+  if (!form.name) {
+    ElMessage.warning("请填写围栏名称");
+    return;
+  }
+  if (!form.latitude || !form.longitude) {
+    ElMessage.warning("请在地图上圈选围栏位置");
+    return;
+  }
   saving.value = true;
   upsertMutation.mutate(
     { name: form.name, latitude: form.latitude, longitude: form.longitude, radiusMeters: form.radiusMeters },

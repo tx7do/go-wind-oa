@@ -11,6 +11,8 @@ interface ImportMetaEnv {
   readonly VITE_APP_TITLE?: string;
   readonly VITE_APP_TENANT_ENABLED?: string;
   readonly VITE_MOCK_DEV_SERVER: boolean;
+  readonly VITE_AMAP_KEY: string;
+  readonly VITE_AMAP_SECURITY_CODE: string;
 }
 
 interface ImportMeta {

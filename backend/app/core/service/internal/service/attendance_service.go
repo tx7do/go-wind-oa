@@ -393,12 +393,14 @@ func (s *AttendanceService) validateLocation(ctx context.Context, tid uint32, la
 		if lat == 0 && lon == 0 {
 			return oaV1.ErrorForbidden("定位不可用，无法判定打卡范围")
 		}
+		// 打卡 GPS 为 WGS-84，围栏按 GCJ-02 存储；统一到 GCJ-02 再比对。
+		gcjLat, gcjLon := wgs84ToGcj02(lat, lon)
 		inside := false
 		for _, f := range geofences {
 			if f.RadiusMeters <= 0 {
 				continue
 			}
-			if haversineMeters(lat, lon, f.Latitude, f.Longitude) <= f.RadiusMeters {
+			if haversineMeters(gcjLat, gcjLon, f.Latitude, f.Longitude) <= f.RadiusMeters {
 				inside = true
 				break
 			}
