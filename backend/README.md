@@ -44,7 +44,7 @@
 | [Etcd](https://etcd.io/) | 服务注册与发现 | 2379 |
 | [Jaeger](https://www.jaegertracing.io/) | 分布式链路追踪 | 14268 / 16686 |
 
-> 上述中间件可通过仓库根目录的 `docker-compose.yaml` 一键启动，无需逐一手动安装。
+> 上述中间件可通过 `backend/` 下的 `docker-compose.libs.yaml` 一键启动（全量编排见同目录 `docker-compose.yaml`，另含三个应用服务），无需逐一手动安装。
 
 ## 内置API文档
 

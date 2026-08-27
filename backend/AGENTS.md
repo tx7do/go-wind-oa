@@ -4,7 +4,7 @@
 
 ## 项目概览
 
-基于 [go-kratos v2](https://github.com/go-kratos/kratos) 微服务框架的多租户 Headless 内容中台，采用 **Protobuf-first（契约驱动）** 工作流。
+基于 [go-kratos v2](https://github.com/go-kratos/kratos) 微服务框架的多租户协同办公系统（OA），采用 **Protobuf-first（契约驱动）** 工作流。
 
 **核心技术栈**：
 - **框架**: go-kratos v2.9.2（HTTP + gRPC + SSE）
@@ -51,7 +51,7 @@ core-service (gRPC，真正干活)
 backend/
 ├── api/                          # 接口契约层（proto 源 + 生成代码，无业务逻辑）
 │   ├── protos/                   # ★ proto 源文件（人工维护，128 个）
-│   │   └── <domain>/service/v1/  # 按领域组织：admin/app/identity/permission/content/audit/...
+│   │   └── <domain>/service/v1/  # 按领域组织：admin/app（HTTP wrapper）+ oa/identity/authentication/permission/audit/dict/...
 │   └── gen/go/                   # ← protoc 生成（禁止手改）
 ├── app/                          # 应用实现层（3 个独立微服务）
 │   └── <admin|app|core>/service/
@@ -96,7 +96,7 @@ api/
 
 **proto 命名约定**：
 - BFF 域（admin/app）的文件以 `i_` 前缀（如 `i_user.proto`），定义对外 REST 接口
-- 核心域（identity/permission/content 等）用 `{entity}.proto`，定义 gRPC 接口与实体 message
+- 核心域（oa/identity/permission 等）用 `{entity}.proto`，定义 gRPC 接口与实体 message
 - 包名 `{domain}.service.v1`（如 `identity.service.v1`）
 - **BFF proto 复用核心域 message**：admin 的 `i_user.proto` 通过 `import "identity/service/v1/user.proto"` 复用，不重复定义实体
 
@@ -475,9 +475,8 @@ func NewRestMiddleware(...) []middleware.Middleware {
 
 ## 国际化（i18n）
 
-后端 i18n 是**数据驱动**（翻译表实体 + 机器翻译服务），**不是文案 i18n**：
-- 内容多语言通过独立翻译表实体（`category_translation`、`page_translation` 等）+ `language` 实体管理
-- 机器翻译通过 `translator` 服务（Google Translate）
+后端 i18n 是**数据驱动**（翻译表实体），**不是文案 i18n**：
+- 字典多语言通过 `dict_entry_i18n` 翻译表实体 + `language` 实体管理
 - 错误消息文案为硬编码（中/英混合），**无** response message 语言切换机制
 
 ## 构建与开发命令
