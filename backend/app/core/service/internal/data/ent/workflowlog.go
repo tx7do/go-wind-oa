@@ -33,8 +33,8 @@ type WorkflowLog struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 节点索引
-	NodeIndex *int `json:"node_index,omitempty"`
+	// 图节点ID
+	NodeID *string `json:"node_id,omitempty"`
 	// 日志动作
 	LogAction *workflowlog.LogAction `json:"log_action,omitempty"`
 	// 审批意见
@@ -71,9 +71,9 @@ func (*WorkflowLog) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case workflowlog.FieldID, workflowlog.FieldCreatedBy, workflowlog.FieldUpdatedBy, workflowlog.FieldDeletedBy, workflowlog.FieldTenantID, workflowlog.FieldNodeIndex:
+		case workflowlog.FieldID, workflowlog.FieldCreatedBy, workflowlog.FieldUpdatedBy, workflowlog.FieldDeletedBy, workflowlog.FieldTenantID:
 			values[i] = new(sql.NullInt64)
-		case workflowlog.FieldLogAction, workflowlog.FieldComment:
+		case workflowlog.FieldNodeID, workflowlog.FieldLogAction, workflowlog.FieldComment:
 			values[i] = new(sql.NullString)
 		case workflowlog.FieldCreatedAt, workflowlog.FieldUpdatedAt, workflowlog.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -149,12 +149,12 @@ func (_m *WorkflowLog) assignValues(columns []string, values []any) error {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
 			}
-		case workflowlog.FieldNodeIndex:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field node_index", values[i])
+		case workflowlog.FieldNodeID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field node_id", values[i])
 			} else if value.Valid {
-				_m.NodeIndex = new(int)
-				*_m.NodeIndex = int(value.Int64)
+				_m.NodeID = new(string)
+				*_m.NodeID = value.String
 			}
 		case workflowlog.FieldLogAction:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -253,9 +253,9 @@ func (_m *WorkflowLog) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.NodeIndex; v != nil {
-		builder.WriteString("node_index=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+	if v := _m.NodeID; v != nil {
+		builder.WriteString("node_id=")
+		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	if v := _m.LogAction; v != nil {

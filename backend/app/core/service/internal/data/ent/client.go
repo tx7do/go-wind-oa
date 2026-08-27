@@ -68,7 +68,10 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/userrole"
 	"go-wind-oa/app/core/service/internal/data/ent/wififingerprint"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowdelegation"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowinstancejoin"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowinstanceparentlink"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowlog"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowtask"
 
@@ -197,8 +200,14 @@ type Client struct {
 	WifiFingerprint *WifiFingerprintClient
 	// WorkflowDefinition is the client for interacting with the WorkflowDefinition builders.
 	WorkflowDefinition *WorkflowDefinitionClient
+	// WorkflowDelegation is the client for interacting with the WorkflowDelegation builders.
+	WorkflowDelegation *WorkflowDelegationClient
 	// WorkflowInstance is the client for interacting with the WorkflowInstance builders.
 	WorkflowInstance *WorkflowInstanceClient
+	// WorkflowInstanceJoin is the client for interacting with the WorkflowInstanceJoin builders.
+	WorkflowInstanceJoin *WorkflowInstanceJoinClient
+	// WorkflowInstanceParentLink is the client for interacting with the WorkflowInstanceParentLink builders.
+	WorkflowInstanceParentLink *WorkflowInstanceParentLinkClient
 	// WorkflowLog is the client for interacting with the WorkflowLog builders.
 	WorkflowLog *WorkflowLogClient
 	// WorkflowTask is the client for interacting with the WorkflowTask builders.
@@ -271,7 +280,10 @@ func (c *Client) init() {
 	c.UserRole = NewUserRoleClient(c.config)
 	c.WifiFingerprint = NewWifiFingerprintClient(c.config)
 	c.WorkflowDefinition = NewWorkflowDefinitionClient(c.config)
+	c.WorkflowDelegation = NewWorkflowDelegationClient(c.config)
 	c.WorkflowInstance = NewWorkflowInstanceClient(c.config)
+	c.WorkflowInstanceJoin = NewWorkflowInstanceJoinClient(c.config)
+	c.WorkflowInstanceParentLink = NewWorkflowInstanceParentLinkClient(c.config)
 	c.WorkflowLog = NewWorkflowLogClient(c.config)
 	c.WorkflowTask = NewWorkflowTaskClient(c.config)
 }
@@ -364,68 +376,71 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                      ctx,
-		config:                   cfg,
-		Api:                      NewAPIClient(cfg),
-		ApiAuditLog:              NewApiAuditLogClient(cfg),
-		AttendanceRecord:         NewAttendanceRecordClient(cfg),
-		AttendanceSetting:        NewAttendanceSettingClient(cfg),
-		BusinessTripApplication:  NewBusinessTripApplicationClient(cfg),
-		DataAccessAuditLog:       NewDataAccessAuditLogClient(cfg),
-		DictEntry:                NewDictEntryClient(cfg),
-		DictEntryI18n:            NewDictEntryI18nClient(cfg),
-		DictType:                 NewDictTypeClient(cfg),
-		ExpenseApplication:       NewExpenseApplicationClient(cfg),
-		ExpenseItem:              NewExpenseItemClient(cfg),
-		File:                     NewFileClient(cfg),
-		Geofence:                 NewGeofenceClient(cfg),
-		Holiday:                  NewHolidayClient(cfg),
-		InternalMessage:          NewInternalMessageClient(cfg),
-		InternalMessageCategory:  NewInternalMessageCategoryClient(cfg),
-		InternalMessageRecipient: NewInternalMessageRecipientClient(cfg),
-		Language:                 NewLanguageClient(cfg),
-		LeaveApplication:         NewLeaveApplicationClient(cfg),
-		LeaveBalance:             NewLeaveBalanceClient(cfg),
-		LeaveType:                NewLeaveTypeClient(cfg),
-		LoginAuditLog:            NewLoginAuditLogClient(cfg),
-		LoginPolicy:              NewLoginPolicyClient(cfg),
-		Membership:               NewMembershipClient(cfg),
-		MembershipOrgUnit:        NewMembershipOrgUnitClient(cfg),
-		MembershipPosition:       NewMembershipPositionClient(cfg),
-		MembershipRole:           NewMembershipRoleClient(cfg),
-		Menu:                     NewMenuClient(cfg),
-		OperationAuditLog:        NewOperationAuditLogClient(cfg),
-		OrgUnit:                  NewOrgUnitClient(cfg),
-		OutingApplication:        NewOutingApplicationClient(cfg),
-		OvertimeApplication:      NewOvertimeApplicationClient(cfg),
-		Permission:               NewPermissionClient(cfg),
-		PermissionApi:            NewPermissionApiClient(cfg),
-		PermissionAuditLog:       NewPermissionAuditLogClient(cfg),
-		PermissionGroup:          NewPermissionGroupClient(cfg),
-		PermissionMenu:           NewPermissionMenuClient(cfg),
-		PermissionPolicy:         NewPermissionPolicyClient(cfg),
-		Plan:                     NewPlanClient(cfg),
-		PlanModule:               NewPlanModuleClient(cfg),
-		PlanQuota:                NewPlanQuotaClient(cfg),
-		PolicyEvaluationLog:      NewPolicyEvaluationLogClient(cfg),
-		Position:                 NewPositionClient(cfg),
-		Role:                     NewRoleClient(cfg),
-		RoleMetadata:             NewRoleMetadataClient(cfg),
-		RolePermission:           NewRolePermissionClient(cfg),
-		SealApplication:          NewSealApplicationClient(cfg),
-		Task:                     NewTaskClient(cfg),
-		Tenant:                   NewTenantClient(cfg),
-		User:                     NewUserClient(cfg),
-		UserCredential:           NewUserCredentialClient(cfg),
-		UserMfaFactor:            NewUserMfaFactorClient(cfg),
-		UserOrgUnit:              NewUserOrgUnitClient(cfg),
-		UserPosition:             NewUserPositionClient(cfg),
-		UserRole:                 NewUserRoleClient(cfg),
-		WifiFingerprint:          NewWifiFingerprintClient(cfg),
-		WorkflowDefinition:       NewWorkflowDefinitionClient(cfg),
-		WorkflowInstance:         NewWorkflowInstanceClient(cfg),
-		WorkflowLog:              NewWorkflowLogClient(cfg),
-		WorkflowTask:             NewWorkflowTaskClient(cfg),
+		ctx:                        ctx,
+		config:                     cfg,
+		Api:                        NewAPIClient(cfg),
+		ApiAuditLog:                NewApiAuditLogClient(cfg),
+		AttendanceRecord:           NewAttendanceRecordClient(cfg),
+		AttendanceSetting:          NewAttendanceSettingClient(cfg),
+		BusinessTripApplication:    NewBusinessTripApplicationClient(cfg),
+		DataAccessAuditLog:         NewDataAccessAuditLogClient(cfg),
+		DictEntry:                  NewDictEntryClient(cfg),
+		DictEntryI18n:              NewDictEntryI18nClient(cfg),
+		DictType:                   NewDictTypeClient(cfg),
+		ExpenseApplication:         NewExpenseApplicationClient(cfg),
+		ExpenseItem:                NewExpenseItemClient(cfg),
+		File:                       NewFileClient(cfg),
+		Geofence:                   NewGeofenceClient(cfg),
+		Holiday:                    NewHolidayClient(cfg),
+		InternalMessage:            NewInternalMessageClient(cfg),
+		InternalMessageCategory:    NewInternalMessageCategoryClient(cfg),
+		InternalMessageRecipient:   NewInternalMessageRecipientClient(cfg),
+		Language:                   NewLanguageClient(cfg),
+		LeaveApplication:           NewLeaveApplicationClient(cfg),
+		LeaveBalance:               NewLeaveBalanceClient(cfg),
+		LeaveType:                  NewLeaveTypeClient(cfg),
+		LoginAuditLog:              NewLoginAuditLogClient(cfg),
+		LoginPolicy:                NewLoginPolicyClient(cfg),
+		Membership:                 NewMembershipClient(cfg),
+		MembershipOrgUnit:          NewMembershipOrgUnitClient(cfg),
+		MembershipPosition:         NewMembershipPositionClient(cfg),
+		MembershipRole:             NewMembershipRoleClient(cfg),
+		Menu:                       NewMenuClient(cfg),
+		OperationAuditLog:          NewOperationAuditLogClient(cfg),
+		OrgUnit:                    NewOrgUnitClient(cfg),
+		OutingApplication:          NewOutingApplicationClient(cfg),
+		OvertimeApplication:        NewOvertimeApplicationClient(cfg),
+		Permission:                 NewPermissionClient(cfg),
+		PermissionApi:              NewPermissionApiClient(cfg),
+		PermissionAuditLog:         NewPermissionAuditLogClient(cfg),
+		PermissionGroup:            NewPermissionGroupClient(cfg),
+		PermissionMenu:             NewPermissionMenuClient(cfg),
+		PermissionPolicy:           NewPermissionPolicyClient(cfg),
+		Plan:                       NewPlanClient(cfg),
+		PlanModule:                 NewPlanModuleClient(cfg),
+		PlanQuota:                  NewPlanQuotaClient(cfg),
+		PolicyEvaluationLog:        NewPolicyEvaluationLogClient(cfg),
+		Position:                   NewPositionClient(cfg),
+		Role:                       NewRoleClient(cfg),
+		RoleMetadata:               NewRoleMetadataClient(cfg),
+		RolePermission:             NewRolePermissionClient(cfg),
+		SealApplication:            NewSealApplicationClient(cfg),
+		Task:                       NewTaskClient(cfg),
+		Tenant:                     NewTenantClient(cfg),
+		User:                       NewUserClient(cfg),
+		UserCredential:             NewUserCredentialClient(cfg),
+		UserMfaFactor:              NewUserMfaFactorClient(cfg),
+		UserOrgUnit:                NewUserOrgUnitClient(cfg),
+		UserPosition:               NewUserPositionClient(cfg),
+		UserRole:                   NewUserRoleClient(cfg),
+		WifiFingerprint:            NewWifiFingerprintClient(cfg),
+		WorkflowDefinition:         NewWorkflowDefinitionClient(cfg),
+		WorkflowDelegation:         NewWorkflowDelegationClient(cfg),
+		WorkflowInstance:           NewWorkflowInstanceClient(cfg),
+		WorkflowInstanceJoin:       NewWorkflowInstanceJoinClient(cfg),
+		WorkflowInstanceParentLink: NewWorkflowInstanceParentLinkClient(cfg),
+		WorkflowLog:                NewWorkflowLogClient(cfg),
+		WorkflowTask:               NewWorkflowTaskClient(cfg),
 	}, nil
 }
 
@@ -443,68 +458,71 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                      ctx,
-		config:                   cfg,
-		Api:                      NewAPIClient(cfg),
-		ApiAuditLog:              NewApiAuditLogClient(cfg),
-		AttendanceRecord:         NewAttendanceRecordClient(cfg),
-		AttendanceSetting:        NewAttendanceSettingClient(cfg),
-		BusinessTripApplication:  NewBusinessTripApplicationClient(cfg),
-		DataAccessAuditLog:       NewDataAccessAuditLogClient(cfg),
-		DictEntry:                NewDictEntryClient(cfg),
-		DictEntryI18n:            NewDictEntryI18nClient(cfg),
-		DictType:                 NewDictTypeClient(cfg),
-		ExpenseApplication:       NewExpenseApplicationClient(cfg),
-		ExpenseItem:              NewExpenseItemClient(cfg),
-		File:                     NewFileClient(cfg),
-		Geofence:                 NewGeofenceClient(cfg),
-		Holiday:                  NewHolidayClient(cfg),
-		InternalMessage:          NewInternalMessageClient(cfg),
-		InternalMessageCategory:  NewInternalMessageCategoryClient(cfg),
-		InternalMessageRecipient: NewInternalMessageRecipientClient(cfg),
-		Language:                 NewLanguageClient(cfg),
-		LeaveApplication:         NewLeaveApplicationClient(cfg),
-		LeaveBalance:             NewLeaveBalanceClient(cfg),
-		LeaveType:                NewLeaveTypeClient(cfg),
-		LoginAuditLog:            NewLoginAuditLogClient(cfg),
-		LoginPolicy:              NewLoginPolicyClient(cfg),
-		Membership:               NewMembershipClient(cfg),
-		MembershipOrgUnit:        NewMembershipOrgUnitClient(cfg),
-		MembershipPosition:       NewMembershipPositionClient(cfg),
-		MembershipRole:           NewMembershipRoleClient(cfg),
-		Menu:                     NewMenuClient(cfg),
-		OperationAuditLog:        NewOperationAuditLogClient(cfg),
-		OrgUnit:                  NewOrgUnitClient(cfg),
-		OutingApplication:        NewOutingApplicationClient(cfg),
-		OvertimeApplication:      NewOvertimeApplicationClient(cfg),
-		Permission:               NewPermissionClient(cfg),
-		PermissionApi:            NewPermissionApiClient(cfg),
-		PermissionAuditLog:       NewPermissionAuditLogClient(cfg),
-		PermissionGroup:          NewPermissionGroupClient(cfg),
-		PermissionMenu:           NewPermissionMenuClient(cfg),
-		PermissionPolicy:         NewPermissionPolicyClient(cfg),
-		Plan:                     NewPlanClient(cfg),
-		PlanModule:               NewPlanModuleClient(cfg),
-		PlanQuota:                NewPlanQuotaClient(cfg),
-		PolicyEvaluationLog:      NewPolicyEvaluationLogClient(cfg),
-		Position:                 NewPositionClient(cfg),
-		Role:                     NewRoleClient(cfg),
-		RoleMetadata:             NewRoleMetadataClient(cfg),
-		RolePermission:           NewRolePermissionClient(cfg),
-		SealApplication:          NewSealApplicationClient(cfg),
-		Task:                     NewTaskClient(cfg),
-		Tenant:                   NewTenantClient(cfg),
-		User:                     NewUserClient(cfg),
-		UserCredential:           NewUserCredentialClient(cfg),
-		UserMfaFactor:            NewUserMfaFactorClient(cfg),
-		UserOrgUnit:              NewUserOrgUnitClient(cfg),
-		UserPosition:             NewUserPositionClient(cfg),
-		UserRole:                 NewUserRoleClient(cfg),
-		WifiFingerprint:          NewWifiFingerprintClient(cfg),
-		WorkflowDefinition:       NewWorkflowDefinitionClient(cfg),
-		WorkflowInstance:         NewWorkflowInstanceClient(cfg),
-		WorkflowLog:              NewWorkflowLogClient(cfg),
-		WorkflowTask:             NewWorkflowTaskClient(cfg),
+		ctx:                        ctx,
+		config:                     cfg,
+		Api:                        NewAPIClient(cfg),
+		ApiAuditLog:                NewApiAuditLogClient(cfg),
+		AttendanceRecord:           NewAttendanceRecordClient(cfg),
+		AttendanceSetting:          NewAttendanceSettingClient(cfg),
+		BusinessTripApplication:    NewBusinessTripApplicationClient(cfg),
+		DataAccessAuditLog:         NewDataAccessAuditLogClient(cfg),
+		DictEntry:                  NewDictEntryClient(cfg),
+		DictEntryI18n:              NewDictEntryI18nClient(cfg),
+		DictType:                   NewDictTypeClient(cfg),
+		ExpenseApplication:         NewExpenseApplicationClient(cfg),
+		ExpenseItem:                NewExpenseItemClient(cfg),
+		File:                       NewFileClient(cfg),
+		Geofence:                   NewGeofenceClient(cfg),
+		Holiday:                    NewHolidayClient(cfg),
+		InternalMessage:            NewInternalMessageClient(cfg),
+		InternalMessageCategory:    NewInternalMessageCategoryClient(cfg),
+		InternalMessageRecipient:   NewInternalMessageRecipientClient(cfg),
+		Language:                   NewLanguageClient(cfg),
+		LeaveApplication:           NewLeaveApplicationClient(cfg),
+		LeaveBalance:               NewLeaveBalanceClient(cfg),
+		LeaveType:                  NewLeaveTypeClient(cfg),
+		LoginAuditLog:              NewLoginAuditLogClient(cfg),
+		LoginPolicy:                NewLoginPolicyClient(cfg),
+		Membership:                 NewMembershipClient(cfg),
+		MembershipOrgUnit:          NewMembershipOrgUnitClient(cfg),
+		MembershipPosition:         NewMembershipPositionClient(cfg),
+		MembershipRole:             NewMembershipRoleClient(cfg),
+		Menu:                       NewMenuClient(cfg),
+		OperationAuditLog:          NewOperationAuditLogClient(cfg),
+		OrgUnit:                    NewOrgUnitClient(cfg),
+		OutingApplication:          NewOutingApplicationClient(cfg),
+		OvertimeApplication:        NewOvertimeApplicationClient(cfg),
+		Permission:                 NewPermissionClient(cfg),
+		PermissionApi:              NewPermissionApiClient(cfg),
+		PermissionAuditLog:         NewPermissionAuditLogClient(cfg),
+		PermissionGroup:            NewPermissionGroupClient(cfg),
+		PermissionMenu:             NewPermissionMenuClient(cfg),
+		PermissionPolicy:           NewPermissionPolicyClient(cfg),
+		Plan:                       NewPlanClient(cfg),
+		PlanModule:                 NewPlanModuleClient(cfg),
+		PlanQuota:                  NewPlanQuotaClient(cfg),
+		PolicyEvaluationLog:        NewPolicyEvaluationLogClient(cfg),
+		Position:                   NewPositionClient(cfg),
+		Role:                       NewRoleClient(cfg),
+		RoleMetadata:               NewRoleMetadataClient(cfg),
+		RolePermission:             NewRolePermissionClient(cfg),
+		SealApplication:            NewSealApplicationClient(cfg),
+		Task:                       NewTaskClient(cfg),
+		Tenant:                     NewTenantClient(cfg),
+		User:                       NewUserClient(cfg),
+		UserCredential:             NewUserCredentialClient(cfg),
+		UserMfaFactor:              NewUserMfaFactorClient(cfg),
+		UserOrgUnit:                NewUserOrgUnitClient(cfg),
+		UserPosition:               NewUserPositionClient(cfg),
+		UserRole:                   NewUserRoleClient(cfg),
+		WifiFingerprint:            NewWifiFingerprintClient(cfg),
+		WorkflowDefinition:         NewWorkflowDefinitionClient(cfg),
+		WorkflowDelegation:         NewWorkflowDelegationClient(cfg),
+		WorkflowInstance:           NewWorkflowInstanceClient(cfg),
+		WorkflowInstanceJoin:       NewWorkflowInstanceJoinClient(cfg),
+		WorkflowInstanceParentLink: NewWorkflowInstanceParentLinkClient(cfg),
+		WorkflowLog:                NewWorkflowLogClient(cfg),
+		WorkflowTask:               NewWorkflowTaskClient(cfg),
 	}, nil
 }
 
@@ -546,8 +564,9 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PlanQuota, c.PolicyEvaluationLog, c.Position, c.Role, c.RoleMetadata,
 		c.RolePermission, c.SealApplication, c.Task, c.Tenant, c.User,
 		c.UserCredential, c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
-		c.WifiFingerprint, c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog,
-		c.WorkflowTask,
+		c.WifiFingerprint, c.WorkflowDefinition, c.WorkflowDelegation,
+		c.WorkflowInstance, c.WorkflowInstanceJoin, c.WorkflowInstanceParentLink,
+		c.WorkflowLog, c.WorkflowTask,
 	} {
 		n.Use(hooks...)
 	}
@@ -569,8 +588,9 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PlanQuota, c.PolicyEvaluationLog, c.Position, c.Role, c.RoleMetadata,
 		c.RolePermission, c.SealApplication, c.Task, c.Tenant, c.User,
 		c.UserCredential, c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
-		c.WifiFingerprint, c.WorkflowDefinition, c.WorkflowInstance, c.WorkflowLog,
-		c.WorkflowTask,
+		c.WifiFingerprint, c.WorkflowDefinition, c.WorkflowDelegation,
+		c.WorkflowInstance, c.WorkflowInstanceJoin, c.WorkflowInstanceParentLink,
+		c.WorkflowLog, c.WorkflowTask,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -693,8 +713,14 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.WifiFingerprint.mutate(ctx, m)
 	case *WorkflowDefinitionMutation:
 		return c.WorkflowDefinition.mutate(ctx, m)
+	case *WorkflowDelegationMutation:
+		return c.WorkflowDelegation.mutate(ctx, m)
 	case *WorkflowInstanceMutation:
 		return c.WorkflowInstance.mutate(ctx, m)
+	case *WorkflowInstanceJoinMutation:
+		return c.WorkflowInstanceJoin.mutate(ctx, m)
+	case *WorkflowInstanceParentLinkMutation:
+		return c.WorkflowInstanceParentLink.mutate(ctx, m)
 	case *WorkflowLogMutation:
 		return c.WorkflowLog.mutate(ctx, m)
 	case *WorkflowTaskMutation:
@@ -8641,6 +8667,140 @@ func (c *WorkflowDefinitionClient) mutate(ctx context.Context, m *WorkflowDefini
 	}
 }
 
+// WorkflowDelegationClient is a client for the WorkflowDelegation schema.
+type WorkflowDelegationClient struct {
+	config
+}
+
+// NewWorkflowDelegationClient returns a client for the WorkflowDelegation from the given config.
+func NewWorkflowDelegationClient(c config) *WorkflowDelegationClient {
+	return &WorkflowDelegationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `workflowdelegation.Hooks(f(g(h())))`.
+func (c *WorkflowDelegationClient) Use(hooks ...Hook) {
+	c.hooks.WorkflowDelegation = append(c.hooks.WorkflowDelegation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `workflowdelegation.Intercept(f(g(h())))`.
+func (c *WorkflowDelegationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.WorkflowDelegation = append(c.inters.WorkflowDelegation, interceptors...)
+}
+
+// Create returns a builder for creating a WorkflowDelegation entity.
+func (c *WorkflowDelegationClient) Create() *WorkflowDelegationCreate {
+	mutation := newWorkflowDelegationMutation(c.config, OpCreate)
+	return &WorkflowDelegationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of WorkflowDelegation entities.
+func (c *WorkflowDelegationClient) CreateBulk(builders ...*WorkflowDelegationCreate) *WorkflowDelegationCreateBulk {
+	return &WorkflowDelegationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *WorkflowDelegationClient) MapCreateBulk(slice any, setFunc func(*WorkflowDelegationCreate, int)) *WorkflowDelegationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &WorkflowDelegationCreateBulk{err: fmt.Errorf("calling to WorkflowDelegationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*WorkflowDelegationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &WorkflowDelegationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for WorkflowDelegation.
+func (c *WorkflowDelegationClient) Update() *WorkflowDelegationUpdate {
+	mutation := newWorkflowDelegationMutation(c.config, OpUpdate)
+	return &WorkflowDelegationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WorkflowDelegationClient) UpdateOne(_m *WorkflowDelegation) *WorkflowDelegationUpdateOne {
+	mutation := newWorkflowDelegationMutation(c.config, OpUpdateOne, withWorkflowDelegation(_m))
+	return &WorkflowDelegationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WorkflowDelegationClient) UpdateOneID(id uint32) *WorkflowDelegationUpdateOne {
+	mutation := newWorkflowDelegationMutation(c.config, OpUpdateOne, withWorkflowDelegationID(id))
+	return &WorkflowDelegationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for WorkflowDelegation.
+func (c *WorkflowDelegationClient) Delete() *WorkflowDelegationDelete {
+	mutation := newWorkflowDelegationMutation(c.config, OpDelete)
+	return &WorkflowDelegationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *WorkflowDelegationClient) DeleteOne(_m *WorkflowDelegation) *WorkflowDelegationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *WorkflowDelegationClient) DeleteOneID(id uint32) *WorkflowDelegationDeleteOne {
+	builder := c.Delete().Where(workflowdelegation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WorkflowDelegationDeleteOne{builder}
+}
+
+// Query returns a query builder for WorkflowDelegation.
+func (c *WorkflowDelegationClient) Query() *WorkflowDelegationQuery {
+	return &WorkflowDelegationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeWorkflowDelegation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a WorkflowDelegation entity by its id.
+func (c *WorkflowDelegationClient) Get(ctx context.Context, id uint32) (*WorkflowDelegation, error) {
+	return c.Query().Where(workflowdelegation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WorkflowDelegationClient) GetX(ctx context.Context, id uint32) *WorkflowDelegation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *WorkflowDelegationClient) Hooks() []Hook {
+	hooks := c.hooks.WorkflowDelegation
+	return append(hooks[:len(hooks):len(hooks)], workflowdelegation.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *WorkflowDelegationClient) Interceptors() []Interceptor {
+	return c.inters.WorkflowDelegation
+}
+
+func (c *WorkflowDelegationClient) mutate(ctx context.Context, m *WorkflowDelegationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&WorkflowDelegationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&WorkflowDelegationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&WorkflowDelegationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&WorkflowDelegationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown WorkflowDelegation mutation op: %q", m.Op())
+	}
+}
+
 // WorkflowInstanceClient is a client for the WorkflowInstance schema.
 type WorkflowInstanceClient struct {
 	config
@@ -8797,6 +8957,38 @@ func (c *WorkflowInstanceClient) QueryLogs(_m *WorkflowInstance) *WorkflowLogQue
 	return query
 }
 
+// QueryInstanceJoins queries the instance_joins edge of a WorkflowInstance.
+func (c *WorkflowInstanceClient) QueryInstanceJoins(_m *WorkflowInstance) *WorkflowInstanceJoinQuery {
+	query := (&WorkflowInstanceJoinClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workflowinstance.Table, workflowinstance.FieldID, id),
+			sqlgraph.To(workflowinstancejoin.Table, workflowinstancejoin.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workflowinstance.InstanceJoinsTable, workflowinstance.InstanceJoinsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParentLinks queries the parent_links edge of a WorkflowInstance.
+func (c *WorkflowInstanceClient) QueryParentLinks(_m *WorkflowInstance) *WorkflowInstanceParentLinkQuery {
+	query := (&WorkflowInstanceParentLinkClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workflowinstance.Table, workflowinstance.FieldID, id),
+			sqlgraph.To(workflowinstanceparentlink.Table, workflowinstanceparentlink.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workflowinstance.ParentLinksTable, workflowinstance.ParentLinksColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *WorkflowInstanceClient) Hooks() []Hook {
 	hooks := c.hooks.WorkflowInstance
@@ -8820,6 +9012,306 @@ func (c *WorkflowInstanceClient) mutate(ctx context.Context, m *WorkflowInstance
 		return (&WorkflowInstanceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown WorkflowInstance mutation op: %q", m.Op())
+	}
+}
+
+// WorkflowInstanceJoinClient is a client for the WorkflowInstanceJoin schema.
+type WorkflowInstanceJoinClient struct {
+	config
+}
+
+// NewWorkflowInstanceJoinClient returns a client for the WorkflowInstanceJoin from the given config.
+func NewWorkflowInstanceJoinClient(c config) *WorkflowInstanceJoinClient {
+	return &WorkflowInstanceJoinClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `workflowinstancejoin.Hooks(f(g(h())))`.
+func (c *WorkflowInstanceJoinClient) Use(hooks ...Hook) {
+	c.hooks.WorkflowInstanceJoin = append(c.hooks.WorkflowInstanceJoin, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `workflowinstancejoin.Intercept(f(g(h())))`.
+func (c *WorkflowInstanceJoinClient) Intercept(interceptors ...Interceptor) {
+	c.inters.WorkflowInstanceJoin = append(c.inters.WorkflowInstanceJoin, interceptors...)
+}
+
+// Create returns a builder for creating a WorkflowInstanceJoin entity.
+func (c *WorkflowInstanceJoinClient) Create() *WorkflowInstanceJoinCreate {
+	mutation := newWorkflowInstanceJoinMutation(c.config, OpCreate)
+	return &WorkflowInstanceJoinCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of WorkflowInstanceJoin entities.
+func (c *WorkflowInstanceJoinClient) CreateBulk(builders ...*WorkflowInstanceJoinCreate) *WorkflowInstanceJoinCreateBulk {
+	return &WorkflowInstanceJoinCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *WorkflowInstanceJoinClient) MapCreateBulk(slice any, setFunc func(*WorkflowInstanceJoinCreate, int)) *WorkflowInstanceJoinCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &WorkflowInstanceJoinCreateBulk{err: fmt.Errorf("calling to WorkflowInstanceJoinClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*WorkflowInstanceJoinCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &WorkflowInstanceJoinCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for WorkflowInstanceJoin.
+func (c *WorkflowInstanceJoinClient) Update() *WorkflowInstanceJoinUpdate {
+	mutation := newWorkflowInstanceJoinMutation(c.config, OpUpdate)
+	return &WorkflowInstanceJoinUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WorkflowInstanceJoinClient) UpdateOne(_m *WorkflowInstanceJoin) *WorkflowInstanceJoinUpdateOne {
+	mutation := newWorkflowInstanceJoinMutation(c.config, OpUpdateOne, withWorkflowInstanceJoin(_m))
+	return &WorkflowInstanceJoinUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WorkflowInstanceJoinClient) UpdateOneID(id uint32) *WorkflowInstanceJoinUpdateOne {
+	mutation := newWorkflowInstanceJoinMutation(c.config, OpUpdateOne, withWorkflowInstanceJoinID(id))
+	return &WorkflowInstanceJoinUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for WorkflowInstanceJoin.
+func (c *WorkflowInstanceJoinClient) Delete() *WorkflowInstanceJoinDelete {
+	mutation := newWorkflowInstanceJoinMutation(c.config, OpDelete)
+	return &WorkflowInstanceJoinDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *WorkflowInstanceJoinClient) DeleteOne(_m *WorkflowInstanceJoin) *WorkflowInstanceJoinDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *WorkflowInstanceJoinClient) DeleteOneID(id uint32) *WorkflowInstanceJoinDeleteOne {
+	builder := c.Delete().Where(workflowinstancejoin.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WorkflowInstanceJoinDeleteOne{builder}
+}
+
+// Query returns a query builder for WorkflowInstanceJoin.
+func (c *WorkflowInstanceJoinClient) Query() *WorkflowInstanceJoinQuery {
+	return &WorkflowInstanceJoinQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeWorkflowInstanceJoin},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a WorkflowInstanceJoin entity by its id.
+func (c *WorkflowInstanceJoinClient) Get(ctx context.Context, id uint32) (*WorkflowInstanceJoin, error) {
+	return c.Query().Where(workflowinstancejoin.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WorkflowInstanceJoinClient) GetX(ctx context.Context, id uint32) *WorkflowInstanceJoin {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryInstance queries the instance edge of a WorkflowInstanceJoin.
+func (c *WorkflowInstanceJoinClient) QueryInstance(_m *WorkflowInstanceJoin) *WorkflowInstanceQuery {
+	query := (&WorkflowInstanceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workflowinstancejoin.Table, workflowinstancejoin.FieldID, id),
+			sqlgraph.To(workflowinstance.Table, workflowinstance.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, workflowinstancejoin.InstanceTable, workflowinstancejoin.InstanceColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *WorkflowInstanceJoinClient) Hooks() []Hook {
+	hooks := c.hooks.WorkflowInstanceJoin
+	return append(hooks[:len(hooks):len(hooks)], workflowinstancejoin.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *WorkflowInstanceJoinClient) Interceptors() []Interceptor {
+	return c.inters.WorkflowInstanceJoin
+}
+
+func (c *WorkflowInstanceJoinClient) mutate(ctx context.Context, m *WorkflowInstanceJoinMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&WorkflowInstanceJoinCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&WorkflowInstanceJoinUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&WorkflowInstanceJoinUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&WorkflowInstanceJoinDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown WorkflowInstanceJoin mutation op: %q", m.Op())
+	}
+}
+
+// WorkflowInstanceParentLinkClient is a client for the WorkflowInstanceParentLink schema.
+type WorkflowInstanceParentLinkClient struct {
+	config
+}
+
+// NewWorkflowInstanceParentLinkClient returns a client for the WorkflowInstanceParentLink from the given config.
+func NewWorkflowInstanceParentLinkClient(c config) *WorkflowInstanceParentLinkClient {
+	return &WorkflowInstanceParentLinkClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `workflowinstanceparentlink.Hooks(f(g(h())))`.
+func (c *WorkflowInstanceParentLinkClient) Use(hooks ...Hook) {
+	c.hooks.WorkflowInstanceParentLink = append(c.hooks.WorkflowInstanceParentLink, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `workflowinstanceparentlink.Intercept(f(g(h())))`.
+func (c *WorkflowInstanceParentLinkClient) Intercept(interceptors ...Interceptor) {
+	c.inters.WorkflowInstanceParentLink = append(c.inters.WorkflowInstanceParentLink, interceptors...)
+}
+
+// Create returns a builder for creating a WorkflowInstanceParentLink entity.
+func (c *WorkflowInstanceParentLinkClient) Create() *WorkflowInstanceParentLinkCreate {
+	mutation := newWorkflowInstanceParentLinkMutation(c.config, OpCreate)
+	return &WorkflowInstanceParentLinkCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of WorkflowInstanceParentLink entities.
+func (c *WorkflowInstanceParentLinkClient) CreateBulk(builders ...*WorkflowInstanceParentLinkCreate) *WorkflowInstanceParentLinkCreateBulk {
+	return &WorkflowInstanceParentLinkCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *WorkflowInstanceParentLinkClient) MapCreateBulk(slice any, setFunc func(*WorkflowInstanceParentLinkCreate, int)) *WorkflowInstanceParentLinkCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &WorkflowInstanceParentLinkCreateBulk{err: fmt.Errorf("calling to WorkflowInstanceParentLinkClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*WorkflowInstanceParentLinkCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &WorkflowInstanceParentLinkCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for WorkflowInstanceParentLink.
+func (c *WorkflowInstanceParentLinkClient) Update() *WorkflowInstanceParentLinkUpdate {
+	mutation := newWorkflowInstanceParentLinkMutation(c.config, OpUpdate)
+	return &WorkflowInstanceParentLinkUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WorkflowInstanceParentLinkClient) UpdateOne(_m *WorkflowInstanceParentLink) *WorkflowInstanceParentLinkUpdateOne {
+	mutation := newWorkflowInstanceParentLinkMutation(c.config, OpUpdateOne, withWorkflowInstanceParentLink(_m))
+	return &WorkflowInstanceParentLinkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WorkflowInstanceParentLinkClient) UpdateOneID(id uint32) *WorkflowInstanceParentLinkUpdateOne {
+	mutation := newWorkflowInstanceParentLinkMutation(c.config, OpUpdateOne, withWorkflowInstanceParentLinkID(id))
+	return &WorkflowInstanceParentLinkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for WorkflowInstanceParentLink.
+func (c *WorkflowInstanceParentLinkClient) Delete() *WorkflowInstanceParentLinkDelete {
+	mutation := newWorkflowInstanceParentLinkMutation(c.config, OpDelete)
+	return &WorkflowInstanceParentLinkDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *WorkflowInstanceParentLinkClient) DeleteOne(_m *WorkflowInstanceParentLink) *WorkflowInstanceParentLinkDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *WorkflowInstanceParentLinkClient) DeleteOneID(id uint32) *WorkflowInstanceParentLinkDeleteOne {
+	builder := c.Delete().Where(workflowinstanceparentlink.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WorkflowInstanceParentLinkDeleteOne{builder}
+}
+
+// Query returns a query builder for WorkflowInstanceParentLink.
+func (c *WorkflowInstanceParentLinkClient) Query() *WorkflowInstanceParentLinkQuery {
+	return &WorkflowInstanceParentLinkQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeWorkflowInstanceParentLink},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a WorkflowInstanceParentLink entity by its id.
+func (c *WorkflowInstanceParentLinkClient) Get(ctx context.Context, id uint32) (*WorkflowInstanceParentLink, error) {
+	return c.Query().Where(workflowinstanceparentlink.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WorkflowInstanceParentLinkClient) GetX(ctx context.Context, id uint32) *WorkflowInstanceParentLink {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryParentInstance queries the parent_instance edge of a WorkflowInstanceParentLink.
+func (c *WorkflowInstanceParentLinkClient) QueryParentInstance(_m *WorkflowInstanceParentLink) *WorkflowInstanceQuery {
+	query := (&WorkflowInstanceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workflowinstanceparentlink.Table, workflowinstanceparentlink.FieldID, id),
+			sqlgraph.To(workflowinstance.Table, workflowinstance.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, workflowinstanceparentlink.ParentInstanceTable, workflowinstanceparentlink.ParentInstanceColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *WorkflowInstanceParentLinkClient) Hooks() []Hook {
+	hooks := c.hooks.WorkflowInstanceParentLink
+	return append(hooks[:len(hooks):len(hooks)], workflowinstanceparentlink.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *WorkflowInstanceParentLinkClient) Interceptors() []Interceptor {
+	return c.inters.WorkflowInstanceParentLink
+}
+
+func (c *WorkflowInstanceParentLinkClient) mutate(ctx context.Context, m *WorkflowInstanceParentLinkMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&WorkflowInstanceParentLinkCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&WorkflowInstanceParentLinkUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&WorkflowInstanceParentLinkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&WorkflowInstanceParentLinkDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown WorkflowInstanceParentLink mutation op: %q", m.Op())
 	}
 }
 
@@ -9137,7 +9629,8 @@ type (
 		PolicyEvaluationLog, Position, Role, RoleMetadata, RolePermission,
 		SealApplication, Task, Tenant, User, UserCredential, UserMfaFactor,
 		UserOrgUnit, UserPosition, UserRole, WifiFingerprint, WorkflowDefinition,
-		WorkflowInstance, WorkflowLog, WorkflowTask []ent.Hook
+		WorkflowDelegation, WorkflowInstance, WorkflowInstanceJoin,
+		WorkflowInstanceParentLink, WorkflowLog, WorkflowTask []ent.Hook
 	}
 	inters struct {
 		Api, ApiAuditLog, AttendanceRecord, AttendanceSetting, BusinessTripApplication,
@@ -9151,6 +9644,7 @@ type (
 		PolicyEvaluationLog, Position, Role, RoleMetadata, RolePermission,
 		SealApplication, Task, Tenant, User, UserCredential, UserMfaFactor,
 		UserOrgUnit, UserPosition, UserRole, WifiFingerprint, WorkflowDefinition,
-		WorkflowInstance, WorkflowLog, WorkflowTask []ent.Interceptor
+		WorkflowDelegation, WorkflowInstance, WorkflowInstanceJoin,
+		WorkflowInstanceParentLink, WorkflowLog, WorkflowTask []ent.Interceptor
 	}
 )

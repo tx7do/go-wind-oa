@@ -5,10 +5,20 @@
     :config="{ component: 'drawer', drawer: { size: '60%', closeOnClickModal: false } }"
   >
     <div v-if="detail" class="detail-body">
+      <div class="section-title">审批进度</div>
+      <ElSteps :active="progressActive" finish-status="success" align-center>
+        <ElStep
+          v-for="(step, idx) in progressSteps"
+          :key="idx"
+          :title="step.title"
+          :description="step.description"
+        />
+      </ElSteps>
+
       <div class="section-title">任务信息</div>
       <ElDescriptions :column="2" border size="small">
         <ElDescriptionsItem label="任务ID">{{ taskId }}</ElDescriptionsItem>
-        <ElDescriptionsItem label="节点索引">{{ detail.task?.nodeIndex ?? '-' }}</ElDescriptionsItem>
+        <ElDescriptionsItem label="节点ID">{{ detail.task?.nodeId ?? "-" }}</ElDescriptionsItem>
       </ElDescriptions>
 
       <div class="section-title">申请表单数据</div>
@@ -42,6 +52,7 @@
         <ElButton type="primary" :loading="acting" @click="doAudit('APPROVE')">通过</ElButton>
         <ElButton type="danger" plain :loading="acting" @click="doAudit('REJECT')">驳回</ElButton>
         <ElButton plain :loading="acting" @click="doForward">转办</ElButton>
+        <ElButton plain :loading="acting" @click="doAddApprover">加签</ElButton>
       </div>
     </div>
   </ProModal>
@@ -56,6 +67,8 @@ import {
   ElInput,
   ElMessage,
   ElMessageBox,
+  ElStep,
+  ElSteps,
   ElTable,
   ElTableColumn,
 } from "element-plus";
@@ -90,6 +103,31 @@ const formEntries = computed<[string, string][]>(() => {
   return [];
 });
 
+// 审批进度：从审批日志构建步骤列表，当前待办节点高亮。
+const progressSteps = computed(() => {
+  const logs = detail.value?.logs ?? [];
+  const currentNode = detail.value?.task?.nodeId;
+  const steps: { title: string; description: string }[] = [];
+  for (const log of logs) {
+    const action = auditActionLabel(log.logAction);
+    steps.push({
+      title: String(log.nodeId ?? "—"),
+      description: action + " · " + fmtTime(String(log.createdAt ?? "")),
+    });
+  }
+  if (currentNode && !steps.some((s) => s.title === currentNode)) {
+    steps.push({ title: String(currentNode), description: "待审批" });
+  }
+  return steps;
+});
+
+const progressActive = computed(() => {
+  const currentNode = detail.value?.task?.nodeId;
+  if (!currentNode) return -1;
+  const idx = progressSteps.value.findIndex((s) => s.title === currentNode);
+  return idx;
+});
+
 const auditMutation = useAuditTask({
   onSuccess: () => {
     ElMessage.success("操作成功");
@@ -110,10 +148,16 @@ async function open(id: number) {
   }
 }
 
-function doAudit(action: oaservicev1_AuditAction, forwardTo?: number) {
+function doAudit(action: oaservicev1_AuditAction, forwardTo?: number, additionalApprover?: number) {
   acting.value = true;
   auditMutation.mutate(
-    { taskId: taskId.value, action, comment: comment.value, forwardTo },
+    {
+      taskId: taskId.value,
+      action,
+      comment: comment.value,
+      forwardTo,
+      additionalApprover,
+    },
     { onSettled: () => (acting.value = false) }
   );
 }
@@ -125,6 +169,18 @@ async function doForward() {
       inputErrorMessage: "请输入正整数用户ID",
     });
     doAudit("FORWARD", Number(value));
+  } catch {
+    /* 用户取消 */
+  }
+}
+
+async function doAddApprover() {
+  try {
+    const { value } = await ElMessageBox.prompt("请输入加签目标用户ID", "加签", {
+      inputPattern: /^[1-9]\d*$/,
+      inputErrorMessage: "请输入正整数用户ID",
+    });
+    doAudit("ADD_APPROVER", undefined, Number(value));
   } catch {
     /* 用户取消 */
   }

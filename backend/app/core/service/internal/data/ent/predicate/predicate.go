@@ -177,8 +177,17 @@ type WifiFingerprint func(*sql.Selector)
 // WorkflowDefinition is the predicate function for workflowdefinition builders.
 type WorkflowDefinition func(*sql.Selector)
 
+// WorkflowDelegation is the predicate function for workflowdelegation builders.
+type WorkflowDelegation func(*sql.Selector)
+
 // WorkflowInstance is the predicate function for workflowinstance builders.
 type WorkflowInstance func(*sql.Selector)
+
+// WorkflowInstanceJoin is the predicate function for workflowinstancejoin builders.
+type WorkflowInstanceJoin func(*sql.Selector)
+
+// WorkflowInstanceParentLink is the predicate function for workflowinstanceparentlink builders.
+type WorkflowInstanceParentLink func(*sql.Selector)
 
 // WorkflowLog is the predicate function for workflowlog builders.
 type WorkflowLog func(*sql.Selector)

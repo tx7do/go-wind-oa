@@ -3325,6 +3325,119 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/oa/workflow/delegations:
+        get:
+            tags:
+                - WorkflowService
+            description: 查询审批委托列表
+            operationId: WorkflowService_ListWorkflowDelegation
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.ListWorkflowDelegationResponse'
+        post:
+            tags:
+                - WorkflowService
+            description: 设置审批委托
+            operationId: WorkflowService_SetWorkflowDelegation
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/oa.service.v1.SetWorkflowDelegationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/oa.service.v1.WorkflowDelegation'
+    /admin/v1/oa/workflow/delegations/{id}:
+        delete:
+            tags:
+                - WorkflowService
+            description: 删除审批委托
+            operationId: WorkflowService_DeleteWorkflowDelegation
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/oa/workflow/my-tasks:
         get:
             tags:
@@ -8989,6 +9102,7 @@ components:
                         - APPROVE
                         - REJECT
                         - FORWARD
+                        - ADD_APPROVER
                     type: string
                     description: 审批动作
                     format: enum
@@ -8999,6 +9113,10 @@ components:
                 comment:
                     type: string
                     description: 审批意见
+                additionalApprover:
+                    type: integer
+                    description: 加签目标用户ID
+                    format: uint32
             description: 审批任务 - 请求
         oa.service.v1.BusinessTripApplication:
             type: object
@@ -9600,6 +9718,16 @@ components:
                 total:
                     type: string
             description: 查询流程定义列表 - 回应
+        oa.service.v1.ListWorkflowDelegationResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/oa.service.v1.WorkflowDelegation'
+                total:
+                    type: string
+            description: 查询审批委托列表 - 回应
         oa.service.v1.MyTaskItem:
             type: object
             properties:
@@ -9842,6 +9970,12 @@ components:
                     description: 删除时间
                     format: date-time
             description: 用印申请单
+        oa.service.v1.SetWorkflowDelegationRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/oa.service.v1.WorkflowDelegation'
+            description: 设置审批委托 - 请求
         oa.service.v1.UpdateWorkflowDefinitionRequest:
             type: object
             properties:
@@ -9897,7 +10031,7 @@ components:
                     format: int32
                 nodeConfig:
                     type: string
-                    description: 节点配置（JSON）。每节点格式：{"approvers":[{"type":"USER"|"LEADER"|"POSITION","id":用户或职位ID}],"strategy":"ALL"|"ANY"}。type=LEADER 无需 id（提交人主管）。strategy=ALL 会签（默认），ANY 或签。兼容旧格式 {"approver_type":"USER","approver":id}
+                    description: 流程图配置（JSON）。图格式 {"version":2,"nodes":[{"id","type","approvers","strategy"}],"edges":[{"from","to","condition"}]}。节点 type：START/END/TASK/EXCLUSIVE_GATEWAY/PARALLEL_GATEWAY_FORK/PARALLEL_GATEWAY_JOIN。TASK 节点 approvers/strategy 同旧格式。EXCLUSIVE_GATEWAY 出边带 condition（表达式或 "default"）。兼容旧格式（节点数组自动转线性图）。
                 formSchema:
                     type: string
                     description: 表单 schema（JSON）
@@ -9941,6 +10075,30 @@ components:
                     description: 删除时间
                     format: date-time
             description: 流程定义
+        oa.service.v1.WorkflowDelegation:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 委托记录ID
+                    format: uint32
+                delegatorUserId:
+                    type: integer
+                    description: 委托人用户ID（原审批人）
+                    format: uint32
+                delegateUserId:
+                    type: integer
+                    description: 被委托人用户ID（代理人）
+                    format: uint32
+                tenantId:
+                    type: integer
+                    description: 租户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+            description: 审批委托
         oa.service.v1.WorkflowLog:
             type: object
             properties:
@@ -9948,10 +10106,9 @@ components:
                     type: integer
                     description: 日志ID
                     format: uint32
-                nodeIndex:
-                    type: integer
-                    description: 节点索引
-                    format: int32
+                nodeId:
+                    type: string
+                    description: 图节点ID
                 logAction:
                     enum:
                         - SUBMIT
@@ -10001,10 +10158,9 @@ components:
                     type: integer
                     description: 任务ID
                     format: uint32
-                nodeIndex:
-                    type: integer
-                    description: 节点索引
-                    format: int32
+                nodeId:
+                    type: string
+                    description: 图节点ID
                 assigneeUserId:
                     type: integer
                     description: 指派审批人ID

@@ -33,8 +33,8 @@ type WorkflowTask struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 节点索引
-	NodeIndex *int `json:"node_index,omitempty"`
+	// 图节点ID
+	NodeID *string `json:"node_id,omitempty"`
 	// 指派审批人ID
 	AssigneeUserID *uint32 `json:"assignee_user_id,omitempty"`
 	// 任务状态
@@ -71,9 +71,9 @@ func (*WorkflowTask) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case workflowtask.FieldID, workflowtask.FieldCreatedBy, workflowtask.FieldUpdatedBy, workflowtask.FieldDeletedBy, workflowtask.FieldTenantID, workflowtask.FieldNodeIndex, workflowtask.FieldAssigneeUserID:
+		case workflowtask.FieldID, workflowtask.FieldCreatedBy, workflowtask.FieldUpdatedBy, workflowtask.FieldDeletedBy, workflowtask.FieldTenantID, workflowtask.FieldAssigneeUserID:
 			values[i] = new(sql.NullInt64)
-		case workflowtask.FieldTaskStatus:
+		case workflowtask.FieldNodeID, workflowtask.FieldTaskStatus:
 			values[i] = new(sql.NullString)
 		case workflowtask.FieldCreatedAt, workflowtask.FieldUpdatedAt, workflowtask.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -149,12 +149,12 @@ func (_m *WorkflowTask) assignValues(columns []string, values []any) error {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
 			}
-		case workflowtask.FieldNodeIndex:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field node_index", values[i])
+		case workflowtask.FieldNodeID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field node_id", values[i])
 			} else if value.Valid {
-				_m.NodeIndex = new(int)
-				*_m.NodeIndex = int(value.Int64)
+				_m.NodeID = new(string)
+				*_m.NodeID = value.String
 			}
 		case workflowtask.FieldAssigneeUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -253,9 +253,9 @@ func (_m *WorkflowTask) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.NodeIndex; v != nil {
-		builder.WriteString("node_index=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+	if v := _m.NodeID; v != nil {
+		builder.WriteString("node_id=")
+		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	if v := _m.AssigneeUserID; v != nil {

@@ -24,10 +24,13 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationWorkflowServiceAuditTask = "/admin.service.v1.WorkflowService/AuditTask"
 const OperationWorkflowServiceCreateWorkflowDefinition = "/admin.service.v1.WorkflowService/CreateWorkflowDefinition"
+const OperationWorkflowServiceDeleteWorkflowDelegation = "/admin.service.v1.WorkflowService/DeleteWorkflowDelegation"
 const OperationWorkflowServiceGetMyTasks = "/admin.service.v1.WorkflowService/GetMyTasks"
 const OperationWorkflowServiceGetTask = "/admin.service.v1.WorkflowService/GetTask"
 const OperationWorkflowServiceGetWorkflowDefinition = "/admin.service.v1.WorkflowService/GetWorkflowDefinition"
 const OperationWorkflowServiceListWorkflowDefinition = "/admin.service.v1.WorkflowService/ListWorkflowDefinition"
+const OperationWorkflowServiceListWorkflowDelegation = "/admin.service.v1.WorkflowService/ListWorkflowDelegation"
+const OperationWorkflowServiceSetWorkflowDelegation = "/admin.service.v1.WorkflowService/SetWorkflowDelegation"
 const OperationWorkflowServiceUpdateWorkflowDefinition = "/admin.service.v1.WorkflowService/UpdateWorkflowDefinition"
 
 type WorkflowServiceHTTPServer interface {
@@ -35,6 +38,8 @@ type WorkflowServiceHTTPServer interface {
 	AuditTask(context.Context, *v11.AuditTaskRequest) (*emptypb.Empty, error)
 	// CreateWorkflowDefinition 创建流程定义
 	CreateWorkflowDefinition(context.Context, *v11.CreateWorkflowDefinitionRequest) (*v11.WorkflowDefinition, error)
+	// DeleteWorkflowDelegation 删除审批委托
+	DeleteWorkflowDelegation(context.Context, *v11.DeleteWorkflowDelegationRequest) (*emptypb.Empty, error)
 	// GetMyTasks 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(context.Context, *v11.GetMyTasksRequest) (*v11.GetMyTasksResponse, error)
 	// GetTask 查询任务详情
@@ -43,6 +48,10 @@ type WorkflowServiceHTTPServer interface {
 	GetWorkflowDefinition(context.Context, *v11.GetWorkflowDefinitionRequest) (*v11.WorkflowDefinition, error)
 	// ListWorkflowDefinition 查询流程定义列表
 	ListWorkflowDefinition(context.Context, *v1.PagingRequest) (*v11.ListWorkflowDefinitionResponse, error)
+	// ListWorkflowDelegation 查询审批委托列表
+	ListWorkflowDelegation(context.Context, *v1.PagingRequest) (*v11.ListWorkflowDelegationResponse, error)
+	// SetWorkflowDelegation 设置审批委托
+	SetWorkflowDelegation(context.Context, *v11.SetWorkflowDelegationRequest) (*v11.WorkflowDelegation, error)
 	// UpdateWorkflowDefinition 更新流程定义（仅允许切换 definition_status）
 	UpdateWorkflowDefinition(context.Context, *v11.UpdateWorkflowDefinitionRequest) (*emptypb.Empty, error)
 }
@@ -56,6 +65,9 @@ func RegisterWorkflowServiceHTTPServer(s *http.Server, srv WorkflowServiceHTTPSe
 	r.POST("/admin/v1/oa/workflow/audit-task", _WorkflowService_AuditTask0_HTTP_Handler(srv))
 	r.GET("/admin/v1/oa/workflow/my-tasks", _WorkflowService_GetMyTasks0_HTTP_Handler(srv))
 	r.GET("/admin/v1/oa/workflow/tasks/{id}", _WorkflowService_GetTask0_HTTP_Handler(srv))
+	r.POST("/admin/v1/oa/workflow/delegations", _WorkflowService_SetWorkflowDelegation0_HTTP_Handler(srv))
+	r.GET("/admin/v1/oa/workflow/delegations", _WorkflowService_ListWorkflowDelegation0_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/oa/workflow/delegations/{id}", _WorkflowService_DeleteWorkflowDelegation0_HTTP_Handler(srv))
 }
 
 func _WorkflowService_ListWorkflowDefinition0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
@@ -209,11 +221,76 @@ func _WorkflowService_GetTask0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(
 	}
 }
 
+func _WorkflowService_SetWorkflowDelegation0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.SetWorkflowDelegationRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWorkflowServiceSetWorkflowDelegation)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.SetWorkflowDelegation(ctx, req.(*v11.SetWorkflowDelegationRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.WorkflowDelegation)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _WorkflowService_ListWorkflowDelegation0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.PagingRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWorkflowServiceListWorkflowDelegation)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListWorkflowDelegation(ctx, req.(*v1.PagingRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.ListWorkflowDelegationResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _WorkflowService_DeleteWorkflowDelegation0_HTTP_Handler(srv WorkflowServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.DeleteWorkflowDelegationRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWorkflowServiceDeleteWorkflowDelegation)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteWorkflowDelegation(ctx, req.(*v11.DeleteWorkflowDelegationRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type WorkflowServiceHTTPClient interface {
 	// AuditTask 审批任务（通过/驳回/转办）
 	AuditTask(ctx context.Context, req *v11.AuditTaskRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// CreateWorkflowDefinition 创建流程定义
 	CreateWorkflowDefinition(ctx context.Context, req *v11.CreateWorkflowDefinitionRequest, opts ...http.CallOption) (rsp *v11.WorkflowDefinition, err error)
+	// DeleteWorkflowDelegation 删除审批委托
+	DeleteWorkflowDelegation(ctx context.Context, req *v11.DeleteWorkflowDelegationRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// GetMyTasks 查询我的任务（待办/已办/我的申请）
 	GetMyTasks(ctx context.Context, req *v11.GetMyTasksRequest, opts ...http.CallOption) (rsp *v11.GetMyTasksResponse, err error)
 	// GetTask 查询任务详情
@@ -222,6 +299,10 @@ type WorkflowServiceHTTPClient interface {
 	GetWorkflowDefinition(ctx context.Context, req *v11.GetWorkflowDefinitionRequest, opts ...http.CallOption) (rsp *v11.WorkflowDefinition, err error)
 	// ListWorkflowDefinition 查询流程定义列表
 	ListWorkflowDefinition(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListWorkflowDefinitionResponse, err error)
+	// ListWorkflowDelegation 查询审批委托列表
+	ListWorkflowDelegation(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListWorkflowDelegationResponse, err error)
+	// SetWorkflowDelegation 设置审批委托
+	SetWorkflowDelegation(ctx context.Context, req *v11.SetWorkflowDelegationRequest, opts ...http.CallOption) (rsp *v11.WorkflowDelegation, err error)
 	// UpdateWorkflowDefinition 更新流程定义（仅允许切换 definition_status）
 	UpdateWorkflowDefinition(ctx context.Context, req *v11.UpdateWorkflowDefinitionRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
@@ -256,6 +337,20 @@ func (c *WorkflowServiceHTTPClientImpl) CreateWorkflowDefinition(ctx context.Con
 	opts = append(opts, http.Operation(OperationWorkflowServiceCreateWorkflowDefinition))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// DeleteWorkflowDelegation 删除审批委托
+func (c *WorkflowServiceHTTPClientImpl) DeleteWorkflowDelegation(ctx context.Context, in *v11.DeleteWorkflowDelegationRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/oa/workflow/delegations/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationWorkflowServiceDeleteWorkflowDelegation))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -312,6 +407,34 @@ func (c *WorkflowServiceHTTPClientImpl) ListWorkflowDefinition(ctx context.Conte
 	opts = append(opts, http.Operation(OperationWorkflowServiceListWorkflowDefinition))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// ListWorkflowDelegation 查询审批委托列表
+func (c *WorkflowServiceHTTPClientImpl) ListWorkflowDelegation(ctx context.Context, in *v1.PagingRequest, opts ...http.CallOption) (*v11.ListWorkflowDelegationResponse, error) {
+	var out v11.ListWorkflowDelegationResponse
+	pattern := "/admin/v1/oa/workflow/delegations"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationWorkflowServiceListWorkflowDelegation))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// SetWorkflowDelegation 设置审批委托
+func (c *WorkflowServiceHTTPClientImpl) SetWorkflowDelegation(ctx context.Context, in *v11.SetWorkflowDelegationRequest, opts ...http.CallOption) (*v11.WorkflowDelegation, error) {
+	var out v11.WorkflowDelegation
+	pattern := "/admin/v1/oa/workflow/delegations"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationWorkflowServiceSetWorkflowDelegation))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

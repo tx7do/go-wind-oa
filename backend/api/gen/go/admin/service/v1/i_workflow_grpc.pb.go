@@ -29,6 +29,9 @@ const (
 	WorkflowService_AuditTask_FullMethodName                = "/admin.service.v1.WorkflowService/AuditTask"
 	WorkflowService_GetMyTasks_FullMethodName               = "/admin.service.v1.WorkflowService/GetMyTasks"
 	WorkflowService_GetTask_FullMethodName                  = "/admin.service.v1.WorkflowService/GetTask"
+	WorkflowService_SetWorkflowDelegation_FullMethodName    = "/admin.service.v1.WorkflowService/SetWorkflowDelegation"
+	WorkflowService_ListWorkflowDelegation_FullMethodName   = "/admin.service.v1.WorkflowService/ListWorkflowDelegation"
+	WorkflowService_DeleteWorkflowDelegation_FullMethodName = "/admin.service.v1.WorkflowService/DeleteWorkflowDelegation"
 )
 
 // WorkflowServiceClient is the client API for WorkflowService service.
@@ -51,6 +54,12 @@ type WorkflowServiceClient interface {
 	GetMyTasks(ctx context.Context, in *v11.GetMyTasksRequest, opts ...grpc.CallOption) (*v11.GetMyTasksResponse, error)
 	// 查询任务详情
 	GetTask(ctx context.Context, in *v11.GetTaskRequest, opts ...grpc.CallOption) (*v11.GetTaskResponse, error)
+	// 设置审批委托
+	SetWorkflowDelegation(ctx context.Context, in *v11.SetWorkflowDelegationRequest, opts ...grpc.CallOption) (*v11.WorkflowDelegation, error)
+	// 查询审批委托列表
+	ListWorkflowDelegation(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListWorkflowDelegationResponse, error)
+	// 删除审批委托
+	DeleteWorkflowDelegation(ctx context.Context, in *v11.DeleteWorkflowDelegationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type workflowServiceClient struct {
@@ -131,6 +140,36 @@ func (c *workflowServiceClient) GetTask(ctx context.Context, in *v11.GetTaskRequ
 	return out, nil
 }
 
+func (c *workflowServiceClient) SetWorkflowDelegation(ctx context.Context, in *v11.SetWorkflowDelegationRequest, opts ...grpc.CallOption) (*v11.WorkflowDelegation, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v11.WorkflowDelegation)
+	err := c.cc.Invoke(ctx, WorkflowService_SetWorkflowDelegation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workflowServiceClient) ListWorkflowDelegation(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListWorkflowDelegationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v11.ListWorkflowDelegationResponse)
+	err := c.cc.Invoke(ctx, WorkflowService_ListWorkflowDelegation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workflowServiceClient) DeleteWorkflowDelegation(ctx context.Context, in *v11.DeleteWorkflowDelegationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, WorkflowService_DeleteWorkflowDelegation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkflowServiceServer is the server API for WorkflowService service.
 // All implementations must embed UnimplementedWorkflowServiceServer
 // for forward compatibility.
@@ -151,6 +190,12 @@ type WorkflowServiceServer interface {
 	GetMyTasks(context.Context, *v11.GetMyTasksRequest) (*v11.GetMyTasksResponse, error)
 	// 查询任务详情
 	GetTask(context.Context, *v11.GetTaskRequest) (*v11.GetTaskResponse, error)
+	// 设置审批委托
+	SetWorkflowDelegation(context.Context, *v11.SetWorkflowDelegationRequest) (*v11.WorkflowDelegation, error)
+	// 查询审批委托列表
+	ListWorkflowDelegation(context.Context, *v1.PagingRequest) (*v11.ListWorkflowDelegationResponse, error)
+	// 删除审批委托
+	DeleteWorkflowDelegation(context.Context, *v11.DeleteWorkflowDelegationRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedWorkflowServiceServer()
 }
 
@@ -181,6 +226,15 @@ func (UnimplementedWorkflowServiceServer) GetMyTasks(context.Context, *v11.GetMy
 }
 func (UnimplementedWorkflowServiceServer) GetTask(context.Context, *v11.GetTaskRequest) (*v11.GetTaskResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTask not implemented")
+}
+func (UnimplementedWorkflowServiceServer) SetWorkflowDelegation(context.Context, *v11.SetWorkflowDelegationRequest) (*v11.WorkflowDelegation, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetWorkflowDelegation not implemented")
+}
+func (UnimplementedWorkflowServiceServer) ListWorkflowDelegation(context.Context, *v1.PagingRequest) (*v11.ListWorkflowDelegationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListWorkflowDelegation not implemented")
+}
+func (UnimplementedWorkflowServiceServer) DeleteWorkflowDelegation(context.Context, *v11.DeleteWorkflowDelegationRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteWorkflowDelegation not implemented")
 }
 func (UnimplementedWorkflowServiceServer) mustEmbedUnimplementedWorkflowServiceServer() {}
 func (UnimplementedWorkflowServiceServer) testEmbeddedByValue()                         {}
@@ -329,6 +383,60 @@ func _WorkflowService_GetTask_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkflowService_SetWorkflowDelegation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v11.SetWorkflowDelegationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).SetWorkflowDelegation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_SetWorkflowDelegation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).SetWorkflowDelegation(ctx, req.(*v11.SetWorkflowDelegationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkflowService_ListWorkflowDelegation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.PagingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).ListWorkflowDelegation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_ListWorkflowDelegation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).ListWorkflowDelegation(ctx, req.(*v1.PagingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkflowService_DeleteWorkflowDelegation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v11.DeleteWorkflowDelegationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkflowServiceServer).DeleteWorkflowDelegation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkflowService_DeleteWorkflowDelegation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkflowServiceServer).DeleteWorkflowDelegation(ctx, req.(*v11.DeleteWorkflowDelegationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkflowService_ServiceDesc is the grpc.ServiceDesc for WorkflowService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -363,6 +471,18 @@ var WorkflowService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTask",
 			Handler:    _WorkflowService_GetTask_Handler,
+		},
+		{
+			MethodName: "SetWorkflowDelegation",
+			Handler:    _WorkflowService_SetWorkflowDelegation_Handler,
+		},
+		{
+			MethodName: "ListWorkflowDelegation",
+			Handler:    _WorkflowService_ListWorkflowDelegation_Handler,
+		},
+		{
+			MethodName: "DeleteWorkflowDelegation",
+			Handler:    _WorkflowService_DeleteWorkflowDelegation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

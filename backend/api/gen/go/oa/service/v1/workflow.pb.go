@@ -31,9 +31,10 @@ const (
 type AuditAction int32
 
 const (
-	AuditAction_APPROVE AuditAction = 0 // 通过
-	AuditAction_REJECT  AuditAction = 1 // 驳回
-	AuditAction_FORWARD AuditAction = 2 // 转办
+	AuditAction_APPROVE      AuditAction = 0 // 通过
+	AuditAction_REJECT       AuditAction = 1 // 驳回
+	AuditAction_FORWARD      AuditAction = 2 // 转办
+	AuditAction_ADD_APPROVER AuditAction = 3 // 加签
 )
 
 // Enum value maps for AuditAction.
@@ -42,11 +43,13 @@ var (
 		0: "APPROVE",
 		1: "REJECT",
 		2: "FORWARD",
+		3: "ADD_APPROVER",
 	}
 	AuditAction_value = map[string]int32{
-		"APPROVE": 0,
-		"REJECT":  1,
-		"FORWARD": 2,
+		"APPROVE":      0,
+		"REJECT":       1,
+		"FORWARD":      2,
+		"ADD_APPROVER": 3,
 	}
 )
 
@@ -185,6 +188,7 @@ const (
 	WorkflowInstance_APPROVED  WorkflowInstance_InstanceStatus = 1 // 已通过
 	WorkflowInstance_REJECTED  WorkflowInstance_InstanceStatus = 2 // 已驳回
 	WorkflowInstance_WITHDRAWN WorkflowInstance_InstanceStatus = 3 // 已撤回
+	WorkflowInstance_SUSPENDED WorkflowInstance_InstanceStatus = 4 // 挂起（等待子流程完成）
 )
 
 // Enum value maps for WorkflowInstance_InstanceStatus.
@@ -194,12 +198,14 @@ var (
 		1: "APPROVED",
 		2: "REJECTED",
 		3: "WITHDRAWN",
+		4: "SUSPENDED",
 	}
 	WorkflowInstance_InstanceStatus_value = map[string]int32{
 		"PENDING":   0,
 		"APPROVED":  1,
 		"REJECTED":  2,
 		"WITHDRAWN": 3,
+		"SUSPENDED": 4,
 	}
 )
 
@@ -345,7 +351,7 @@ type WorkflowDefinition struct {
 	Id               *uint32                              `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                                            // 定义ID
 	Code             *string                              `protobuf:"bytes,2,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                                                                         // 流程代码
 	Version          *int32                               `protobuf:"varint,3,opt,name=version,proto3,oneof" json:"version,omitempty"`                                                                                                  // 版本号
-	NodeConfig       *string                              `protobuf:"bytes,4,opt,name=node_config,json=nodeConfig,proto3,oneof" json:"node_config,omitempty"`                                                                           // 节点配置（JSON）
+	NodeConfig       *string                              `protobuf:"bytes,4,opt,name=node_config,json=nodeConfig,proto3,oneof" json:"node_config,omitempty"`                                                                           // 流程图配置（JSON）
 	FormSchema       *string                              `protobuf:"bytes,5,opt,name=form_schema,json=formSchema,proto3,oneof" json:"form_schema,omitempty"`                                                                           // 表单 schema（JSON）
 	DefinitionStatus *WorkflowDefinition_DefinitionStatus `protobuf:"varint,6,opt,name=definition_status,json=definitionStatus,proto3,enum=oa.service.v1.WorkflowDefinition_DefinitionStatus,oneof" json:"definition_status,omitempty"` // 定义状态
 	Remark           *string                              `protobuf:"bytes,7,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                                                                                     // 备注
@@ -490,22 +496,21 @@ func (x *WorkflowDefinition) GetDeletedAt() *timestamppb.Timestamp {
 
 // 流程实例
 type WorkflowInstance struct {
-	state            protoimpl.MessageState           `protogen:"open.v1"`
-	Id               *uint32                          `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                                  // 实例ID
-	InstanceStatus   *WorkflowInstance_InstanceStatus `protobuf:"varint,2,opt,name=instance_status,json=instanceStatus,proto3,enum=oa.service.v1.WorkflowInstance_InstanceStatus,oneof" json:"instance_status,omitempty"` // 实例状态
-	CurrentNodeIndex *int32                           `protobuf:"varint,3,opt,name=current_node_index,json=currentNodeIndex,proto3,oneof" json:"current_node_index,omitempty"`                                            // 当前节点索引
-	FormData         *string                          `protobuf:"bytes,4,opt,name=form_data,json=formData,proto3,oneof" json:"form_data,omitempty"`                                                                       // 申请表单数据（JSON）
-	BusinessType     *string                          `protobuf:"bytes,5,opt,name=business_type,json=businessType,proto3,oneof" json:"business_type,omitempty"`                                                           // 业务单据类型
-	BusinessId       *uint32                          `protobuf:"varint,6,opt,name=business_id,json=businessId,proto3,oneof" json:"business_id,omitempty"`                                                                // 业务单据ID
-	TenantId         *uint32                          `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                                     // 租户ID，0代表系统全局角色
-	CreatedBy        *uint32                          `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                                 // 创建者用户ID
-	UpdatedBy        *uint32                          `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                                 // 更新者用户ID
-	DeletedBy        *uint32                          `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                                 // 删除者用户ID
-	CreatedAt        *timestamppb.Timestamp           `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                                  // 创建时间
-	UpdatedAt        *timestamppb.Timestamp           `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                                                  // 更新时间
-	DeletedAt        *timestamppb.Timestamp           `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                                                  // 删除时间
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state          protoimpl.MessageState           `protogen:"open.v1"`
+	Id             *uint32                          `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                                  // 实例ID
+	InstanceStatus *WorkflowInstance_InstanceStatus `protobuf:"varint,2,opt,name=instance_status,json=instanceStatus,proto3,enum=oa.service.v1.WorkflowInstance_InstanceStatus,oneof" json:"instance_status,omitempty"` // 实例状态
+	FormData       *string                          `protobuf:"bytes,4,opt,name=form_data,json=formData,proto3,oneof" json:"form_data,omitempty"`                                                                       // 申请表单数据（JSON）
+	BusinessType   *string                          `protobuf:"bytes,5,opt,name=business_type,json=businessType,proto3,oneof" json:"business_type,omitempty"`                                                           // 业务单据类型
+	BusinessId     *uint32                          `protobuf:"varint,6,opt,name=business_id,json=businessId,proto3,oneof" json:"business_id,omitempty"`                                                                // 业务单据ID
+	TenantId       *uint32                          `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                                     // 租户ID，0代表系统全局角色
+	CreatedBy      *uint32                          `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                                 // 创建者用户ID
+	UpdatedBy      *uint32                          `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                                 // 更新者用户ID
+	DeletedBy      *uint32                          `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                                 // 删除者用户ID
+	CreatedAt      *timestamppb.Timestamp           `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                                  // 创建时间
+	UpdatedAt      *timestamppb.Timestamp           `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                                                  // 更新时间
+	DeletedAt      *timestamppb.Timestamp           `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                                                  // 删除时间
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *WorkflowInstance) Reset() {
@@ -550,13 +555,6 @@ func (x *WorkflowInstance) GetInstanceStatus() WorkflowInstance_InstanceStatus {
 		return *x.InstanceStatus
 	}
 	return WorkflowInstance_PENDING
-}
-
-func (x *WorkflowInstance) GetCurrentNodeIndex() int32 {
-	if x != nil && x.CurrentNodeIndex != nil {
-		return *x.CurrentNodeIndex
-	}
-	return 0
 }
 
 func (x *WorkflowInstance) GetFormData() string {
@@ -633,7 +631,7 @@ func (x *WorkflowInstance) GetDeletedAt() *timestamppb.Timestamp {
 type WorkflowTask struct {
 	state          protoimpl.MessageState   `protogen:"open.v1"`
 	Id             *uint32                  `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                              // 任务ID
-	NodeIndex      *int32                   `protobuf:"varint,2,opt,name=node_index,json=nodeIndex,proto3,oneof" json:"node_index,omitempty"`                                               // 节点索引
+	NodeId         *string                  `protobuf:"bytes,2,opt,name=node_id,json=nodeId,proto3,oneof" json:"node_id,omitempty"`                                                         // 图节点ID
 	AssigneeUserId *uint32                  `protobuf:"varint,3,opt,name=assignee_user_id,json=assigneeUserId,proto3,oneof" json:"assignee_user_id,omitempty"`                              // 指派审批人ID
 	TaskStatus     *WorkflowTask_TaskStatus `protobuf:"varint,4,opt,name=task_status,json=taskStatus,proto3,enum=oa.service.v1.WorkflowTask_TaskStatus,oneof" json:"task_status,omitempty"` // 任务状态
 	TenantId       *uint32                  `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                 // 租户ID，0代表系统全局角色
@@ -684,11 +682,11 @@ func (x *WorkflowTask) GetId() uint32 {
 	return 0
 }
 
-func (x *WorkflowTask) GetNodeIndex() int32 {
-	if x != nil && x.NodeIndex != nil {
-		return *x.NodeIndex
+func (x *WorkflowTask) GetNodeId() string {
+	if x != nil && x.NodeId != nil {
+		return *x.NodeId
 	}
-	return 0
+	return ""
 }
 
 func (x *WorkflowTask) GetAssigneeUserId() uint32 {
@@ -758,7 +756,7 @@ func (x *WorkflowTask) GetDeletedAt() *timestamppb.Timestamp {
 type WorkflowLog struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                         // 日志ID
-	NodeIndex     *int32                 `protobuf:"varint,2,opt,name=node_index,json=nodeIndex,proto3,oneof" json:"node_index,omitempty"`                                          // 节点索引
+	NodeId        *string                `protobuf:"bytes,2,opt,name=node_id,json=nodeId,proto3,oneof" json:"node_id,omitempty"`                                                    // 图节点ID
 	LogAction     *WorkflowLog_LogAction `protobuf:"varint,3,opt,name=log_action,json=logAction,proto3,enum=oa.service.v1.WorkflowLog_LogAction,oneof" json:"log_action,omitempty"` // 日志动作
 	Comment       *string                `protobuf:"bytes,4,opt,name=comment,proto3,oneof" json:"comment,omitempty"`                                                                // 审批意见
 	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                            // 租户ID，0代表系统全局角色
@@ -809,11 +807,11 @@ func (x *WorkflowLog) GetId() uint32 {
 	return 0
 }
 
-func (x *WorkflowLog) GetNodeIndex() int32 {
-	if x != nil && x.NodeIndex != nil {
-		return *x.NodeIndex
+func (x *WorkflowLog) GetNodeId() string {
+	if x != nil && x.NodeId != nil {
+		return *x.NodeId
 	}
-	return 0
+	return ""
 }
 
 func (x *WorkflowLog) GetLogAction() WorkflowLog_LogAction {
@@ -1457,13 +1455,14 @@ func (x *WithdrawApplyRequest) GetInstanceId() uint32 {
 
 // 审批任务 - 请求
 type AuditTaskRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TaskId        uint32                 `protobuf:"varint,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`                  // 任务ID
-	Action        AuditAction            `protobuf:"varint,2,opt,name=action,proto3,enum=oa.service.v1.AuditAction" json:"action,omitempty"` // 审批动作
-	ForwardTo     uint32                 `protobuf:"varint,3,opt,name=forward_to,json=forwardTo,proto3" json:"forward_to,omitempty"`         // 转办目标用户ID
-	Comment       string                 `protobuf:"bytes,4,opt,name=comment,proto3" json:"comment,omitempty"`                               // 审批意见
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	TaskId             uint32                 `protobuf:"varint,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`                                     // 任务ID
+	Action             AuditAction            `protobuf:"varint,2,opt,name=action,proto3,enum=oa.service.v1.AuditAction" json:"action,omitempty"`                    // 审批动作
+	ForwardTo          uint32                 `protobuf:"varint,3,opt,name=forward_to,json=forwardTo,proto3" json:"forward_to,omitempty"`                            // 转办目标用户ID
+	Comment            string                 `protobuf:"bytes,4,opt,name=comment,proto3" json:"comment,omitempty"`                                                  // 审批意见
+	AdditionalApprover uint32                 `protobuf:"varint,5,opt,name=additional_approver,json=additionalApprover,proto3" json:"additional_approver,omitempty"` // 加签目标用户ID
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *AuditTaskRequest) Reset() {
@@ -1522,6 +1521,13 @@ func (x *AuditTaskRequest) GetComment() string {
 		return x.Comment
 	}
 	return ""
+}
+
+func (x *AuditTaskRequest) GetAdditionalApprover() uint32 {
+	if x != nil {
+		return x.AdditionalApprover
+	}
+	return 0
 }
 
 // 查询我的任务 - 请求
@@ -1766,16 +1772,236 @@ func (x *GetTaskResponse) GetFormData() string {
 	return ""
 }
 
+// 审批委托
+type WorkflowDelegation struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                    // 委托记录ID
+	DelegatorUserId *uint32                `protobuf:"varint,2,opt,name=delegator_user_id,json=delegatorUserId,proto3,oneof" json:"delegator_user_id,omitempty"` // 委托人用户ID
+	DelegateUserId  *uint32                `protobuf:"varint,3,opt,name=delegate_user_id,json=delegateUserId,proto3,oneof" json:"delegate_user_id,omitempty"`    // 被委托人用户ID
+	TenantId        *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                       // 租户ID
+	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,41,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                     // 创建时间
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *WorkflowDelegation) Reset() {
+	*x = WorkflowDelegation{}
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkflowDelegation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkflowDelegation) ProtoMessage() {}
+
+func (x *WorkflowDelegation) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkflowDelegation.ProtoReflect.Descriptor instead.
+func (*WorkflowDelegation) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *WorkflowDelegation) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *WorkflowDelegation) GetDelegatorUserId() uint32 {
+	if x != nil && x.DelegatorUserId != nil {
+		return *x.DelegatorUserId
+	}
+	return 0
+}
+
+func (x *WorkflowDelegation) GetDelegateUserId() uint32 {
+	if x != nil && x.DelegateUserId != nil {
+		return *x.DelegateUserId
+	}
+	return 0
+}
+
+func (x *WorkflowDelegation) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
+func (x *WorkflowDelegation) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+// 设置审批委托 - 请求
+type SetWorkflowDelegationRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Data          *WorkflowDelegation    `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetWorkflowDelegationRequest) Reset() {
+	*x = SetWorkflowDelegationRequest{}
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetWorkflowDelegationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetWorkflowDelegationRequest) ProtoMessage() {}
+
+func (x *SetWorkflowDelegationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetWorkflowDelegationRequest.ProtoReflect.Descriptor instead.
+func (*SetWorkflowDelegationRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *SetWorkflowDelegationRequest) GetData() *WorkflowDelegation {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+// 查询审批委托列表 - 回应
+type ListWorkflowDelegationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*WorkflowDelegation  `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListWorkflowDelegationResponse) Reset() {
+	*x = ListWorkflowDelegationResponse{}
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListWorkflowDelegationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListWorkflowDelegationResponse) ProtoMessage() {}
+
+func (x *ListWorkflowDelegationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListWorkflowDelegationResponse.ProtoReflect.Descriptor instead.
+func (*ListWorkflowDelegationResponse) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *ListWorkflowDelegationResponse) GetItems() []*WorkflowDelegation {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *ListWorkflowDelegationResponse) GetTotal() uint64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+// 删除审批委托 - 请求
+type DeleteWorkflowDelegationRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteWorkflowDelegationRequest) Reset() {
+	*x = DeleteWorkflowDelegationRequest{}
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteWorkflowDelegationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteWorkflowDelegationRequest) ProtoMessage() {}
+
+func (x *DeleteWorkflowDelegationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_oa_service_v1_workflow_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteWorkflowDelegationRequest.ProtoReflect.Descriptor instead.
+func (*DeleteWorkflowDelegationRequest) Descriptor() ([]byte, []int) {
+	return file_oa_service_v1_workflow_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *DeleteWorkflowDelegationRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
 var File_oa_service_v1_workflow_proto protoreflect.FileDescriptor
 
 const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\n" +
-	"\x1coa/service/v1/workflow.proto\x12\roa.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xd9\v\n" +
+	"\x1coa/service/v1/workflow.proto\x12\roa.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xc6\f\n" +
 	"\x12WorkflowDefinition\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b定义IDH\x00R\x02id\x88\x01\x01\x12+\n" +
 	"\x04code\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f流程代码H\x01R\x04code\x88\x01\x01\x12.\n" +
-	"\aversion\x18\x03 \x01(\x05B\x0f\xbaG\f\x92\x02\t版本号H\x02R\aversion\x88\x01\x01\x12\xd0\x02\n" +
-	"\vnode_config\x18\x04 \x01(\tB\xa9\x02\xbaG\xa5\x02\x92\x02\xa1\x02节点配置（JSON）。每节点格式：{\"approvers\":[{\"type\":\"USER\"|\"LEADER\"|\"POSITION\",\"id\":用户或职位ID}],\"strategy\":\"ALL\"|\"ANY\"}。type=LEADER 无需 id（提交人主管）。strategy=ALL 会签（默认），ANY 或签。兼容旧格式 {\"approver_type\":\"USER\",\"approver\":id}H\x03R\n" +
+	"\aversion\x18\x03 \x01(\x05B\x0f\xbaG\f\x92\x02\t版本号H\x02R\aversion\x88\x01\x01\x12\xbd\x03\n" +
+	"\vnode_config\x18\x04 \x01(\tB\x96\x03\xbaG\x92\x03\x92\x02\x8e\x03流程图配置（JSON）。图格式 {\"version\":2,\"nodes\":[{\"id\",\"type\",\"approvers\",\"strategy\"}],\"edges\":[{\"from\",\"to\",\"condition\"}]}。节点 type：START/END/TASK/EXCLUSIVE_GATEWAY/PARALLEL_GATEWAY_FORK/PARALLEL_GATEWAY_JOIN。TASK 节点 approvers/strategy 同旧格式。EXCLUSIVE_GATEWAY 出边带 condition（表达式或 \"default\"）。兼容旧格式（节点数组自动转线性图）。H\x03R\n" +
 	"nodeConfig\x88\x01\x01\x12C\n" +
 	"\vform_schema\x18\x05 \x01(\tB\x1d\xbaG\x1a\x92\x02\x17表单 schema（JSON）H\x04R\n" +
 	"formSchema\x88\x01\x01\x12x\n" +
@@ -1814,38 +2040,36 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"\x99\n" +
-	"\n" +
+	"\v_deleted_at\"\xc4\t\n" +
 	"\x10WorkflowInstance\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b实例IDH\x00R\x02id\x88\x01\x01\x12p\n" +
-	"\x0finstance_status\x18\x02 \x01(\x0e2..oa.service.v1.WorkflowInstance.InstanceStatusB\x12\xbaG\x0f\x92\x02\f实例状态H\x01R\x0einstanceStatus\x88\x01\x01\x12K\n" +
-	"\x12current_node_index\x18\x03 \x01(\x05B\x18\xbaG\x15\x92\x02\x12当前节点索引H\x02R\x10currentNodeIndex\x88\x01\x01\x12D\n" +
-	"\tform_data\x18\x04 \x01(\tB\"\xbaG\x1f\x92\x02\x1c申请表单数据（JSON）H\x03R\bformData\x88\x01\x01\x12\x83\x01\n" +
-	"\rbusiness_type\x18\x05 \x01(\tBY\xbaGV\x92\x02S业务单据类型（如 LEAVE/EXPENSE，审批终结时回调对应业务模块）H\x04R\fbusinessType\x88\x01\x01\x12:\n" +
-	"\vbusiness_id\x18\x06 \x01(\rB\x14\xbaG\x11\x92\x02\x0e业务单据IDH\x05R\n" +
+	"\x0finstance_status\x18\x02 \x01(\x0e2..oa.service.v1.WorkflowInstance.InstanceStatusB\x12\xbaG\x0f\x92\x02\f实例状态H\x01R\x0einstanceStatus\x88\x01\x01\x12D\n" +
+	"\tform_data\x18\x04 \x01(\tB\"\xbaG\x1f\x92\x02\x1c申请表单数据（JSON）H\x02R\bformData\x88\x01\x01\x12\x83\x01\n" +
+	"\rbusiness_type\x18\x05 \x01(\tBY\xbaGV\x92\x02S业务单据类型（如 LEAVE/EXPENSE，审批终结时回调对应业务模块）H\x03R\fbusinessType\x88\x01\x01\x12:\n" +
+	"\vbusiness_id\x18\x06 \x01(\rB\x14\xbaG\x11\x92\x02\x0e业务单据IDH\x04R\n" +
 	"businessId\x88\x01\x01\x12L\n" +
-	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\x06R\btenantId\x88\x01\x01\x12;\n" +
+	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\x05R\btenantId\x88\x01\x01\x12;\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x17\xbaG\x14\x92\x02\x11创建者用户IDH\aR\tcreatedBy\x88\x01\x01\x12;\n" +
+	"created_by\x18d \x01(\rB\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x06R\tcreatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x17\xbaG\x14\x92\x02\x11更新者用户IDH\bR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\rB\x17\xbaG\x14\x92\x02\x11更新者用户IDH\aR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\tR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\bR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\n" +
-	"R\tcreatedAt\x88\x01\x01\x12S\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\tR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\vR\tupdatedAt\x88\x01\x01\x12S\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\n" +
+	"R\tupdatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\fR\tdeletedAt\x88\x01\x01\"H\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\vR\tdeletedAt\x88\x01\x01\"W\n" +
 	"\x0eInstanceStatus\x12\v\n" +
 	"\aPENDING\x10\x00\x12\f\n" +
 	"\bAPPROVED\x10\x01\x12\f\n" +
 	"\bREJECTED\x10\x02\x12\r\n" +
-	"\tWITHDRAWN\x10\x03B\x05\n" +
+	"\tWITHDRAWN\x10\x03\x12\r\n" +
+	"\tSUSPENDED\x10\x04B\x05\n" +
 	"\x03_idB\x12\n" +
-	"\x10_instance_statusB\x15\n" +
-	"\x13_current_node_indexB\f\n" +
+	"\x10_instance_statusB\f\n" +
 	"\n" +
 	"_form_dataB\x10\n" +
 	"\x0e_business_typeB\x0e\n" +
@@ -1857,11 +2081,10 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"\x85\b\n" +
+	"\v_deleted_at\"\xfb\a\n" +
 	"\fWorkflowTask\x12&\n" +
-	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b任务IDH\x00R\x02id\x88\x01\x01\x126\n" +
-	"\n" +
-	"node_index\x18\x02 \x01(\x05B\x12\xbaG\x0f\x92\x02\f节点索引H\x01R\tnodeIndex\x88\x01\x01\x12F\n" +
+	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b任务IDH\x00R\x02id\x88\x01\x01\x12/\n" +
+	"\anode_id\x18\x02 \x01(\tB\x11\xbaG\x0e\x92\x02\v图节点IDH\x01R\x06nodeId\x88\x01\x01\x12F\n" +
 	"\x10assignee_user_id\x18\x03 \x01(\rB\x17\xbaG\x14\x92\x02\x11指派审批人IDH\x02R\x0eassigneeUserId\x88\x01\x01\x12`\n" +
 	"\vtask_status\x18\x04 \x01(\x0e2&.oa.service.v1.WorkflowTask.TaskStatusB\x12\xbaG\x0f\x92\x02\f任务状态H\x03R\n" +
 	"taskStatus\x88\x01\x01\x12L\n" +
@@ -1885,8 +2108,9 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\bAPPROVED\x10\x01\x12\f\n" +
 	"\bREJECTED\x10\x02\x12\r\n" +
 	"\tCANCELLED\x10\x03B\x05\n" +
-	"\x03_idB\r\n" +
-	"\v_node_indexB\x13\n" +
+	"\x03_idB\n" +
+	"\n" +
+	"\b_node_idB\x13\n" +
 	"\x11_assignee_user_idB\x0e\n" +
 	"\f_task_statusB\f\n" +
 	"\n" +
@@ -1896,11 +2120,10 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"\xe8\a\n" +
+	"\v_deleted_at\"\xde\a\n" +
 	"\vWorkflowLog\x12&\n" +
-	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b日志IDH\x00R\x02id\x88\x01\x01\x126\n" +
-	"\n" +
-	"node_index\x18\x02 \x01(\x05B\x12\xbaG\x0f\x92\x02\f节点索引H\x01R\tnodeIndex\x88\x01\x01\x12\\\n" +
+	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b日志IDH\x00R\x02id\x88\x01\x01\x12/\n" +
+	"\anode_id\x18\x02 \x01(\tB\x11\xbaG\x0e\x92\x02\v图节点IDH\x01R\x06nodeId\x88\x01\x01\x12\\\n" +
 	"\n" +
 	"log_action\x18\x03 \x01(\x0e2$.oa.service.v1.WorkflowLog.LogActionB\x12\xbaG\x0f\x92\x02\f日志动作H\x02R\tlogAction\x88\x01\x01\x121\n" +
 	"\acomment\x18\x04 \x01(\tB\x12\xbaG\x0f\x92\x02\f审批意见H\x03R\acomment\x88\x01\x01\x12L\n" +
@@ -1926,8 +2149,9 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\x06REJECT\x10\x02\x12\v\n" +
 	"\aFORWARD\x10\x03\x12\f\n" +
 	"\bWITHDRAW\x10\x04B\x05\n" +
-	"\x03_idB\r\n" +
-	"\v_node_indexB\r\n" +
+	"\x03_idB\n" +
+	"\n" +
+	"\b_node_idB\r\n" +
 	"\v_log_actionB\n" +
 	"\n" +
 	"\b_commentB\f\n" +
@@ -1992,13 +2216,14 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"formSchema\"G\n" +
 	"\x14WithdrawApplyRequest\x12/\n" +
 	"\vinstance_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b实例IDR\n" +
-	"instanceId\"\xec\x01\n" +
+	"instanceId\"\xb9\x02\n" +
 	"\x10AuditTaskRequest\x12'\n" +
 	"\atask_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b任务IDR\x06taskId\x12F\n" +
 	"\x06action\x18\x02 \x01(\x0e2\x1a.oa.service.v1.AuditActionB\x12\xbaG\x0f\x92\x02\f审批动作R\x06action\x129\n" +
 	"\n" +
 	"forward_to\x18\x03 \x01(\rB\x1a\xbaG\x17\x92\x02\x14转办目标用户IDR\tforwardTo\x12,\n" +
-	"\acomment\x18\x04 \x01(\tB\x12\xbaG\x0f\x92\x02\f审批意见R\acomment\"\x89\x02\n" +
+	"\acomment\x18\x04 \x01(\tB\x12\xbaG\x0f\x92\x02\f审批意见R\acomment\x12K\n" +
+	"\x13additional_approver\x18\x05 \x01(\rB\x1a\xbaG\x17\x92\x02\x14加签目标用户IDR\x12additionalApprover\"\x89\x02\n" +
 	"\x11GetMyTasksRequest\x12H\n" +
 	"\tlist_type\x18\x01 \x01(\x0e2\x17.oa.service.v1.ListTypeB\x12\xbaG\x0f\x92\x02\f列表类型R\blistType\x12G\n" +
 	"\x04page\x18\x02 \x01(\x05B.\xbaG+\x92\x02(页码（从 1 起，不传=不限页）H\x00R\x04page\x88\x01\x01\x12J\n" +
@@ -2020,16 +2245,38 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\tform_data\x18\x03 \x01(\tBC\xbaG@\x92\x02=申请表单数据（JSON，供审批人查看申请内容）H\x01R\bformData\x88\x01\x01B\a\n" +
 	"\x05_taskB\f\n" +
 	"\n" +
-	"_form_data*3\n" +
+	"_form_data\"\xcd\x03\n" +
+	"\x12WorkflowDelegation\x12,\n" +
+	"\x02id\x18\x01 \x01(\rB\x17\xe0A\x01\xbaG\x11\x92\x02\x0e委托记录IDH\x00R\x02id\x88\x01\x01\x12Z\n" +
+	"\x11delegator_user_id\x18\x02 \x01(\rB)\xbaG&\x92\x02#委托人用户ID（原审批人）H\x01R\x0fdelegatorUserId\x88\x01\x01\x12X\n" +
+	"\x10delegate_user_id\x18\x03 \x01(\rB)\xbaG&\x92\x02#被委托人用户ID（代理人）H\x02R\x0edelegateUserId\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18( \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x03R\btenantId\x88\x01\x01\x12R\n" +
+	"\n" +
+	"created_at\x18) \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x04R\tcreatedAt\x88\x01\x01B\x05\n" +
+	"\x03_idB\x14\n" +
+	"\x12_delegator_user_idB\x13\n" +
+	"\x11_delegate_user_idB\f\n" +
+	"\n" +
+	"_tenant_idB\r\n" +
+	"\v_created_at\"U\n" +
+	"\x1cSetWorkflowDelegationRequest\x125\n" +
+	"\x04data\x18\x01 \x01(\v2!.oa.service.v1.WorkflowDelegationR\x04data\"o\n" +
+	"\x1eListWorkflowDelegationResponse\x127\n" +
+	"\x05items\x18\x01 \x03(\v2!.oa.service.v1.WorkflowDelegationR\x05items\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x04R\x05total\"=\n" +
+	"\x1fDeleteWorkflowDelegationRequest\x12\x1a\n" +
+	"\x02id\x18\x01 \x01(\rB\n" +
+	"\xbaG\a\x18\x01\x92\x02\x02IDR\x02id*E\n" +
 	"\vAuditAction\x12\v\n" +
 	"\aAPPROVE\x10\x00\x12\n" +
 	"\n" +
 	"\x06REJECT\x10\x01\x12\v\n" +
-	"\aFORWARD\x10\x02*0\n" +
+	"\aFORWARD\x10\x02\x12\x10\n" +
+	"\fADD_APPROVER\x10\x03*0\n" +
 	"\bListType\x12\v\n" +
 	"\aPENDING\x10\x00\x12\b\n" +
 	"\x04DONE\x10\x01\x12\r\n" +
-	"\tSUBMITTED\x10\x022\xa5\a\n" +
+	"\tSUBMITTED\x10\x022\xdc\t\n" +
 	"\x0fWorkflowService\x12o\n" +
 	"\x18CreateWorkflowDefinition\x12..oa.service.v1.CreateWorkflowDefinitionRequest\x1a!.oa.service.v1.WorkflowDefinition\"\x00\x12d\n" +
 	"\x16ListWorkflowDefinition\x12\x19.pagination.PagingRequest\x1a-.oa.service.v1.ListWorkflowDefinitionResponse\"\x00\x12d\n" +
@@ -2041,7 +2288,10 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\fGetApplyForm\x12\".oa.service.v1.GetApplyFormRequest\x1a#.oa.service.v1.GetApplyFormResponse\"\x00\x12S\n" +
 	"\n" +
 	"GetMyTasks\x12 .oa.service.v1.GetMyTasksRequest\x1a!.oa.service.v1.GetMyTasksResponse\"\x00\x12J\n" +
-	"\aGetTask\x12\x1d.oa.service.v1.GetTaskRequest\x1a\x1e.oa.service.v1.GetTaskResponse\"\x00B\xa2\x01\n" +
+	"\aGetTask\x12\x1d.oa.service.v1.GetTaskRequest\x1a\x1e.oa.service.v1.GetTaskResponse\"\x00\x12i\n" +
+	"\x15SetWorkflowDelegation\x12+.oa.service.v1.SetWorkflowDelegationRequest\x1a!.oa.service.v1.WorkflowDelegation\"\x00\x12d\n" +
+	"\x16ListWorkflowDelegation\x12\x19.pagination.PagingRequest\x1a-.oa.service.v1.ListWorkflowDelegationResponse\"\x00\x12d\n" +
+	"\x18DeleteWorkflowDelegation\x12..oa.service.v1.DeleteWorkflowDelegationRequest\x1a\x16.google.protobuf.Empty\"\x00B\xa2\x01\n" +
 	"\x11com.oa.service.v1B\rWorkflowProtoP\x01Z(go-wind-oa/api/gen/go/oa/service/v1;oapb\xa2\x02\x03OSX\xaa\x02\rOa.Service.V1\xca\x02\rOa\\Service\\V1\xe2\x02\x19Oa\\Service\\V1\\GPBMetadata\xea\x02\x0fOa::Service::V1b\x06proto3"
 
 var (
@@ -2057,7 +2307,7 @@ func file_oa_service_v1_workflow_proto_rawDescGZIP() []byte {
 }
 
 var file_oa_service_v1_workflow_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_oa_service_v1_workflow_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_oa_service_v1_workflow_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_oa_service_v1_workflow_proto_goTypes = []any{
 	(AuditAction)(0),                         // 0: oa.service.v1.AuditAction
 	(ListType)(0),                            // 1: oa.service.v1.ListType
@@ -2084,64 +2334,77 @@ var file_oa_service_v1_workflow_proto_goTypes = []any{
 	(*GetMyTasksResponse)(nil),               // 22: oa.service.v1.GetMyTasksResponse
 	(*GetTaskRequest)(nil),                   // 23: oa.service.v1.GetTaskRequest
 	(*GetTaskResponse)(nil),                  // 24: oa.service.v1.GetTaskResponse
-	(*timestamppb.Timestamp)(nil),            // 25: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),            // 26: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),                 // 27: pagination.PagingRequest
-	(*emptypb.Empty)(nil),                    // 28: google.protobuf.Empty
+	(*WorkflowDelegation)(nil),               // 25: oa.service.v1.WorkflowDelegation
+	(*SetWorkflowDelegationRequest)(nil),     // 26: oa.service.v1.SetWorkflowDelegationRequest
+	(*ListWorkflowDelegationResponse)(nil),   // 27: oa.service.v1.ListWorkflowDelegationResponse
+	(*DeleteWorkflowDelegationRequest)(nil),  // 28: oa.service.v1.DeleteWorkflowDelegationRequest
+	(*timestamppb.Timestamp)(nil),            // 29: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),            // 30: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),                 // 31: pagination.PagingRequest
+	(*emptypb.Empty)(nil),                    // 32: google.protobuf.Empty
 }
 var file_oa_service_v1_workflow_proto_depIdxs = []int32{
 	2,  // 0: oa.service.v1.WorkflowDefinition.definition_status:type_name -> oa.service.v1.WorkflowDefinition.DefinitionStatus
-	25, // 1: oa.service.v1.WorkflowDefinition.created_at:type_name -> google.protobuf.Timestamp
-	25, // 2: oa.service.v1.WorkflowDefinition.updated_at:type_name -> google.protobuf.Timestamp
-	25, // 3: oa.service.v1.WorkflowDefinition.deleted_at:type_name -> google.protobuf.Timestamp
+	29, // 1: oa.service.v1.WorkflowDefinition.created_at:type_name -> google.protobuf.Timestamp
+	29, // 2: oa.service.v1.WorkflowDefinition.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 3: oa.service.v1.WorkflowDefinition.deleted_at:type_name -> google.protobuf.Timestamp
 	3,  // 4: oa.service.v1.WorkflowInstance.instance_status:type_name -> oa.service.v1.WorkflowInstance.InstanceStatus
-	25, // 5: oa.service.v1.WorkflowInstance.created_at:type_name -> google.protobuf.Timestamp
-	25, // 6: oa.service.v1.WorkflowInstance.updated_at:type_name -> google.protobuf.Timestamp
-	25, // 7: oa.service.v1.WorkflowInstance.deleted_at:type_name -> google.protobuf.Timestamp
+	29, // 5: oa.service.v1.WorkflowInstance.created_at:type_name -> google.protobuf.Timestamp
+	29, // 6: oa.service.v1.WorkflowInstance.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 7: oa.service.v1.WorkflowInstance.deleted_at:type_name -> google.protobuf.Timestamp
 	4,  // 8: oa.service.v1.WorkflowTask.task_status:type_name -> oa.service.v1.WorkflowTask.TaskStatus
-	25, // 9: oa.service.v1.WorkflowTask.created_at:type_name -> google.protobuf.Timestamp
-	25, // 10: oa.service.v1.WorkflowTask.updated_at:type_name -> google.protobuf.Timestamp
-	25, // 11: oa.service.v1.WorkflowTask.deleted_at:type_name -> google.protobuf.Timestamp
+	29, // 9: oa.service.v1.WorkflowTask.created_at:type_name -> google.protobuf.Timestamp
+	29, // 10: oa.service.v1.WorkflowTask.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 11: oa.service.v1.WorkflowTask.deleted_at:type_name -> google.protobuf.Timestamp
 	5,  // 12: oa.service.v1.WorkflowLog.log_action:type_name -> oa.service.v1.WorkflowLog.LogAction
-	25, // 13: oa.service.v1.WorkflowLog.created_at:type_name -> google.protobuf.Timestamp
-	25, // 14: oa.service.v1.WorkflowLog.updated_at:type_name -> google.protobuf.Timestamp
-	25, // 15: oa.service.v1.WorkflowLog.deleted_at:type_name -> google.protobuf.Timestamp
-	25, // 16: oa.service.v1.MyTaskItem.created_at:type_name -> google.protobuf.Timestamp
+	29, // 13: oa.service.v1.WorkflowLog.created_at:type_name -> google.protobuf.Timestamp
+	29, // 14: oa.service.v1.WorkflowLog.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 15: oa.service.v1.WorkflowLog.deleted_at:type_name -> google.protobuf.Timestamp
+	29, // 16: oa.service.v1.MyTaskItem.created_at:type_name -> google.protobuf.Timestamp
 	6,  // 17: oa.service.v1.ListWorkflowDefinitionResponse.items:type_name -> oa.service.v1.WorkflowDefinition
-	26, // 18: oa.service.v1.GetWorkflowDefinitionRequest.view_mask:type_name -> google.protobuf.FieldMask
+	30, // 18: oa.service.v1.GetWorkflowDefinitionRequest.view_mask:type_name -> google.protobuf.FieldMask
 	6,  // 19: oa.service.v1.CreateWorkflowDefinitionRequest.data:type_name -> oa.service.v1.WorkflowDefinition
 	6,  // 20: oa.service.v1.UpdateWorkflowDefinitionRequest.data:type_name -> oa.service.v1.WorkflowDefinition
-	26, // 21: oa.service.v1.UpdateWorkflowDefinitionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	30, // 21: oa.service.v1.UpdateWorkflowDefinitionRequest.update_mask:type_name -> google.protobuf.FieldMask
 	0,  // 22: oa.service.v1.AuditTaskRequest.action:type_name -> oa.service.v1.AuditAction
 	1,  // 23: oa.service.v1.GetMyTasksRequest.list_type:type_name -> oa.service.v1.ListType
 	10, // 24: oa.service.v1.GetMyTasksResponse.items:type_name -> oa.service.v1.MyTaskItem
 	8,  // 25: oa.service.v1.GetTaskResponse.task:type_name -> oa.service.v1.WorkflowTask
 	9,  // 26: oa.service.v1.GetTaskResponse.logs:type_name -> oa.service.v1.WorkflowLog
-	13, // 27: oa.service.v1.WorkflowService.CreateWorkflowDefinition:input_type -> oa.service.v1.CreateWorkflowDefinitionRequest
-	27, // 28: oa.service.v1.WorkflowService.ListWorkflowDefinition:input_type -> pagination.PagingRequest
-	14, // 29: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:input_type -> oa.service.v1.UpdateWorkflowDefinitionRequest
-	12, // 30: oa.service.v1.WorkflowService.GetWorkflowDefinition:input_type -> oa.service.v1.GetWorkflowDefinitionRequest
-	15, // 31: oa.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
-	20, // 32: oa.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
-	19, // 33: oa.service.v1.WorkflowService.WithdrawApply:input_type -> oa.service.v1.WithdrawApplyRequest
-	17, // 34: oa.service.v1.WorkflowService.GetApplyForm:input_type -> oa.service.v1.GetApplyFormRequest
-	21, // 35: oa.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
-	23, // 36: oa.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
-	6,  // 37: oa.service.v1.WorkflowService.CreateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
-	11, // 38: oa.service.v1.WorkflowService.ListWorkflowDefinition:output_type -> oa.service.v1.ListWorkflowDefinitionResponse
-	28, // 39: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:output_type -> google.protobuf.Empty
-	6,  // 40: oa.service.v1.WorkflowService.GetWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
-	16, // 41: oa.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
-	28, // 42: oa.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
-	28, // 43: oa.service.v1.WorkflowService.WithdrawApply:output_type -> google.protobuf.Empty
-	18, // 44: oa.service.v1.WorkflowService.GetApplyForm:output_type -> oa.service.v1.GetApplyFormResponse
-	22, // 45: oa.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
-	24, // 46: oa.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
-	37, // [37:47] is the sub-list for method output_type
-	27, // [27:37] is the sub-list for method input_type
-	27, // [27:27] is the sub-list for extension type_name
-	27, // [27:27] is the sub-list for extension extendee
-	0,  // [0:27] is the sub-list for field type_name
+	29, // 27: oa.service.v1.WorkflowDelegation.created_at:type_name -> google.protobuf.Timestamp
+	25, // 28: oa.service.v1.SetWorkflowDelegationRequest.data:type_name -> oa.service.v1.WorkflowDelegation
+	25, // 29: oa.service.v1.ListWorkflowDelegationResponse.items:type_name -> oa.service.v1.WorkflowDelegation
+	13, // 30: oa.service.v1.WorkflowService.CreateWorkflowDefinition:input_type -> oa.service.v1.CreateWorkflowDefinitionRequest
+	31, // 31: oa.service.v1.WorkflowService.ListWorkflowDefinition:input_type -> pagination.PagingRequest
+	14, // 32: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:input_type -> oa.service.v1.UpdateWorkflowDefinitionRequest
+	12, // 33: oa.service.v1.WorkflowService.GetWorkflowDefinition:input_type -> oa.service.v1.GetWorkflowDefinitionRequest
+	15, // 34: oa.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
+	20, // 35: oa.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
+	19, // 36: oa.service.v1.WorkflowService.WithdrawApply:input_type -> oa.service.v1.WithdrawApplyRequest
+	17, // 37: oa.service.v1.WorkflowService.GetApplyForm:input_type -> oa.service.v1.GetApplyFormRequest
+	21, // 38: oa.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
+	23, // 39: oa.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
+	26, // 40: oa.service.v1.WorkflowService.SetWorkflowDelegation:input_type -> oa.service.v1.SetWorkflowDelegationRequest
+	31, // 41: oa.service.v1.WorkflowService.ListWorkflowDelegation:input_type -> pagination.PagingRequest
+	28, // 42: oa.service.v1.WorkflowService.DeleteWorkflowDelegation:input_type -> oa.service.v1.DeleteWorkflowDelegationRequest
+	6,  // 43: oa.service.v1.WorkflowService.CreateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	11, // 44: oa.service.v1.WorkflowService.ListWorkflowDefinition:output_type -> oa.service.v1.ListWorkflowDefinitionResponse
+	32, // 45: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:output_type -> google.protobuf.Empty
+	6,  // 46: oa.service.v1.WorkflowService.GetWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	16, // 47: oa.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
+	32, // 48: oa.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
+	32, // 49: oa.service.v1.WorkflowService.WithdrawApply:output_type -> google.protobuf.Empty
+	18, // 50: oa.service.v1.WorkflowService.GetApplyForm:output_type -> oa.service.v1.GetApplyFormResponse
+	22, // 51: oa.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
+	24, // 52: oa.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
+	25, // 53: oa.service.v1.WorkflowService.SetWorkflowDelegation:output_type -> oa.service.v1.WorkflowDelegation
+	27, // 54: oa.service.v1.WorkflowService.ListWorkflowDelegation:output_type -> oa.service.v1.ListWorkflowDelegationResponse
+	32, // 55: oa.service.v1.WorkflowService.DeleteWorkflowDelegation:output_type -> google.protobuf.Empty
+	43, // [43:56] is the sub-list for method output_type
+	30, // [30:43] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_oa_service_v1_workflow_proto_init() }
@@ -2164,13 +2427,14 @@ func file_oa_service_v1_workflow_proto_init() {
 		(*GetTaskRequest_Id)(nil),
 	}
 	file_oa_service_v1_workflow_proto_msgTypes[18].OneofWrappers = []any{}
+	file_oa_service_v1_workflow_proto_msgTypes[19].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_oa_service_v1_workflow_proto_rawDesc), len(file_oa_service_v1_workflow_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   19,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

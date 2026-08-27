@@ -3480,6 +3480,38 @@ var (
 			},
 		},
 	}
+	// OaWorkflowDelegationColumns holds the columns for the "oa_workflow_delegation" table.
+	OaWorkflowDelegationColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "delegator_user_id", Type: field.TypeUint32, Nullable: true, Comment: "委托人用户ID（原审批人）"},
+		{Name: "delegate_user_id", Type: field.TypeUint32, Nullable: true, Comment: "被委托人用户ID（代理人）"},
+	}
+	// OaWorkflowDelegationTable holds the schema information for the "oa_workflow_delegation" table.
+	OaWorkflowDelegationTable = &schema.Table{
+		Name:       "oa_workflow_delegation",
+		Comment:    "OA 工作流审批委托表（审批人指定代理人，待办自动转发）",
+		Columns:    OaWorkflowDelegationColumns,
+		PrimaryKey: []*schema.Column{OaWorkflowDelegationColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_workflow_delegation_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaWorkflowDelegationColumns[7]},
+			},
+			{
+				Name:    "uix_oa_workflow_delegation_tenant_delegator",
+				Unique:  true,
+				Columns: []*schema.Column{OaWorkflowDelegationColumns[7], OaWorkflowDelegationColumns[8]},
+			},
+		},
+	}
 	// OaWorkflowInstanceColumns holds the columns for the "oa_workflow_instance" table.
 	OaWorkflowInstanceColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -3490,8 +3522,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
-		{Name: "instance_status", Type: field.TypeEnum, Nullable: true, Comment: "实例状态", Enums: []string{"PENDING", "APPROVED", "REJECTED", "WITHDRAWN"}, Default: "PENDING"},
-		{Name: "current_node_index", Type: field.TypeInt, Nullable: true, Comment: "当前节点索引"},
+		{Name: "instance_status", Type: field.TypeEnum, Nullable: true, Comment: "实例状态", Enums: []string{"PENDING", "APPROVED", "REJECTED", "WITHDRAWN", "SUSPENDED"}, Default: "PENDING"},
 		{Name: "form_data", Type: field.TypeString, Nullable: true, Comment: "申请表单数据（JSON 文本）"},
 		{Name: "business_type", Type: field.TypeString, Nullable: true, Comment: "业务单据类型（LEAVE/EXPENSE 等，审批终结时回调业务模块）"},
 		{Name: "business_id", Type: field.TypeUint32, Nullable: true, Comment: "业务单据ID"},
@@ -3506,7 +3537,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "oa_workflow_instance_oa_workflow_definition_instances",
-				Columns:    []*schema.Column{OaWorkflowInstanceColumns[13]},
+				Columns:    []*schema.Column{OaWorkflowInstanceColumns[12]},
 				RefColumns: []*schema.Column{OaWorkflowDefinitionColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -3524,6 +3555,78 @@ var (
 			},
 		},
 	}
+	// OaWorkflowInstanceJoinColumns holds the columns for the "oa_workflow_instance_join" table.
+	OaWorkflowInstanceJoinColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "join_node_id", Type: field.TypeString, Nullable: true, Comment: "汇聚节点ID（图节点 id）"},
+		{Name: "arrived_count", Type: field.TypeInt, Nullable: true, Comment: "已到达分支数", Default: 0},
+		{Name: "instance_id", Type: field.TypeUint32, Nullable: true},
+	}
+	// OaWorkflowInstanceJoinTable holds the schema information for the "oa_workflow_instance_join" table.
+	OaWorkflowInstanceJoinTable = &schema.Table{
+		Name:       "oa_workflow_instance_join",
+		Comment:    "OA 工作流汇聚节点到达计数表",
+		Columns:    OaWorkflowInstanceJoinColumns,
+		PrimaryKey: []*schema.Column{OaWorkflowInstanceJoinColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "oa_workflow_instance_join_oa_workflow_instance_instance_joins",
+				Columns:    []*schema.Column{OaWorkflowInstanceJoinColumns[10]},
+				RefColumns: []*schema.Column{OaWorkflowInstanceColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_workflow_inst_join_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaWorkflowInstanceJoinColumns[7]},
+			},
+		},
+	}
+	// OaWorkflowInstanceParentLinkColumns holds the columns for the "oa_workflow_instance_parent_link" table.
+	OaWorkflowInstanceParentLinkColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "subprocess_node_id", Type: field.TypeString, Nullable: true, Comment: "父流程中 SUBPROCESS 节点的ID"},
+		{Name: "child_instance_id", Type: field.TypeUint32, Nullable: true, Comment: "子流程实例ID"},
+		{Name: "parent_instance_id", Type: field.TypeUint32, Nullable: true},
+	}
+	// OaWorkflowInstanceParentLinkTable holds the schema information for the "oa_workflow_instance_parent_link" table.
+	OaWorkflowInstanceParentLinkTable = &schema.Table{
+		Name:       "oa_workflow_instance_parent_link",
+		Comment:    "OA 工作流父子实例关联表（子流程挂起/恢复用）",
+		Columns:    OaWorkflowInstanceParentLinkColumns,
+		PrimaryKey: []*schema.Column{OaWorkflowInstanceParentLinkColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "oa_workflow_instance_parent_link_oa_workflow_instance_parent_links",
+				Columns:    []*schema.Column{OaWorkflowInstanceParentLinkColumns[10]},
+				RefColumns: []*schema.Column{OaWorkflowInstanceColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_workflow_inst_pl_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{OaWorkflowInstanceParentLinkColumns[7]},
+			},
+		},
+	}
 	// OaWorkflowLogColumns holds the columns for the "oa_workflow_log" table.
 	OaWorkflowLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -3534,7 +3637,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
-		{Name: "node_index", Type: field.TypeInt, Nullable: true, Comment: "节点索引"},
+		{Name: "node_id", Type: field.TypeString, Nullable: true, Comment: "图节点ID"},
 		{Name: "log_action", Type: field.TypeEnum, Nullable: true, Comment: "日志动作", Enums: []string{"SUBMIT", "APPROVE", "REJECT", "FORWARD", "WITHDRAW"}, Default: "SUBMIT"},
 		{Name: "comment", Type: field.TypeString, Nullable: true, Comment: "审批意见"},
 		{Name: "instance_id", Type: field.TypeUint32, Nullable: true},
@@ -3576,7 +3679,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
-		{Name: "node_index", Type: field.TypeInt, Nullable: true, Comment: "节点索引"},
+		{Name: "node_id", Type: field.TypeString, Nullable: true, Comment: "图节点ID"},
 		{Name: "assignee_user_id", Type: field.TypeUint32, Nullable: true, Comment: "指派审批人ID"},
 		{Name: "task_status", Type: field.TypeEnum, Nullable: true, Comment: "任务状态", Enums: []string{"PENDING", "APPROVED", "REJECTED", "CANCELLED"}, Default: "PENDING"},
 		{Name: "instance_id", Type: field.TypeUint32, Nullable: true},
@@ -3667,7 +3770,10 @@ var (
 		SysUserRolesTable,
 		OaWifiFingerprintTable,
 		OaWorkflowDefinitionTable,
+		OaWorkflowDelegationTable,
 		OaWorkflowInstanceTable,
+		OaWorkflowInstanceJoinTable,
+		OaWorkflowInstanceParentLinkTable,
 		OaWorkflowLogTable,
 		OaWorkflowTaskTable,
 	}
@@ -3968,9 +4074,26 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
+	OaWorkflowDelegationTable.Annotation = &entsql.Annotation{
+		Table:     "oa_workflow_delegation",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
 	OaWorkflowInstanceTable.ForeignKeys[0].RefTable = OaWorkflowDefinitionTable
 	OaWorkflowInstanceTable.Annotation = &entsql.Annotation{
 		Table:     "oa_workflow_instance",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaWorkflowInstanceJoinTable.ForeignKeys[0].RefTable = OaWorkflowInstanceTable
+	OaWorkflowInstanceJoinTable.Annotation = &entsql.Annotation{
+		Table:     "oa_workflow_instance_join",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaWorkflowInstanceParentLinkTable.ForeignKeys[0].RefTable = OaWorkflowInstanceTable
+	OaWorkflowInstanceParentLinkTable.Annotation = &entsql.Annotation{
+		Table:     "oa_workflow_instance_parent_link",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

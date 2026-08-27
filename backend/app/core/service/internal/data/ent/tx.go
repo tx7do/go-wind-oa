@@ -126,8 +126,14 @@ type Tx struct {
 	WifiFingerprint *WifiFingerprintClient
 	// WorkflowDefinition is the client for interacting with the WorkflowDefinition builders.
 	WorkflowDefinition *WorkflowDefinitionClient
+	// WorkflowDelegation is the client for interacting with the WorkflowDelegation builders.
+	WorkflowDelegation *WorkflowDelegationClient
 	// WorkflowInstance is the client for interacting with the WorkflowInstance builders.
 	WorkflowInstance *WorkflowInstanceClient
+	// WorkflowInstanceJoin is the client for interacting with the WorkflowInstanceJoin builders.
+	WorkflowInstanceJoin *WorkflowInstanceJoinClient
+	// WorkflowInstanceParentLink is the client for interacting with the WorkflowInstanceParentLink builders.
+	WorkflowInstanceParentLink *WorkflowInstanceParentLinkClient
 	// WorkflowLog is the client for interacting with the WorkflowLog builders.
 	WorkflowLog *WorkflowLogClient
 	// WorkflowTask is the client for interacting with the WorkflowTask builders.
@@ -320,7 +326,10 @@ func (tx *Tx) init() {
 	tx.UserRole = NewUserRoleClient(tx.config)
 	tx.WifiFingerprint = NewWifiFingerprintClient(tx.config)
 	tx.WorkflowDefinition = NewWorkflowDefinitionClient(tx.config)
+	tx.WorkflowDelegation = NewWorkflowDelegationClient(tx.config)
 	tx.WorkflowInstance = NewWorkflowInstanceClient(tx.config)
+	tx.WorkflowInstanceJoin = NewWorkflowInstanceJoinClient(tx.config)
+	tx.WorkflowInstanceParentLink = NewWorkflowInstanceParentLinkClient(tx.config)
 	tx.WorkflowLog = NewWorkflowLogClient(tx.config)
 	tx.WorkflowTask = NewWorkflowTaskClient(tx.config)
 }

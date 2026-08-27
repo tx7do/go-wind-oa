@@ -54,8 +54,7 @@ export function useListWorkflowDefinitions(
 ) {
   return useQuery({
     queryKey: ["listWorkflowDefinitions", query],
-    queryFn: () =>
-      apiClient.workflowService.ListWorkflowDefinition(query.toRawParams()),
+    queryFn: () => apiClient.workflowService.ListWorkflowDefinition(query.toRawParams()),
     ...options,
   });
 }
@@ -63,8 +62,7 @@ export function useListWorkflowDefinitions(
 export async function fetchListWorkflowDefinitions(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ["listWorkflowDefinitions", params],
-    queryFn: () =>
-      apiClient.workflowService.ListWorkflowDefinition(params.toRawParams()),
+    queryFn: () => apiClient.workflowService.ListWorkflowDefinition(params.toRawParams()),
     staleTime: 0,
     retry: 0,
   });
@@ -133,20 +131,20 @@ import { computed } from "vue";
 import { $t } from "@/core/i18n";
 
 export const definitionStatusList = computed(() => [
-  { value: 'DRAFT' as const, label: $t("enum.definitionStatus.DRAFT") },
-  { value: 'ENABLED' as const, label: $t("enum.definitionStatus.ENABLED") },
-  { value: 'DISABLED' as const, label: $t("enum.definitionStatus.DISABLED") },
+  { value: "DRAFT" as const, label: $t("enum.definitionStatus.DRAFT") },
+  { value: "ENABLED" as const, label: $t("enum.definitionStatus.ENABLED") },
+  { value: "DISABLED" as const, label: $t("enum.definitionStatus.DISABLED") },
 ]);
 
 export function definitionStatusLabel(
   s: oaservicev1_WorkflowDefinition_DefinitionStatus | undefined
 ): string {
   switch (s) {
-    case 'DRAFT':
+    case "DRAFT":
       return $t("enum.definitionStatus.DRAFT");
-    case 'ENABLED':
+    case "ENABLED":
       return $t("enum.definitionStatus.ENABLED");
-    case 'DISABLED':
+    case "DISABLED":
       return $t("enum.definitionStatus.DISABLED");
     default:
       return $t("common.unknown");
@@ -157,9 +155,9 @@ export function definitionStatusColor(
   s: oaservicev1_WorkflowDefinition_DefinitionStatus | undefined
 ): string {
   switch (s) {
-    case 'ENABLED':
+    case "ENABLED":
       return "#67c23a"; // 绿
-    case 'DISABLED':
+    case "DISABLED":
       return "#909399"; // 灰
     default:
       return "#e6a23c"; // 黄（DRAFT）
@@ -176,8 +174,7 @@ export function useListLeaveTypes(
 ) {
   return useQuery({
     queryKey: ["listLeaveTypes", query],
-    queryFn: () =>
-      apiClient.leaveService.ListLeaveTypes(query.toRawParams()),
+    queryFn: () => apiClient.leaveService.ListLeaveTypes(query.toRawParams()),
     ...options,
   });
 }
@@ -185,19 +182,14 @@ export function useListLeaveTypes(
 export async function fetchListLeaveTypes(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ["listLeaveTypes", params],
-    queryFn: () =>
-      apiClient.leaveService.ListLeaveTypes(params.toRawParams()),
+    queryFn: () => apiClient.leaveService.ListLeaveTypes(params.toRawParams()),
     staleTime: 0,
     retry: 0,
   });
 }
 
 export function useCreateLeaveType(
-  options?: UseMutationOptions<
-    oaservicev1_LeaveType,
-    Error,
-    oaservicev1_CreateLeaveTypeRequest
-  >
+  options?: UseMutationOptions<oaservicev1_LeaveType, Error, oaservicev1_CreateLeaveTypeRequest>
 ) {
   return useMutation({
     mutationFn: (req) => apiClient.leaveService.CreateLeaveType(req),
@@ -206,11 +198,7 @@ export function useCreateLeaveType(
 }
 
 export function useGrantLeaveBalance(
-  options?: UseMutationOptions<
-    Record<never, never>,
-    Error,
-    oaservicev1_GrantLeaveBalanceRequest
-  >
+  options?: UseMutationOptions<Record<never, never>, Error, oaservicev1_GrantLeaveBalanceRequest>
 ) {
   return useMutation({
     mutationFn: (req) => apiClient.leaveService.GrantLeaveBalance(req),
@@ -229,9 +217,7 @@ export function useListLeaveBalances(
   });
 }
 
-export async function fetchListLeaveBalances(
-  req: oaservicev1_ListLeaveBalancesRequest
-) {
+export async function fetchListLeaveBalances(req: oaservicev1_ListLeaveBalancesRequest) {
   return queryClient.fetchQuery({
     queryKey: ["listLeaveBalances", req],
     queryFn: () => apiClient.leaveService.ListLeaveBalances(req),
@@ -251,9 +237,7 @@ export function useListLeaveApplications(
   });
 }
 
-export async function fetchListLeaveApplications(
-  req: oaservicev1_ListLeaveApplicationsRequest
-) {
+export async function fetchListLeaveApplications(req: oaservicev1_ListLeaveApplicationsRequest) {
   return queryClient.fetchQuery({
     queryKey: ["listLeaveApplications", req],
     queryFn: () => apiClient.leaveService.ListLeaveApplications(req),
@@ -299,7 +283,10 @@ import type {
 
 export function useListBusinessTripApplications(
   req: oaservicev1_ListBusinessTripApplicationsRequest,
-  options?: Omit<UseQueryOptions<oaservicev1_ListBusinessTripApplicationsResponse, Error>, "queryKey">
+  options?: Omit<
+    UseQueryOptions<oaservicev1_ListBusinessTripApplicationsResponse, Error>,
+    "queryKey"
+  >
 ) {
   return useQuery({
     queryKey: ["listBusinessTripApplications", req],
@@ -365,9 +352,7 @@ export function useListSealApplications(
   });
 }
 
-export async function fetchListSealApplications(
-  req: oaservicev1_ListSealApplicationsRequest
-) {
+export async function fetchListSealApplications(req: oaservicev1_ListSealApplicationsRequest) {
   return queryClient.fetchQuery({
     queryKey: ["listSealApplications", req],
     queryFn: () => apiClient.sealApplicationService.ListSealApplications(req),
@@ -387,9 +372,7 @@ export function useListOutingApplications(
   });
 }
 
-export async function fetchListOutingApplications(
-  req: oaservicev1_ListOutingApplicationsRequest
-) {
+export async function fetchListOutingApplications(req: oaservicev1_ListOutingApplicationsRequest) {
   return queryClient.fetchQuery({
     queryKey: ["listOutingApplications", req],
     queryFn: () => apiClient.outingService.ListOutingApplications(req),
@@ -413,9 +396,7 @@ export function useListAttendanceRecords(
   });
 }
 
-export async function fetchListAttendanceRecords(
-  req: oaservicev1_ListAttendanceRecordsRequest
-) {
+export async function fetchListAttendanceRecords(req: oaservicev1_ListAttendanceRecordsRequest) {
   return queryClient.fetchQuery({
     queryKey: ["listAttendanceRecords", req],
     queryFn: () => apiClient.attendanceService.ListAttendanceRecords(req),
@@ -435,11 +416,7 @@ export function useGetAttendanceSetting(
 }
 
 export function useUpdateAttendanceSetting(
-  options?: UseMutationOptions<
-    Record<never, never>,
-    Error,
-    oaservicev1_AttendanceSetting
-  >
+  options?: UseMutationOptions<Record<never, never>, Error, oaservicev1_AttendanceSetting>
 ) {
   return useMutation({
     mutationFn: (req) => apiClient.attendanceService.UpdateAttendanceSetting(req),
@@ -469,6 +446,9 @@ import type {
   oaservicev1_GetTaskResponse,
   oaservicev1_AuditTaskRequest,
   oaservicev1_ListType,
+  oaservicev1_WorkflowDelegation,
+  oaservicev1_SetWorkflowDelegationRequest,
+  oaservicev1_ListWorkflowDelegationResponse,
 } from "@/api/generated/admin/service/v1";
 
 export async function fetchMyTasks(
@@ -499,11 +479,7 @@ export async function fetchTaskDetail(taskId: number) {
 }
 
 export function useAuditTask(
-  options?: UseMutationOptions<
-    Record<never, never>,
-    Error,
-    oaservicev1_AuditTaskRequest
-  >
+  options?: UseMutationOptions<Record<never, never>, Error, oaservicev1_AuditTaskRequest>
 ) {
   return useMutation({
     mutationFn: (req) => apiClient.workflowService.AuditTask(req),
@@ -511,15 +487,56 @@ export function useAuditTask(
   });
 }
 
+// ==============================
+// 审批委托管理
+// ==============================
+
+export async function fetchListWorkflowDelegations(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ["listWorkflowDelegations", params],
+    queryFn: () => apiClient.workflowService.ListWorkflowDelegation(params.toRawParams()),
+    staleTime: 0,
+    retry: 0,
+  }) as Promise<oaservicev1_ListWorkflowDelegationResponse>;
+}
+
+export function useSetWorkflowDelegation(
+  options?: UseMutationOptions<
+    oaservicev1_WorkflowDelegation,
+    Error,
+    oaservicev1_SetWorkflowDelegationRequest
+  >
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.workflowService.SetWorkflowDelegation(req),
+    ...options,
+  });
+}
+
+export function useDeleteWorkflowDelegation(
+  options?: UseMutationOptions<Record<never, never>, Error, { id: number }>
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.workflowService.DeleteWorkflowDelegation(req),
+    ...options,
+  });
+}
+
 /** 审批历史动作 → 展示文案。 */
 export function auditActionLabel(action?: string): string {
   switch (action) {
-    case "SUBMIT": return "已提交";
-    case "APPROVE": return "已审批通过";
-    case "REJECT": return "已审批驳回";
-    case "FORWARD": return "已转办";
-    case "WITHDRAW": return "已撤回";
-    default: return "-";
+    case "SUBMIT":
+      return "已提交";
+    case "APPROVE":
+      return "已审批通过";
+    case "REJECT":
+      return "已审批驳回";
+    case "FORWARD":
+      return "已转办";
+    case "WITHDRAW":
+      return "已撤回";
+    default:
+      return "-";
   }
 }
 

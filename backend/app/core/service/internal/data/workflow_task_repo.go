@@ -56,12 +56,12 @@ func (r *WorkflowTaskRepo) Create(
 	tenantID uint32,
 	creatorUserID uint32,
 	instanceID uint32,
-	nodeIndex int,
+	nodeID string,
 	assigneeUserID uint32,
 ) (uint32, error) {
 	builder := r.entClient.Client().WorkflowTask.Create().
 		SetInstanceID(instanceID).
-		SetNodeIndex(nodeIndex).
+		SetNodeID(nodeID).
 		SetAssigneeUserID(assigneeUserID).
 		SetTaskStatus(workflowtask.TaskStatusPending).
 		SetTenantID(tenantID).
@@ -76,10 +76,10 @@ func (r *WorkflowTaskRepo) Create(
 	return entity.ID, nil
 }
 
-// GetState 直读 entity 的 TaskStatus/AssigneeUserID 字段（绕过 mapper），并经
-// WithInstance 边加载读取父实例的 ID 与 current_node_index。
+// GetState 直读 entity 的 TaskStatus/AssigneeUserID/NodeID 字段（绕过 mapper），并经
+// WithInstance 边加载读取父实例的 ID。
 // 返回值供状态机校验：assignee==caller && taskPending && instance 活跃。
-func (r *WorkflowTaskRepo) GetState(ctx context.Context, id uint32, tenantID uint32) (uint32, bool, uint32, *int, error) {
+func (r *WorkflowTaskRepo) GetState(ctx context.Context, id uint32, tenantID uint32) (uint32, bool, uint32, string, error) {
 	entity, err := r.entClient.Client().WorkflowTask.Query().
 		Where(
 			workflowtask.IDEQ(id),
@@ -89,21 +89,21 @@ func (r *WorkflowTaskRepo) GetState(ctx context.Context, id uint32, tenantID uin
 		Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return 0, false, 0, nil, oaV1.ErrorNotFound("workflow task not found")
+			return 0, false, 0, "", oaV1.ErrorNotFound("workflow task not found")
 		}
 		r.log.Errorf("query task state failed: %s", err.Error())
-		return 0, false, 0, nil, oaV1.ErrorInternalServerError("query task state failed")
+		return 0, false, 0, "", oaV1.ErrorInternalServerError("query task state failed")
 	}
-	if entity.AssigneeUserID == nil || entity.TaskStatus == nil {
-		return 0, false, 0, nil, oaV1.ErrorConflict("task state corrupt")
+	if entity.AssigneeUserID == nil || entity.TaskStatus == nil || entity.NodeID == nil {
+		return 0, false, 0, "", oaV1.ErrorConflict("task state corrupt")
 	}
 	inst := entity.Edges.Instance
-	if inst == nil || inst.CurrentNodeIndex == nil {
-		return 0, false, 0, nil, oaV1.ErrorConflict("instance edge missing")
+	if inst == nil {
+		return 0, false, 0, "", oaV1.ErrorConflict("instance edge missing")
 	}
 	assignee := *entity.AssigneeUserID
 	taskPending := *entity.TaskStatus == workflowtask.TaskStatusPending
-	return assignee, taskPending, inst.ID, inst.CurrentNodeIndex, nil
+	return assignee, taskPending, inst.ID, *entity.NodeID, nil
 }
 
 func (r *WorkflowTaskRepo) UpdateStatus(
@@ -226,7 +226,7 @@ func (r *WorkflowTaskRepo) ListNodeTaskStatuses(
 	ctx context.Context,
 	tenantID uint32,
 	instanceID uint32,
-	nodeIndex int,
+	nodeID string,
 ) ([]workflowtask.TaskStatus, error) {
 	entities, err := r.entClient.Client().WorkflowTask.Query().
 		Where(
@@ -234,7 +234,7 @@ func (r *WorkflowTaskRepo) ListNodeTaskStatuses(
 				workflowinstance.IDEQ(instanceID),
 				workflowinstance.TenantIDEQ(tenantID),
 			),
-			workflowtask.NodeIndexEQ(nodeIndex),
+			workflowtask.NodeIDEQ(nodeID),
 			workflowtask.TenantIDEQ(tenantID),
 		).
 		All(ctx)
@@ -257,12 +257,12 @@ func (r *WorkflowTaskRepo) CancelPendingByInstanceNode(
 	ctx context.Context,
 	tenantID uint32,
 	instanceID uint32,
-	nodeIndex int,
+	nodeID string,
 	excludeTaskID uint32,
 ) error {
 	predicates := []predicate.WorkflowTask{
 		workflowtask.HasInstanceWith(workflowinstance.IDEQ(instanceID)),
-		workflowtask.NodeIndexEQ(nodeIndex),
+		workflowtask.NodeIDEQ(nodeID),
 		workflowtask.TaskStatusEQ(workflowtask.TaskStatusPending),
 		workflowtask.TenantIDEQ(tenantID),
 	}
@@ -285,11 +285,11 @@ func (r *WorkflowTaskRepo) CancelPendingByInstanceNode(
 // CreateWithTx 事务内建任务。builder 源自 tx。
 func (r *WorkflowTaskRepo) CreateWithTx(
 	ctx context.Context, tx *ent.Tx,
-	tenantID uint32, creatorUserID uint32, instanceID uint32, nodeIndex int, assigneeUserID uint32,
+	tenantID uint32, creatorUserID uint32, instanceID uint32, nodeID string, assigneeUserID uint32,
 ) (uint32, error) {
 	builder := tx.WorkflowTask.Create().
 		SetInstanceID(instanceID).
-		SetNodeIndex(nodeIndex).
+		SetNodeID(nodeID).
 		SetAssigneeUserID(assigneeUserID).
 		SetTaskStatus(workflowtask.TaskStatusPending).
 		SetTenantID(tenantID).
@@ -344,11 +344,11 @@ func (r *WorkflowTaskRepo) UpdateAssigneeWithTx(
 
 // CancelPendingByInstanceNodeWithTx 事务内取消同实例同节点 PENDING 任务。
 func (r *WorkflowTaskRepo) CancelPendingByInstanceNodeWithTx(
-	ctx context.Context, tx *ent.Tx, tenantID uint32, instanceID uint32, nodeIndex int, excludeTaskID uint32,
+	ctx context.Context, tx *ent.Tx, tenantID uint32, instanceID uint32, nodeID string, excludeTaskID uint32,
 ) error {
 	predicates := []predicate.WorkflowTask{
 		workflowtask.HasInstanceWith(workflowinstance.IDEQ(instanceID)),
-		workflowtask.NodeIndexEQ(nodeIndex),
+		workflowtask.NodeIDEQ(nodeID),
 		workflowtask.TaskStatusEQ(workflowtask.TaskStatusPending),
 		workflowtask.TenantIDEQ(tenantID),
 	}
@@ -392,6 +392,82 @@ func (r *WorkflowTaskRepo) ListPendingAssigneesByInstance(
 	return assignees, nil
 }
 
+// HasPendingByInstance 判断实例是否存在 PENDING 任务（用于活跃节点判定）。
+func (r *WorkflowTaskRepo) HasPendingByInstance(
+	ctx context.Context,
+	tenantID uint32,
+	instanceID uint32,
+) (bool, error) {
+	count, err := r.entClient.Client().WorkflowTask.Query().
+		Where(
+			workflowtask.HasInstanceWith(
+				workflowinstance.IDEQ(instanceID),
+				workflowinstance.TenantIDEQ(tenantID),
+			),
+			workflowtask.TaskStatusEQ(workflowtask.TaskStatusPending),
+			workflowtask.TenantIDEQ(tenantID),
+		).
+		Count(ctx)
+	if err != nil {
+		r.log.Errorf("count pending tasks by instance failed: %s", err.Error())
+		return false, oaV1.ErrorInternalServerError("count pending tasks failed")
+	}
+	return count > 0, nil
+}
+
+// PendingTaskInfo 待办任务的超时检查信息。
+type PendingTaskInfo struct {
+	TaskID      uint32
+	InstanceID  uint32
+	TenantID    uint32
+	Assignee    uint32
+	NodeID      string
+	CreatedAt   time.Time
+}
+
+// ListAllPendingWithAge 列出全部租户的 PENDING 任务及其审批人、实例、节点、创建时间。
+// 供超时催办调度器扫描用。经 WithInstance 边加载取实例 ID。
+func (r *WorkflowTaskRepo) ListAllPendingWithAge(
+	ctx context.Context,
+) ([]PendingTaskInfo, error) {
+	entities, err := r.entClient.Client().WorkflowTask.Query().
+		Where(
+			workflowtask.TaskStatusEQ(workflowtask.TaskStatusPending),
+		).
+		WithInstance().
+		All(ctx)
+	if err != nil {
+		r.log.Errorf("list all pending with age failed: %s", err.Error())
+		return nil, oaV1.ErrorInternalServerError("list all pending with age failed")
+	}
+	tasks := make([]PendingTaskInfo, 0, len(entities))
+	for _, e := range entities {
+		if e.AssigneeUserID == nil || *e.AssigneeUserID == 0 {
+			continue
+		}
+		if e.NodeID == nil || *e.NodeID == "" {
+			continue
+		}
+		inst := e.Edges.Instance
+		if inst == nil {
+			continue
+		}
+		createdAt := time.Time{}
+		if e.CreatedAt != nil {
+			createdAt = *e.CreatedAt
+		}
+		tasks = append(tasks, PendingTaskInfo{
+			TaskID:     e.ID,
+			InstanceID: inst.ID,
+			TenantID:   *e.TenantID,
+			Assignee:   *e.AssigneeUserID,
+			NodeID:     *e.NodeID,
+			CreatedAt:  createdAt,
+		})
+	}
+	return tasks, nil
+}
+
 // CancelAllPendingByInstance 取消实例全部待办任务（撤回场景，跨所有节点）。
 func (r *WorkflowTaskRepo) CancelAllPendingByInstance(
 	ctx context.Context,
@@ -420,7 +496,10 @@ func (r *WorkflowTaskRepo) CancelAllPendingByInstanceWithTx(
 ) error {
 	builder := tx.WorkflowTask.Update()
 	builder.Where(
-		workflowtask.HasInstanceWith(workflowinstance.IDEQ(instanceID)),
+		workflowtask.HasInstanceWith(
+			workflowinstance.IDEQ(instanceID),
+			workflowinstance.TenantIDEQ(tenantID),
+		),
 		workflowtask.TaskStatusEQ(workflowtask.TaskStatusPending),
 		workflowtask.TenantIDEQ(tenantID),
 	)
@@ -430,6 +509,57 @@ func (r *WorkflowTaskRepo) CancelAllPendingByInstanceWithTx(
 	if _, err := builder.Save(ctx); err != nil {
 		r.log.Errorf("cancel all pending tasks failed: %s", err.Error())
 		return oaV1.ErrorInternalServerError("cancel all pending tasks failed")
+	}
+	return nil
+}
+
+// CancelAllByInstanceNode 清除指定节点的全部任务（不限状态，置 CANCELLED）。
+// 用于回退边场景：walker 再次到达某节点时，该节点可能残留上一轮的 APPROVED/REJECTED 任务，
+// 会污染会签/或签收敛判定，故建新任务前先清除。
+func (r *WorkflowTaskRepo) CancelAllByInstanceNode(
+	ctx context.Context,
+	tenantID uint32,
+	instanceID uint32,
+	nodeID string,
+) error {
+	builder := r.entClient.Client().WorkflowTask.Update()
+	builder.Where(
+		workflowtask.HasInstanceWith(
+			workflowinstance.IDEQ(instanceID),
+			workflowinstance.TenantIDEQ(tenantID),
+		),
+		workflowtask.NodeIDEQ(nodeID),
+		workflowtask.TenantIDEQ(tenantID),
+	)
+	builder.SetTaskStatus(workflowtask.TaskStatusCancelled)
+	builder.SetUpdatedAt(time.Now())
+
+	if _, err := builder.Save(ctx); err != nil {
+		r.log.Errorf("cancel all by instance node failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("cancel all by instance node failed")
+	}
+	return nil
+}
+
+// CancelAllByInstanceNodeWithTx 事务内清除指定节点的全部任务。
+func (r *WorkflowTaskRepo) CancelAllByInstanceNodeWithTx(
+	ctx context.Context, tx *ent.Tx, tenantID uint32, instanceID uint32, nodeID string,
+) error {
+	builder := tx.WorkflowTask.Update()
+	builder.Where(
+		workflowtask.HasInstanceWith(
+			workflowinstance.IDEQ(instanceID),
+			workflowinstance.TenantIDEQ(tenantID),
+		),
+		workflowtask.NodeIDEQ(nodeID),
+		workflowtask.TenantIDEQ(tenantID),
+	)
+	builder.SetTaskStatus(workflowtask.TaskStatusCancelled)
+	builder.SetUpdatedAt(time.Now())
+
+	if _, err := builder.Save(ctx); err != nil {
+		r.log.Errorf("cancel all by instance node failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("cancel all by instance node failed")
 	}
 	return nil
 }

@@ -310,10 +310,6 @@ func (m *WorkflowInstance) validate(all bool) error {
 		// no validation rules for InstanceStatus
 	}
 
-	if m.CurrentNodeIndex != nil {
-		// no validation rules for CurrentNodeIndex
-	}
-
 	if m.FormData != nil {
 		// no validation rules for FormData
 	}
@@ -545,8 +541,8 @@ func (m *WorkflowTask) validate(all bool) error {
 		// no validation rules for Id
 	}
 
-	if m.NodeIndex != nil {
-		// no validation rules for NodeIndex
+	if m.NodeId != nil {
+		// no validation rules for NodeId
 	}
 
 	if m.AssigneeUserId != nil {
@@ -775,8 +771,8 @@ func (m *WorkflowLog) validate(all bool) error {
 		// no validation rules for Id
 	}
 
-	if m.NodeIndex != nil {
-		// no validation rules for NodeIndex
+	if m.NodeId != nil {
+		// no validation rules for NodeId
 	}
 
 	if m.LogAction != nil {
@@ -2278,6 +2274,8 @@ func (m *AuditTaskRequest) validate(all bool) error {
 
 	// no validation rules for Comment
 
+	// no validation rules for AdditionalApprover
+
 	if len(errors) > 0 {
 		return AuditTaskRequestMultiError(errors)
 	}
@@ -2893,3 +2891,530 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetTaskResponseValidationError{}
+
+// Validate checks the field values on WorkflowDelegation with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *WorkflowDelegation) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on WorkflowDelegation with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// WorkflowDelegationMultiError, or nil if none found.
+func (m *WorkflowDelegation) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *WorkflowDelegation) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Id != nil {
+		// no validation rules for Id
+	}
+
+	if m.DelegatorUserId != nil {
+		// no validation rules for DelegatorUserId
+	}
+
+	if m.DelegateUserId != nil {
+		// no validation rules for DelegateUserId
+	}
+
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
+	if m.CreatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCreatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, WorkflowDelegationValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, WorkflowDelegationValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return WorkflowDelegationValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return WorkflowDelegationMultiError(errors)
+	}
+
+	return nil
+}
+
+// WorkflowDelegationMultiError is an error wrapping multiple validation errors
+// returned by WorkflowDelegation.ValidateAll() if the designated constraints
+// aren't met.
+type WorkflowDelegationMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m WorkflowDelegationMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m WorkflowDelegationMultiError) AllErrors() []error { return m }
+
+// WorkflowDelegationValidationError is the validation error returned by
+// WorkflowDelegation.Validate if the designated constraints aren't met.
+type WorkflowDelegationValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e WorkflowDelegationValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e WorkflowDelegationValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e WorkflowDelegationValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e WorkflowDelegationValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e WorkflowDelegationValidationError) ErrorName() string {
+	return "WorkflowDelegationValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e WorkflowDelegationValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sWorkflowDelegation.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = WorkflowDelegationValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = WorkflowDelegationValidationError{}
+
+// Validate checks the field values on SetWorkflowDelegationRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SetWorkflowDelegationRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SetWorkflowDelegationRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// SetWorkflowDelegationRequestMultiError, or nil if none found.
+func (m *SetWorkflowDelegationRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SetWorkflowDelegationRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetData()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, SetWorkflowDelegationRequestValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, SetWorkflowDelegationRequestValidationError{
+					field:  "Data",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetData()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return SetWorkflowDelegationRequestValidationError{
+				field:  "Data",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return SetWorkflowDelegationRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// SetWorkflowDelegationRequestMultiError is an error wrapping multiple
+// validation errors returned by SetWorkflowDelegationRequest.ValidateAll() if
+// the designated constraints aren't met.
+type SetWorkflowDelegationRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SetWorkflowDelegationRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SetWorkflowDelegationRequestMultiError) AllErrors() []error { return m }
+
+// SetWorkflowDelegationRequestValidationError is the validation error returned
+// by SetWorkflowDelegationRequest.Validate if the designated constraints
+// aren't met.
+type SetWorkflowDelegationRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SetWorkflowDelegationRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SetWorkflowDelegationRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SetWorkflowDelegationRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SetWorkflowDelegationRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SetWorkflowDelegationRequestValidationError) ErrorName() string {
+	return "SetWorkflowDelegationRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SetWorkflowDelegationRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSetWorkflowDelegationRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SetWorkflowDelegationRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SetWorkflowDelegationRequestValidationError{}
+
+// Validate checks the field values on ListWorkflowDelegationResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListWorkflowDelegationResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListWorkflowDelegationResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ListWorkflowDelegationResponseMultiError, or nil if none found.
+func (m *ListWorkflowDelegationResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListWorkflowDelegationResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListWorkflowDelegationResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListWorkflowDelegationResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListWorkflowDelegationResponseValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return ListWorkflowDelegationResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListWorkflowDelegationResponseMultiError is an error wrapping multiple
+// validation errors returned by ListWorkflowDelegationResponse.ValidateAll()
+// if the designated constraints aren't met.
+type ListWorkflowDelegationResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListWorkflowDelegationResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListWorkflowDelegationResponseMultiError) AllErrors() []error { return m }
+
+// ListWorkflowDelegationResponseValidationError is the validation error
+// returned by ListWorkflowDelegationResponse.Validate if the designated
+// constraints aren't met.
+type ListWorkflowDelegationResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListWorkflowDelegationResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListWorkflowDelegationResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListWorkflowDelegationResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListWorkflowDelegationResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListWorkflowDelegationResponseValidationError) ErrorName() string {
+	return "ListWorkflowDelegationResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListWorkflowDelegationResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListWorkflowDelegationResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListWorkflowDelegationResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListWorkflowDelegationResponseValidationError{}
+
+// Validate checks the field values on DeleteWorkflowDelegationRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteWorkflowDelegationRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteWorkflowDelegationRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// DeleteWorkflowDelegationRequestMultiError, or nil if none found.
+func (m *DeleteWorkflowDelegationRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteWorkflowDelegationRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return DeleteWorkflowDelegationRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteWorkflowDelegationRequestMultiError is an error wrapping multiple
+// validation errors returned by DeleteWorkflowDelegationRequest.ValidateAll()
+// if the designated constraints aren't met.
+type DeleteWorkflowDelegationRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteWorkflowDelegationRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteWorkflowDelegationRequestMultiError) AllErrors() []error { return m }
+
+// DeleteWorkflowDelegationRequestValidationError is the validation error
+// returned by DeleteWorkflowDelegationRequest.Validate if the designated
+// constraints aren't met.
+type DeleteWorkflowDelegationRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteWorkflowDelegationRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteWorkflowDelegationRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteWorkflowDelegationRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteWorkflowDelegationRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteWorkflowDelegationRequestValidationError) ErrorName() string {
+	return "DeleteWorkflowDelegationRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteWorkflowDelegationRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteWorkflowDelegationRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteWorkflowDelegationRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteWorkflowDelegationRequestValidationError{}

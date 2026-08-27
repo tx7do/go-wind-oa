@@ -88,3 +88,27 @@ func (s *WorkflowService) AuditTask(ctx context.Context, req *oaV1.AuditTaskRequ
 	}
 	return resp, nil
 }
+
+func (s *WorkflowService) SetWorkflowDelegation(ctx context.Context, req *oaV1.SetWorkflowDelegationRequest) (*oaV1.WorkflowDelegation, error) {
+	resp, err := s.workflowServiceClient.SetWorkflowDelegation(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (s *WorkflowService) ListWorkflowDelegation(ctx context.Context, req *paginationV1.PagingRequest) (*oaV1.ListWorkflowDelegationResponse, error) {
+	resp, err := s.workflowServiceClient.ListWorkflowDelegation(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (s *WorkflowService) DeleteWorkflowDelegation(ctx context.Context, req *oaV1.DeleteWorkflowDelegationRequest) (*emptypb.Empty, error) {
+	resp, err := s.workflowServiceClient.DeleteWorkflowDelegation(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}

@@ -55,13 +55,13 @@ func (r *WorkflowLogRepo) Create(
 	tenantID uint32,
 	creatorUserID uint32,
 	instanceID uint32,
-	nodeIndex int,
+	nodeID string,
 	action *oaV1.WorkflowLog_LogAction,
 	comment string,
 ) (uint32, error) {
 	builder := r.entClient.Client().WorkflowLog.Create().
 		SetInstanceID(instanceID).
-		SetNodeIndex(nodeIndex).
+		SetNodeID(nodeID).
 		SetNillableLogAction(r.logActionConverter.ToEntity(action)).
 		SetNillableComment(&comment).
 		SetTenantID(tenantID).
@@ -79,12 +79,12 @@ func (r *WorkflowLogRepo) Create(
 // CreateWithTx 事务内写日志。builder 源自 tx。
 func (r *WorkflowLogRepo) CreateWithTx(
 	ctx context.Context, tx *ent.Tx,
-	tenantID uint32, creatorUserID uint32, instanceID uint32, nodeIndex int,
-	action *oaV1.WorkflowLog_LogAction, comment string,
+	tenantID uint32, creatorUserID uint32, instanceID uint32, nodeID string,
+		action *oaV1.WorkflowLog_LogAction, comment string,
 ) (uint32, error) {
 	builder := tx.WorkflowLog.Create().
 		SetInstanceID(instanceID).
-		SetNodeIndex(nodeIndex).
+		SetNodeID(nodeID).
 		SetNillableLogAction(r.logActionConverter.ToEntity(action)).
 		SetNillableComment(&comment).
 		SetTenantID(tenantID).

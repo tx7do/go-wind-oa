@@ -44,6 +44,15 @@ service WorkflowService {
 
   // 查询任务详情
   rpc GetTask(GetTaskRequest) returns (GetTaskResponse) {}
+
+  // 设置审批委托（审批人指定代理人，待办自动转发）
+  rpc SetWorkflowDelegation(SetWorkflowDelegationRequest) returns (WorkflowDelegation) {}
+
+  // 查询审批委托列表
+  rpc ListWorkflowDelegation(pagination.PagingRequest) returns (ListWorkflowDelegationResponse) {}
+
+  // 删除审批委托
+  rpc DeleteWorkflowDelegation(DeleteWorkflowDelegationRequest) returns (google.protobuf.Empty) {}
 }
 
 // 流程定义
@@ -73,8 +82,8 @@ message WorkflowDefinition {
 
   optional string node_config = 4 [
     json_name = "nodeConfig",
-    (gnostic.openapi.v3.property) = { description: "节点配置（JSON）。每节点格式：{\"approvers\":[{\"type\":\"USER\"|\"LEADER\"|\"POSITION\",\"id\":用户或职位ID}],\"strategy\":\"ALL\"|\"ANY\"}。type=LEADER 无需 id（提交人主管）。strategy=ALL 会签（默认），ANY 或签。兼容旧格式 {\"approver_type\":\"USER\",\"approver\":id}" }
-  ]; // 节点配置（JSON）
+    (gnostic.openapi.v3.property) = { description: "流程图配置（JSON）。图格式 {\"version\":2,\"nodes\":[{\"id\",\"type\",\"approvers\",\"strategy\"}],\"edges\":[{\"from\",\"to\",\"condition\"}]}。节点 type：START/END/TASK/EXCLUSIVE_GATEWAY/PARALLEL_GATEWAY_FORK/PARALLEL_GATEWAY_JOIN。TASK 节点 approvers/strategy 同旧格式。EXCLUSIVE_GATEWAY 出边带 condition（表达式或 \"default\"）。兼容旧格式（节点数组自动转线性图）。" }
+  ]; // 流程图配置（JSON）
 
   optional string form_schema = 5 [
     json_name = "formSchema",
@@ -113,6 +122,7 @@ message WorkflowInstance {
     APPROVED = 1;    // 已通过
     REJECTED = 2;    // 已驳回
     WITHDRAWN = 3;   // 已撤回
+    SUSPENDED = 4;   // 挂起（等待子流程完成）
   }
 
   optional uint32 id = 1 [
@@ -125,11 +135,6 @@ message WorkflowInstance {
     json_name = "instanceStatus",
     (gnostic.openapi.v3.property) = { description: "实例状态" }
   ]; // 实例状态
-
-  optional int32 current_node_index = 3 [
-    json_name = "currentNodeIndex",
-    (gnostic.openapi.v3.property) = { description: "当前节点索引" }
-  ]; // 当前节点索引
 
   optional string form_data = 4 [
     json_name = "formData",
@@ -176,10 +181,10 @@ message WorkflowTask {
     (gnostic.openapi.v3.property) = { description: "任务ID" }
   ]; // 任务ID
 
-  optional int32 node_index = 2 [
-    json_name = "nodeIndex",
-    (gnostic.openapi.v3.property) = { description: "节点索引" }
-  ]; // 节点索引
+  optional string node_id = 2 [
+    json_name = "nodeId",
+    (gnostic.openapi.v3.property) = { description: "图节点ID" }
+  ]; // 图节点ID
 
   optional uint32 assignee_user_id = 3 [
     json_name = "assigneeUserId",
@@ -222,10 +227,10 @@ message WorkflowLog {
     (gnostic.openapi.v3.property) = { description: "日志ID" }
   ]; // 日志ID
 
-  optional int32 node_index = 2 [
-    json_name = "nodeIndex",
-    (gnostic.openapi.v3.property) = { description: "节点索引" }
-  ]; // 节点索引
+  optional string node_id = 2 [
+    json_name = "nodeId",
+    (gnostic.openapi.v3.property) = { description: "图节点ID" }
+  ]; // 图节点ID
 
   optional LogAction log_action = 3 [
     json_name = "logAction",
@@ -389,6 +394,7 @@ enum AuditAction {
   APPROVE = 0;  // 通过
   REJECT = 1;   // 驳回
   FORWARD = 2;  // 转办
+  ADD_APPROVER = 3;  // 加签
 }
 
 // 审批任务 - 请求
@@ -412,6 +418,11 @@ message AuditTaskRequest {
     json_name = "comment",
     (gnostic.openapi.v3.property) = { description: "审批意见" }
   ]; // 审批意见
+
+  uint32 additional_approver = 5 [
+    json_name = "additionalApprover",
+    (gnostic.openapi.v3.property) = { description: "加签目标用户ID" }
+  ]; // 加签目标用户ID
 }
 
 // 任务列表类型
@@ -471,4 +482,52 @@ message GetTaskResponse {
     json_name = "formData",
     (gnostic.openapi.v3.property) = { description: "申请表单数据（JSON，供审批人查看申请内容）" }
   ]; // 申请表单数据
+}
+
+// 审批委托
+message WorkflowDelegation {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (google.api.field_behavior) = OPTIONAL,
+    (gnostic.openapi.v3.property) = { description: "委托记录ID" }
+  ]; // 委托记录ID
+
+  optional uint32 delegator_user_id = 2 [
+    json_name = "delegatorUserId",
+    (gnostic.openapi.v3.property) = { description: "委托人用户ID（原审批人）" }
+  ]; // 委托人用户ID
+
+  optional uint32 delegate_user_id = 3 [
+    json_name = "delegateUserId",
+    (gnostic.openapi.v3.property) = { description: "被委托人用户ID（代理人）" }
+  ]; // 被委托人用户ID
+
+  optional uint32 tenant_id = 40 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = { description: "租户ID" }
+  ]; // 租户ID
+
+  optional google.protobuf.Timestamp created_at = 41 [
+    json_name = "createdAt",
+    (gnostic.openapi.v3.property) = { description: "创建时间" }
+  ]; // 创建时间
+}
+
+// 设置审批委托 - 请求
+message SetWorkflowDelegationRequest {
+  WorkflowDelegation data = 1;
+}
+
+// 查询审批委托列表 - 回应
+message ListWorkflowDelegationResponse {
+  repeated WorkflowDelegation items = 1;
+  uint64 total = 2;
+}
+
+// 删除审批委托 - 请求
+message DeleteWorkflowDelegationRequest {
+  uint32 id = 1 [
+    (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+    json_name = "id"
+  ]; // ID
 }

@@ -29,8 +29,8 @@ const (
 	FieldDeletedBy = "deleted_by"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
-	// FieldNodeIndex holds the string denoting the node_index field in the database.
-	FieldNodeIndex = "node_index"
+	// FieldNodeID holds the string denoting the node_id field in the database.
+	FieldNodeID = "node_id"
 	// FieldAssigneeUserID holds the string denoting the assignee_user_id field in the database.
 	FieldAssigneeUserID = "assignee_user_id"
 	// FieldTaskStatus holds the string denoting the task_status field in the database.
@@ -58,7 +58,7 @@ var Columns = []string{
 	FieldUpdatedBy,
 	FieldDeletedBy,
 	FieldTenantID,
-	FieldNodeIndex,
+	FieldNodeID,
 	FieldAssigneeUserID,
 	FieldTaskStatus,
 }
@@ -169,9 +169,9 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
-// ByNodeIndex orders the results by the node_index field.
-func ByNodeIndex(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldNodeIndex, opts...).ToFunc()
+// ByNodeID orders the results by the node_id field.
+func ByNodeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNodeID, opts...).ToFunc()
 }
 
 // ByAssigneeUserID orders the results by the assignee_user_id field.

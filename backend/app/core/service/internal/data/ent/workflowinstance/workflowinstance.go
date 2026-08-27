@@ -31,8 +31,6 @@ const (
 	FieldTenantID = "tenant_id"
 	// FieldInstanceStatus holds the string denoting the instance_status field in the database.
 	FieldInstanceStatus = "instance_status"
-	// FieldCurrentNodeIndex holds the string denoting the current_node_index field in the database.
-	FieldCurrentNodeIndex = "current_node_index"
 	// FieldFormData holds the string denoting the form_data field in the database.
 	FieldFormData = "form_data"
 	// FieldBusinessType holds the string denoting the business_type field in the database.
@@ -45,6 +43,10 @@ const (
 	EdgeTasks = "tasks"
 	// EdgeLogs holds the string denoting the logs edge name in mutations.
 	EdgeLogs = "logs"
+	// EdgeInstanceJoins holds the string denoting the instance_joins edge name in mutations.
+	EdgeInstanceJoins = "instance_joins"
+	// EdgeParentLinks holds the string denoting the parent_links edge name in mutations.
+	EdgeParentLinks = "parent_links"
 	// Table holds the table name of the workflowinstance in the database.
 	Table = "oa_workflow_instance"
 	// DefinitionTable is the table that holds the definition relation/edge.
@@ -68,6 +70,20 @@ const (
 	LogsInverseTable = "oa_workflow_log"
 	// LogsColumn is the table column denoting the logs relation/edge.
 	LogsColumn = "instance_id"
+	// InstanceJoinsTable is the table that holds the instance_joins relation/edge.
+	InstanceJoinsTable = "oa_workflow_instance_join"
+	// InstanceJoinsInverseTable is the table name for the WorkflowInstanceJoin entity.
+	// It exists in this package in order to avoid circular dependency with the "workflowinstancejoin" package.
+	InstanceJoinsInverseTable = "oa_workflow_instance_join"
+	// InstanceJoinsColumn is the table column denoting the instance_joins relation/edge.
+	InstanceJoinsColumn = "instance_id"
+	// ParentLinksTable is the table that holds the parent_links relation/edge.
+	ParentLinksTable = "oa_workflow_instance_parent_link"
+	// ParentLinksInverseTable is the table name for the WorkflowInstanceParentLink entity.
+	// It exists in this package in order to avoid circular dependency with the "workflowinstanceparentlink" package.
+	ParentLinksInverseTable = "oa_workflow_instance_parent_link"
+	// ParentLinksColumn is the table column denoting the parent_links relation/edge.
+	ParentLinksColumn = "parent_instance_id"
 )
 
 // Columns holds all SQL columns for workflowinstance fields.
@@ -81,7 +97,6 @@ var Columns = []string{
 	FieldDeletedBy,
 	FieldTenantID,
 	FieldInstanceStatus,
-	FieldCurrentNodeIndex,
 	FieldFormData,
 	FieldBusinessType,
 	FieldBusinessID,
@@ -134,6 +149,7 @@ const (
 	InstanceStatusApproved  InstanceStatus = "APPROVED"
 	InstanceStatusRejected  InstanceStatus = "REJECTED"
 	InstanceStatusWithdrawn InstanceStatus = "WITHDRAWN"
+	InstanceStatusSuspended InstanceStatus = "SUSPENDED"
 )
 
 func (is InstanceStatus) String() string {
@@ -143,7 +159,7 @@ func (is InstanceStatus) String() string {
 // InstanceStatusValidator is a validator for the "instance_status" field enum values. It is called by the builders before save.
 func InstanceStatusValidator(is InstanceStatus) error {
 	switch is {
-	case InstanceStatusPending, InstanceStatusApproved, InstanceStatusRejected, InstanceStatusWithdrawn:
+	case InstanceStatusPending, InstanceStatusApproved, InstanceStatusRejected, InstanceStatusWithdrawn, InstanceStatusSuspended:
 		return nil
 	default:
 		return fmt.Errorf("workflowinstance: invalid enum value for instance_status field: %q", is)
@@ -198,11 +214,6 @@ func ByInstanceStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldInstanceStatus, opts...).ToFunc()
 }
 
-// ByCurrentNodeIndex orders the results by the current_node_index field.
-func ByCurrentNodeIndex(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCurrentNodeIndex, opts...).ToFunc()
-}
-
 // ByFormData orders the results by the form_data field.
 func ByFormData(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFormData, opts...).ToFunc()
@@ -252,6 +263,34 @@ func ByLogs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newLogsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByInstanceJoinsCount orders the results by instance_joins count.
+func ByInstanceJoinsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newInstanceJoinsStep(), opts...)
+	}
+}
+
+// ByInstanceJoins orders the results by instance_joins terms.
+func ByInstanceJoins(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInstanceJoinsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByParentLinksCount orders the results by parent_links count.
+func ByParentLinksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newParentLinksStep(), opts...)
+	}
+}
+
+// ByParentLinks orders the results by parent_links terms.
+func ByParentLinks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newParentLinksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newDefinitionStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -271,5 +310,19 @@ func newLogsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(LogsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, LogsTable, LogsColumn),
+	)
+}
+func newInstanceJoinsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InstanceJoinsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, InstanceJoinsTable, InstanceJoinsColumn),
+	)
+}
+func newParentLinksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ParentLinksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ParentLinksTable, ParentLinksColumn),
 	)
 }

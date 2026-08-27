@@ -96,6 +96,9 @@ var ProviderSet = wire.NewSet(
 	data.NewWorkflowTaskRepo,
 	data.NewWorkflowLogRepo,
 	data.NewWorkflowResolverRepo,
+	data.NewWorkflowInstanceJoinRepo,
+	data.NewWorkflowInstanceParentLinkRepo,
+	data.NewWorkflowDelegationRepo,
 
 	data.NewLeaveTypeRepo,
 	data.NewLeaveBalanceRepo,

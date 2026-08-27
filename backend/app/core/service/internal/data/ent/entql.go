@@ -61,7 +61,10 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/userrole"
 	"go-wind-oa/app/core/service/internal/data/ent/wififingerprint"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowdelegation"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowinstancejoin"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowinstanceparentlink"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowlog"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowtask"
 
@@ -73,7 +76,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 60)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 63)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   api.Table,
@@ -1654,6 +1657,28 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[57] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   workflowdelegation.Table,
+			Columns: workflowdelegation.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint32,
+				Column: workflowdelegation.FieldID,
+			},
+		},
+		Type: "WorkflowDelegation",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			workflowdelegation.FieldCreatedAt:       {Type: field.TypeTime, Column: workflowdelegation.FieldCreatedAt},
+			workflowdelegation.FieldUpdatedAt:       {Type: field.TypeTime, Column: workflowdelegation.FieldUpdatedAt},
+			workflowdelegation.FieldDeletedAt:       {Type: field.TypeTime, Column: workflowdelegation.FieldDeletedAt},
+			workflowdelegation.FieldCreatedBy:       {Type: field.TypeUint32, Column: workflowdelegation.FieldCreatedBy},
+			workflowdelegation.FieldUpdatedBy:       {Type: field.TypeUint32, Column: workflowdelegation.FieldUpdatedBy},
+			workflowdelegation.FieldDeletedBy:       {Type: field.TypeUint32, Column: workflowdelegation.FieldDeletedBy},
+			workflowdelegation.FieldTenantID:        {Type: field.TypeUint32, Column: workflowdelegation.FieldTenantID},
+			workflowdelegation.FieldDelegatorUserID: {Type: field.TypeUint32, Column: workflowdelegation.FieldDelegatorUserID},
+			workflowdelegation.FieldDelegateUserID:  {Type: field.TypeUint32, Column: workflowdelegation.FieldDelegateUserID},
+		},
+	}
+	graph.Nodes[58] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowinstance.Table,
 			Columns: workflowinstance.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -1663,21 +1688,64 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "WorkflowInstance",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			workflowinstance.FieldCreatedAt:        {Type: field.TypeTime, Column: workflowinstance.FieldCreatedAt},
-			workflowinstance.FieldUpdatedAt:        {Type: field.TypeTime, Column: workflowinstance.FieldUpdatedAt},
-			workflowinstance.FieldDeletedAt:        {Type: field.TypeTime, Column: workflowinstance.FieldDeletedAt},
-			workflowinstance.FieldCreatedBy:        {Type: field.TypeUint32, Column: workflowinstance.FieldCreatedBy},
-			workflowinstance.FieldUpdatedBy:        {Type: field.TypeUint32, Column: workflowinstance.FieldUpdatedBy},
-			workflowinstance.FieldDeletedBy:        {Type: field.TypeUint32, Column: workflowinstance.FieldDeletedBy},
-			workflowinstance.FieldTenantID:         {Type: field.TypeUint32, Column: workflowinstance.FieldTenantID},
-			workflowinstance.FieldInstanceStatus:   {Type: field.TypeEnum, Column: workflowinstance.FieldInstanceStatus},
-			workflowinstance.FieldCurrentNodeIndex: {Type: field.TypeInt, Column: workflowinstance.FieldCurrentNodeIndex},
-			workflowinstance.FieldFormData:         {Type: field.TypeString, Column: workflowinstance.FieldFormData},
-			workflowinstance.FieldBusinessType:     {Type: field.TypeString, Column: workflowinstance.FieldBusinessType},
-			workflowinstance.FieldBusinessID:       {Type: field.TypeUint32, Column: workflowinstance.FieldBusinessID},
+			workflowinstance.FieldCreatedAt:      {Type: field.TypeTime, Column: workflowinstance.FieldCreatedAt},
+			workflowinstance.FieldUpdatedAt:      {Type: field.TypeTime, Column: workflowinstance.FieldUpdatedAt},
+			workflowinstance.FieldDeletedAt:      {Type: field.TypeTime, Column: workflowinstance.FieldDeletedAt},
+			workflowinstance.FieldCreatedBy:      {Type: field.TypeUint32, Column: workflowinstance.FieldCreatedBy},
+			workflowinstance.FieldUpdatedBy:      {Type: field.TypeUint32, Column: workflowinstance.FieldUpdatedBy},
+			workflowinstance.FieldDeletedBy:      {Type: field.TypeUint32, Column: workflowinstance.FieldDeletedBy},
+			workflowinstance.FieldTenantID:       {Type: field.TypeUint32, Column: workflowinstance.FieldTenantID},
+			workflowinstance.FieldInstanceStatus: {Type: field.TypeEnum, Column: workflowinstance.FieldInstanceStatus},
+			workflowinstance.FieldFormData:       {Type: field.TypeString, Column: workflowinstance.FieldFormData},
+			workflowinstance.FieldBusinessType:   {Type: field.TypeString, Column: workflowinstance.FieldBusinessType},
+			workflowinstance.FieldBusinessID:     {Type: field.TypeUint32, Column: workflowinstance.FieldBusinessID},
 		},
 	}
-	graph.Nodes[58] = &sqlgraph.Node{
+	graph.Nodes[59] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   workflowinstancejoin.Table,
+			Columns: workflowinstancejoin.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint32,
+				Column: workflowinstancejoin.FieldID,
+			},
+		},
+		Type: "WorkflowInstanceJoin",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			workflowinstancejoin.FieldCreatedAt:    {Type: field.TypeTime, Column: workflowinstancejoin.FieldCreatedAt},
+			workflowinstancejoin.FieldUpdatedAt:    {Type: field.TypeTime, Column: workflowinstancejoin.FieldUpdatedAt},
+			workflowinstancejoin.FieldDeletedAt:    {Type: field.TypeTime, Column: workflowinstancejoin.FieldDeletedAt},
+			workflowinstancejoin.FieldCreatedBy:    {Type: field.TypeUint32, Column: workflowinstancejoin.FieldCreatedBy},
+			workflowinstancejoin.FieldUpdatedBy:    {Type: field.TypeUint32, Column: workflowinstancejoin.FieldUpdatedBy},
+			workflowinstancejoin.FieldDeletedBy:    {Type: field.TypeUint32, Column: workflowinstancejoin.FieldDeletedBy},
+			workflowinstancejoin.FieldTenantID:     {Type: field.TypeUint32, Column: workflowinstancejoin.FieldTenantID},
+			workflowinstancejoin.FieldJoinNodeID:   {Type: field.TypeString, Column: workflowinstancejoin.FieldJoinNodeID},
+			workflowinstancejoin.FieldArrivedCount: {Type: field.TypeInt, Column: workflowinstancejoin.FieldArrivedCount},
+		},
+	}
+	graph.Nodes[60] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   workflowinstanceparentlink.Table,
+			Columns: workflowinstanceparentlink.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint32,
+				Column: workflowinstanceparentlink.FieldID,
+			},
+		},
+		Type: "WorkflowInstanceParentLink",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			workflowinstanceparentlink.FieldCreatedAt:        {Type: field.TypeTime, Column: workflowinstanceparentlink.FieldCreatedAt},
+			workflowinstanceparentlink.FieldUpdatedAt:        {Type: field.TypeTime, Column: workflowinstanceparentlink.FieldUpdatedAt},
+			workflowinstanceparentlink.FieldDeletedAt:        {Type: field.TypeTime, Column: workflowinstanceparentlink.FieldDeletedAt},
+			workflowinstanceparentlink.FieldCreatedBy:        {Type: field.TypeUint32, Column: workflowinstanceparentlink.FieldCreatedBy},
+			workflowinstanceparentlink.FieldUpdatedBy:        {Type: field.TypeUint32, Column: workflowinstanceparentlink.FieldUpdatedBy},
+			workflowinstanceparentlink.FieldDeletedBy:        {Type: field.TypeUint32, Column: workflowinstanceparentlink.FieldDeletedBy},
+			workflowinstanceparentlink.FieldTenantID:         {Type: field.TypeUint32, Column: workflowinstanceparentlink.FieldTenantID},
+			workflowinstanceparentlink.FieldSubprocessNodeID: {Type: field.TypeString, Column: workflowinstanceparentlink.FieldSubprocessNodeID},
+			workflowinstanceparentlink.FieldChildInstanceID:  {Type: field.TypeUint32, Column: workflowinstanceparentlink.FieldChildInstanceID},
+		},
+	}
+	graph.Nodes[61] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowlog.Table,
 			Columns: workflowlog.Columns,
@@ -1695,12 +1763,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			workflowlog.FieldUpdatedBy: {Type: field.TypeUint32, Column: workflowlog.FieldUpdatedBy},
 			workflowlog.FieldDeletedBy: {Type: field.TypeUint32, Column: workflowlog.FieldDeletedBy},
 			workflowlog.FieldTenantID:  {Type: field.TypeUint32, Column: workflowlog.FieldTenantID},
-			workflowlog.FieldNodeIndex: {Type: field.TypeInt, Column: workflowlog.FieldNodeIndex},
+			workflowlog.FieldNodeID:    {Type: field.TypeString, Column: workflowlog.FieldNodeID},
 			workflowlog.FieldLogAction: {Type: field.TypeEnum, Column: workflowlog.FieldLogAction},
 			workflowlog.FieldComment:   {Type: field.TypeString, Column: workflowlog.FieldComment},
 		},
 	}
-	graph.Nodes[59] = &sqlgraph.Node{
+	graph.Nodes[62] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   workflowtask.Table,
 			Columns: workflowtask.Columns,
@@ -1718,7 +1786,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			workflowtask.FieldUpdatedBy:      {Type: field.TypeUint32, Column: workflowtask.FieldUpdatedBy},
 			workflowtask.FieldDeletedBy:      {Type: field.TypeUint32, Column: workflowtask.FieldDeletedBy},
 			workflowtask.FieldTenantID:       {Type: field.TypeUint32, Column: workflowtask.FieldTenantID},
-			workflowtask.FieldNodeIndex:      {Type: field.TypeInt, Column: workflowtask.FieldNodeIndex},
+			workflowtask.FieldNodeID:         {Type: field.TypeString, Column: workflowtask.FieldNodeID},
 			workflowtask.FieldAssigneeUserID: {Type: field.TypeUint32, Column: workflowtask.FieldAssigneeUserID},
 			workflowtask.FieldTaskStatus:     {Type: field.TypeEnum, Column: workflowtask.FieldTaskStatus},
 		},
@@ -1986,6 +2054,54 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"WorkflowInstance",
 		"WorkflowLog",
+	)
+	graph.MustAddE(
+		"instance_joins",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workflowinstance.InstanceJoinsTable,
+			Columns: []string{workflowinstance.InstanceJoinsColumn},
+			Bidi:    false,
+		},
+		"WorkflowInstance",
+		"WorkflowInstanceJoin",
+	)
+	graph.MustAddE(
+		"parent_links",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workflowinstance.ParentLinksTable,
+			Columns: []string{workflowinstance.ParentLinksColumn},
+			Bidi:    false,
+		},
+		"WorkflowInstance",
+		"WorkflowInstanceParentLink",
+	)
+	graph.MustAddE(
+		"instance",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   workflowinstancejoin.InstanceTable,
+			Columns: []string{workflowinstancejoin.InstanceColumn},
+			Bidi:    false,
+		},
+		"WorkflowInstanceJoin",
+		"WorkflowInstance",
+	)
+	graph.MustAddE(
+		"parent_instance",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   workflowinstanceparentlink.ParentInstanceTable,
+			Columns: []string{workflowinstanceparentlink.ParentInstanceColumn},
+			Bidi:    false,
+		},
+		"WorkflowInstanceParentLink",
+		"WorkflowInstance",
 	)
 	graph.MustAddE(
 		"instance",
@@ -8752,6 +8868,91 @@ func (f *WorkflowDefinitionFilter) WhereHasInstancesWith(preds ...predicate.Work
 }
 
 // addPredicate implements the predicateAdder interface.
+func (_q *WorkflowDelegationQuery) addPredicate(pred func(s *sql.Selector)) {
+	_q.predicates = append(_q.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the WorkflowDelegationQuery builder.
+func (_q *WorkflowDelegationQuery) Filter() *WorkflowDelegationFilter {
+	return &WorkflowDelegationFilter{config: _q.config, predicateAdder: _q}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *WorkflowDelegationMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the WorkflowDelegationMutation builder.
+func (m *WorkflowDelegationMutation) Filter() *WorkflowDelegationFilter {
+	return &WorkflowDelegationFilter{config: m.config, predicateAdder: m}
+}
+
+// WorkflowDelegationFilter provides a generic filtering capability at runtime for WorkflowDelegationQuery.
+type WorkflowDelegationFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *WorkflowDelegationFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[57].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *WorkflowDelegationFilter) WhereID(p entql.Uint32P) {
+	f.Where(p.Field(workflowdelegation.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *WorkflowDelegationFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowdelegation.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *WorkflowDelegationFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowdelegation.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *WorkflowDelegationFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowdelegation.FieldDeletedAt))
+}
+
+// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
+func (f *WorkflowDelegationFilter) WhereCreatedBy(p entql.Uint32P) {
+	f.Where(p.Field(workflowdelegation.FieldCreatedBy))
+}
+
+// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
+func (f *WorkflowDelegationFilter) WhereUpdatedBy(p entql.Uint32P) {
+	f.Where(p.Field(workflowdelegation.FieldUpdatedBy))
+}
+
+// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
+func (f *WorkflowDelegationFilter) WhereDeletedBy(p entql.Uint32P) {
+	f.Where(p.Field(workflowdelegation.FieldDeletedBy))
+}
+
+// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
+func (f *WorkflowDelegationFilter) WhereTenantID(p entql.Uint32P) {
+	f.Where(p.Field(workflowdelegation.FieldTenantID))
+}
+
+// WhereDelegatorUserID applies the entql uint32 predicate on the delegator_user_id field.
+func (f *WorkflowDelegationFilter) WhereDelegatorUserID(p entql.Uint32P) {
+	f.Where(p.Field(workflowdelegation.FieldDelegatorUserID))
+}
+
+// WhereDelegateUserID applies the entql uint32 predicate on the delegate_user_id field.
+func (f *WorkflowDelegationFilter) WhereDelegateUserID(p entql.Uint32P) {
+	f.Where(p.Field(workflowdelegation.FieldDelegateUserID))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (_q *WorkflowInstanceQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -8780,7 +8981,7 @@ type WorkflowInstanceFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowInstanceFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[57].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[58].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8829,11 +9030,6 @@ func (f *WorkflowInstanceFilter) WhereTenantID(p entql.Uint32P) {
 // WhereInstanceStatus applies the entql string predicate on the instance_status field.
 func (f *WorkflowInstanceFilter) WhereInstanceStatus(p entql.StringP) {
 	f.Where(p.Field(workflowinstance.FieldInstanceStatus))
-}
-
-// WhereCurrentNodeIndex applies the entql int predicate on the current_node_index field.
-func (f *WorkflowInstanceFilter) WhereCurrentNodeIndex(p entql.IntP) {
-	f.Where(p.Field(workflowinstance.FieldCurrentNodeIndex))
 }
 
 // WhereFormData applies the entql string predicate on the form_data field.
@@ -8893,6 +9089,232 @@ func (f *WorkflowInstanceFilter) WhereHasLogsWith(preds ...predicate.WorkflowLog
 	})))
 }
 
+// WhereHasInstanceJoins applies a predicate to check if query has an edge instance_joins.
+func (f *WorkflowInstanceFilter) WhereHasInstanceJoins() {
+	f.Where(entql.HasEdge("instance_joins"))
+}
+
+// WhereHasInstanceJoinsWith applies a predicate to check if query has an edge instance_joins with a given conditions (other predicates).
+func (f *WorkflowInstanceFilter) WhereHasInstanceJoinsWith(preds ...predicate.WorkflowInstanceJoin) {
+	f.Where(entql.HasEdgeWith("instance_joins", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasParentLinks applies a predicate to check if query has an edge parent_links.
+func (f *WorkflowInstanceFilter) WhereHasParentLinks() {
+	f.Where(entql.HasEdge("parent_links"))
+}
+
+// WhereHasParentLinksWith applies a predicate to check if query has an edge parent_links with a given conditions (other predicates).
+func (f *WorkflowInstanceFilter) WhereHasParentLinksWith(preds ...predicate.WorkflowInstanceParentLink) {
+	f.Where(entql.HasEdgeWith("parent_links", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (_q *WorkflowInstanceJoinQuery) addPredicate(pred func(s *sql.Selector)) {
+	_q.predicates = append(_q.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the WorkflowInstanceJoinQuery builder.
+func (_q *WorkflowInstanceJoinQuery) Filter() *WorkflowInstanceJoinFilter {
+	return &WorkflowInstanceJoinFilter{config: _q.config, predicateAdder: _q}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *WorkflowInstanceJoinMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the WorkflowInstanceJoinMutation builder.
+func (m *WorkflowInstanceJoinMutation) Filter() *WorkflowInstanceJoinFilter {
+	return &WorkflowInstanceJoinFilter{config: m.config, predicateAdder: m}
+}
+
+// WorkflowInstanceJoinFilter provides a generic filtering capability at runtime for WorkflowInstanceJoinQuery.
+type WorkflowInstanceJoinFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *WorkflowInstanceJoinFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[59].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *WorkflowInstanceJoinFilter) WhereID(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstancejoin.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *WorkflowInstanceJoinFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowinstancejoin.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *WorkflowInstanceJoinFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowinstancejoin.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *WorkflowInstanceJoinFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowinstancejoin.FieldDeletedAt))
+}
+
+// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
+func (f *WorkflowInstanceJoinFilter) WhereCreatedBy(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstancejoin.FieldCreatedBy))
+}
+
+// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
+func (f *WorkflowInstanceJoinFilter) WhereUpdatedBy(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstancejoin.FieldUpdatedBy))
+}
+
+// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
+func (f *WorkflowInstanceJoinFilter) WhereDeletedBy(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstancejoin.FieldDeletedBy))
+}
+
+// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
+func (f *WorkflowInstanceJoinFilter) WhereTenantID(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstancejoin.FieldTenantID))
+}
+
+// WhereJoinNodeID applies the entql string predicate on the join_node_id field.
+func (f *WorkflowInstanceJoinFilter) WhereJoinNodeID(p entql.StringP) {
+	f.Where(p.Field(workflowinstancejoin.FieldJoinNodeID))
+}
+
+// WhereArrivedCount applies the entql int predicate on the arrived_count field.
+func (f *WorkflowInstanceJoinFilter) WhereArrivedCount(p entql.IntP) {
+	f.Where(p.Field(workflowinstancejoin.FieldArrivedCount))
+}
+
+// WhereHasInstance applies a predicate to check if query has an edge instance.
+func (f *WorkflowInstanceJoinFilter) WhereHasInstance() {
+	f.Where(entql.HasEdge("instance"))
+}
+
+// WhereHasInstanceWith applies a predicate to check if query has an edge instance with a given conditions (other predicates).
+func (f *WorkflowInstanceJoinFilter) WhereHasInstanceWith(preds ...predicate.WorkflowInstance) {
+	f.Where(entql.HasEdgeWith("instance", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (_q *WorkflowInstanceParentLinkQuery) addPredicate(pred func(s *sql.Selector)) {
+	_q.predicates = append(_q.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the WorkflowInstanceParentLinkQuery builder.
+func (_q *WorkflowInstanceParentLinkQuery) Filter() *WorkflowInstanceParentLinkFilter {
+	return &WorkflowInstanceParentLinkFilter{config: _q.config, predicateAdder: _q}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *WorkflowInstanceParentLinkMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the WorkflowInstanceParentLinkMutation builder.
+func (m *WorkflowInstanceParentLinkMutation) Filter() *WorkflowInstanceParentLinkFilter {
+	return &WorkflowInstanceParentLinkFilter{config: m.config, predicateAdder: m}
+}
+
+// WorkflowInstanceParentLinkFilter provides a generic filtering capability at runtime for WorkflowInstanceParentLinkQuery.
+type WorkflowInstanceParentLinkFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *WorkflowInstanceParentLinkFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[60].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *WorkflowInstanceParentLinkFilter) WhereID(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstanceparentlink.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *WorkflowInstanceParentLinkFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowinstanceparentlink.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *WorkflowInstanceParentLinkFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowinstanceparentlink.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *WorkflowInstanceParentLinkFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowinstanceparentlink.FieldDeletedAt))
+}
+
+// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
+func (f *WorkflowInstanceParentLinkFilter) WhereCreatedBy(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstanceparentlink.FieldCreatedBy))
+}
+
+// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
+func (f *WorkflowInstanceParentLinkFilter) WhereUpdatedBy(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstanceparentlink.FieldUpdatedBy))
+}
+
+// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
+func (f *WorkflowInstanceParentLinkFilter) WhereDeletedBy(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstanceparentlink.FieldDeletedBy))
+}
+
+// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
+func (f *WorkflowInstanceParentLinkFilter) WhereTenantID(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstanceparentlink.FieldTenantID))
+}
+
+// WhereSubprocessNodeID applies the entql string predicate on the subprocess_node_id field.
+func (f *WorkflowInstanceParentLinkFilter) WhereSubprocessNodeID(p entql.StringP) {
+	f.Where(p.Field(workflowinstanceparentlink.FieldSubprocessNodeID))
+}
+
+// WhereChildInstanceID applies the entql uint32 predicate on the child_instance_id field.
+func (f *WorkflowInstanceParentLinkFilter) WhereChildInstanceID(p entql.Uint32P) {
+	f.Where(p.Field(workflowinstanceparentlink.FieldChildInstanceID))
+}
+
+// WhereHasParentInstance applies a predicate to check if query has an edge parent_instance.
+func (f *WorkflowInstanceParentLinkFilter) WhereHasParentInstance() {
+	f.Where(entql.HasEdge("parent_instance"))
+}
+
+// WhereHasParentInstanceWith applies a predicate to check if query has an edge parent_instance with a given conditions (other predicates).
+func (f *WorkflowInstanceParentLinkFilter) WhereHasParentInstanceWith(preds ...predicate.WorkflowInstance) {
+	f.Where(entql.HasEdgeWith("parent_instance", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (_q *WorkflowLogQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
@@ -8922,7 +9344,7 @@ type WorkflowLogFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowLogFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[58].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[61].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8968,9 +9390,9 @@ func (f *WorkflowLogFilter) WhereTenantID(p entql.Uint32P) {
 	f.Where(p.Field(workflowlog.FieldTenantID))
 }
 
-// WhereNodeIndex applies the entql int predicate on the node_index field.
-func (f *WorkflowLogFilter) WhereNodeIndex(p entql.IntP) {
-	f.Where(p.Field(workflowlog.FieldNodeIndex))
+// WhereNodeID applies the entql string predicate on the node_id field.
+func (f *WorkflowLogFilter) WhereNodeID(p entql.StringP) {
+	f.Where(p.Field(workflowlog.FieldNodeID))
 }
 
 // WhereLogAction applies the entql string predicate on the log_action field.
@@ -9026,7 +9448,7 @@ type WorkflowTaskFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *WorkflowTaskFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[59].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[62].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -9072,9 +9494,9 @@ func (f *WorkflowTaskFilter) WhereTenantID(p entql.Uint32P) {
 	f.Where(p.Field(workflowtask.FieldTenantID))
 }
 
-// WhereNodeIndex applies the entql int predicate on the node_index field.
-func (f *WorkflowTaskFilter) WhereNodeIndex(p entql.IntP) {
-	f.Where(p.Field(workflowtask.FieldNodeIndex))
+// WhereNodeID applies the entql string predicate on the node_id field.
+func (f *WorkflowTaskFilter) WhereNodeID(p entql.StringP) {
+	f.Where(p.Field(workflowtask.FieldNodeID))
 }
 
 // WhereAssigneeUserID applies the entql uint32 predicate on the assignee_user_id field.

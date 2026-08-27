@@ -38,13 +38,9 @@ func (WorkflowInstance) Fields() []ent.Field {
 				"Approved", "APPROVED",
 				"Rejected", "REJECTED",
 				"Withdrawn", "WITHDRAWN",
+				"Suspended", "SUSPENDED",
 			).
 			Default("PENDING").
-			Optional().
-			Nillable(),
-
-		field.Int("current_node_index").
-			Comment("当前节点索引").
 			Optional().
 			Nillable(),
 
@@ -97,6 +93,20 @@ func (WorkflowInstance) Edges() []ent.Edge {
 				OnDelete: entsql.Cascade,
 			}).
 			StorageKey(edge.Column("instance_id")),
+
+		// 正向：实例→汇聚计数。外鍵列 instance_id 在此側宣告，級聯刪除。
+		edge.To("instance_joins", WorkflowInstanceJoin.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}).
+			StorageKey(edge.Column("instance_id")),
+
+		// 正向：实例→子流程挂起记录。外鍵列 parent_instance_id 在此側宣告，級聯刪除。
+		edge.To("parent_links", WorkflowInstanceParentLink.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}).
+			StorageKey(edge.Column("parent_instance_id")),
 	}
 }
 

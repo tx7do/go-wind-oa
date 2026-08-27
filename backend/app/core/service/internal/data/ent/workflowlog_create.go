@@ -121,16 +121,16 @@ func (_c *WorkflowLogCreate) SetNillableTenantID(v *uint32) *WorkflowLogCreate {
 	return _c
 }
 
-// SetNodeIndex sets the "node_index" field.
-func (_c *WorkflowLogCreate) SetNodeIndex(v int) *WorkflowLogCreate {
-	_c.mutation.SetNodeIndex(v)
+// SetNodeID sets the "node_id" field.
+func (_c *WorkflowLogCreate) SetNodeID(v string) *WorkflowLogCreate {
+	_c.mutation.SetNodeID(v)
 	return _c
 }
 
-// SetNillableNodeIndex sets the "node_index" field if the given value is not nil.
-func (_c *WorkflowLogCreate) SetNillableNodeIndex(v *int) *WorkflowLogCreate {
+// SetNillableNodeID sets the "node_id" field if the given value is not nil.
+func (_c *WorkflowLogCreate) SetNillableNodeID(v *string) *WorkflowLogCreate {
 	if v != nil {
-		_c.SetNodeIndex(*v)
+		_c.SetNodeID(*v)
 	}
 	return _c
 }
@@ -309,9 +309,9 @@ func (_c *WorkflowLogCreate) createSpec() (*WorkflowLog, *sqlgraph.CreateSpec) {
 		_spec.SetField(workflowlog.FieldTenantID, field.TypeUint32, value)
 		_node.TenantID = &value
 	}
-	if value, ok := _c.mutation.NodeIndex(); ok {
-		_spec.SetField(workflowlog.FieldNodeIndex, field.TypeInt, value)
-		_node.NodeIndex = &value
+	if value, ok := _c.mutation.NodeID(); ok {
+		_spec.SetField(workflowlog.FieldNodeID, field.TypeString, value)
+		_node.NodeID = &value
 	}
 	if value, ok := _c.mutation.LogAction(); ok {
 		_spec.SetField(workflowlog.FieldLogAction, field.TypeEnum, value)
@@ -498,27 +498,21 @@ func (u *WorkflowLogUpsert) ClearDeletedBy() *WorkflowLogUpsert {
 	return u
 }
 
-// SetNodeIndex sets the "node_index" field.
-func (u *WorkflowLogUpsert) SetNodeIndex(v int) *WorkflowLogUpsert {
-	u.Set(workflowlog.FieldNodeIndex, v)
+// SetNodeID sets the "node_id" field.
+func (u *WorkflowLogUpsert) SetNodeID(v string) *WorkflowLogUpsert {
+	u.Set(workflowlog.FieldNodeID, v)
 	return u
 }
 
-// UpdateNodeIndex sets the "node_index" field to the value that was provided on create.
-func (u *WorkflowLogUpsert) UpdateNodeIndex() *WorkflowLogUpsert {
-	u.SetExcluded(workflowlog.FieldNodeIndex)
+// UpdateNodeID sets the "node_id" field to the value that was provided on create.
+func (u *WorkflowLogUpsert) UpdateNodeID() *WorkflowLogUpsert {
+	u.SetExcluded(workflowlog.FieldNodeID)
 	return u
 }
 
-// AddNodeIndex adds v to the "node_index" field.
-func (u *WorkflowLogUpsert) AddNodeIndex(v int) *WorkflowLogUpsert {
-	u.Add(workflowlog.FieldNodeIndex, v)
-	return u
-}
-
-// ClearNodeIndex clears the value of the "node_index" field.
-func (u *WorkflowLogUpsert) ClearNodeIndex() *WorkflowLogUpsert {
-	u.SetNull(workflowlog.FieldNodeIndex)
+// ClearNodeID clears the value of the "node_id" field.
+func (u *WorkflowLogUpsert) ClearNodeID() *WorkflowLogUpsert {
+	u.SetNull(workflowlog.FieldNodeID)
 	return u
 }
 
@@ -738,31 +732,24 @@ func (u *WorkflowLogUpsertOne) ClearDeletedBy() *WorkflowLogUpsertOne {
 	})
 }
 
-// SetNodeIndex sets the "node_index" field.
-func (u *WorkflowLogUpsertOne) SetNodeIndex(v int) *WorkflowLogUpsertOne {
+// SetNodeID sets the "node_id" field.
+func (u *WorkflowLogUpsertOne) SetNodeID(v string) *WorkflowLogUpsertOne {
 	return u.Update(func(s *WorkflowLogUpsert) {
-		s.SetNodeIndex(v)
+		s.SetNodeID(v)
 	})
 }
 
-// AddNodeIndex adds v to the "node_index" field.
-func (u *WorkflowLogUpsertOne) AddNodeIndex(v int) *WorkflowLogUpsertOne {
+// UpdateNodeID sets the "node_id" field to the value that was provided on create.
+func (u *WorkflowLogUpsertOne) UpdateNodeID() *WorkflowLogUpsertOne {
 	return u.Update(func(s *WorkflowLogUpsert) {
-		s.AddNodeIndex(v)
+		s.UpdateNodeID()
 	})
 }
 
-// UpdateNodeIndex sets the "node_index" field to the value that was provided on create.
-func (u *WorkflowLogUpsertOne) UpdateNodeIndex() *WorkflowLogUpsertOne {
+// ClearNodeID clears the value of the "node_id" field.
+func (u *WorkflowLogUpsertOne) ClearNodeID() *WorkflowLogUpsertOne {
 	return u.Update(func(s *WorkflowLogUpsert) {
-		s.UpdateNodeIndex()
-	})
-}
-
-// ClearNodeIndex clears the value of the "node_index" field.
-func (u *WorkflowLogUpsertOne) ClearNodeIndex() *WorkflowLogUpsertOne {
-	return u.Update(func(s *WorkflowLogUpsert) {
-		s.ClearNodeIndex()
+		s.ClearNodeID()
 	})
 }
 
@@ -1154,31 +1141,24 @@ func (u *WorkflowLogUpsertBulk) ClearDeletedBy() *WorkflowLogUpsertBulk {
 	})
 }
 
-// SetNodeIndex sets the "node_index" field.
-func (u *WorkflowLogUpsertBulk) SetNodeIndex(v int) *WorkflowLogUpsertBulk {
+// SetNodeID sets the "node_id" field.
+func (u *WorkflowLogUpsertBulk) SetNodeID(v string) *WorkflowLogUpsertBulk {
 	return u.Update(func(s *WorkflowLogUpsert) {
-		s.SetNodeIndex(v)
+		s.SetNodeID(v)
 	})
 }
 
-// AddNodeIndex adds v to the "node_index" field.
-func (u *WorkflowLogUpsertBulk) AddNodeIndex(v int) *WorkflowLogUpsertBulk {
+// UpdateNodeID sets the "node_id" field to the value that was provided on create.
+func (u *WorkflowLogUpsertBulk) UpdateNodeID() *WorkflowLogUpsertBulk {
 	return u.Update(func(s *WorkflowLogUpsert) {
-		s.AddNodeIndex(v)
+		s.UpdateNodeID()
 	})
 }
 
-// UpdateNodeIndex sets the "node_index" field to the value that was provided on create.
-func (u *WorkflowLogUpsertBulk) UpdateNodeIndex() *WorkflowLogUpsertBulk {
+// ClearNodeID clears the value of the "node_id" field.
+func (u *WorkflowLogUpsertBulk) ClearNodeID() *WorkflowLogUpsertBulk {
 	return u.Update(func(s *WorkflowLogUpsert) {
-		s.UpdateNodeIndex()
-	})
-}
-
-// ClearNodeIndex clears the value of the "node_index" field.
-func (u *WorkflowLogUpsertBulk) ClearNodeIndex() *WorkflowLogUpsertBulk {
-	return u.Update(func(s *WorkflowLogUpsert) {
-		s.ClearNodeIndex()
+		s.ClearNodeID()
 	})
 }
 

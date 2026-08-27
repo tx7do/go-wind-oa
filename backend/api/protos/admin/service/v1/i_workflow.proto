@@ -62,4 +62,26 @@ service WorkflowService {
       get: "/admin/v1/oa/workflow/tasks/{id}"
     };
   }
+
+  // 设置审批委托
+  rpc SetWorkflowDelegation(oa.service.v1.SetWorkflowDelegationRequest) returns (oa.service.v1.WorkflowDelegation) {
+    option (google.api.http) = {
+      post: "/admin/v1/oa/workflow/delegations"
+      body: "*"
+    };
+  }
+
+  // 查询审批委托列表
+  rpc ListWorkflowDelegation(pagination.PagingRequest) returns (oa.service.v1.ListWorkflowDelegationResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/oa/workflow/delegations"
+    };
+  }
+
+  // 删除审批委托
+  rpc DeleteWorkflowDelegation(oa.service.v1.DeleteWorkflowDelegationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/oa/workflow/delegations/{id}"
+    };
+  }
 }

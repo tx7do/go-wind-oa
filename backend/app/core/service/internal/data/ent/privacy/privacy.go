@@ -1479,6 +1479,30 @@ func (f WorkflowDefinitionMutationRuleFunc) EvalMutation(ctx context.Context, m 
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.WorkflowDefinitionMutation", m)
 }
 
+// The WorkflowDelegationQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type WorkflowDelegationQueryRuleFunc func(context.Context, *ent.WorkflowDelegationQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f WorkflowDelegationQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.WorkflowDelegationQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.WorkflowDelegationQuery", q)
+}
+
+// The WorkflowDelegationMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type WorkflowDelegationMutationRuleFunc func(context.Context, *ent.WorkflowDelegationMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f WorkflowDelegationMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.WorkflowDelegationMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.WorkflowDelegationMutation", m)
+}
+
 // The WorkflowInstanceQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type WorkflowInstanceQueryRuleFunc func(context.Context, *ent.WorkflowInstanceQuery) error
@@ -1501,6 +1525,54 @@ func (f WorkflowInstanceMutationRuleFunc) EvalMutation(ctx context.Context, m en
 		return f(ctx, m)
 	}
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.WorkflowInstanceMutation", m)
+}
+
+// The WorkflowInstanceJoinQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type WorkflowInstanceJoinQueryRuleFunc func(context.Context, *ent.WorkflowInstanceJoinQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f WorkflowInstanceJoinQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.WorkflowInstanceJoinQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.WorkflowInstanceJoinQuery", q)
+}
+
+// The WorkflowInstanceJoinMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type WorkflowInstanceJoinMutationRuleFunc func(context.Context, *ent.WorkflowInstanceJoinMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f WorkflowInstanceJoinMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.WorkflowInstanceJoinMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.WorkflowInstanceJoinMutation", m)
+}
+
+// The WorkflowInstanceParentLinkQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type WorkflowInstanceParentLinkQueryRuleFunc func(context.Context, *ent.WorkflowInstanceParentLinkQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f WorkflowInstanceParentLinkQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.WorkflowInstanceParentLinkQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.WorkflowInstanceParentLinkQuery", q)
+}
+
+// The WorkflowInstanceParentLinkMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type WorkflowInstanceParentLinkMutationRuleFunc func(context.Context, *ent.WorkflowInstanceParentLinkMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f WorkflowInstanceParentLinkMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.WorkflowInstanceParentLinkMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.WorkflowInstanceParentLinkMutation", m)
 }
 
 // The WorkflowLogQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -1700,7 +1772,13 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.WorkflowDefinitionQuery:
 		return q.Filter(), nil
+	case *ent.WorkflowDelegationQuery:
+		return q.Filter(), nil
 	case *ent.WorkflowInstanceQuery:
+		return q.Filter(), nil
+	case *ent.WorkflowInstanceJoinQuery:
+		return q.Filter(), nil
+	case *ent.WorkflowInstanceParentLinkQuery:
 		return q.Filter(), nil
 	case *ent.WorkflowLogQuery:
 		return q.Filter(), nil
@@ -1827,7 +1905,13 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.WorkflowDefinitionMutation:
 		return m.Filter(), nil
+	case *ent.WorkflowDelegationMutation:
+		return m.Filter(), nil
 	case *ent.WorkflowInstanceMutation:
+		return m.Filter(), nil
+	case *ent.WorkflowInstanceJoinMutation:
+		return m.Filter(), nil
+	case *ent.WorkflowInstanceParentLinkMutation:
 		return m.Filter(), nil
 	case *ent.WorkflowLogMutation:
 		return m.Filter(), nil

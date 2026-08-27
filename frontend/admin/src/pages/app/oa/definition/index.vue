@@ -12,14 +12,9 @@
           {{ definitionStatusLabel(scope.row.definitionStatus) }}
         </ElTag>
       </template>
-      <!-- 操作列：查看 / 启用/禁用切换 -->
+      <!-- 操作列：查看 / 启用/禁用切换 / 导出 -->
       <template #operation="scope: any">
-        <ElButton
-          size="small"
-          type="primary"
-          link
-          @click="handleView(scope.row)"
-        >
+        <ElButton size="small" type="primary" link @click="handleView(scope.row)">
           {{ $t("common.view") }}
         </ElButton>
         <ElButton
@@ -40,12 +35,21 @@
         >
           {{ $t("pages.oa.definition.disable") }}
         </ElButton>
+        <ElButton size="small" type="info" link @click="handleExport(scope.row)">导出</ElButton>
       </template>
     </ProPage>
 
     <!-- 抽屉 -->
     <DefinitionDrawer ref="drawerRef" @success="handleSuccess" />
     <DetailDrawer ref="detailDrawerRef" />
+
+    <input
+      ref="importInputRef"
+      type="file"
+      accept=".json"
+      style="display: none"
+      @change="handleImportFile"
+    />
   </div>
 </template>
 
@@ -65,6 +69,8 @@ import {
   definitionStatusLabel,
   definitionStatusColor,
   fetchListWorkflowDefinitions,
+  fetchWorkflowDefinition,
+  useCreateWorkflowDefinition,
   useUpdateWorkflowDefinitionStatus,
 } from "@/api/composables";
 import { queryClient } from "@/plugins/vue-query";
@@ -77,6 +83,15 @@ import DetailDrawer from "./detail-drawer.vue";
 const pageRef = ref();
 const drawerRef = ref();
 const detailDrawerRef = ref();
+const importInputRef = ref<HTMLInputElement>();
+
+const importMutation = useCreateWorkflowDefinition({
+  onSuccess: () => {
+    ElMessage.success("导入成功");
+    pageRef.value?.refresh();
+  },
+  onError: (err: Error) => ElMessage.error(err.message || "导入失败"),
+});
 
 const toggleStatusMutation = useUpdateWorkflowDefinitionStatus({
   onSuccess: () => {
@@ -200,6 +215,80 @@ function handleToggleStatus(
 
 function handleSuccess() {
   pageRef.value?.refresh();
+}
+
+function handleExport(row: oaservicev1_WorkflowDefinition) {
+  ElMessageBox.confirm("确定导出此流程定义？导出文件包含流程图配置和表单定义。", "导出确认", {
+    confirmButtonText: $t("common.button.confirm"),
+    cancelButtonText: $t("common.cancel"),
+    type: "info",
+  })
+    .then(async () => {
+      try {
+        const def = await fetchWorkflowDefinition(row.id as number);
+        const exportData = {
+          code: def.code,
+          version: def.version,
+          remark: def.remark,
+          nodeConfig: def.nodeConfig,
+          formSchema: def.formSchema,
+        };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `workflow-${def.code}-v${def.version}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        ElMessage.success("已导出");
+      } catch {
+        ElMessage.error("导出失败");
+      }
+    })
+    .catch(() => {});
+}
+
+function handleImportClick() {
+  importInputRef.value?.click();
+}
+
+function handleImportFile(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result as string);
+      if (!parsed.code || !parsed.version || !parsed.nodeConfig) {
+        ElMessage.error("导入文件缺少必要字段（code/version/nodeConfig）");
+        return;
+      }
+      ElMessageBox.confirm("确定导入此流程定义？将创建新的流程定义。", "导入确认", {
+        confirmButtonText: $t("common.button.confirm"),
+        cancelButtonText: $t("common.cancel"),
+        type: "warning",
+      })
+        .then(() => {
+          importMutation.mutate({
+            data: {
+              code: parsed.code,
+              version: parsed.version,
+              remark: parsed.remark || undefined,
+              nodeConfig: parsed.nodeConfig,
+              formSchema: parsed.formSchema || undefined,
+            },
+          });
+        })
+        .catch(() => {});
+    } catch {
+      ElMessage.error("导入文件解析失败");
+    }
+    input.value = "";
+  };
+  reader.readAsText(file);
 }
 </script>
 

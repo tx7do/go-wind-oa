@@ -61,25 +61,24 @@ func (r *WorkflowInstanceRepo) Create(
 	builder := r.entClient.Client().WorkflowInstance.Create().
 		SetDefinitionID(definitionID).
 		SetInstanceStatus(workflowinstance.InstanceStatusPending).
-		SetCurrentNodeIndex(0).
-		SetNillableFormData(&formData).
-		SetTenantID(tenantID).
-		SetCreatedBy(creatorUserID).
-		SetCreatedAt(time.Now())
-	if businessType != "" {
-		builder.SetNillableBusinessType(&businessType)
-	}
-	if businessID != 0 {
-		builder.SetNillableBusinessID(&businessID)
-	}
+			SetNillableFormData(&formData).
+			SetTenantID(tenantID).
+			SetCreatedBy(creatorUserID).
+			SetCreatedAt(time.Now())
+		if businessType != "" {
+			builder.SetNillableBusinessType(&businessType)
+		}
+		if businessID != 0 {
+			builder.SetNillableBusinessID(&businessID)
+		}
 
-	entity, err := builder.Save(ctx)
-	if err != nil {
-		r.log.Errorf("insert workflow instance failed: %s", err.Error())
-		return 0, oaV1.ErrorInternalServerError("insert workflow instance failed")
+		entity, err := builder.Save(ctx)
+		if err != nil {
+			r.log.Errorf("insert workflow instance failed: %s", err.Error())
+			return 0, oaV1.ErrorInternalServerError("insert workflow instance failed")
+		}
+		return entity.ID, nil
 	}
-	return entity.ID, nil
-}
 
 // CreateWithTx 事务内建实例。builder 源自 tx。
 func (r *WorkflowInstanceRepo) CreateWithTx(
@@ -89,7 +88,6 @@ func (r *WorkflowInstanceRepo) CreateWithTx(
 	builder := tx.WorkflowInstance.Create().
 		SetDefinitionID(definitionID).
 		SetInstanceStatus(workflowinstance.InstanceStatusPending).
-		SetCurrentNodeIndex(0).
 		SetNillableFormData(&formData).
 		SetTenantID(tenantID).
 		SetCreatedBy(creatorUserID).
@@ -131,13 +129,12 @@ func (r *WorkflowInstanceRepo) GetState(ctx context.Context, id uint32, tenantID
 	return *entity.InstanceStatus == workflowinstance.InstanceStatusPending, nil
 }
 
-// UpdateStatus 推进实例状态。newNodeIndex==nil 表示终结态，清空 current_node_index。
+// UpdateStatus 切换实例状态（活跃↔终结态）。
 func (r *WorkflowInstanceRepo) UpdateStatus(
 	ctx context.Context,
 	id uint32,
 	tenantID uint32,
 	newStatus *oaV1.WorkflowInstance_InstanceStatus,
-	newNodeIndex *int,
 ) error {
 	builder := r.entClient.Client().WorkflowInstance.Update()
 	builder.Where(
@@ -145,11 +142,6 @@ func (r *WorkflowInstanceRepo) UpdateStatus(
 		workflowinstance.TenantIDEQ(tenantID),
 	)
 	builder.SetNillableInstanceStatus(r.instanceStatusConverter.ToEntity(newStatus))
-	if newNodeIndex == nil {
-		builder.ClearCurrentNodeIndex()
-	} else {
-		builder.SetNillableCurrentNodeIndex(newNodeIndex)
-	}
 	builder.SetUpdatedAt(time.Now())
 
 	if _, err := builder.Save(ctx); err != nil {
@@ -182,11 +174,11 @@ func (r *WorkflowInstanceRepo) Txn(ctx context.Context, fn func(tx *ent.Tx) erro
 	return fn(tx)
 }
 
-// UpdateStatusWithTx 事务内推进实例状态。builder 源自 tx 而非 client。
+// UpdateStatusWithTx 事务内切换实例状态。builder 源自 tx 而非 client。
 func (r *WorkflowInstanceRepo) UpdateStatusWithTx(
 	ctx context.Context, tx *ent.Tx,
 	id uint32, tenantID uint32,
-	newStatus *oaV1.WorkflowInstance_InstanceStatus, newNodeIndex *int,
+	newStatus *oaV1.WorkflowInstance_InstanceStatus,
 ) error {
 	builder := tx.WorkflowInstance.Update()
 	builder.Where(
@@ -194,11 +186,6 @@ func (r *WorkflowInstanceRepo) UpdateStatusWithTx(
 		workflowinstance.TenantIDEQ(tenantID),
 	)
 	builder.SetNillableInstanceStatus(r.instanceStatusConverter.ToEntity(newStatus))
-	if newNodeIndex == nil {
-		builder.ClearCurrentNodeIndex()
-	} else {
-		builder.SetNillableCurrentNodeIndex(newNodeIndex)
-	}
 	builder.SetUpdatedAt(time.Now())
 
 	if _, err := builder.Save(ctx); err != nil {

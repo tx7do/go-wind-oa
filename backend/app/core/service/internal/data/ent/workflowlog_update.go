@@ -151,30 +151,23 @@ func (_u *WorkflowLogUpdate) ClearDeletedBy() *WorkflowLogUpdate {
 	return _u
 }
 
-// SetNodeIndex sets the "node_index" field.
-func (_u *WorkflowLogUpdate) SetNodeIndex(v int) *WorkflowLogUpdate {
-	_u.mutation.ResetNodeIndex()
-	_u.mutation.SetNodeIndex(v)
+// SetNodeID sets the "node_id" field.
+func (_u *WorkflowLogUpdate) SetNodeID(v string) *WorkflowLogUpdate {
+	_u.mutation.SetNodeID(v)
 	return _u
 }
 
-// SetNillableNodeIndex sets the "node_index" field if the given value is not nil.
-func (_u *WorkflowLogUpdate) SetNillableNodeIndex(v *int) *WorkflowLogUpdate {
+// SetNillableNodeID sets the "node_id" field if the given value is not nil.
+func (_u *WorkflowLogUpdate) SetNillableNodeID(v *string) *WorkflowLogUpdate {
 	if v != nil {
-		_u.SetNodeIndex(*v)
+		_u.SetNodeID(*v)
 	}
 	return _u
 }
 
-// AddNodeIndex adds value to the "node_index" field.
-func (_u *WorkflowLogUpdate) AddNodeIndex(v int) *WorkflowLogUpdate {
-	_u.mutation.AddNodeIndex(v)
-	return _u
-}
-
-// ClearNodeIndex clears the value of the "node_index" field.
-func (_u *WorkflowLogUpdate) ClearNodeIndex() *WorkflowLogUpdate {
-	_u.mutation.ClearNodeIndex()
+// ClearNodeID clears the value of the "node_id" field.
+func (_u *WorkflowLogUpdate) ClearNodeID() *WorkflowLogUpdate {
+	_u.mutation.ClearNodeID()
 	return _u
 }
 
@@ -348,14 +341,11 @@ func (_u *WorkflowLogUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(workflowlog.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.NodeIndex(); ok {
-		_spec.SetField(workflowlog.FieldNodeIndex, field.TypeInt, value)
+	if value, ok := _u.mutation.NodeID(); ok {
+		_spec.SetField(workflowlog.FieldNodeID, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.AddedNodeIndex(); ok {
-		_spec.AddField(workflowlog.FieldNodeIndex, field.TypeInt, value)
-	}
-	if _u.mutation.NodeIndexCleared() {
-		_spec.ClearField(workflowlog.FieldNodeIndex, field.TypeInt)
+	if _u.mutation.NodeIDCleared() {
+		_spec.ClearField(workflowlog.FieldNodeID, field.TypeString)
 	}
 	if value, ok := _u.mutation.LogAction(); ok {
 		_spec.SetField(workflowlog.FieldLogAction, field.TypeEnum, value)
@@ -541,30 +531,23 @@ func (_u *WorkflowLogUpdateOne) ClearDeletedBy() *WorkflowLogUpdateOne {
 	return _u
 }
 
-// SetNodeIndex sets the "node_index" field.
-func (_u *WorkflowLogUpdateOne) SetNodeIndex(v int) *WorkflowLogUpdateOne {
-	_u.mutation.ResetNodeIndex()
-	_u.mutation.SetNodeIndex(v)
+// SetNodeID sets the "node_id" field.
+func (_u *WorkflowLogUpdateOne) SetNodeID(v string) *WorkflowLogUpdateOne {
+	_u.mutation.SetNodeID(v)
 	return _u
 }
 
-// SetNillableNodeIndex sets the "node_index" field if the given value is not nil.
-func (_u *WorkflowLogUpdateOne) SetNillableNodeIndex(v *int) *WorkflowLogUpdateOne {
+// SetNillableNodeID sets the "node_id" field if the given value is not nil.
+func (_u *WorkflowLogUpdateOne) SetNillableNodeID(v *string) *WorkflowLogUpdateOne {
 	if v != nil {
-		_u.SetNodeIndex(*v)
+		_u.SetNodeID(*v)
 	}
 	return _u
 }
 
-// AddNodeIndex adds value to the "node_index" field.
-func (_u *WorkflowLogUpdateOne) AddNodeIndex(v int) *WorkflowLogUpdateOne {
-	_u.mutation.AddNodeIndex(v)
-	return _u
-}
-
-// ClearNodeIndex clears the value of the "node_index" field.
-func (_u *WorkflowLogUpdateOne) ClearNodeIndex() *WorkflowLogUpdateOne {
-	_u.mutation.ClearNodeIndex()
+// ClearNodeID clears the value of the "node_id" field.
+func (_u *WorkflowLogUpdateOne) ClearNodeID() *WorkflowLogUpdateOne {
+	_u.mutation.ClearNodeID()
 	return _u
 }
 
@@ -768,14 +751,11 @@ func (_u *WorkflowLogUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowLog
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(workflowlog.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.NodeIndex(); ok {
-		_spec.SetField(workflowlog.FieldNodeIndex, field.TypeInt, value)
+	if value, ok := _u.mutation.NodeID(); ok {
+		_spec.SetField(workflowlog.FieldNodeID, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.AddedNodeIndex(); ok {
-		_spec.AddField(workflowlog.FieldNodeIndex, field.TypeInt, value)
-	}
-	if _u.mutation.NodeIndexCleared() {
-		_spec.ClearField(workflowlog.FieldNodeIndex, field.TypeInt)
+	if _u.mutation.NodeIDCleared() {
+		_spec.ClearField(workflowlog.FieldNodeID, field.TypeString)
 	}
 	if value, ok := _u.mutation.LogAction(); ok {
 		_spec.SetField(workflowlog.FieldLogAction, field.TypeEnum, value)

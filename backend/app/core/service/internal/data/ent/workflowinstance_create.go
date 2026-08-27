@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowinstancejoin"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowinstanceparentlink"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowlog"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowtask"
 	"time"
@@ -137,20 +139,6 @@ func (_c *WorkflowInstanceCreate) SetNillableInstanceStatus(v *workflowinstance.
 	return _c
 }
 
-// SetCurrentNodeIndex sets the "current_node_index" field.
-func (_c *WorkflowInstanceCreate) SetCurrentNodeIndex(v int) *WorkflowInstanceCreate {
-	_c.mutation.SetCurrentNodeIndex(v)
-	return _c
-}
-
-// SetNillableCurrentNodeIndex sets the "current_node_index" field if the given value is not nil.
-func (_c *WorkflowInstanceCreate) SetNillableCurrentNodeIndex(v *int) *WorkflowInstanceCreate {
-	if v != nil {
-		_c.SetCurrentNodeIndex(*v)
-	}
-	return _c
-}
-
 // SetFormData sets the "form_data" field.
 func (_c *WorkflowInstanceCreate) SetFormData(v string) *WorkflowInstanceCreate {
 	_c.mutation.SetFormData(v)
@@ -246,6 +234,36 @@ func (_c *WorkflowInstanceCreate) AddLogs(v ...*WorkflowLog) *WorkflowInstanceCr
 		ids[i] = v[i].ID
 	}
 	return _c.AddLogIDs(ids...)
+}
+
+// AddInstanceJoinIDs adds the "instance_joins" edge to the WorkflowInstanceJoin entity by IDs.
+func (_c *WorkflowInstanceCreate) AddInstanceJoinIDs(ids ...uint32) *WorkflowInstanceCreate {
+	_c.mutation.AddInstanceJoinIDs(ids...)
+	return _c
+}
+
+// AddInstanceJoins adds the "instance_joins" edges to the WorkflowInstanceJoin entity.
+func (_c *WorkflowInstanceCreate) AddInstanceJoins(v ...*WorkflowInstanceJoin) *WorkflowInstanceCreate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddInstanceJoinIDs(ids...)
+}
+
+// AddParentLinkIDs adds the "parent_links" edge to the WorkflowInstanceParentLink entity by IDs.
+func (_c *WorkflowInstanceCreate) AddParentLinkIDs(ids ...uint32) *WorkflowInstanceCreate {
+	_c.mutation.AddParentLinkIDs(ids...)
+	return _c
+}
+
+// AddParentLinks adds the "parent_links" edges to the WorkflowInstanceParentLink entity.
+func (_c *WorkflowInstanceCreate) AddParentLinks(v ...*WorkflowInstanceParentLink) *WorkflowInstanceCreate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddParentLinkIDs(ids...)
 }
 
 // Mutation returns the WorkflowInstanceMutation object of the builder.
@@ -373,10 +391,6 @@ func (_c *WorkflowInstanceCreate) createSpec() (*WorkflowInstance, *sqlgraph.Cre
 		_spec.SetField(workflowinstance.FieldInstanceStatus, field.TypeEnum, value)
 		_node.InstanceStatus = &value
 	}
-	if value, ok := _c.mutation.CurrentNodeIndex(); ok {
-		_spec.SetField(workflowinstance.FieldCurrentNodeIndex, field.TypeInt, value)
-		_node.CurrentNodeIndex = &value
-	}
 	if value, ok := _c.mutation.FormData(); ok {
 		_spec.SetField(workflowinstance.FieldFormData, field.TypeString, value)
 		_node.FormData = &value
@@ -431,6 +445,38 @@ func (_c *WorkflowInstanceCreate) createSpec() (*WorkflowInstance, *sqlgraph.Cre
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.InstanceJoinsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workflowinstance.InstanceJoinsTable,
+			Columns: []string{workflowinstance.InstanceJoinsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstancejoin.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ParentLinksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workflowinstance.ParentLinksTable,
+			Columns: []string{workflowinstance.ParentLinksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstanceparentlink.FieldID, field.TypeUint32),
 			},
 		}
 		for _, k := range nodes {
@@ -613,30 +659,6 @@ func (u *WorkflowInstanceUpsert) UpdateInstanceStatus() *WorkflowInstanceUpsert 
 // ClearInstanceStatus clears the value of the "instance_status" field.
 func (u *WorkflowInstanceUpsert) ClearInstanceStatus() *WorkflowInstanceUpsert {
 	u.SetNull(workflowinstance.FieldInstanceStatus)
-	return u
-}
-
-// SetCurrentNodeIndex sets the "current_node_index" field.
-func (u *WorkflowInstanceUpsert) SetCurrentNodeIndex(v int) *WorkflowInstanceUpsert {
-	u.Set(workflowinstance.FieldCurrentNodeIndex, v)
-	return u
-}
-
-// UpdateCurrentNodeIndex sets the "current_node_index" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsert) UpdateCurrentNodeIndex() *WorkflowInstanceUpsert {
-	u.SetExcluded(workflowinstance.FieldCurrentNodeIndex)
-	return u
-}
-
-// AddCurrentNodeIndex adds v to the "current_node_index" field.
-func (u *WorkflowInstanceUpsert) AddCurrentNodeIndex(v int) *WorkflowInstanceUpsert {
-	u.Add(workflowinstance.FieldCurrentNodeIndex, v)
-	return u
-}
-
-// ClearCurrentNodeIndex clears the value of the "current_node_index" field.
-func (u *WorkflowInstanceUpsert) ClearCurrentNodeIndex() *WorkflowInstanceUpsert {
-	u.SetNull(workflowinstance.FieldCurrentNodeIndex)
 	return u
 }
 
@@ -898,34 +920,6 @@ func (u *WorkflowInstanceUpsertOne) UpdateInstanceStatus() *WorkflowInstanceUpse
 func (u *WorkflowInstanceUpsertOne) ClearInstanceStatus() *WorkflowInstanceUpsertOne {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
 		s.ClearInstanceStatus()
-	})
-}
-
-// SetCurrentNodeIndex sets the "current_node_index" field.
-func (u *WorkflowInstanceUpsertOne) SetCurrentNodeIndex(v int) *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.SetCurrentNodeIndex(v)
-	})
-}
-
-// AddCurrentNodeIndex adds v to the "current_node_index" field.
-func (u *WorkflowInstanceUpsertOne) AddCurrentNodeIndex(v int) *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.AddCurrentNodeIndex(v)
-	})
-}
-
-// UpdateCurrentNodeIndex sets the "current_node_index" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsertOne) UpdateCurrentNodeIndex() *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.UpdateCurrentNodeIndex()
-	})
-}
-
-// ClearCurrentNodeIndex clears the value of the "current_node_index" field.
-func (u *WorkflowInstanceUpsertOne) ClearCurrentNodeIndex() *WorkflowInstanceUpsertOne {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.ClearCurrentNodeIndex()
 	})
 }
 
@@ -1363,34 +1357,6 @@ func (u *WorkflowInstanceUpsertBulk) UpdateInstanceStatus() *WorkflowInstanceUps
 func (u *WorkflowInstanceUpsertBulk) ClearInstanceStatus() *WorkflowInstanceUpsertBulk {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
 		s.ClearInstanceStatus()
-	})
-}
-
-// SetCurrentNodeIndex sets the "current_node_index" field.
-func (u *WorkflowInstanceUpsertBulk) SetCurrentNodeIndex(v int) *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.SetCurrentNodeIndex(v)
-	})
-}
-
-// AddCurrentNodeIndex adds v to the "current_node_index" field.
-func (u *WorkflowInstanceUpsertBulk) AddCurrentNodeIndex(v int) *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.AddCurrentNodeIndex(v)
-	})
-}
-
-// UpdateCurrentNodeIndex sets the "current_node_index" field to the value that was provided on create.
-func (u *WorkflowInstanceUpsertBulk) UpdateCurrentNodeIndex() *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.UpdateCurrentNodeIndex()
-	})
-}
-
-// ClearCurrentNodeIndex clears the value of the "current_node_index" field.
-func (u *WorkflowInstanceUpsertBulk) ClearCurrentNodeIndex() *WorkflowInstanceUpsertBulk {
-	return u.Update(func(s *WorkflowInstanceUpsert) {
-		s.ClearCurrentNodeIndex()
 	})
 }
 

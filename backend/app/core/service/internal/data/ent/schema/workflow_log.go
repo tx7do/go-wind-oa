@@ -31,8 +31,8 @@ func (WorkflowLog) Annotations() []schema.Annotation {
 // Fields of the WorkflowLog.
 func (WorkflowLog) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("node_index").
-			Comment("节点索引").
+		field.String("node_id").
+			Comment("图节点ID").
 			Optional().
 			Nillable(),
 

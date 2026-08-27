@@ -49,6 +49,16 @@ const oa: RouteRecordRaw[] = [
         component: () => import("@/pages/app/oa/approval/index.vue"),
       },
       {
+        path: "delegations",
+        name: "OaWorkflowDelegation",
+        meta: {
+          order: 2,
+          icon: "lucide:user-check",
+          title: "routes.oa.delegation",
+        },
+        component: () => import("@/pages/app/oa/delegation/index.vue"),
+      },
+      {
         path: "attendance-records",
         name: "OaAttendanceRecords",
         meta: {

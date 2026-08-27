@@ -9918,6 +9918,18 @@ export interface WorkflowService {
   GetTask(
     request: oaservicev1_GetTaskRequest,
   ): Promise<oaservicev1_GetTaskResponse>;
+  // 设置审批委托
+  SetWorkflowDelegation(
+    request: oaservicev1_SetWorkflowDelegationRequest,
+  ): Promise<oaservicev1_WorkflowDelegation>;
+  // 查询审批委托列表
+  ListWorkflowDelegation(
+    request: pagination_PagingRequest,
+  ): Promise<oaservicev1_ListWorkflowDelegationResponse>;
+  // 删除审批委托
+  DeleteWorkflowDelegation(
+    request: oaservicev1_DeleteWorkflowDelegationRequest,
+  ): Promise<wellKnownEmpty>;
 }
 
 export function createWorkflowServiceClient(
@@ -10126,6 +10138,140 @@ export function createWorkflowServiceClient(
         method: 'GetTask',
       }) as Promise<oaservicev1_GetTaskResponse>;
     },
+    SetWorkflowDelegation(request) {
+      const path = `admin/v1/oa/workflow/delegations`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'WorkflowService',
+        method: 'SetWorkflowDelegation',
+      }) as Promise<oaservicev1_WorkflowDelegation>;
+    },
+    ListWorkflowDelegation(request) {
+      const path = `admin/v1/oa/workflow/delegations`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      if (request.offset) {
+        queryParams.push(
+          `offset=${encodeURIComponent(request.offset.toString())}`,
+        );
+      }
+      if (request.limit) {
+        queryParams.push(
+          `limit=${encodeURIComponent(request.limit.toString())}`,
+        );
+      }
+      if (request.token) {
+        queryParams.push(
+          `token=${encodeURIComponent(request.token.toString())}`,
+        );
+      }
+      if (request.noPaging) {
+        queryParams.push(
+          `noPaging=${encodeURIComponent(request.noPaging.toString())}`,
+        );
+      }
+      if (request.query) {
+        queryParams.push(
+          `query=${encodeURIComponent(request.query.toString())}`,
+        );
+      }
+      if (request.filter) {
+        queryParams.push(
+          `filter=${encodeURIComponent(request.filter.toString())}`,
+        );
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(
+          `filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.orderBy) {
+        queryParams.push(
+          `orderBy=${encodeURIComponent(request.orderBy.toString())}`,
+        );
+      }
+      if (request.sorting?.field) {
+        queryParams.push(
+          `sorting.field=${encodeURIComponent(request.sorting.field.toString())}`,
+        );
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(
+          `sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`,
+        );
+      }
+      if (request.fieldMask) {
+        queryParams.push(
+          `fieldMask=${encodeURIComponent(request.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'WorkflowService',
+        method: 'ListWorkflowDelegation',
+      }) as Promise<oaservicev1_ListWorkflowDelegationResponse>;
+    },
+    DeleteWorkflowDelegation(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/oa/workflow/delegations/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'WorkflowService',
+        method: 'DeleteWorkflowDelegation',
+      }) as Promise<wellKnownEmpty>;
+    },
   };
 }
 // 查询流程定义列表 - 回应
@@ -10181,6 +10327,7 @@ export type oaservicev1_UpdateWorkflowDefinitionRequest = {
 // 审批任务 - 请求
 export type oaservicev1_AuditTaskRequest = {
   action: oaservicev1_AuditAction | undefined;
+  additionalApprover: number | undefined;
   comment: string | undefined;
   forwardTo: number | undefined;
   taskId: number | undefined;
@@ -10188,6 +10335,7 @@ export type oaservicev1_AuditTaskRequest = {
 
 // 审批动作
 export type oaservicev1_AuditAction =
+  | 'ADD_APPROVER'
   | 'APPROVE'
   | 'FORWARD'
   | 'REJECT';
@@ -10239,7 +10387,7 @@ export type oaservicev1_WorkflowTask = {
   //
   // Behaviors: OPTIONAL
   id?: number;
-  nodeIndex?: number;
+  nodeId?: string;
   taskStatus?: oaservicev1_WorkflowTask_TaskStatus;
   tenantId?: number;
   updatedAt?: wellKnownTimestamp;
@@ -10263,7 +10411,7 @@ export type oaservicev1_WorkflowLog = {
   // Behaviors: OPTIONAL
   id?: number;
   logAction?: oaservicev1_WorkflowLog_LogAction;
-  nodeIndex?: number;
+  nodeId?: string;
   tenantId?: number;
   updatedAt?: wellKnownTimestamp;
   updatedBy?: number;
@@ -10276,6 +10424,33 @@ export type oaservicev1_WorkflowLog_LogAction =
   | 'REJECT'
   | 'SUBMIT'
   | 'WITHDRAW';
+// 设置审批委托 - 请求
+export type oaservicev1_SetWorkflowDelegationRequest = {
+  data: oaservicev1_WorkflowDelegation | undefined;
+};
+
+// 审批委托
+export type oaservicev1_WorkflowDelegation = {
+  createdAt?: wellKnownTimestamp;
+  delegateUserId?: number;
+  delegatorUserId?: number;
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  tenantId?: number;
+};
+
+// 查询审批委托列表 - 回应
+export type oaservicev1_ListWorkflowDelegationResponse = {
+  items: oaservicev1_WorkflowDelegation[] | undefined;
+  total: number | undefined;
+};
+
+// 删除审批委托 - 请求
+export type oaservicev1_DeleteWorkflowDelegationRequest = {
+  id: number | undefined;
+};
+
 export class ApiClient {
   private _adminPortalService?: AdminPortalService;
   private _apiAuditLogService?: ApiAuditLogService;

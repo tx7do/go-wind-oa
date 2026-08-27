@@ -90,9 +90,9 @@ func TenantID(v uint32) predicate.WorkflowLog {
 	return predicate.WorkflowLog(sql.FieldEQ(FieldTenantID, v))
 }
 
-// NodeIndex applies equality check predicate on the "node_index" field. It's identical to NodeIndexEQ.
-func NodeIndex(v int) predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldEQ(FieldNodeIndex, v))
+// NodeID applies equality check predicate on the "node_id" field. It's identical to NodeIDEQ.
+func NodeID(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldEQ(FieldNodeID, v))
 }
 
 // Comment applies equality check predicate on the "comment" field. It's identical to CommentEQ.
@@ -450,54 +450,79 @@ func TenantIDNotNil() predicate.WorkflowLog {
 	return predicate.WorkflowLog(sql.FieldNotNull(FieldTenantID))
 }
 
-// NodeIndexEQ applies the EQ predicate on the "node_index" field.
-func NodeIndexEQ(v int) predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldEQ(FieldNodeIndex, v))
+// NodeIDEQ applies the EQ predicate on the "node_id" field.
+func NodeIDEQ(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldEQ(FieldNodeID, v))
 }
 
-// NodeIndexNEQ applies the NEQ predicate on the "node_index" field.
-func NodeIndexNEQ(v int) predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldNEQ(FieldNodeIndex, v))
+// NodeIDNEQ applies the NEQ predicate on the "node_id" field.
+func NodeIDNEQ(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldNEQ(FieldNodeID, v))
 }
 
-// NodeIndexIn applies the In predicate on the "node_index" field.
-func NodeIndexIn(vs ...int) predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldIn(FieldNodeIndex, vs...))
+// NodeIDIn applies the In predicate on the "node_id" field.
+func NodeIDIn(vs ...string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldIn(FieldNodeID, vs...))
 }
 
-// NodeIndexNotIn applies the NotIn predicate on the "node_index" field.
-func NodeIndexNotIn(vs ...int) predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldNotIn(FieldNodeIndex, vs...))
+// NodeIDNotIn applies the NotIn predicate on the "node_id" field.
+func NodeIDNotIn(vs ...string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldNotIn(FieldNodeID, vs...))
 }
 
-// NodeIndexGT applies the GT predicate on the "node_index" field.
-func NodeIndexGT(v int) predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldGT(FieldNodeIndex, v))
+// NodeIDGT applies the GT predicate on the "node_id" field.
+func NodeIDGT(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldGT(FieldNodeID, v))
 }
 
-// NodeIndexGTE applies the GTE predicate on the "node_index" field.
-func NodeIndexGTE(v int) predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldGTE(FieldNodeIndex, v))
+// NodeIDGTE applies the GTE predicate on the "node_id" field.
+func NodeIDGTE(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldGTE(FieldNodeID, v))
 }
 
-// NodeIndexLT applies the LT predicate on the "node_index" field.
-func NodeIndexLT(v int) predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldLT(FieldNodeIndex, v))
+// NodeIDLT applies the LT predicate on the "node_id" field.
+func NodeIDLT(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldLT(FieldNodeID, v))
 }
 
-// NodeIndexLTE applies the LTE predicate on the "node_index" field.
-func NodeIndexLTE(v int) predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldLTE(FieldNodeIndex, v))
+// NodeIDLTE applies the LTE predicate on the "node_id" field.
+func NodeIDLTE(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldLTE(FieldNodeID, v))
 }
 
-// NodeIndexIsNil applies the IsNil predicate on the "node_index" field.
-func NodeIndexIsNil() predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldIsNull(FieldNodeIndex))
+// NodeIDContains applies the Contains predicate on the "node_id" field.
+func NodeIDContains(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldContains(FieldNodeID, v))
 }
 
-// NodeIndexNotNil applies the NotNil predicate on the "node_index" field.
-func NodeIndexNotNil() predicate.WorkflowLog {
-	return predicate.WorkflowLog(sql.FieldNotNull(FieldNodeIndex))
+// NodeIDHasPrefix applies the HasPrefix predicate on the "node_id" field.
+func NodeIDHasPrefix(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldHasPrefix(FieldNodeID, v))
+}
+
+// NodeIDHasSuffix applies the HasSuffix predicate on the "node_id" field.
+func NodeIDHasSuffix(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldHasSuffix(FieldNodeID, v))
+}
+
+// NodeIDIsNil applies the IsNil predicate on the "node_id" field.
+func NodeIDIsNil() predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldIsNull(FieldNodeID))
+}
+
+// NodeIDNotNil applies the NotNil predicate on the "node_id" field.
+func NodeIDNotNil() predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldNotNull(FieldNodeID))
+}
+
+// NodeIDEqualFold applies the EqualFold predicate on the "node_id" field.
+func NodeIDEqualFold(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldEqualFold(FieldNodeID, v))
+}
+
+// NodeIDContainsFold applies the ContainsFold predicate on the "node_id" field.
+func NodeIDContainsFold(v string) predicate.WorkflowLog {
+	return predicate.WorkflowLog(sql.FieldContainsFold(FieldNodeID, v))
 }
 
 // LogActionEQ applies the EQ predicate on the "log_action" field.

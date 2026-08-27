@@ -35,8 +35,6 @@ type WorkflowInstance struct {
 	TenantID *uint32 `json:"tenant_id,omitempty"`
 	// 实例状态
 	InstanceStatus *workflowinstance.InstanceStatus `json:"instance_status,omitempty"`
-	// 当前节点索引
-	CurrentNodeIndex *int `json:"current_node_index,omitempty"`
 	// 申请表单数据（JSON 文本）
 	FormData *string `json:"form_data,omitempty"`
 	// 业务单据类型（LEAVE/EXPENSE 等，审批终结时回调业务模块）
@@ -58,9 +56,13 @@ type WorkflowInstanceEdges struct {
 	Tasks []*WorkflowTask `json:"tasks,omitempty"`
 	// Logs holds the value of the logs edge.
 	Logs []*WorkflowLog `json:"logs,omitempty"`
+	// InstanceJoins holds the value of the instance_joins edge.
+	InstanceJoins []*WorkflowInstanceJoin `json:"instance_joins,omitempty"`
+	// ParentLinks holds the value of the parent_links edge.
+	ParentLinks []*WorkflowInstanceParentLink `json:"parent_links,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [5]bool
 }
 
 // DefinitionOrErr returns the Definition value or an error if the edge
@@ -92,12 +94,30 @@ func (e WorkflowInstanceEdges) LogsOrErr() ([]*WorkflowLog, error) {
 	return nil, &NotLoadedError{edge: "logs"}
 }
 
+// InstanceJoinsOrErr returns the InstanceJoins value or an error if the edge
+// was not loaded in eager-loading.
+func (e WorkflowInstanceEdges) InstanceJoinsOrErr() ([]*WorkflowInstanceJoin, error) {
+	if e.loadedTypes[3] {
+		return e.InstanceJoins, nil
+	}
+	return nil, &NotLoadedError{edge: "instance_joins"}
+}
+
+// ParentLinksOrErr returns the ParentLinks value or an error if the edge
+// was not loaded in eager-loading.
+func (e WorkflowInstanceEdges) ParentLinksOrErr() ([]*WorkflowInstanceParentLink, error) {
+	if e.loadedTypes[4] {
+		return e.ParentLinks, nil
+	}
+	return nil, &NotLoadedError{edge: "parent_links"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*WorkflowInstance) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case workflowinstance.FieldID, workflowinstance.FieldCreatedBy, workflowinstance.FieldUpdatedBy, workflowinstance.FieldDeletedBy, workflowinstance.FieldTenantID, workflowinstance.FieldCurrentNodeIndex, workflowinstance.FieldBusinessID:
+		case workflowinstance.FieldID, workflowinstance.FieldCreatedBy, workflowinstance.FieldUpdatedBy, workflowinstance.FieldDeletedBy, workflowinstance.FieldTenantID, workflowinstance.FieldBusinessID:
 			values[i] = new(sql.NullInt64)
 		case workflowinstance.FieldInstanceStatus, workflowinstance.FieldFormData, workflowinstance.FieldBusinessType:
 			values[i] = new(sql.NullString)
@@ -182,13 +202,6 @@ func (_m *WorkflowInstance) assignValues(columns []string, values []any) error {
 				_m.InstanceStatus = new(workflowinstance.InstanceStatus)
 				*_m.InstanceStatus = workflowinstance.InstanceStatus(value.String)
 			}
-		case workflowinstance.FieldCurrentNodeIndex:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field current_node_index", values[i])
-			} else if value.Valid {
-				_m.CurrentNodeIndex = new(int)
-				*_m.CurrentNodeIndex = int(value.Int64)
-			}
 		case workflowinstance.FieldFormData:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field form_data", values[i])
@@ -243,6 +256,16 @@ func (_m *WorkflowInstance) QueryTasks() *WorkflowTaskQuery {
 // QueryLogs queries the "logs" edge of the WorkflowInstance entity.
 func (_m *WorkflowInstance) QueryLogs() *WorkflowLogQuery {
 	return NewWorkflowInstanceClient(_m.config).QueryLogs(_m)
+}
+
+// QueryInstanceJoins queries the "instance_joins" edge of the WorkflowInstance entity.
+func (_m *WorkflowInstance) QueryInstanceJoins() *WorkflowInstanceJoinQuery {
+	return NewWorkflowInstanceClient(_m.config).QueryInstanceJoins(_m)
+}
+
+// QueryParentLinks queries the "parent_links" edge of the WorkflowInstance entity.
+func (_m *WorkflowInstance) QueryParentLinks() *WorkflowInstanceParentLinkQuery {
+	return NewWorkflowInstanceClient(_m.config).QueryParentLinks(_m)
 }
 
 // Update returns a builder for updating this WorkflowInstance.
@@ -305,11 +328,6 @@ func (_m *WorkflowInstance) String() string {
 	builder.WriteString(", ")
 	if v := _m.InstanceStatus; v != nil {
 		builder.WriteString("instance_status=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.CurrentNodeIndex; v != nil {
-		builder.WriteString("current_node_index=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

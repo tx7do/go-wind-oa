@@ -100,41 +100,41 @@ func TestIsWeekend(t *testing.T) {
 
 func TestWorkflowNodeNormalizedApprovers(t *testing.T) {
 	// 新格式直取
-	n := &workflowNode{Approvers: []workflowApprover{{Type: approverTypeLeader}}}
+	n := &taskNodeApproverConfig{Approvers: []workflowApprover{{Type: approverTypeLeader}}}
 	if got := n.normalizedApprovers(); len(got) != 1 || got[0].Type != approverTypeLeader {
 		t.Fatalf("new format = %v", got)
 	}
 	// 旧格式归一化为单 USER
-	n = &workflowNode{ApproverType: "USER", Approver: 42}
+	n = &taskNodeApproverConfig{ApproverType: "USER", Approver: 42}
 	if got := n.normalizedApprovers(); len(got) != 1 || got[0].Type != "USER" || got[0].ID != 42 {
 		t.Fatalf("legacy format = %v", got)
 	}
 	// 旧格式非法类型归一化为空
-	n = &workflowNode{ApproverType: "ROLE", Approver: 1}
+	n = &taskNodeApproverConfig{ApproverType: "ROLE", Approver: 1}
 	if got := n.normalizedApprovers(); got != nil {
 		t.Fatalf("invalid legacy = %v, want nil", got)
 	}
 	// 空节点
-	n = &workflowNode{}
+	n = &taskNodeApproverConfig{}
 	if got := n.normalizedApprovers(); got != nil {
 		t.Fatalf("empty node = %v, want nil", got)
 	}
 }
 
 func TestWorkflowNodeIsAnyStrategy(t *testing.T) {
-	if (&workflowNode{Strategy: "ANY"}).isAnyStrategy() != true {
+	if (&taskNodeApproverConfig{Strategy: "ANY"}).isAnyStrategy() != true {
 		t.Fatal("ANY should be or-sign")
 	}
-	if (&workflowNode{Strategy: "any"}).isAnyStrategy() != true { // 大小写不敏感
+	if (&taskNodeApproverConfig{Strategy: "any"}).isAnyStrategy() != true { // 大小写不敏感
 		t.Fatal("any should be or-sign")
 	}
-	if (&workflowNode{Strategy: "ALL"}).isAnyStrategy() != false {
+	if (&taskNodeApproverConfig{Strategy: "ALL"}).isAnyStrategy() != false {
 		t.Fatal("ALL should be and-sign")
 	}
-	if (&workflowNode{}).isAnyStrategy() != false { // 缺省会签
+	if (&taskNodeApproverConfig{}).isAnyStrategy() != false { // 缺省会签
 		t.Fatal("empty strategy should default to and-sign")
 	}
-	if (&workflowNode{Strategy: "WHATEVER"}).isAnyStrategy() != false { // 未知值会签
+	if (&taskNodeApproverConfig{Strategy: "WHATEVER"}).isAnyStrategy() != false { // 未知值会签
 		t.Fatal("unknown strategy should default to and-sign")
 	}
 }

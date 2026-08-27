@@ -344,32 +344,32 @@ SELECT setval('oa_workflow_definition_id_seq', (SELECT COALESCE(MAX(id), 1) FROM
 -- ----------------------------
 -- oa_workflow_instance 工作流实例（引用上方定义；状态混合）
 -- ----------------------------
-INSERT INTO public.oa_workflow_instance (tenant_id, definition_id, instance_status, current_node_index, form_data, business_type, business_id, created_at, updated_at, created_by, updated_by) VALUES
-    (1, 1, 'PENDING', 0, '{}', 'LEAVE', 101, now(), now(), 2, 2),
-    (1, 2, 'APPROVED', 1, '{}', 'EXPENSE', 201, now(), now(), 2, 2),
-    (1, 3, 'REJECTED', 1, '{}', 'BUSINESS_TRIP', 301, now(), now(), 2, 2),
-    (1, 4, 'PENDING', 0, '{}', 'OUTING', 401, now(), now(), 2, 2);
+INSERT INTO public.oa_workflow_instance (tenant_id, definition_id, instance_status, form_data, business_type, business_id, created_at, updated_at, created_by, updated_by) VALUES
+    (1, 1, 'PENDING', '{}', 'LEAVE', 101, now(), now(), 2, 2),
+    (1, 2, 'APPROVED', '{}', 'EXPENSE', 201, now(), now(), 2, 2),
+    (1, 3, 'REJECTED', '{}', 'BUSINESS_TRIP', 301, now(), now(), 2, 2),
+    (1, 4, 'PENDING', '{}', 'OUTING', 401, now(), now(), 2, 2);
 SELECT setval('oa_workflow_instance_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_instance));
 
 -- ----------------------------
 -- oa_workflow_task 审批任务（引用上方实例；部分指派 user=2 填充待办）
 -- ----------------------------
-INSERT INTO public.oa_workflow_task (tenant_id, instance_id, node_index, assignee_user_id, task_status, created_at, updated_at, created_by, updated_by) VALUES
-    (1, 1, 0, 2, 'PENDING', now(), now(), 2, 2),
-    (1, 2, 0, 2, 'APPROVED', now(), now(), 2, 2),
-    (1, 3, 0, 2, 'REJECTED', now(), now(), 2, 2),
-    (1, 4, 0, NULL, 'PENDING', now(), now(), 2, 2);
+INSERT INTO public.oa_workflow_task (tenant_id, instance_id, node_id, assignee_user_id, task_status, created_at, updated_at, created_by, updated_by) VALUES
+    (1, 1, 'node_0', 2, 'PENDING', now(), now(), 2, 2),
+    (1, 2, 'node_0', 2, 'APPROVED', now(), now(), 2, 2),
+    (1, 3, 'node_0', 2, 'REJECTED', now(), now(), 2, 2),
+    (1, 4, 'node_0', NULL, 'PENDING', now(), now(), 2, 2);
 SELECT setval('oa_workflow_task_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_task));
 
 -- ----------------------------
 -- oa_workflow_log 审批日志（引用上方实例）
 -- ----------------------------
-INSERT INTO public.oa_workflow_log (tenant_id, instance_id, node_index, log_action, comment, created_at, updated_at, created_by, updated_by) VALUES
-    (1, 1, 0, 'SUBMIT', '申请人提交请假申请', now(), now(), 2, 2),
-    (1, 2, 0, 'SUBMIT', '申请人提交报销申请', now(), now(), 2, 2),
-    (1, 2, 1, 'APPROVE', '主管同意', now(), now(), 2, 2),
-    (1, 3, 0, 'SUBMIT', '申请人提交出差申请', now(), now(), 2, 2),
-    (1, 3, 1, 'REJECT', '主管驳回：行程不合理', now(), now(), 2, 2);
+INSERT INTO public.oa_workflow_log (tenant_id, instance_id, node_id, log_action, comment, created_at, updated_at, created_by, updated_by) VALUES
+    (1, 1, 'node_0', 'SUBMIT', '申请人提交请假申请', now(), now(), 2, 2),
+    (1, 2, 'node_0', 'SUBMIT', '申请人提交报销申请', now(), now(), 2, 2),
+    (1, 2, 'node_1', 'APPROVE', '主管同意', now(), now(), 2, 2),
+    (1, 3, 'node_0', 'SUBMIT', '申请人提交出差申请', now(), now(), 2, 2),
+    (1, 3, 'node_1', 'REJECT', '主管驳回：行程不合理', now(), now(), 2, 2);
 SELECT setval('oa_workflow_log_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_log));
 
 -- ----------------------------
@@ -511,32 +511,32 @@ SELECT setval('oa_workflow_definition_id_seq', (SELECT COALESCE(MAX(id), 1) FROM
 -- ----------------------------
 -- oa_workflow_instance 工作流实例（超管组，引用上方超管组定义；状态混合）
 -- ----------------------------
-INSERT INTO public.oa_workflow_instance (tenant_id, definition_id, instance_status, current_node_index, form_data, business_type, business_id, created_at, updated_at, created_by, updated_by) VALUES
-    (0, 7, 'PENDING', 0, '{}', 'LEAVE', 5, now(), now(), 1, 1),
-    (0, 8, 'APPROVED', 1, '{}', 'EXPENSE', 4, now(), now(), 1, 1),
-    (0, 9, 'REJECTED', 1, '{}', 'BUSINESS_TRIP', 4, now(), now(), 1, 1),
-    (0, 10, 'PENDING', 0, '{}', 'OUTING', 4, now(), now(), 1, 1);
+INSERT INTO public.oa_workflow_instance (tenant_id, definition_id, instance_status, form_data, business_type, business_id, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 7, 'PENDING', '{}', 'LEAVE', 5, now(), now(), 1, 1),
+    (0, 8, 'APPROVED', '{}', 'EXPENSE', 4, now(), now(), 1, 1),
+    (0, 9, 'REJECTED', '{}', 'BUSINESS_TRIP', 4, now(), now(), 1, 1),
+    (0, 10, 'PENDING', '{}', 'OUTING', 4, now(), now(), 1, 1);
 SELECT setval('oa_workflow_instance_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_instance));
 
 -- ----------------------------
 -- oa_workflow_task 审批任务（超管组，引用上方实例；部分指派 user=1 填充待办）
 -- ----------------------------
-INSERT INTO public.oa_workflow_task (tenant_id, instance_id, node_index, assignee_user_id, task_status, created_at, updated_at, created_by, updated_by) VALUES
-    (0, 5, 0, 1, 'PENDING', now(), now(), 1, 1),
-    (0, 6, 0, 1, 'APPROVED', now(), now(), 1, 1),
-    (0, 7, 0, 1, 'REJECTED', now(), now(), 1, 1),
-    (0, 8, 0, NULL, 'PENDING', now(), now(), 1, 1);
+INSERT INTO public.oa_workflow_task (tenant_id, instance_id, node_id, assignee_user_id, task_status, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 5, 'node_0', 1, 'PENDING', now(), now(), 1, 1),
+    (0, 6, 'node_0', 1, 'APPROVED', now(), now(), 1, 1),
+    (0, 7, 'node_0', 1, 'REJECTED', now(), now(), 1, 1),
+    (0, 8, 'node_0', NULL, 'PENDING', now(), now(), 1, 1);
 SELECT setval('oa_workflow_task_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_task));
 
 -- ----------------------------
 -- oa_workflow_log 审批日志（超管组，引用上方实例）
 -- ----------------------------
-INSERT INTO public.oa_workflow_log (tenant_id, instance_id, node_index, log_action, comment, created_at, updated_at, created_by, updated_by) VALUES
-    (0, 5, 0, 'SUBMIT', '申请人提交请假申请', now(), now(), 1, 1),
-    (0, 6, 0, 'SUBMIT', '申请人提交报销申请', now(), now(), 1, 1),
-    (0, 6, 1, 'APPROVE', '主管同意', now(), now(), 1, 1),
-    (0, 7, 0, 'SUBMIT', '申请人提交出差申请', now(), now(), 1, 1),
-    (0, 7, 1, 'REJECT', '主管驳回：行程不合理', now(), now(), 1, 1);
+INSERT INTO public.oa_workflow_log (tenant_id, instance_id, node_id, log_action, comment, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 5, 'node_0', 'SUBMIT', '申请人提交请假申请', now(), now(), 1, 1),
+    (0, 6, 'node_0', 'SUBMIT', '申请人提交报销申请', now(), now(), 1, 1),
+    (0, 6, 'node_1', 'APPROVE', '主管同意', now(), now(), 1, 1),
+    (0, 7, 'node_0', 'SUBMIT', '申请人提交出差申请', now(), now(), 1, 1),
+    (0, 7, 'node_1', 'REJECT', '主管驳回：行程不合理', now(), now(), 1, 1);
 SELECT setval('oa_workflow_log_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_log));
 
 -- ----------------------------

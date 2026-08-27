@@ -90,11 +90,6 @@ func TenantID(v uint32) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldEQ(FieldTenantID, v))
 }
 
-// CurrentNodeIndex applies equality check predicate on the "current_node_index" field. It's identical to CurrentNodeIndexEQ.
-func CurrentNodeIndex(v int) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldEQ(FieldCurrentNodeIndex, v))
-}
-
 // FormData applies equality check predicate on the "form_data" field. It's identical to FormDataEQ.
 func FormData(v string) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldEQ(FieldFormData, v))
@@ -490,56 +485,6 @@ func InstanceStatusNotNil() predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldNotNull(FieldInstanceStatus))
 }
 
-// CurrentNodeIndexEQ applies the EQ predicate on the "current_node_index" field.
-func CurrentNodeIndexEQ(v int) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldEQ(FieldCurrentNodeIndex, v))
-}
-
-// CurrentNodeIndexNEQ applies the NEQ predicate on the "current_node_index" field.
-func CurrentNodeIndexNEQ(v int) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldNEQ(FieldCurrentNodeIndex, v))
-}
-
-// CurrentNodeIndexIn applies the In predicate on the "current_node_index" field.
-func CurrentNodeIndexIn(vs ...int) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldIn(FieldCurrentNodeIndex, vs...))
-}
-
-// CurrentNodeIndexNotIn applies the NotIn predicate on the "current_node_index" field.
-func CurrentNodeIndexNotIn(vs ...int) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldNotIn(FieldCurrentNodeIndex, vs...))
-}
-
-// CurrentNodeIndexGT applies the GT predicate on the "current_node_index" field.
-func CurrentNodeIndexGT(v int) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldGT(FieldCurrentNodeIndex, v))
-}
-
-// CurrentNodeIndexGTE applies the GTE predicate on the "current_node_index" field.
-func CurrentNodeIndexGTE(v int) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldGTE(FieldCurrentNodeIndex, v))
-}
-
-// CurrentNodeIndexLT applies the LT predicate on the "current_node_index" field.
-func CurrentNodeIndexLT(v int) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldLT(FieldCurrentNodeIndex, v))
-}
-
-// CurrentNodeIndexLTE applies the LTE predicate on the "current_node_index" field.
-func CurrentNodeIndexLTE(v int) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldLTE(FieldCurrentNodeIndex, v))
-}
-
-// CurrentNodeIndexIsNil applies the IsNil predicate on the "current_node_index" field.
-func CurrentNodeIndexIsNil() predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldIsNull(FieldCurrentNodeIndex))
-}
-
-// CurrentNodeIndexNotNil applies the NotNil predicate on the "current_node_index" field.
-func CurrentNodeIndexNotNil() predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(sql.FieldNotNull(FieldCurrentNodeIndex))
-}
-
 // FormDataEQ applies the EQ predicate on the "form_data" field.
 func FormDataEQ(v string) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldEQ(FieldFormData, v))
@@ -801,6 +746,52 @@ func HasLogs() predicate.WorkflowInstance {
 func HasLogsWith(preds ...predicate.WorkflowLog) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(func(s *sql.Selector) {
 		step := newLogsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasInstanceJoins applies the HasEdge predicate on the "instance_joins" edge.
+func HasInstanceJoins() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InstanceJoinsTable, InstanceJoinsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInstanceJoinsWith applies the HasEdge predicate on the "instance_joins" edge with a given conditions (other predicates).
+func HasInstanceJoinsWith(preds ...predicate.WorkflowInstanceJoin) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(func(s *sql.Selector) {
+		step := newInstanceJoinsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasParentLinks applies the HasEdge predicate on the "parent_links" edge.
+func HasParentLinks() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ParentLinksTable, ParentLinksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasParentLinksWith applies the HasEdge predicate on the "parent_links" edge with a given conditions (other predicates).
+func HasParentLinksWith(preds ...predicate.WorkflowInstanceParentLink) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(func(s *sql.Selector) {
+		step := newParentLinksStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -51,6 +51,7 @@ var ProviderSet = wire.NewSet(
 	service.NewOutingService,
 	service.NewAttendanceService,
 	service.NewAttendanceScheduler,
+	service.NewWorkflowTimeoutScheduler,
 	service.NewLoginPolicyService,
 	service.NewUserCredentialService,
 	service.NewApiService,
