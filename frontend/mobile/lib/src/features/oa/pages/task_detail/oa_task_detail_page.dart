@@ -215,7 +215,7 @@ class _DetailContent extends StatelessWidget {
         Text(loc.oaTaskDetailSummaryTitle,
             style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
-        Text('节点: ${task?.nodeIndex ?? '-'}    任务状态: ${_taskStatusLabel(task?.taskStatus)}',
+        Text('节点: ${task?.nodeId ?? '-'}    任务状态: ${_taskStatusLabel(task?.taskStatus)}',
             style: theme.textTheme.bodyMedium),
         const SizedBox(height: 16),
         Text(loc.oaTaskDetailFormDataTitle,
