@@ -3,7 +3,10 @@ BEGIN;
 SET LOCAL search_path = public, pg_catalog;
 
 -- 一次性清理相关表并重置自增（包含外键依赖）
-TRUNCATE TABLE public.sys_org_units,
+TRUNCATE TABLE public.sys_tenants,
+               public.sys_users,
+               public.sys_user_credentials,
+               public.sys_org_units,
                public.sys_positions,
                public.sys_memberships,
                public.sys_membership_roles,
@@ -31,8 +34,11 @@ TRUNCATE TABLE public.sys_org_units,
                public.oa_seal_application,
                public.oa_workflow_definition,
                public.oa_workflow_instance,
+               public.oa_workflow_instance_join,
+               public.oa_workflow_instance_parent_link,
                public.oa_workflow_log,
-               public.oa_workflow_task
+               public.oa_workflow_task,
+               public.oa_workflow_delegation
 RESTART IDENTITY CASCADE;
 
 -- ----------------------------
@@ -44,12 +50,14 @@ VALUES (1, '测试租户', 'super', 'PAID', 'APPROVED', 'ON', 2, now())
 SELECT setval('sys_tenants_id_seq', (SELECT MAX(id) FROM sys_tenants));
 
 -- ----------------------------
--- 插入 sys_users 租户管理员用户
+-- 插入 sys_users 租户用户（管理员 + 普通员工，普通员工用于委托/通讯录等演示）
 -- ----------------------------
 INSERT INTO public.sys_users (id, tenant_id, username, nickname, realname, email, gender, created_at)
 VALUES
     -- 2. 租户管理员（TENANT_ADMIN）
-    (2, 1, 'tenant_admin', '租户管理', '张管理员', 'tenant@company.com', 'MALE', now())
+    (2, 1, 'tenant_admin', '租户管理', '张管理员', 'tenant@company.com', 'MALE', now()),
+    -- 3. 普通员工（无管理角色，研发一部后端开发专员；审批委托 demo 的被委托人）
+    (3, 1, 'zhangsan', '张三', '张三', 'zhangsan@company.com', 'MALE', now())
 ;
 SELECT setval('sys_users_id_seq', (SELECT MAX(id) FROM sys_users));
 
@@ -61,7 +69,9 @@ INSERT INTO public.sys_user_credentials (tenant_id, user_id, identity_type, iden
 VALUES
     -- 租户管理员（对应users表id=2，tenant_id=1）
     (1, 2, 'USERNAME', 'tenant_admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', true, now()),
-    (1, 2, 'EMAIL', 'tenant@company.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', false, now())
+    (1, 2, 'EMAIL', 'tenant@company.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', false, now()),
+    -- 普通员工（对应users表id=3，密码同 admin）
+    (1, 3, 'USERNAME', 'zhangsan', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', true, now())
 ;
 SELECT setval('sys_user_credentials_id_seq', (SELECT MAX(id) FROM sys_user_credentials));
 
@@ -120,7 +130,9 @@ SELECT setval('sys_positions_id_seq', (SELECT COALESCE(MAX(id), 1) FROM sys_posi
 -- 插入 sys_memberships 用户-租户关联关系
 -- ----------------------------
 INSERT INTO public.sys_memberships (id, tenant_id, user_id, org_unit_id, position_id, role_id, is_primary, status)
-VALUES (2, 1, 2, null, null, 2, true, 'ACTIVE');
+VALUES
+    (2, 1, 2, null, null, 2, true, 'ACTIVE'),
+    (3, 1, 3, 5, 6, null, true, 'ACTIVE');
 SELECT setval('sys_memberships_id_seq', (SELECT COALESCE(MAX(id), 1) FROM sys_memberships));
 
 -- ----------------------------
@@ -330,34 +342,41 @@ SELECT setval('oa_holiday_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_holiday)
 
 -- ----------------------------
 -- oa_workflow_definition 工作流定义（六域各一条，version=1，ENABLED）
--- node_config 为默认模板，与 service 层 ensureWorkflowDefinition 一致
+-- node_config 为图格式（version:2），节点 id（node_0/node_1 等）与下方 task/log 的 node_id 对齐；
+-- 审批引擎按图节点 id 定位任务所在节点，id 不一致会报 instance state corrupt。
+-- 图形态：LEAVE/OUTING/SEAL 单级审批；EXPENSE 按金额条件分流（>1000 加签一级）；
+-- BUSINESS_TRIP 两级串行；OVERTIME 并行会签（FORK/JOIN）。审批人统一 LEADER（按申请人主组织单元负责人解析）。
 -- ----------------------------
 INSERT INTO public.oa_workflow_definition (tenant_id, code, version, node_config, form_schema, definition_status, remark, created_at, updated_at, created_by, updated_by) VALUES
-    (1, 'LEAVE', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '请假流程', now(), now(), 2, 2),
-    (1, 'EXPENSE', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '报销流程', now(), now(), 2, 2),
-    (1, 'BUSINESS_TRIP', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '出差流程', now(), now(), 2, 2),
-    (1, 'OUTING', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '外出流程', now(), now(), 2, 2),
-    (1, 'OVERTIME', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '加班流程', now(), now(), 2, 2),
-    (1, 'SEAL_APPLICATION', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '用印流程', now(), now(), 2, 2);
+    (1, 'LEAVE', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"node_0"},{"from":"node_0","to":"end"}]}', NULL, 'ENABLED', '请假流程（单级会签）', now(), now(), 2, 2),
+    (1, 'EXPENSE', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"gw_0","type":"EXCLUSIVE_GATEWAY"},{"id":"node_1","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ANY"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"node_0"},{"from":"node_0","to":"gw_0"},{"from":"gw_0","to":"node_1","condition":"amount > 1000"},{"from":"gw_0","to":"end","condition":"default"},{"from":"node_1","to":"end"}]}', NULL, 'ENABLED', '报销流程（>1000 加签一级或签）', now(), now(), 2, 2),
+    (1, 'BUSINESS_TRIP', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"node_1","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ANY"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"node_0"},{"from":"node_0","to":"node_1"},{"from":"node_1","to":"end"}]}', NULL, 'ENABLED', '出差流程（两级串行）', now(), now(), 2, 2),
+    (1, 'OUTING', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"node_0"},{"from":"node_0","to":"end"}]}', NULL, 'ENABLED', '外出流程（单级会签）', now(), now(), 2, 2),
+    (1, 'OVERTIME', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"fork_0","type":"PARALLEL_GATEWAY_FORK"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"node_1","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"join_0","type":"PARALLEL_GATEWAY_JOIN"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"fork_0"},{"from":"fork_0","to":"node_0"},{"from":"fork_0","to":"node_1"},{"from":"node_0","to":"join_0"},{"from":"node_1","to":"join_0"},{"from":"join_0","to":"end"}]}', NULL, 'ENABLED', '加班流程（并行会签）', now(), now(), 2, 2),
+    (1, 'SEAL_APPLICATION', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"node_0"},{"from":"node_0","to":"end"}]}', NULL, 'ENABLED', '用印流程（单级会签）', now(), now(), 2, 2);
 SELECT setval('oa_workflow_definition_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_definition));
 
 -- ----------------------------
 -- oa_workflow_instance 工作流实例（引用上方定义；状态混合）
+-- 实例2（EXPENSE）form_data 带 amount=5000：按定义走「>1000 加签」分支，与 log 在 node_1 的 APPROVE 记录自洽
 -- ----------------------------
 INSERT INTO public.oa_workflow_instance (tenant_id, definition_id, instance_status, form_data, business_type, business_id, created_at, updated_at, created_by, updated_by) VALUES
     (1, 1, 'PENDING', '{}', 'LEAVE', 101, now(), now(), 2, 2),
-    (1, 2, 'APPROVED', '{}', 'EXPENSE', 201, now(), now(), 2, 2),
+    (1, 2, 'APPROVED', '{"amount": 5000}', 'EXPENSE', 201, now(), now(), 2, 2),
     (1, 3, 'REJECTED', '{}', 'BUSINESS_TRIP', 301, now(), now(), 2, 2),
     (1, 4, 'PENDING', '{}', 'OUTING', 401, now(), now(), 2, 2);
 SELECT setval('oa_workflow_instance_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_instance));
 
 -- ----------------------------
 -- oa_workflow_task 审批任务（引用上方实例；部分指派 user=2 填充待办）
+-- 实例2/3 为两级流程：node_0 通过后再经 node_1（与 log 呼应）；实例4 assignee 置空演示「无待办人」挂起态
 -- ----------------------------
 INSERT INTO public.oa_workflow_task (tenant_id, instance_id, node_id, assignee_user_id, task_status, created_at, updated_at, created_by, updated_by) VALUES
     (1, 1, 'node_0', 2, 'PENDING', now(), now(), 2, 2),
     (1, 2, 'node_0', 2, 'APPROVED', now(), now(), 2, 2),
-    (1, 3, 'node_0', 2, 'REJECTED', now(), now(), 2, 2),
+    (1, 2, 'node_1', 2, 'APPROVED', now(), now(), 2, 2),
+    (1, 3, 'node_0', 2, 'APPROVED', now(), now(), 2, 2),
+    (1, 3, 'node_1', 2, 'REJECTED', now(), now(), 2, 2),
     (1, 4, 'node_0', NULL, 'PENDING', now(), now(), 2, 2);
 SELECT setval('oa_workflow_task_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_task));
 
@@ -498,14 +517,15 @@ SELECT setval('oa_holiday_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_holiday)
 
 -- ----------------------------
 -- oa_workflow_definition 工作流定义（超管组，六域各一条，ENABLED）
+-- 图形态与租户组同构（版本均 version:2）
 -- ----------------------------
 INSERT INTO public.oa_workflow_definition (tenant_id, code, version, node_config, form_schema, definition_status, remark, created_at, updated_at, created_by, updated_by) VALUES
-    (0, 'LEAVE', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '请假流程', now(), now(), 1, 1),
-    (0, 'EXPENSE', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '报销流程', now(), now(), 1, 1),
-    (0, 'BUSINESS_TRIP', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '出差流程', now(), now(), 1, 1),
-    (0, 'OUTING', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '外出流程', now(), now(), 1, 1),
-    (0, 'OVERTIME', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '加班流程', now(), now(), 1, 1),
-    (0, 'SEAL_APPLICATION', 1, '[{"approvers":[{"type":"LEADER"}],"strategy":"ALL"}]', NULL, 'ENABLED', '用印流程', now(), now(), 1, 1);
+    (0, 'LEAVE', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"node_0"},{"from":"node_0","to":"end"}]}', NULL, 'ENABLED', '请假流程（单级会签）', now(), now(), 1, 1),
+    (0, 'EXPENSE', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"gw_0","type":"EXCLUSIVE_GATEWAY"},{"id":"node_1","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ANY"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"node_0"},{"from":"node_0","to":"gw_0"},{"from":"gw_0","to":"node_1","condition":"amount > 1000"},{"from":"gw_0","to":"end","condition":"default"},{"from":"node_1","to":"end"}]}', NULL, 'ENABLED', '报销流程（>1000 加签一级或签）', now(), now(), 1, 1),
+    (0, 'BUSINESS_TRIP', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"node_1","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ANY"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"node_0"},{"from":"node_0","to":"node_1"},{"from":"node_1","to":"end"}]}', NULL, 'ENABLED', '出差流程（两级串行）', now(), now(), 1, 1),
+    (0, 'OUTING', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"node_0"},{"from":"node_0","to":"end"}]}', NULL, 'ENABLED', '外出流程（单级会签）', now(), now(), 1, 1),
+    (0, 'OVERTIME', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"fork_0","type":"PARALLEL_GATEWAY_FORK"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"node_1","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"join_0","type":"PARALLEL_GATEWAY_JOIN"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"fork_0"},{"from":"fork_0","to":"node_0"},{"from":"fork_0","to":"node_1"},{"from":"node_0","to":"join_0"},{"from":"node_1","to":"join_0"},{"from":"join_0","to":"end"}]}', NULL, 'ENABLED', '加班流程（并行会签）', now(), now(), 1, 1),
+    (0, 'SEAL_APPLICATION', 1, '{"version":2,"nodes":[{"id":"start","type":"START"},{"id":"node_0","type":"TASK","approvers":[{"type":"LEADER"}],"strategy":"ALL"},{"id":"end","type":"END"}],"edges":[{"from":"start","to":"node_0"},{"from":"node_0","to":"end"}]}', NULL, 'ENABLED', '用印流程（单级会签）', now(), now(), 1, 1);
 SELECT setval('oa_workflow_definition_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_definition));
 
 -- ----------------------------
@@ -513,7 +533,7 @@ SELECT setval('oa_workflow_definition_id_seq', (SELECT COALESCE(MAX(id), 1) FROM
 -- ----------------------------
 INSERT INTO public.oa_workflow_instance (tenant_id, definition_id, instance_status, form_data, business_type, business_id, created_at, updated_at, created_by, updated_by) VALUES
     (0, 7, 'PENDING', '{}', 'LEAVE', 5, now(), now(), 1, 1),
-    (0, 8, 'APPROVED', '{}', 'EXPENSE', 4, now(), now(), 1, 1),
+    (0, 8, 'APPROVED', '{"amount": 5000}', 'EXPENSE', 4, now(), now(), 1, 1),
     (0, 9, 'REJECTED', '{}', 'BUSINESS_TRIP', 4, now(), now(), 1, 1),
     (0, 10, 'PENDING', '{}', 'OUTING', 4, now(), now(), 1, 1);
 SELECT setval('oa_workflow_instance_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_instance));
@@ -524,7 +544,9 @@ SELECT setval('oa_workflow_instance_id_seq', (SELECT COALESCE(MAX(id), 1) FROM o
 INSERT INTO public.oa_workflow_task (tenant_id, instance_id, node_id, assignee_user_id, task_status, created_at, updated_at, created_by, updated_by) VALUES
     (0, 5, 'node_0', 1, 'PENDING', now(), now(), 1, 1),
     (0, 6, 'node_0', 1, 'APPROVED', now(), now(), 1, 1),
-    (0, 7, 'node_0', 1, 'REJECTED', now(), now(), 1, 1),
+    (0, 6, 'node_1', 1, 'APPROVED', now(), now(), 1, 1),
+    (0, 7, 'node_0', 1, 'APPROVED', now(), now(), 1, 1),
+    (0, 7, 'node_1', 1, 'REJECTED', now(), now(), 1, 1),
     (0, 8, 'node_0', NULL, 'PENDING', now(), now(), 1, 1);
 SELECT setval('oa_workflow_task_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_task));
 
@@ -538,6 +560,22 @@ INSERT INTO public.oa_workflow_log (tenant_id, instance_id, node_id, log_action,
     (0, 7, 'node_0', 'SUBMIT', '申请人提交出差申请', now(), now(), 1, 1),
     (0, 7, 'node_1', 'REJECT', '主管驳回：行程不合理', now(), now(), 1, 1);
 SELECT setval('oa_workflow_log_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_log));
+
+-- ----------------------------
+-- oa_workflow_delegation 审批委托（租户管理员外出期间审批委托给张三）
+-- 引擎在解析审批人时查本表自动替换：node_config 中解析到 user2 的审批任务会派给 user3。
+-- 超管组（tid=0）仅有 user=1 一个账号，无法自委托，故无数据。
+-- ----------------------------
+INSERT INTO public.oa_workflow_delegation (tenant_id, delegator_user_id, delegate_user_id, created_at, updated_at, created_by, updated_by) VALUES
+    (1, 2, 3, now(), now(), 2, 2);
+SELECT setval('oa_workflow_delegation_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_delegation));
+
+-- ----------------------------
+-- oa_workflow_instance_join / oa_workflow_instance_parent_link 保持空表：
+-- 两表是引擎运行时状态（并行分支到达计数 / 父子流程挂起链接），由推进器在执行
+-- PARALLEL_GATEWAY_JOIN / SUBPROCESS 节点时自动写入。demo 实例没有进行中的并行
+-- 分支或子流程，人工造行会留下与图结构不一致的脏状态，故不插入。
+-- ----------------------------
 
 -- ----------------------------
 -- oa_attendance_record 考勤记录（超管组，user=1，近期工作日，状态混合）
