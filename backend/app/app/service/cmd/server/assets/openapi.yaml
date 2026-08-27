@@ -1968,6 +1968,7 @@ components:
                         - APPROVE
                         - REJECT
                         - FORWARD
+                        - ADD_APPROVER
                     type: string
                     description: 审批动作
                     format: enum
@@ -1978,6 +1979,10 @@ components:
                 comment:
                     type: string
                     description: 审批意见
+                additionalApprover:
+                    type: integer
+                    description: 加签目标用户ID
+                    format: uint32
             description: 审批任务 - 请求
         oa.service.v1.BusinessTripApplication:
             type: object
@@ -2939,10 +2944,9 @@ components:
                     type: integer
                     description: 日志ID
                     format: uint32
-                nodeIndex:
-                    type: integer
-                    description: 节点索引
-                    format: int32
+                nodeId:
+                    type: string
+                    description: 图节点ID
                 logAction:
                     enum:
                         - SUBMIT
@@ -2992,10 +2996,9 @@ components:
                     type: integer
                     description: 任务ID
                     format: uint32
-                nodeIndex:
-                    type: integer
-                    description: 节点索引
-                    format: int32
+                nodeId:
+                    type: string
+                    description: 图节点ID
                 assigneeUserId:
                     type: integer
                     description: 指派审批人ID

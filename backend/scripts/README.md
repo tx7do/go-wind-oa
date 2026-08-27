@@ -13,8 +13,7 @@ scripts/
 │   └── lib/                        # 共享函数库（Unix .sh 与 PowerShell .ps1 各一套：日志/hosts/系统检测等）
 ├── docker/                         # Docker Compose 编排脚本（.sh / .ps1 双版本）
 │   ├── full_deploy.sh|ps1          # 全量启动：中间件 + core/admin/app 三个应用服务
-│   ├── libs_only.sh|ps1            # 仅启动中间件（本地运行三个服务时配合使用）
-│   └── opensearch/Dockerfile       # 自定义 OpenSearch 镜像（安装 smartcn 中文分词插件）；当前两个 compose 文件均未编排 opensearch 服务
+│   └── libs_only.sh|ps1            # 仅启动中间件（本地运行三个服务时配合使用）
 └── deploy/
     └── pm2_service.sh              # PM2 托管三个服务的宿主机部署
 ```

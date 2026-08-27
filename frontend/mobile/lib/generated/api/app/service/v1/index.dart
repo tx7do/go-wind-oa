@@ -8131,12 +8131,14 @@ class OaServiceV1SubmitApplyResponse {
 /// 审批任务 - 请求
 class OaServiceV1AuditTaskRequest {
   OaServiceV1AuditAction? action;
+  int? additionalApprover;
   String? comment;
   int? forwardTo;
   int? taskId;
 
   OaServiceV1AuditTaskRequest({
     this.action,
+    this.additionalApprover,
     this.comment,
     this.forwardTo,
     this.taskId,
@@ -8145,6 +8147,7 @@ class OaServiceV1AuditTaskRequest {
   factory OaServiceV1AuditTaskRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1AuditTaskRequest(
       action: json['action'] != null ? OaServiceV1AuditAction.fromString(json['action'] as String) : null,
+      additionalApprover: json['additionalApprover'] as int?,
       comment: json['comment'] as String?,
       forwardTo: json['forwardTo'] as int?,
       taskId: json['taskId'] as int?,
@@ -8154,6 +8157,7 @@ class OaServiceV1AuditTaskRequest {
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     if (action != null) json['action'] = action!.value;
+    if (additionalApprover != null) json['additionalApprover'] = additionalApprover;
     if (comment != null) json['comment'] = comment;
     if (forwardTo != null) json['forwardTo'] = forwardTo;
     if (taskId != null) json['taskId'] = taskId;
@@ -8162,7 +8166,7 @@ class OaServiceV1AuditTaskRequest {
 
   @override
   String toString() {
-    return 'OaServiceV1AuditTaskRequest(action: $action, comment: $comment, forwardTo: $forwardTo, taskId: $taskId)';
+    return 'OaServiceV1AuditTaskRequest(action: $action, additionalApprover: $additionalApprover, comment: $comment, forwardTo: $forwardTo, taskId: $taskId)';
   }
 
   @override
@@ -8171,6 +8175,7 @@ class OaServiceV1AuditTaskRequest {
     other is OaServiceV1AuditTaskRequest &&
       runtimeType == other.runtimeType
       && action == other.action
+      && additionalApprover == other.additionalApprover
       && comment == other.comment
       && forwardTo == other.forwardTo
       && taskId == other.taskId
@@ -8179,6 +8184,7 @@ class OaServiceV1AuditTaskRequest {
   @override
   int get hashCode => Object.hashAll([
     action,
+    additionalApprover,
     comment,
     forwardTo,
     taskId,
@@ -8186,12 +8192,14 @@ class OaServiceV1AuditTaskRequest {
 
   OaServiceV1AuditTaskRequest copyWith({
     OaServiceV1AuditAction? action,
+    int? additionalApprover,
     String? comment,
     int? forwardTo,
     int? taskId,
   }) {
     return OaServiceV1AuditTaskRequest(
       action: action ?? this.action,
+      additionalApprover: additionalApprover ?? this.additionalApprover,
       comment: comment ?? this.comment,
       forwardTo: forwardTo ?? this.forwardTo,
       taskId: taskId ?? this.taskId,
@@ -8201,6 +8209,7 @@ class OaServiceV1AuditTaskRequest {
 
 /// 审批动作
 enum OaServiceV1AuditAction {
+  addApprover('ADD_APPROVER'),
   approve('APPROVE'),
   forward('FORWARD'),
   reject('REJECT');
@@ -8585,7 +8594,7 @@ class OaServiceV1WorkflowTask {
   ///
   /// Behaviors: OPTIONAL
   int? id;
-  int? nodeIndex;
+  String? nodeId;
   OaServiceV1WorkflowTask$TaskStatus? taskStatus;
   int? tenantId;
   String? updatedAt;
@@ -8598,7 +8607,7 @@ class OaServiceV1WorkflowTask {
     this.deletedAt,
     this.deletedBy,
     this.id,
-    this.nodeIndex,
+    this.nodeId,
     this.taskStatus,
     this.tenantId,
     this.updatedAt,
@@ -8613,7 +8622,7 @@ class OaServiceV1WorkflowTask {
       deletedAt: json['deletedAt'] as String?,
       deletedBy: json['deletedBy'] as int?,
       id: json['id'] as int?,
-      nodeIndex: json['nodeIndex'] as int?,
+      nodeId: json['nodeId'] as String?,
       taskStatus: json['taskStatus'] != null ? OaServiceV1WorkflowTask$TaskStatus.fromString(json['taskStatus'] as String) : null,
       tenantId: json['tenantId'] as int?,
       updatedAt: json['updatedAt'] as String?,
@@ -8629,7 +8638,7 @@ class OaServiceV1WorkflowTask {
     if (deletedAt != null) json['deletedAt'] = deletedAt;
     if (deletedBy != null) json['deletedBy'] = deletedBy;
     if (id != null) json['id'] = id;
-    if (nodeIndex != null) json['nodeIndex'] = nodeIndex;
+    if (nodeId != null) json['nodeId'] = nodeId;
     if (taskStatus != null) json['taskStatus'] = taskStatus!.value;
     if (tenantId != null) json['tenantId'] = tenantId;
     if (updatedAt != null) json['updatedAt'] = updatedAt;
@@ -8639,7 +8648,7 @@ class OaServiceV1WorkflowTask {
 
   @override
   String toString() {
-    return 'OaServiceV1WorkflowTask(assigneeUserId: $assigneeUserId, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, nodeIndex: $nodeIndex, taskStatus: $taskStatus, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+    return 'OaServiceV1WorkflowTask(assigneeUserId: $assigneeUserId, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, nodeId: $nodeId, taskStatus: $taskStatus, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
   }
 
   @override
@@ -8653,7 +8662,7 @@ class OaServiceV1WorkflowTask {
       && deletedAt == other.deletedAt
       && deletedBy == other.deletedBy
       && id == other.id
-      && nodeIndex == other.nodeIndex
+      && nodeId == other.nodeId
       && taskStatus == other.taskStatus
       && tenantId == other.tenantId
       && updatedAt == other.updatedAt
@@ -8668,7 +8677,7 @@ class OaServiceV1WorkflowTask {
     deletedAt,
     deletedBy,
     id,
-    nodeIndex,
+    nodeId,
     taskStatus,
     tenantId,
     updatedAt,
@@ -8682,7 +8691,7 @@ class OaServiceV1WorkflowTask {
     String? deletedAt,
     int? deletedBy,
     int? id,
-    int? nodeIndex,
+    String? nodeId,
     OaServiceV1WorkflowTask$TaskStatus? taskStatus,
     int? tenantId,
     String? updatedAt,
@@ -8695,7 +8704,7 @@ class OaServiceV1WorkflowTask {
       deletedAt: deletedAt ?? this.deletedAt,
       deletedBy: deletedBy ?? this.deletedBy,
       id: id ?? this.id,
-      nodeIndex: nodeIndex ?? this.nodeIndex,
+      nodeId: nodeId ?? this.nodeId,
       taskStatus: taskStatus ?? this.taskStatus,
       tenantId: tenantId ?? this.tenantId,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -8731,7 +8740,7 @@ class OaServiceV1WorkflowLog {
   /// Behaviors: OPTIONAL
   int? id;
   OaServiceV1WorkflowLog$LogAction? logAction;
-  int? nodeIndex;
+  String? nodeId;
   int? tenantId;
   String? updatedAt;
   int? updatedBy;
@@ -8744,7 +8753,7 @@ class OaServiceV1WorkflowLog {
     this.deletedBy,
     this.id,
     this.logAction,
-    this.nodeIndex,
+    this.nodeId,
     this.tenantId,
     this.updatedAt,
     this.updatedBy,
@@ -8759,7 +8768,7 @@ class OaServiceV1WorkflowLog {
       deletedBy: json['deletedBy'] as int?,
       id: json['id'] as int?,
       logAction: json['logAction'] != null ? OaServiceV1WorkflowLog$LogAction.fromString(json['logAction'] as String) : null,
-      nodeIndex: json['nodeIndex'] as int?,
+      nodeId: json['nodeId'] as String?,
       tenantId: json['tenantId'] as int?,
       updatedAt: json['updatedAt'] as String?,
       updatedBy: json['updatedBy'] as int?,
@@ -8775,7 +8784,7 @@ class OaServiceV1WorkflowLog {
     if (deletedBy != null) json['deletedBy'] = deletedBy;
     if (id != null) json['id'] = id;
     if (logAction != null) json['logAction'] = logAction!.value;
-    if (nodeIndex != null) json['nodeIndex'] = nodeIndex;
+    if (nodeId != null) json['nodeId'] = nodeId;
     if (tenantId != null) json['tenantId'] = tenantId;
     if (updatedAt != null) json['updatedAt'] = updatedAt;
     if (updatedBy != null) json['updatedBy'] = updatedBy;
@@ -8784,7 +8793,7 @@ class OaServiceV1WorkflowLog {
 
   @override
   String toString() {
-    return 'OaServiceV1WorkflowLog(comment: $comment, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, logAction: $logAction, nodeIndex: $nodeIndex, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
+    return 'OaServiceV1WorkflowLog(comment: $comment, createdAt: $createdAt, createdBy: $createdBy, deletedAt: $deletedAt, deletedBy: $deletedBy, id: $id, logAction: $logAction, nodeId: $nodeId, tenantId: $tenantId, updatedAt: $updatedAt, updatedBy: $updatedBy)';
   }
 
   @override
@@ -8799,7 +8808,7 @@ class OaServiceV1WorkflowLog {
       && deletedBy == other.deletedBy
       && id == other.id
       && logAction == other.logAction
-      && nodeIndex == other.nodeIndex
+      && nodeId == other.nodeId
       && tenantId == other.tenantId
       && updatedAt == other.updatedAt
       && updatedBy == other.updatedBy
@@ -8814,7 +8823,7 @@ class OaServiceV1WorkflowLog {
     deletedBy,
     id,
     logAction,
-    nodeIndex,
+    nodeId,
     tenantId,
     updatedAt,
     updatedBy,
@@ -8828,7 +8837,7 @@ class OaServiceV1WorkflowLog {
     int? deletedBy,
     int? id,
     OaServiceV1WorkflowLog$LogAction? logAction,
-    int? nodeIndex,
+    String? nodeId,
     int? tenantId,
     String? updatedAt,
     int? updatedBy,
@@ -8841,7 +8850,7 @@ class OaServiceV1WorkflowLog {
       deletedBy: deletedBy ?? this.deletedBy,
       id: id ?? this.id,
       logAction: logAction ?? this.logAction,
-      nodeIndex: nodeIndex ?? this.nodeIndex,
+      nodeId: nodeId ?? this.nodeId,
       tenantId: tenantId ?? this.tenantId,
       updatedAt: updatedAt ?? this.updatedAt,
       updatedBy: updatedBy ?? this.updatedBy,
