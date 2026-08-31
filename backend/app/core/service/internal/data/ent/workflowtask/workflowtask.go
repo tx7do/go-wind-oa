@@ -33,6 +33,10 @@ const (
 	FieldNodeID = "node_id"
 	// FieldAssigneeUserID holds the string denoting the assignee_user_id field in the database.
 	FieldAssigneeUserID = "assignee_user_id"
+	// FieldRemindedAt holds the string denoting the reminded_at field in the database.
+	FieldRemindedAt = "reminded_at"
+	// FieldEscalatedAt holds the string denoting the escalated_at field in the database.
+	FieldEscalatedAt = "escalated_at"
 	// FieldTaskStatus holds the string denoting the task_status field in the database.
 	FieldTaskStatus = "task_status"
 	// EdgeInstance holds the string denoting the instance edge name in mutations.
@@ -60,6 +64,8 @@ var Columns = []string{
 	FieldTenantID,
 	FieldNodeID,
 	FieldAssigneeUserID,
+	FieldRemindedAt,
+	FieldEscalatedAt,
 	FieldTaskStatus,
 }
 
@@ -177,6 +183,16 @@ func ByNodeID(opts ...sql.OrderTermOption) OrderOption {
 // ByAssigneeUserID orders the results by the assignee_user_id field.
 func ByAssigneeUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAssigneeUserID, opts...).ToFunc()
+}
+
+// ByRemindedAt orders the results by the reminded_at field.
+func ByRemindedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemindedAt, opts...).ToFunc()
+}
+
+// ByEscalatedAt orders the results by the escalated_at field.
+func ByEscalatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEscalatedAt, opts...).ToFunc()
 }
 
 // ByTaskStatus orders the results by the task_status field.

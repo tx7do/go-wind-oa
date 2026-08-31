@@ -41,6 +41,16 @@ func (WorkflowTask) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
+		field.Time("reminded_at").
+			Comment("最近一次超时催办时间；非空表示已催办过，避免重复催办").
+			Optional().
+			Nillable(),
+
+		field.Time("escalated_at").
+			Comment("超时自动升级时间；非空表示已升级过，避免沿组织树连环上转").
+			Optional().
+			Nillable(),
+
 		field.Enum("task_status").
 			Comment("任务状态").
 			NamedValues(

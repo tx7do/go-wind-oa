@@ -149,6 +149,34 @@ func (_c *WorkflowTaskCreate) SetNillableAssigneeUserID(v *uint32) *WorkflowTask
 	return _c
 }
 
+// SetRemindedAt sets the "reminded_at" field.
+func (_c *WorkflowTaskCreate) SetRemindedAt(v time.Time) *WorkflowTaskCreate {
+	_c.mutation.SetRemindedAt(v)
+	return _c
+}
+
+// SetNillableRemindedAt sets the "reminded_at" field if the given value is not nil.
+func (_c *WorkflowTaskCreate) SetNillableRemindedAt(v *time.Time) *WorkflowTaskCreate {
+	if v != nil {
+		_c.SetRemindedAt(*v)
+	}
+	return _c
+}
+
+// SetEscalatedAt sets the "escalated_at" field.
+func (_c *WorkflowTaskCreate) SetEscalatedAt(v time.Time) *WorkflowTaskCreate {
+	_c.mutation.SetEscalatedAt(v)
+	return _c
+}
+
+// SetNillableEscalatedAt sets the "escalated_at" field if the given value is not nil.
+func (_c *WorkflowTaskCreate) SetNillableEscalatedAt(v *time.Time) *WorkflowTaskCreate {
+	if v != nil {
+		_c.SetEscalatedAt(*v)
+	}
+	return _c
+}
+
 // SetTaskStatus sets the "task_status" field.
 func (_c *WorkflowTaskCreate) SetTaskStatus(v workflowtask.TaskStatus) *WorkflowTaskCreate {
 	_c.mutation.SetTaskStatus(v)
@@ -316,6 +344,14 @@ func (_c *WorkflowTaskCreate) createSpec() (*WorkflowTask, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.AssigneeUserID(); ok {
 		_spec.SetField(workflowtask.FieldAssigneeUserID, field.TypeUint32, value)
 		_node.AssigneeUserID = &value
+	}
+	if value, ok := _c.mutation.RemindedAt(); ok {
+		_spec.SetField(workflowtask.FieldRemindedAt, field.TypeTime, value)
+		_node.RemindedAt = &value
+	}
+	if value, ok := _c.mutation.EscalatedAt(); ok {
+		_spec.SetField(workflowtask.FieldEscalatedAt, field.TypeTime, value)
+		_node.EscalatedAt = &value
 	}
 	if value, ok := _c.mutation.TaskStatus(); ok {
 		_spec.SetField(workflowtask.FieldTaskStatus, field.TypeEnum, value)
@@ -537,6 +573,42 @@ func (u *WorkflowTaskUpsert) AddAssigneeUserID(v uint32) *WorkflowTaskUpsert {
 // ClearAssigneeUserID clears the value of the "assignee_user_id" field.
 func (u *WorkflowTaskUpsert) ClearAssigneeUserID() *WorkflowTaskUpsert {
 	u.SetNull(workflowtask.FieldAssigneeUserID)
+	return u
+}
+
+// SetRemindedAt sets the "reminded_at" field.
+func (u *WorkflowTaskUpsert) SetRemindedAt(v time.Time) *WorkflowTaskUpsert {
+	u.Set(workflowtask.FieldRemindedAt, v)
+	return u
+}
+
+// UpdateRemindedAt sets the "reminded_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsert) UpdateRemindedAt() *WorkflowTaskUpsert {
+	u.SetExcluded(workflowtask.FieldRemindedAt)
+	return u
+}
+
+// ClearRemindedAt clears the value of the "reminded_at" field.
+func (u *WorkflowTaskUpsert) ClearRemindedAt() *WorkflowTaskUpsert {
+	u.SetNull(workflowtask.FieldRemindedAt)
+	return u
+}
+
+// SetEscalatedAt sets the "escalated_at" field.
+func (u *WorkflowTaskUpsert) SetEscalatedAt(v time.Time) *WorkflowTaskUpsert {
+	u.Set(workflowtask.FieldEscalatedAt, v)
+	return u
+}
+
+// UpdateEscalatedAt sets the "escalated_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsert) UpdateEscalatedAt() *WorkflowTaskUpsert {
+	u.SetExcluded(workflowtask.FieldEscalatedAt)
+	return u
+}
+
+// ClearEscalatedAt clears the value of the "escalated_at" field.
+func (u *WorkflowTaskUpsert) ClearEscalatedAt() *WorkflowTaskUpsert {
+	u.SetNull(workflowtask.FieldEscalatedAt)
 	return u
 }
 
@@ -784,6 +856,48 @@ func (u *WorkflowTaskUpsertOne) UpdateAssigneeUserID() *WorkflowTaskUpsertOne {
 func (u *WorkflowTaskUpsertOne) ClearAssigneeUserID() *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.ClearAssigneeUserID()
+	})
+}
+
+// SetRemindedAt sets the "reminded_at" field.
+func (u *WorkflowTaskUpsertOne) SetRemindedAt(v time.Time) *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetRemindedAt(v)
+	})
+}
+
+// UpdateRemindedAt sets the "reminded_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertOne) UpdateRemindedAt() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateRemindedAt()
+	})
+}
+
+// ClearRemindedAt clears the value of the "reminded_at" field.
+func (u *WorkflowTaskUpsertOne) ClearRemindedAt() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearRemindedAt()
+	})
+}
+
+// SetEscalatedAt sets the "escalated_at" field.
+func (u *WorkflowTaskUpsertOne) SetEscalatedAt(v time.Time) *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetEscalatedAt(v)
+	})
+}
+
+// UpdateEscalatedAt sets the "escalated_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertOne) UpdateEscalatedAt() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateEscalatedAt()
+	})
+}
+
+// ClearEscalatedAt clears the value of the "escalated_at" field.
+func (u *WorkflowTaskUpsertOne) ClearEscalatedAt() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearEscalatedAt()
 	})
 }
 
@@ -1200,6 +1314,48 @@ func (u *WorkflowTaskUpsertBulk) UpdateAssigneeUserID() *WorkflowTaskUpsertBulk 
 func (u *WorkflowTaskUpsertBulk) ClearAssigneeUserID() *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.ClearAssigneeUserID()
+	})
+}
+
+// SetRemindedAt sets the "reminded_at" field.
+func (u *WorkflowTaskUpsertBulk) SetRemindedAt(v time.Time) *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetRemindedAt(v)
+	})
+}
+
+// UpdateRemindedAt sets the "reminded_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertBulk) UpdateRemindedAt() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateRemindedAt()
+	})
+}
+
+// ClearRemindedAt clears the value of the "reminded_at" field.
+func (u *WorkflowTaskUpsertBulk) ClearRemindedAt() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearRemindedAt()
+	})
+}
+
+// SetEscalatedAt sets the "escalated_at" field.
+func (u *WorkflowTaskUpsertBulk) SetEscalatedAt(v time.Time) *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetEscalatedAt(v)
+	})
+}
+
+// UpdateEscalatedAt sets the "escalated_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertBulk) UpdateEscalatedAt() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateEscalatedAt()
+	})
+}
+
+// ClearEscalatedAt clears the value of the "escalated_at" field.
+func (u *WorkflowTaskUpsertBulk) ClearEscalatedAt() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearEscalatedAt()
 	})
 }
 

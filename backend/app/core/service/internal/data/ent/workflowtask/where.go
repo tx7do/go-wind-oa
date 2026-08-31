@@ -100,6 +100,16 @@ func AssigneeUserID(v uint32) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldEQ(FieldAssigneeUserID, v))
 }
 
+// RemindedAt applies equality check predicate on the "reminded_at" field. It's identical to RemindedAtEQ.
+func RemindedAt(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldEQ(FieldRemindedAt, v))
+}
+
+// EscalatedAt applies equality check predicate on the "escalated_at" field. It's identical to EscalatedAtEQ.
+func EscalatedAt(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldEQ(FieldEscalatedAt, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldEQ(FieldCreatedAt, v))
@@ -573,6 +583,106 @@ func AssigneeUserIDIsNil() predicate.WorkflowTask {
 // AssigneeUserIDNotNil applies the NotNil predicate on the "assignee_user_id" field.
 func AssigneeUserIDNotNil() predicate.WorkflowTask {
 	return predicate.WorkflowTask(sql.FieldNotNull(FieldAssigneeUserID))
+}
+
+// RemindedAtEQ applies the EQ predicate on the "reminded_at" field.
+func RemindedAtEQ(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldEQ(FieldRemindedAt, v))
+}
+
+// RemindedAtNEQ applies the NEQ predicate on the "reminded_at" field.
+func RemindedAtNEQ(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldNEQ(FieldRemindedAt, v))
+}
+
+// RemindedAtIn applies the In predicate on the "reminded_at" field.
+func RemindedAtIn(vs ...time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldIn(FieldRemindedAt, vs...))
+}
+
+// RemindedAtNotIn applies the NotIn predicate on the "reminded_at" field.
+func RemindedAtNotIn(vs ...time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldNotIn(FieldRemindedAt, vs...))
+}
+
+// RemindedAtGT applies the GT predicate on the "reminded_at" field.
+func RemindedAtGT(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldGT(FieldRemindedAt, v))
+}
+
+// RemindedAtGTE applies the GTE predicate on the "reminded_at" field.
+func RemindedAtGTE(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldGTE(FieldRemindedAt, v))
+}
+
+// RemindedAtLT applies the LT predicate on the "reminded_at" field.
+func RemindedAtLT(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldLT(FieldRemindedAt, v))
+}
+
+// RemindedAtLTE applies the LTE predicate on the "reminded_at" field.
+func RemindedAtLTE(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldLTE(FieldRemindedAt, v))
+}
+
+// RemindedAtIsNil applies the IsNil predicate on the "reminded_at" field.
+func RemindedAtIsNil() predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldIsNull(FieldRemindedAt))
+}
+
+// RemindedAtNotNil applies the NotNil predicate on the "reminded_at" field.
+func RemindedAtNotNil() predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldNotNull(FieldRemindedAt))
+}
+
+// EscalatedAtEQ applies the EQ predicate on the "escalated_at" field.
+func EscalatedAtEQ(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldEQ(FieldEscalatedAt, v))
+}
+
+// EscalatedAtNEQ applies the NEQ predicate on the "escalated_at" field.
+func EscalatedAtNEQ(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldNEQ(FieldEscalatedAt, v))
+}
+
+// EscalatedAtIn applies the In predicate on the "escalated_at" field.
+func EscalatedAtIn(vs ...time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldIn(FieldEscalatedAt, vs...))
+}
+
+// EscalatedAtNotIn applies the NotIn predicate on the "escalated_at" field.
+func EscalatedAtNotIn(vs ...time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldNotIn(FieldEscalatedAt, vs...))
+}
+
+// EscalatedAtGT applies the GT predicate on the "escalated_at" field.
+func EscalatedAtGT(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldGT(FieldEscalatedAt, v))
+}
+
+// EscalatedAtGTE applies the GTE predicate on the "escalated_at" field.
+func EscalatedAtGTE(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldGTE(FieldEscalatedAt, v))
+}
+
+// EscalatedAtLT applies the LT predicate on the "escalated_at" field.
+func EscalatedAtLT(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldLT(FieldEscalatedAt, v))
+}
+
+// EscalatedAtLTE applies the LTE predicate on the "escalated_at" field.
+func EscalatedAtLTE(v time.Time) predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldLTE(FieldEscalatedAt, v))
+}
+
+// EscalatedAtIsNil applies the IsNil predicate on the "escalated_at" field.
+func EscalatedAtIsNil() predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldIsNull(FieldEscalatedAt))
+}
+
+// EscalatedAtNotNil applies the NotNil predicate on the "escalated_at" field.
+func EscalatedAtNotNil() predicate.WorkflowTask {
+	return predicate.WorkflowTask(sql.FieldNotNull(FieldEscalatedAt))
 }
 
 // TaskStatusEQ applies the EQ predicate on the "task_status" field.

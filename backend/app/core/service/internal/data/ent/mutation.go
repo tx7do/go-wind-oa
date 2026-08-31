@@ -93684,6 +93684,8 @@ type WorkflowTaskMutation struct {
 	node_id             *string
 	assignee_user_id    *uint32
 	addassignee_user_id *int32
+	reminded_at         *time.Time
+	escalated_at        *time.Time
 	task_status         *workflowtask.TaskStatus
 	clearedFields       map[string]struct{}
 	instance            *uint32
@@ -94343,6 +94345,104 @@ func (m *WorkflowTaskMutation) ResetAssigneeUserID() {
 	delete(m.clearedFields, workflowtask.FieldAssigneeUserID)
 }
 
+// SetRemindedAt sets the "reminded_at" field.
+func (m *WorkflowTaskMutation) SetRemindedAt(t time.Time) {
+	m.reminded_at = &t
+}
+
+// RemindedAt returns the value of the "reminded_at" field in the mutation.
+func (m *WorkflowTaskMutation) RemindedAt() (r time.Time, exists bool) {
+	v := m.reminded_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemindedAt returns the old "reminded_at" field's value of the WorkflowTask entity.
+// If the WorkflowTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTaskMutation) OldRemindedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemindedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemindedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemindedAt: %w", err)
+	}
+	return oldValue.RemindedAt, nil
+}
+
+// ClearRemindedAt clears the value of the "reminded_at" field.
+func (m *WorkflowTaskMutation) ClearRemindedAt() {
+	m.reminded_at = nil
+	m.clearedFields[workflowtask.FieldRemindedAt] = struct{}{}
+}
+
+// RemindedAtCleared returns if the "reminded_at" field was cleared in this mutation.
+func (m *WorkflowTaskMutation) RemindedAtCleared() bool {
+	_, ok := m.clearedFields[workflowtask.FieldRemindedAt]
+	return ok
+}
+
+// ResetRemindedAt resets all changes to the "reminded_at" field.
+func (m *WorkflowTaskMutation) ResetRemindedAt() {
+	m.reminded_at = nil
+	delete(m.clearedFields, workflowtask.FieldRemindedAt)
+}
+
+// SetEscalatedAt sets the "escalated_at" field.
+func (m *WorkflowTaskMutation) SetEscalatedAt(t time.Time) {
+	m.escalated_at = &t
+}
+
+// EscalatedAt returns the value of the "escalated_at" field in the mutation.
+func (m *WorkflowTaskMutation) EscalatedAt() (r time.Time, exists bool) {
+	v := m.escalated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEscalatedAt returns the old "escalated_at" field's value of the WorkflowTask entity.
+// If the WorkflowTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTaskMutation) OldEscalatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEscalatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEscalatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEscalatedAt: %w", err)
+	}
+	return oldValue.EscalatedAt, nil
+}
+
+// ClearEscalatedAt clears the value of the "escalated_at" field.
+func (m *WorkflowTaskMutation) ClearEscalatedAt() {
+	m.escalated_at = nil
+	m.clearedFields[workflowtask.FieldEscalatedAt] = struct{}{}
+}
+
+// EscalatedAtCleared returns if the "escalated_at" field was cleared in this mutation.
+func (m *WorkflowTaskMutation) EscalatedAtCleared() bool {
+	_, ok := m.clearedFields[workflowtask.FieldEscalatedAt]
+	return ok
+}
+
+// ResetEscalatedAt resets all changes to the "escalated_at" field.
+func (m *WorkflowTaskMutation) ResetEscalatedAt() {
+	m.escalated_at = nil
+	delete(m.clearedFields, workflowtask.FieldEscalatedAt)
+}
+
 // SetTaskStatus sets the "task_status" field.
 func (m *WorkflowTaskMutation) SetTaskStatus(ws workflowtask.TaskStatus) {
 	m.task_status = &ws
@@ -94465,7 +94565,7 @@ func (m *WorkflowTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WorkflowTaskMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, workflowtask.FieldCreatedAt)
 	}
@@ -94492,6 +94592,12 @@ func (m *WorkflowTaskMutation) Fields() []string {
 	}
 	if m.assignee_user_id != nil {
 		fields = append(fields, workflowtask.FieldAssigneeUserID)
+	}
+	if m.reminded_at != nil {
+		fields = append(fields, workflowtask.FieldRemindedAt)
+	}
+	if m.escalated_at != nil {
+		fields = append(fields, workflowtask.FieldEscalatedAt)
 	}
 	if m.task_status != nil {
 		fields = append(fields, workflowtask.FieldTaskStatus)
@@ -94522,6 +94628,10 @@ func (m *WorkflowTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.NodeID()
 	case workflowtask.FieldAssigneeUserID:
 		return m.AssigneeUserID()
+	case workflowtask.FieldRemindedAt:
+		return m.RemindedAt()
+	case workflowtask.FieldEscalatedAt:
+		return m.EscalatedAt()
 	case workflowtask.FieldTaskStatus:
 		return m.TaskStatus()
 	}
@@ -94551,6 +94661,10 @@ func (m *WorkflowTaskMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldNodeID(ctx)
 	case workflowtask.FieldAssigneeUserID:
 		return m.OldAssigneeUserID(ctx)
+	case workflowtask.FieldRemindedAt:
+		return m.OldRemindedAt(ctx)
+	case workflowtask.FieldEscalatedAt:
+		return m.OldEscalatedAt(ctx)
 	case workflowtask.FieldTaskStatus:
 		return m.OldTaskStatus(ctx)
 	}
@@ -94624,6 +94738,20 @@ func (m *WorkflowTaskMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAssigneeUserID(v)
+		return nil
+	case workflowtask.FieldRemindedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemindedAt(v)
+		return nil
+	case workflowtask.FieldEscalatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEscalatedAt(v)
 		return nil
 	case workflowtask.FieldTaskStatus:
 		v, ok := value.(workflowtask.TaskStatus)
@@ -94752,6 +94880,12 @@ func (m *WorkflowTaskMutation) ClearedFields() []string {
 	if m.FieldCleared(workflowtask.FieldAssigneeUserID) {
 		fields = append(fields, workflowtask.FieldAssigneeUserID)
 	}
+	if m.FieldCleared(workflowtask.FieldRemindedAt) {
+		fields = append(fields, workflowtask.FieldRemindedAt)
+	}
+	if m.FieldCleared(workflowtask.FieldEscalatedAt) {
+		fields = append(fields, workflowtask.FieldEscalatedAt)
+	}
 	if m.FieldCleared(workflowtask.FieldTaskStatus) {
 		fields = append(fields, workflowtask.FieldTaskStatus)
 	}
@@ -94796,6 +94930,12 @@ func (m *WorkflowTaskMutation) ClearField(name string) error {
 	case workflowtask.FieldAssigneeUserID:
 		m.ClearAssigneeUserID()
 		return nil
+	case workflowtask.FieldRemindedAt:
+		m.ClearRemindedAt()
+		return nil
+	case workflowtask.FieldEscalatedAt:
+		m.ClearEscalatedAt()
+		return nil
 	case workflowtask.FieldTaskStatus:
 		m.ClearTaskStatus()
 		return nil
@@ -94833,6 +94973,12 @@ func (m *WorkflowTaskMutation) ResetField(name string) error {
 		return nil
 	case workflowtask.FieldAssigneeUserID:
 		m.ResetAssigneeUserID()
+		return nil
+	case workflowtask.FieldRemindedAt:
+		m.ResetRemindedAt()
+		return nil
+	case workflowtask.FieldEscalatedAt:
+		m.ResetEscalatedAt()
 		return nil
 	case workflowtask.FieldTaskStatus:
 		m.ResetTaskStatus()

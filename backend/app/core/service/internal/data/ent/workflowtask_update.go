@@ -198,6 +198,46 @@ func (_u *WorkflowTaskUpdate) ClearAssigneeUserID() *WorkflowTaskUpdate {
 	return _u
 }
 
+// SetRemindedAt sets the "reminded_at" field.
+func (_u *WorkflowTaskUpdate) SetRemindedAt(v time.Time) *WorkflowTaskUpdate {
+	_u.mutation.SetRemindedAt(v)
+	return _u
+}
+
+// SetNillableRemindedAt sets the "reminded_at" field if the given value is not nil.
+func (_u *WorkflowTaskUpdate) SetNillableRemindedAt(v *time.Time) *WorkflowTaskUpdate {
+	if v != nil {
+		_u.SetRemindedAt(*v)
+	}
+	return _u
+}
+
+// ClearRemindedAt clears the value of the "reminded_at" field.
+func (_u *WorkflowTaskUpdate) ClearRemindedAt() *WorkflowTaskUpdate {
+	_u.mutation.ClearRemindedAt()
+	return _u
+}
+
+// SetEscalatedAt sets the "escalated_at" field.
+func (_u *WorkflowTaskUpdate) SetEscalatedAt(v time.Time) *WorkflowTaskUpdate {
+	_u.mutation.SetEscalatedAt(v)
+	return _u
+}
+
+// SetNillableEscalatedAt sets the "escalated_at" field if the given value is not nil.
+func (_u *WorkflowTaskUpdate) SetNillableEscalatedAt(v *time.Time) *WorkflowTaskUpdate {
+	if v != nil {
+		_u.SetEscalatedAt(*v)
+	}
+	return _u
+}
+
+// ClearEscalatedAt clears the value of the "escalated_at" field.
+func (_u *WorkflowTaskUpdate) ClearEscalatedAt() *WorkflowTaskUpdate {
+	_u.mutation.ClearEscalatedAt()
+	return _u
+}
+
 // SetTaskStatus sets the "task_status" field.
 func (_u *WorkflowTaskUpdate) SetTaskStatus(v workflowtask.TaskStatus) *WorkflowTaskUpdate {
 	_u.mutation.SetTaskStatus(v)
@@ -362,6 +402,18 @@ func (_u *WorkflowTaskUpdate) sqlSave(ctx context.Context) (_node int, err error
 	}
 	if _u.mutation.AssigneeUserIDCleared() {
 		_spec.ClearField(workflowtask.FieldAssigneeUserID, field.TypeUint32)
+	}
+	if value, ok := _u.mutation.RemindedAt(); ok {
+		_spec.SetField(workflowtask.FieldRemindedAt, field.TypeTime, value)
+	}
+	if _u.mutation.RemindedAtCleared() {
+		_spec.ClearField(workflowtask.FieldRemindedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.EscalatedAt(); ok {
+		_spec.SetField(workflowtask.FieldEscalatedAt, field.TypeTime, value)
+	}
+	if _u.mutation.EscalatedAtCleared() {
+		_spec.ClearField(workflowtask.FieldEscalatedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.TaskStatus(); ok {
 		_spec.SetField(workflowtask.FieldTaskStatus, field.TypeEnum, value)
@@ -588,6 +640,46 @@ func (_u *WorkflowTaskUpdateOne) ClearAssigneeUserID() *WorkflowTaskUpdateOne {
 	return _u
 }
 
+// SetRemindedAt sets the "reminded_at" field.
+func (_u *WorkflowTaskUpdateOne) SetRemindedAt(v time.Time) *WorkflowTaskUpdateOne {
+	_u.mutation.SetRemindedAt(v)
+	return _u
+}
+
+// SetNillableRemindedAt sets the "reminded_at" field if the given value is not nil.
+func (_u *WorkflowTaskUpdateOne) SetNillableRemindedAt(v *time.Time) *WorkflowTaskUpdateOne {
+	if v != nil {
+		_u.SetRemindedAt(*v)
+	}
+	return _u
+}
+
+// ClearRemindedAt clears the value of the "reminded_at" field.
+func (_u *WorkflowTaskUpdateOne) ClearRemindedAt() *WorkflowTaskUpdateOne {
+	_u.mutation.ClearRemindedAt()
+	return _u
+}
+
+// SetEscalatedAt sets the "escalated_at" field.
+func (_u *WorkflowTaskUpdateOne) SetEscalatedAt(v time.Time) *WorkflowTaskUpdateOne {
+	_u.mutation.SetEscalatedAt(v)
+	return _u
+}
+
+// SetNillableEscalatedAt sets the "escalated_at" field if the given value is not nil.
+func (_u *WorkflowTaskUpdateOne) SetNillableEscalatedAt(v *time.Time) *WorkflowTaskUpdateOne {
+	if v != nil {
+		_u.SetEscalatedAt(*v)
+	}
+	return _u
+}
+
+// ClearEscalatedAt clears the value of the "escalated_at" field.
+func (_u *WorkflowTaskUpdateOne) ClearEscalatedAt() *WorkflowTaskUpdateOne {
+	_u.mutation.ClearEscalatedAt()
+	return _u
+}
+
 // SetTaskStatus sets the "task_status" field.
 func (_u *WorkflowTaskUpdateOne) SetTaskStatus(v workflowtask.TaskStatus) *WorkflowTaskUpdateOne {
 	_u.mutation.SetTaskStatus(v)
@@ -782,6 +874,18 @@ func (_u *WorkflowTaskUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowTa
 	}
 	if _u.mutation.AssigneeUserIDCleared() {
 		_spec.ClearField(workflowtask.FieldAssigneeUserID, field.TypeUint32)
+	}
+	if value, ok := _u.mutation.RemindedAt(); ok {
+		_spec.SetField(workflowtask.FieldRemindedAt, field.TypeTime, value)
+	}
+	if _u.mutation.RemindedAtCleared() {
+		_spec.ClearField(workflowtask.FieldRemindedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.EscalatedAt(); ok {
+		_spec.SetField(workflowtask.FieldEscalatedAt, field.TypeTime, value)
+	}
+	if _u.mutation.EscalatedAtCleared() {
+		_spec.ClearField(workflowtask.FieldEscalatedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.TaskStatus(); ok {
 		_spec.SetField(workflowtask.FieldTaskStatus, field.TypeEnum, value)

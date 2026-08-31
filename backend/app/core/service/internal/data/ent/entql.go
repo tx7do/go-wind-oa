@@ -1788,6 +1788,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			workflowtask.FieldTenantID:       {Type: field.TypeUint32, Column: workflowtask.FieldTenantID},
 			workflowtask.FieldNodeID:         {Type: field.TypeString, Column: workflowtask.FieldNodeID},
 			workflowtask.FieldAssigneeUserID: {Type: field.TypeUint32, Column: workflowtask.FieldAssigneeUserID},
+			workflowtask.FieldRemindedAt:     {Type: field.TypeTime, Column: workflowtask.FieldRemindedAt},
+			workflowtask.FieldEscalatedAt:    {Type: field.TypeTime, Column: workflowtask.FieldEscalatedAt},
 			workflowtask.FieldTaskStatus:     {Type: field.TypeEnum, Column: workflowtask.FieldTaskStatus},
 		},
 	}
@@ -9502,6 +9504,16 @@ func (f *WorkflowTaskFilter) WhereNodeID(p entql.StringP) {
 // WhereAssigneeUserID applies the entql uint32 predicate on the assignee_user_id field.
 func (f *WorkflowTaskFilter) WhereAssigneeUserID(p entql.Uint32P) {
 	f.Where(p.Field(workflowtask.FieldAssigneeUserID))
+}
+
+// WhereRemindedAt applies the entql time.Time predicate on the reminded_at field.
+func (f *WorkflowTaskFilter) WhereRemindedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowtask.FieldRemindedAt))
+}
+
+// WhereEscalatedAt applies the entql time.Time predicate on the escalated_at field.
+func (f *WorkflowTaskFilter) WhereEscalatedAt(p entql.TimeP) {
+	f.Where(p.Field(workflowtask.FieldEscalatedAt))
 }
 
 // WhereTaskStatus applies the entql string predicate on the task_status field.

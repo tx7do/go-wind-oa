@@ -3681,6 +3681,8 @@ var (
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
 		{Name: "node_id", Type: field.TypeString, Nullable: true, Comment: "图节点ID"},
 		{Name: "assignee_user_id", Type: field.TypeUint32, Nullable: true, Comment: "指派审批人ID"},
+		{Name: "reminded_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次超时催办时间；非空表示已催办过，避免重复催办"},
+		{Name: "escalated_at", Type: field.TypeTime, Nullable: true, Comment: "超时自动升级时间；非空表示已升级过，避免沿组织树连环上转"},
 		{Name: "task_status", Type: field.TypeEnum, Nullable: true, Comment: "任务状态", Enums: []string{"PENDING", "APPROVED", "REJECTED", "CANCELLED"}, Default: "PENDING"},
 		{Name: "instance_id", Type: field.TypeUint32, Nullable: true},
 	}
@@ -3693,7 +3695,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "oa_workflow_task_oa_workflow_instance_tasks",
-				Columns:    []*schema.Column{OaWorkflowTaskColumns[11]},
+				Columns:    []*schema.Column{OaWorkflowTaskColumns[13]},
 				RefColumns: []*schema.Column{OaWorkflowInstanceColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -3707,7 +3709,7 @@ var (
 			{
 				Name:    "idx_oa_workflow_task_tenant_assignee_status",
 				Unique:  false,
-				Columns: []*schema.Column{OaWorkflowTaskColumns[7], OaWorkflowTaskColumns[9], OaWorkflowTaskColumns[10]},
+				Columns: []*schema.Column{OaWorkflowTaskColumns[7], OaWorkflowTaskColumns[9], OaWorkflowTaskColumns[12]},
 			},
 		},
 	}

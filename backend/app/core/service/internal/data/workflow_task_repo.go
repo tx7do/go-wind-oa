@@ -148,6 +148,49 @@ func (r *WorkflowTaskRepo) UpdateAssignee(
 	return nil
 }
 
+// MarkReminded 记录超时催办时间；非空后调度器不再重复催办同一待办。
+func (r *WorkflowTaskRepo) MarkReminded(
+	ctx context.Context,
+	id uint32,
+	tenantID uint32,
+) error {
+	return r.markTimeoutStamp(ctx, id, tenantID, true)
+}
+
+// MarkEscalated 记录超时升级时间；非空后调度器不再对同一待办重复升级。
+func (r *WorkflowTaskRepo) MarkEscalated(
+	ctx context.Context,
+	id uint32,
+	tenantID uint32,
+) error {
+	return r.markTimeoutStamp(ctx, id, tenantID, false)
+}
+
+func (r *WorkflowTaskRepo) markTimeoutStamp(
+	ctx context.Context,
+	id uint32,
+	tenantID uint32,
+	reminded bool,
+) error {
+	builder := r.entClient.Client().WorkflowTask.Update()
+	builder.Where(
+		workflowtask.IDEQ(id),
+		workflowtask.TenantIDEQ(tenantID),
+	)
+	if reminded {
+		builder.SetRemindedAt(time.Now())
+	} else {
+		builder.SetEscalatedAt(time.Now())
+	}
+	builder.SetUpdatedAt(time.Now())
+
+	if _, err := builder.Save(ctx); err != nil {
+		r.log.Errorf("mark timeout stamp failed: %s", err.Error())
+		return oaV1.ErrorInternalServerError("mark timeout stamp failed")
+	}
+	return nil
+}
+
 // ListPendingByAssignee “待办”列表。三重谓词：指派审批人 + 任务状态=PENDING + 租户。
 // pageSize>0 时分页并返回真实总数。
 func (r *WorkflowTaskRepo) ListPendingByAssignee(ctx context.Context, tenantID uint32, assigneeUserID uint32, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {
@@ -423,6 +466,8 @@ type PendingTaskInfo struct {
 	Assignee    uint32
 	NodeID      string
 	CreatedAt   time.Time
+	RemindedAt  *time.Time
+	EscalatedAt *time.Time
 }
 
 // ListAllPendingWithAge 列出全部租户的 PENDING 任务及其审批人、实例、节点、创建时间。
@@ -457,12 +502,14 @@ func (r *WorkflowTaskRepo) ListAllPendingWithAge(
 			createdAt = *e.CreatedAt
 		}
 		tasks = append(tasks, PendingTaskInfo{
-			TaskID:     e.ID,
-			InstanceID: inst.ID,
-			TenantID:   *e.TenantID,
-			Assignee:   *e.AssigneeUserID,
-			NodeID:     *e.NodeID,
-			CreatedAt:  createdAt,
+			TaskID:      e.ID,
+			InstanceID:  inst.ID,
+			TenantID:    *e.TenantID,
+			Assignee:    *e.AssigneeUserID,
+			NodeID:      *e.NodeID,
+			CreatedAt:   createdAt,
+			RemindedAt:  e.RemindedAt,
+			EscalatedAt: e.EscalatedAt,
 		})
 	}
 	return tasks, nil

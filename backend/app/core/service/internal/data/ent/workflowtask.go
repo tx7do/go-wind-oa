@@ -37,6 +37,10 @@ type WorkflowTask struct {
 	NodeID *string `json:"node_id,omitempty"`
 	// 指派审批人ID
 	AssigneeUserID *uint32 `json:"assignee_user_id,omitempty"`
+	// 最近一次超时催办时间；非空表示已催办过，避免重复催办
+	RemindedAt *time.Time `json:"reminded_at,omitempty"`
+	// 超时自动升级时间；非空表示已升级过，避免沿组织树连环上转
+	EscalatedAt *time.Time `json:"escalated_at,omitempty"`
 	// 任务状态
 	TaskStatus *workflowtask.TaskStatus `json:"task_status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -75,7 +79,7 @@ func (*WorkflowTask) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case workflowtask.FieldNodeID, workflowtask.FieldTaskStatus:
 			values[i] = new(sql.NullString)
-		case workflowtask.FieldCreatedAt, workflowtask.FieldUpdatedAt, workflowtask.FieldDeletedAt:
+		case workflowtask.FieldCreatedAt, workflowtask.FieldUpdatedAt, workflowtask.FieldDeletedAt, workflowtask.FieldRemindedAt, workflowtask.FieldEscalatedAt:
 			values[i] = new(sql.NullTime)
 		case workflowtask.ForeignKeys[0]: // instance_id
 			values[i] = new(sql.NullInt64)
@@ -162,6 +166,20 @@ func (_m *WorkflowTask) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.AssigneeUserID = new(uint32)
 				*_m.AssigneeUserID = uint32(value.Int64)
+			}
+		case workflowtask.FieldRemindedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field reminded_at", values[i])
+			} else if value.Valid {
+				_m.RemindedAt = new(time.Time)
+				*_m.RemindedAt = value.Time
+			}
+		case workflowtask.FieldEscalatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field escalated_at", values[i])
+			} else if value.Valid {
+				_m.EscalatedAt = new(time.Time)
+				*_m.EscalatedAt = value.Time
 			}
 		case workflowtask.FieldTaskStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -261,6 +279,16 @@ func (_m *WorkflowTask) String() string {
 	if v := _m.AssigneeUserID; v != nil {
 		builder.WriteString("assignee_user_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.RemindedAt; v != nil {
+		builder.WriteString("reminded_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.EscalatedAt; v != nil {
+		builder.WriteString("escalated_at=")
+		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
 	if v := _m.TaskStatus; v != nil {
