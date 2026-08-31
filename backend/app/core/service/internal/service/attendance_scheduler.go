@@ -6,49 +6,38 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+
+	"go-wind-oa/pkg/task"
 )
 
 // AttendanceScheduler 考勤每日定时结算。
 //
-// 每 30 分钟唤醒一次，在本地时间 00:30 之后为「昨日」执行全租户结算（物化旷工/
-// 请假、补结算漏结算记录；周末跳过）。经 wire 注入即随服务启动，周期任务在服务
-// 生命周期内常驻。
+// 由 asynq periodic 任务 oa:attendance:settle（每日 00:30）触发，
+// 为「昨日」执行全租户结算（物化旷工/请假、补结算漏结算记录；周末跳过）。
+// 调度由 asynq 周期任务保证多实例下每日只执行一次。
 //
 // 说明：结算走 repo 层显式租户过滤，不依赖请求级 viewer 上下文；若 ent 隐私层
 // 对无 viewer 的写入有额外限制，错误会被记录且下一周期重试（幂等）。
 type AttendanceScheduler struct {
-	log         *log.Helper
-	attendance  *AttendanceService
-	lastRunDate string
+	log        *log.Helper
+	attendance *AttendanceService
 }
 
 func NewAttendanceScheduler(
 	ctx *bootstrap.Context,
 	attendance *AttendanceService,
 ) *AttendanceScheduler {
-	s := &AttendanceScheduler{
+	return &AttendanceScheduler{
 		log:        ctx.NewLoggerHelper("attendance/scheduler/core-service"),
 		attendance: attendance,
 	}
-	go s.loop()
-	return s
 }
 
-func (s *AttendanceScheduler) loop() {
-	ticker := time.NewTicker(30 * time.Minute)
-	defer ticker.Stop()
-	for range ticker.C {
-		now := time.Now()
-		if now.Hour() != 0 || now.Minute() < 30 {
-			continue
-		}
-		today := truncateDate(now).Format("2006-01-02")
-		if s.lastRunDate == today {
-			continue
-		}
-		s.lastRunDate = today
-		s.runSettlementForYesterday(now)
-	}
+// AsyncAttendanceSettle asynq 任务入口：执行一次昨日考勤结算。
+func (s *AttendanceScheduler) AsyncAttendanceSettle(taskType string, _ *task.AttendanceSettleData) error {
+	s.log.Infof("attendance settlement triggered [%s]", taskType)
+	s.runSettlementForYesterday(time.Now())
+	return nil
 }
 
 // runSettlementForYesterday 对全部租户结算昨日考勤。

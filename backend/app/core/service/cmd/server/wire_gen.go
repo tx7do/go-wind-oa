@@ -151,7 +151,9 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	asynqServer := server.NewAsynqServer(context, taskService)
+	workflowTimeoutScheduler := service.NewWorkflowTimeoutScheduler(context, workflowTaskRepo, workflowInstanceRepo, workflowResolverRepo, workflowLogRepo, internalMessageService)
+	attendanceScheduler := service.NewAttendanceScheduler(context, attendanceService)
+	asynqServer := server.NewAsynqServer(context, taskService, workflowTimeoutScheduler, attendanceScheduler)
 	app := newApp(context, grpcServer, asynqServer)
 	return app, func() {
 		cleanup2()

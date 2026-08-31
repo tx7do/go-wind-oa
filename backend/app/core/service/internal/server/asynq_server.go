@@ -13,7 +13,12 @@ import (
 )
 
 // NewAsynqServer creates a new asynq server.
-func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService) *asynq.Server {
+func NewAsynqServer(
+	ctx *bootstrap.Context,
+	taskService *service.TaskService,
+	workflowTimeoutScheduler *service.WorkflowTimeoutScheduler,
+	attendanceScheduler *service.AttendanceScheduler,
+) *asynq.Server {
 	cfg := ctx.GetConfig()
 
 	if cfg == nil || cfg.Server == nil || cfg.Server.Asynq == nil {
@@ -34,6 +39,21 @@ func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService) *a
 
 	// 注册任务
 	if err = asynq.RegisterSubscriber(srv, task.BackupTaskType, taskService.AsyncBackup); err != nil {
+		log.Error(err)
+	}
+	if err = asynq.RegisterSubscriber(srv, task.WorkflowTimeoutScanTaskType, workflowTimeoutScheduler.AsyncTimeoutScan); err != nil {
+		log.Error(err)
+	}
+	if err = asynq.RegisterSubscriber(srv, task.AttendanceSettleTaskType, attendanceScheduler.AsyncAttendanceSettle); err != nil {
+		log.Error(err)
+	}
+
+	// 内置系统周期任务：asynq periodic scheduler 经 Redis 抢锁，
+	// 多实例下整点只入队一次，取代原进程内 ticker。
+	if _, err = srv.NewPeriodicTask("0 * * * *", task.WorkflowTimeoutScanTaskType, task.WorkflowTimeoutScanData{}); err != nil {
+		log.Error(err)
+	}
+	if _, err = srv.NewPeriodicTask("30 0 * * *", task.AttendanceSettleTaskType, task.AttendanceSettleData{}); err != nil {
 		log.Error(err)
 	}
 
