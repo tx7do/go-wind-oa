@@ -43,7 +43,7 @@ func buildGraphFromJSON(j *workflowGraphJSON) (*workflowGraph, error) {
 			return nil, oaV1.ErrorBadRequest("node missing id or type")
 		}
 		if _, exists := graph.Nodes[nj.ID]; exists {
-			return nil, oaV1.ErrorBadRequest(fmt.Sprintf("duplicate node id: %s", nj.ID))
+			return nil, oaV1.ErrorBadRequest("duplicate node id: %s", nj.ID)
 		}
 		node := &graphNode{ID: nj.ID, Type: nj.Type}
 		if nj.Type == nodeTypeTask {
@@ -145,7 +145,7 @@ func validateGraph(graph *workflowGraph) error {
 		case nodeTypeParallelGatewayJoin:
 		case nodeTypeSubprocess:
 		default:
-			return oaV1.ErrorBadRequest(fmt.Sprintf("unknown node type: %s", n.Type))
+			return oaV1.ErrorBadRequest("unknown node type: %s", n.Type)
 		}
 	}
 	if startCount != 1 {
@@ -247,7 +247,7 @@ func checkReachability(graph *workflowGraph) error {
 		for _, e := range cur.OutEdges {
 			next := graph.Nodes[e.To]
 			if next == nil {
-				return oaV1.ErrorBadRequest("edge to unknown node: " + e.To)
+				return oaV1.ErrorBadRequest("edge to unknown node: %s", e.To)
 			}
 			if !reachable[next.ID] {
 				reachable[next.ID] = true
@@ -257,7 +257,7 @@ func checkReachability(graph *workflowGraph) error {
 	}
 	for id, node := range graph.Nodes {
 		if !reachable[id] {
-			return oaV1.ErrorBadRequest("node not reachable from START: " + id)
+			return oaV1.ErrorBadRequest("node not reachable from START: %s", id)
 		}
 		if node.Type == nodeTypeEnd {
 			// END 必须可达。
@@ -294,7 +294,7 @@ func checkReachability(graph *workflowGraph) error {
 	}
 	for id := range graph.Nodes {
 		if !canReachEnd[id] {
-			return oaV1.ErrorBadRequest("node cannot reach END: " + id)
+			return oaV1.ErrorBadRequest("node cannot reach END: %s", id)
 		}
 	}
 
