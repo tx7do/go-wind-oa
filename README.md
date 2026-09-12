@@ -1,10 +1,8 @@
 <div align="center">
 
+<img src="docs/brand/vortex-tile.svg" width="120" alt="GoWind OA｜风行协同办公" />
+
 # GoWind OA｜风行协同办公
-
-**开箱即用的企业级协同办公系统**
-
-> **让协同办公如风般自由 — GoWind OA**
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev/)

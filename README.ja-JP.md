@@ -1,10 +1,8 @@
 <div align="center">
 
+<img src="docs/brand/vortex-tile.svg" width="120" alt="GoWind OA｜コラボレーティブ・オフィスシステム" />
+
 # GoWind OA｜コラボレーティブ・オフィスシステム
-
-**そのまま使えるエンタープライズ級コラボレーティブ・オフィスシステム**
-
-> **コラボレーティブ・オフィスを風のように自由に — GoWind OA**
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev/)

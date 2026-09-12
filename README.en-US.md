@@ -1,10 +1,8 @@
 <div align="center">
 
+<img src="docs/brand/vortex-tile.svg" width="120" alt="GoWind OA｜Collaborative Office System" />
+
 # GoWind OA｜Collaborative Office System
-
-**An out-of-the-box enterprise collaborative office system**
-
-> **Let collaborative office work flow as freely as the wind — GoWind OA**
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev/)
