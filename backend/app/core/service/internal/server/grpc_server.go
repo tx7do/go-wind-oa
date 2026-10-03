@@ -85,6 +85,8 @@ func NewGrpcServer(
 	outingService *service.OutingService,
 	overtimeService *service.OvertimeService,
 	sealApplicationService *service.SealApplicationService,
+
+	// register:grpc-param ── 新模块服务形参在此行后追加(make register 工具锚点,勿删)
 ) (*grpc.Server, error) {
 	cfg := ctx.GetConfig()
 
@@ -150,6 +152,8 @@ func NewGrpcServer(
 	oaV1.RegisterOutingServiceServer(srv, outingService)
 	oaV1.RegisterOvertimeServiceServer(srv, overtimeService)
 	oaV1.RegisterSealApplicationServiceServer(srv, sealApplicationService)
+
+	// register:grpc-route ── 新模块服务路由在此行后注册(make register 工具锚点,勿删)
 
 	return srv, nil
 }

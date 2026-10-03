@@ -92,6 +92,8 @@ func NewRestServer(
 	userProfileService *service.UserProfileService,
 	orgUnitService *service.OrgUnitService,
 	userService *service.UserService,
+
+	// register:rest-param ── 新模块服务形参在此行后追加(make register 工具锚点,勿删)
 ) *http.Server {
 	cfg := ctx.GetConfig()
 
@@ -120,6 +122,8 @@ func NewRestServer(
 	appV1.RegisterUserProfileServiceHTTPServer(srv, userProfileService)
 	appV1.RegisterOrgUnitServiceHTTPServer(srv, orgUnitService)
 	appV1.RegisterUserServiceHTTPServer(srv, userService)
+
+	// register:rest-route ── 新模块服务路由在此行后注册(make register 工具锚点,勿删)
 
 	if cfg.GetServer().GetRest().GetEnableSwagger() {
 		swaggerUI.RegisterSwaggerUIServerWithOption(

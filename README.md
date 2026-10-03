@@ -43,13 +43,13 @@ GoWind OA 是一套面向企业的**协同办公系统**，覆盖日常办公场
 
 <table>
 <tr><th>层级</th><th>技术</th></tr>
-<tr><td><strong>后端框架</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Wire</code> · <code>Protobuf / Buf</code></td></tr>
+<tr><td><strong>后端框架</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code>（含隐私层与多租户隔离） · <code>PostgreSQL</code></td></tr>
 <tr><td><strong>中间件</strong></td><td><code>Redis</code> · <code>MinIO</code>（S3 兼容对象存储） · <code>Etcd</code>（服务注册发现） · <code>Jaeger</code>（链路追踪）</td></tr>
 <tr><td><strong>认证授权</strong></td><td><code>JWT</code> · <code>RBAC</code> · <code>验证码</code> · 多租户数据隔离</td></tr>
 <tr><td><strong>管理后台</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Element Plus</code> · <code>Pinia</code> · <code>TanStack Query</code></td></tr>
 <tr><td><strong>移动端</strong></td><td><code>Flutter</code> · <code>Dart</code> · <code>Dio</code> · <code>GetIt</code></td></tr>
-<tr><td><strong>代码生成</strong></td><td><code>Ent Schema → ORM</code> · <code>Protobuf → Go API / TypeScript / Dart 客户端 / OpenAPI</code> · <code>Wire 依赖注入</code></td></tr>
+<tr><td><strong>代码生成</strong></td><td><code>Ent Schema → ORM</code> · <code>Protobuf → Go API / TypeScript / Dart 客户端 / OpenAPI</code></td></tr>
 <tr><td><strong>部署运维</strong></td><td><code>Docker</code> · <code>Docker Compose</code> · <code>Swagger UI</code></td></tr>
 </table>
 
@@ -90,12 +90,12 @@ Proto 域分离：core 的 `oa/service/v1/*.proto` 为纯 gRPC（HTTP 注解剥�
 每个 service 目录下都有 Makefile（`include ../../../app.mk`），`SERVICE_NAME` 决定 buf openapi 模板选择：
 
 ```bash
-cd backend/app/core/service && make ent wire api build   # core 无 openapi（纯 gRPC）
-cd backend/app/admin/service && make openapi wire api build
-cd backend/app/app/service && make openapi wire api build
+cd backend/app/core/service && make ent api build   # core 无 openapi（纯 gRPC）
+cd backend/app/admin/service && make openapi api build
+cd backend/app/app/service && make openapi api build
 ```
 
-`make ent` 生成 ent ORM（`--feature privacy` 不可省，是 `TenantPrivacy` 策略生效前提）。`make api` 生成 Go proto 桩。`make openapi` 按 service 选择 `buf.admin.openapi.gen.yaml` / `buf.app.openapi.gen.yaml`（core 跳过）。`make wire` 生成 `wire_gen.go`。
+`make ent` 生成 ent ORM（`--feature privacy` 不可省，是 `TenantPrivacy` 策略生效前提）。`make api` 生成 Go proto 桩。`make openapi` 按 service 选择 `buf.admin.openapi.gen.yaml` / `buf.app.openapi.gen.yaml`（core 跳过）。
 
 > 详细的后端环境准备、项目结构、部署流程，见 [backend/README.md](./backend/README.md)。
 

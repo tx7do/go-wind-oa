@@ -12,11 +12,11 @@
 
 <table>
 <tr><th>层级</th><th>技术</th></tr>
-<tr><td><strong>后端框架</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Wire</code> · <code>Protobuf / Buf</code></td></tr>
+<tr><td><strong>后端框架</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code>（含隐私层与多租户隔离） · <code>PostgreSQL</code></td></tr>
 <tr><td><strong>中间件</strong></td><td><code>Redis</code> · <code>MinIO</code>（S3 兼容对象存储） · <code>Etcd</code>（服务注册发现） · <code>Jaeger</code>（链路追踪）</td></tr>
 <tr><td><strong>认证授权</strong></td><td><code>JWT</code> · <code>RBAC</code> · <code>验证码</code> · 多租户数据隔离</td></tr>
-<tr><td><strong>代码生成</strong></td><td><code>Ent Schema → ORM</code> · <code>Protobuf → Go API / TypeScript / Dart 客户端 / OpenAPI</code> · <code>Wire 依赖注入</code></td></tr>
+<tr><td><strong>代码生成</strong></td><td><code>Ent Schema → ORM</code> · <code>Protobuf → Go API / TypeScript / Dart 客户端 / OpenAPI</code></td></tr>
 </table>
 
 ## 前置环境要求
@@ -27,7 +27,6 @@
 |------|----------|------|
 | [Go](https://go.dev/) | 1.22 | 编译后端服务 |
 | [Buf](https://buf.build/) | 最新 | Protobuf API 巷道生成 |
-| [Wire](https://github.com/google/wire) | 最新 | 依赖注入代码生成 |
 | [Docker](https://www.docker.com/) | 最新 | 容器化部署 |
 | [Make](https://www.gnu.org/software/make/) | 最新 | 构建脚本执行 |
 | [Node.js](https://nodejs.org/) | 18+ | 管理后台构建 |
@@ -163,13 +162,6 @@ make ent
 
 > `make ent` 必须带 `--feature privacy` 参数，是 `TenantPrivacy` 策略生效的前提。
 
-### 生成 Wire 代码
-
-```bash
-cd backend/app/{core|admin|app}/service
-make wire
-```
-
 ## 构建与运行
 
 ```bash
@@ -180,20 +172,16 @@ make run      # 调试运行
 
 ### 构建顺序约束
 
-core-service 依赖 ent 仓库与 wire 依赖注入，admin/app-service 依赖 core 的 gRPC 桩与自身的 HTTP 桩。完整构建顺序：
+core-service 依赖 ent 仓库，admin/app-service 依赖 core 的 gRPC 桩与自身的 HTTP 桩。完整构建顺序：
 
 ```bash
 # 1. 先生成 proto 桩（core + admin + app 三端）
 cd backend/api && buf generate
 
-# 2. core 生成 ent 与 wire（admin/app 不持有 ent 仓库）
-cd backend/app/core/service && make ent wire
+# 2. core 生成 ent（admin/app 不持有 ent 仓库）
+cd backend/app/core/service && make ent
 
-# 3. admin / app 生成 wire
-cd backend/app/admin/service && make wire
-cd backend/app/app/service && make wire
-
-# 4. 构建各服务
+# 3. 构建各服务
 cd backend/app/core/service && make build
 cd backend/app/admin/service && make build
 cd backend/app/app/service && make build

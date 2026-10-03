@@ -43,13 +43,13 @@ GoWind OA は、承認フロー、人事勤怠、休暇、経費精算といっ�
 
 <table>
 <tr><th>レイヤー</th><th>技術</th></tr>
-<tr><td><strong>バックエンド フレームワーク</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Wire</code> · <code>Protobuf / Buf</code></td></tr>
+<tr><td><strong>バックエンド フレームワーク</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code>（プライバシー層とマルチテナント分離を含む） · <code>PostgreSQL</code></td></tr>
 <tr><td><strong>ミドルウェア</strong></td><td><code>Redis</code> · <code>MinIO</code>（S3 互換オブジェクトストレージ） · <code>Etcd</code>（サービスレジストリ/検出） · <code>Jaeger</code>（分散トレーシング）</td></tr>
 <tr><td><strong>認証・認可</strong></td><td><code>JWT</code> · <code>RBAC</code> · <code>CAPTCHA</code> · マルチテナント データ分離</td></tr>
 <tr><td><strong>管理コンソール</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Element Plus</code> · <code>Pinia</code> · <code>TanStack Query</code></td></tr>
 <tr><td><strong>モバイルクライアント</strong></td><td><code>Flutter</code> · <code>Dart</code> · <code>Dio</code> · <code>GetIt</code></td></tr>
-<tr><td><strong>コード生成</strong></td><td><code>Ent Schema → ORM</code> · <code>Protobuf → Go API / TypeScript / Dart クライアント / OpenAPI</code> · <code>Wire DI</code></td></tr>
+<tr><td><strong>コード生成</strong></td><td><code>Ent Schema → ORM</code> · <code>Protobuf → Go API / TypeScript / Dart クライアント / OpenAPI</code></td></tr>
 <tr><td><strong>DevOps</strong></td><td><code>Docker</code> · <code>Docker Compose</code> · <code>Swagger UI</code></td></tr>
 </table>
 
@@ -90,12 +90,12 @@ Proto ドメイン分離：core の `oa/service/v1/*.proto` は純 gRPC（HTTP �
 各 service ディレクトリに Makefile（`include ../../../app.mk`）、`SERVICE_NAME` が buf openapi テンプレート選択を決定：
 
 ```bash
-cd backend/app/core/service && make ent wire api build   # core に openapi なし（純 gRPC）
-cd backend/app/admin/service && make openapi wire api build
-cd backend/app/app/service && make openapi wire api build
+cd backend/app/core/service && make ent api build   # core に openapi なし（純 gRPC）
+cd backend/app/admin/service && make openapi api build
+cd backend/app/app/service && make openapi api build
 ```
 
-`make ent` は ent ORM を生成（`--feature privacy` は省略不可、`TenantPrivacy` ポリシーが有効化される前提）。`make api` は Go proto スタブを生成。`make openapi` は service ごとに `buf.admin.openapi.gen.yaml` / `buf.app.openapi.gen.yaml` を選択（core はスキップ）。`make wire` は `wire_gen.go` を生成。
+`make ent` は ent ORM を生成（`--feature privacy` は省略不可、`TenantPrivacy` ポリシーが有効化される前提）。`make api` は Go proto スタブを生成。`make openapi` は service ごとに `buf.admin.openapi.gen.yaml` / `buf.app.openapi.gen.yaml` を選択（core はスキップ）。
 
 > バックエンドの環境準備、プロジェクト構成、デプロイ手順は [backend/README.md](./backend/README.md) を参照してください。
 

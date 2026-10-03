@@ -1,6 +1,6 @@
 # go-wind-oa · 协同办公系统 — 后端架构设计文档
 
-> 本文档面向维护者，记录 `go-wind-oa` 后端的架构决策、三服务分离结构、proto 域分离，以及当前实现的边界与已知约束。读者应已熟悉 Kratos + Wire + Ent 的基本范式。
+> 本文档面向维护者，记录 `go-wind-oa` 后端的架构决策、三服务分离结构、proto 域分离，以及当前实现的边界与已知约束。读者应已熟悉 Kratos + 手写依赖装配 + Ent 的基本范式。
 >
 > 本文与代码同步，权威架构来源为代码本身；本文为导览性说明。
 
@@ -48,9 +48,9 @@
   - `oaV1.RegisterWorkflowServiceServer` / `RegisterAttendanceServiceServer`（`oa.service.v1`）
   - `internalMessageV1.RegisterInternalMessageServiceServer` + Category + Recipient（`internal_message.service.v1`）
   - `authenticationV1.RegisterAuthenticationServiceServer`（`authentication.service.v1`）
-- `internal/data/`：ent 仓库层。infra 客户端（`client.NewRedisClient` / `NewEntClient` / `NewDiscovery`）+ 各业务域仓库。ProviderSet 见 `data/providers/wire_set.go`。
+- `internal/data/`：ent 仓库层。infra 客户端（`client.NewRedisClient` / `NewEntClient` / `NewDiscovery`）+ 各业务域仓库。装配见 `cmd/server/wiring.go` 对应分层小节。
 - `internal/data/ent/schema/`：协同办公域各业务表。注意 workflow 三张父子表的 O2M 边（definition→instances、instance→tasks/logs）**不可加 Required()**——ent 语义为「建父记录时必须已存在子记录」，会导致定义/实例无法插入。
-- `internal/service/`：各 gRPC 服务实现。ProviderSet 见 `service/providers/wire_set.go`。
+- `internal/service/`：各 gRPC 服务实现。装配见 `cmd/server/wiring.go` 服务层小节。
 - 无 HTTP 端点、无 openapi 生成（core 为 gRPC-only）。
 
 #### 鉴权服务端（AuthenticationService，以 CMS 为基座裁剪）
@@ -72,7 +72,7 @@
 - `internal/server/rest_server.go`：创建 HTTP server，中间件链 `logging → auth.Server + authz.Server（白名单匹配）→ entmiddleware.Server()`。**auth 必须在 ent 之前**：`auth.Server` 对非白名单请求注入 `OperatorMetadata`，`entmiddleware.Server` 据此构建 `UserViewer`，`TenantPrivacy` 策略才生效；顺序颠倒则 ent 兜底 `SystemViewer`，租户隔离失效。
   - 注册 HTTP 服务（`adminV1.Register*HTTPServer`）：§3 admin wrapper 清单所示全部 wrapper 均注册 HTTP server（平台管理 + OA 业务 + 站内信 + 鉴权 + 文件传输），实现层为 `internal/service/` 转发层（HTTP → gRPC core）。
   - 白名单（`rpc.AddWhiteList`，5 项）：`OperationAuthenticationServiceLogin` / `OperationAuthenticationServiceRefreshToken` / `OperationAuthenticationServiceGenerateCaptcha` / `OperationAuthenticationServiceVerifyCaptcha` / `OperationAuthenticationServiceRegisterUser`。RefreshToken 与 RegisterUser 在内即放行，故刷新链在 BFF 边端不被 401 拦截（自描述 RT 机制见 §2.1）。
-- `internal/data/`：data 层持 gRPC 客户端打 core-service（经服务发现定位 `CoreService`）。ProviderSet 见 `data/providers/wire_set.go`。
+- `internal/data/`：data 层持 gRPC 客户端打 core-service（经服务发现定位 `CoreService`）。装配见 `cmd/server/wiring.go` 对应分层小节。
 - `internal/service/`：转发层 service（各方法为 HTTP 请求 → gRPC 调 core）。
 - `cmd/server/assets/`：`openapi.yaml` 由 `buf.admin.openapi.gen.yaml` 生成，`assets.go` embed 供 Swagger UI。
 
@@ -82,7 +82,7 @@
 
 - `internal/server/rest_server.go`：同 admin 中间件链与白名单模式。注册 HTTP 服务：§3 app wrapper 清单所示全部 wrapper 均注册 HTTP server。白名单（2 项）：`OperationAuthenticationServiceLogin` / `OperationAuthenticationServiceRefreshToken`。
 - app BFF 匿名请求按 Host→租户 domain 解析（fail-closed）。`LoginRequest.tenant_code` 的 json_name 是蛇形（传 tenantCode 会被静默忽略）。
-- `internal/data/`：data 层持 `NewAuthenticationServiceClient` + `NewWorkflowServiceClient`（打 core-service）。ProviderSet 见 `data/providers/wire_set.go`。
+- `internal/data/`：data 层持 `NewAuthenticationServiceClient` + `NewWorkflowServiceClient`（打 core-service）。装配见 `cmd/server/wiring.go` 对应分层小节。
 - `cmd/server/assets/`：`openapi.yaml` 由 `buf.app.openapi.gen.yaml` 生成。
 
 ### 2.4 sse_server.go
@@ -253,7 +253,7 @@ multipart 三要点（修复记录）：请求头补 `Accept: application/json`�
 
 ### 8.3 每日定时结算
 
-`AttendanceScheduler`（wire 注入常驻 goroutine）每 30 分钟检查，本地 00:30 后为「昨日」跑全租户结算。补结算仅处理仍 PENDING 的记录（幂等）。
+`AttendanceScheduler`（wiring.go 装配的常驻 goroutine）每 30 分钟检查，本地 00:30 后为「昨日」跑全租户结算。补结算仅处理仍 PENDING 的记录（幂等）。
 
 ### 8.4 打卡地理围栏与 Wi-Fi 指纹白名单
 
@@ -277,7 +277,7 @@ multipart 三要点（修复记录）：请求头补 `Accept: application/json`�
 | ent ORM | `make ent`（各 service）| `internal/data/ent/` 下全套生成代码 |
 | proto 桩（Go）| `make api`（`cd ../../../api && buf generate`）| `api/gen/go/{oa,internal_message,authentication,identity,admin,app}/service/v1/*.pb.go` + `*_grpc.pb.go` + `*_errors.pb.go` + `*.pb.validate.go` |
 | openapi v3 | `make openapi`（admin/app，core 跳过）| `app/{admin,app}/service/cmd/server/assets/openapi.yaml` |
-| wire DI | `make wire`（各 service）| `cmd/server/wire_gen.go` |
+| 新模块装配登记 | `make register`（`ENTITY=xxx [SVC=<service>]`，见 AGENTS.md「依赖装配」章节）| `cmd/server/wiring.go` 分层小节与 server 文件 `register:*` 锚点 |
 
 ### 9.1 buf 模板
 
@@ -297,9 +297,9 @@ multipart 三要点（修复记录）：请求头补 `Accept: application/json`�
 
 `make ent` 的五个 feature（`privacy` / `entql` / `sql/modifier` / `sql/upsert` / `sql/lock`）。**`privacy` 不可省略** —— 它是 `TenantID` mixin 附着的 `rule.TenantPrivacy` 策略生效的前提。
 
-### 9.3 wire
+### 9.3 依赖装配
 
-`wire_gen.go` 具现化依赖图：server ProviderSet + service ProviderSet + data ProviderSet + `newApp`。`wire.go` 携带 `//go:build wireinject` 标签，正常构建时由 `wire_gen.go` 提供实体。
+`cmd/server/wiring.go` 手写具现化依赖图（`initApp`），构造调用按基础设施/仓储或服务客户端/服务/传输分层小节组织，终态 `newApp` 装配各 server。新增模块经 `make register`（CRUD 标准形态）或手工追加构造行，详见 AGENTS.md「依赖装配」章节。
 
 ---
 

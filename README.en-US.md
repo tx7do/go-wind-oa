@@ -43,13 +43,13 @@ The backend is built on the [go-kratos](https://go-kratos.dev/) microservice fra
 
 <table>
 <tr><th>Layer</th><th>Technology</th></tr>
-<tr><td><strong>Backend Framework</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Wire</code> · <code>Protobuf / Buf</code></td></tr>
+<tr><td><strong>Backend Framework</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code> (with privacy layer and multi-tenant isolation) · <code>PostgreSQL</code></td></tr>
 <tr><td><strong>Middleware</strong></td><td><code>Redis</code> · <code>MinIO</code> (S3-compatible object storage) · <code>Etcd</code> (service registry/discovery) · <code>Jaeger</code> (tracing)</td></tr>
 <tr><td><strong>Auth</strong></td><td><code>JWT</code> · <code>RBAC</code> · <code>CAPTCHA</code> · multi-tenant data isolation</td></tr>
 <tr><td><strong>Admin Frontend</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Element Plus</code> · <code>Pinia</code> · <code>TanStack Query</code></td></tr>
 <tr><td><strong>Mobile Client</strong></td><td><code>Flutter</code> · <code>Dart</code> · <code>Dio</code> · <code>GetIt</code></td></tr>
-<tr><td><strong>Code Generation</strong></td><td><code>Ent Schema → ORM</code> · <code>Protobuf → Go API / TypeScript / Dart client / OpenAPI</code> · <code>Wire DI</code></td></tr>
+<tr><td><strong>Code Generation</strong></td><td><code>Ent Schema → ORM</code> · <code>Protobuf → Go API / TypeScript / Dart client / OpenAPI</code></td></tr>
 <tr><td><strong>DevOps</strong></td><td><code>Docker</code> · <code>Docker Compose</code> · <code>Swagger UI</code></td></tr>
 </table>
 
@@ -90,12 +90,12 @@ See [docs/oa-workflow-design.md](./docs/oa-workflow-design.md) for details.
 Each service directory has a Makefile (`include ../../../app.mk`); `SERVICE_NAME` selects the buf openapi template:
 
 ```bash
-cd backend/app/core/service && make ent wire api build   # core has no openapi (pure gRPC)
-cd backend/app/admin/service && make openapi wire api build
-cd backend/app/app/service && make openapi wire api build
+cd backend/app/core/service && make ent api build   # core has no openapi (pure gRPC)
+cd backend/app/admin/service && make openapi api build
+cd backend/app/app/service && make openapi api build
 ```
 
-`make ent` generates the ent ORM (`--feature privacy` must not be omitted; it is the prerequisite for the `TenantPrivacy` policy). `make api` generates Go proto stubs. `make openapi` selects `buf.admin.openapi.gen.yaml` / `buf.app.openapi.gen.yaml` per service (core skipped). `make wire` generates `wire_gen.go`.
+`make ent` generates the ent ORM (`--feature privacy` must not be omitted; it is the prerequisite for the `TenantPrivacy` policy). `make api` generates Go proto stubs. `make openapi` selects `buf.admin.openapi.gen.yaml` / `buf.app.openapi.gen.yaml` per service (core skipped).
 
 > For backend environment setup, project structure, and deployment, see [backend/README.md](./backend/README.md).
 
