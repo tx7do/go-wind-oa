@@ -90,7 +90,18 @@ func (r *LeaveTypeRepo) List(ctx context.Context, tid uint32, paging *pagination
 		r.log.Errorf("count leave types failed: %s", err.Error())
 		return nil, oaV1.ErrorInternalServerError("count leave types failed")
 	}
-	entities, err := query.All(ctx)
+	// noPaging（或不传分页参数）= 不限页；否则按 page/pageSize 切片
+	if paging != nil && !paging.GetNoPaging() {
+		page := paging.GetPage()
+		pageSize := paging.GetPageSize()
+		if page < 1 {
+			page = 1
+		}
+		if pageSize > 0 {
+			query = query.Offset((int(page) - 1) * int(pageSize)).Limit(int(pageSize))
+		}
+	}
+	entities, err := query.Order(ent.Desc(leavetype.FieldID)).All(ctx)
 	if err != nil {
 		r.log.Errorf("list leave types failed: %s", err.Error())
 		return nil, oaV1.ErrorInternalServerError("list leave types failed")

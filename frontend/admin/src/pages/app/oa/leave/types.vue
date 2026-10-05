@@ -30,14 +30,18 @@ function handleSuccess() {
 
 const pageConfig = computed<ProPageConfig>(() => ({
   table: {
-    listAction: async () => {
-      const result = await fetchListLeaveTypes(new PaginationQuery());
-      return { items: (result as any)?.items ?? [], total: 0 };
+    listAction: async (query: any) => {
+      const result = await fetchListLeaveTypes(
+        new PaginationQuery({
+          paging: { page: query.page || 1, pageSize: query.pageSize || 10 },
+        })
+      );
+      return { items: (result as any)?.items ?? [], total: (result as any)?.total ?? 0 };
     },
     toolbar: [],
     toolbarRight: ["add"],
     defaultToolbar: ["refresh", "filter"],
-    pagination: false,
+    pagination: true,
     tableAttrs: { border: true, stripe: true },
     columns: [
       { prop: "id", label: "ID", width: 80 },
