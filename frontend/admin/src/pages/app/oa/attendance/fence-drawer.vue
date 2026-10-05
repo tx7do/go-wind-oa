@@ -30,13 +30,14 @@ import ProModal from "@/components/Pro/ProModal/index.vue";
 import AmapCirclePicker from "@/components/AmapCirclePicker/index.vue";
 import { useUpsertGeofence } from "@/api/composables";
 import { $t } from "@/core/i18n";
+import { useOaDrawer } from "../use-oa-drawer";
 
 // 围栏抽屉含地图，需比通用抽屉更宽；不改全局 DRAWER_WIDTH 以免影响其他抽屉。
 const WIDE_DRAWER_WIDTH = "720px";
 
 const emit = defineEmits(["success"]);
 
-const visible = ref(false);
+const { visible, open, close } = useOaDrawer();
 const saving = ref(false);
 const form = reactive({ name: "", latitude: 0, longitude: 0, radiusMeters: 100 });
 
@@ -62,19 +63,13 @@ watch(
 const upsertMutation = useUpsertGeofence({
   onSuccess: () => {
     ElMessage.success($t("common.notification.saveSuccess"));
-    visible.value = false;
+    close();
     emit("success");
   },
   onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.saveFailed")),
 });
 
-function open() {
-  visible.value = true;
-}
-
-function handleClose() {
-  visible.value = false;
-}
+const handleClose = close;
 
 function save() {
   if (!form.name) {
@@ -99,11 +94,3 @@ function save() {
 
 defineExpose({ open });
 </script>
-
-<style lang="scss" scoped>
-.drawer-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-</style>

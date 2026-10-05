@@ -57,30 +57,25 @@ import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useUpsertHoliday } from "@/api/composables";
 import type { oaservicev1_Holiday_HolidayType } from "@/api/generated/admin/service/v1";
 import { DRAWER_WIDTH } from "@/constants";
+import { useOaDrawer } from "../use-oa-drawer";
 import { $t } from "@/core/i18n";
 
 const emit = defineEmits(["success"]);
 
-const visible = ref(false);
+const { visible, open, close } = useOaDrawer();
 const saving = ref(false);
 const form = reactive({ date: "", holidayType: "HOLIDAY", name: "" });
 
 const upsertMutation = useUpsertHoliday({
   onSuccess: () => {
     ElMessage.success($t("common.notification.saveSuccess"));
-    visible.value = false;
+    close();
     emit("success");
   },
   onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.saveFailed")),
 });
 
-function open() {
-  visible.value = true;
-}
-
-function handleClose() {
-  visible.value = false;
-}
+const handleClose = close;
 
 function save() {
   if (!form.date) {
@@ -100,11 +95,3 @@ function save() {
 
 defineExpose({ open });
 </script>
-
-<style lang="scss" scoped>
-.drawer-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-</style>

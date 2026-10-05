@@ -4200,6 +4200,16 @@ export function createLeaveServiceClient(
           `year=${encodeURIComponent(request.year.toString())}`,
         );
       }
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
       let uri = path;
       if (queryParams.length > 0) {
         uri += `?${queryParams.join('&')}`;
@@ -4292,6 +4302,8 @@ export type oaservicev1_GrantLeaveBalanceRequest = {
 
 // 查询额度 - 请求
 export type oaservicev1_ListLeaveBalancesRequest = {
+  page?: number;
+  pageSize?: number;
   userId: number | undefined;
   year: number | undefined;
 };

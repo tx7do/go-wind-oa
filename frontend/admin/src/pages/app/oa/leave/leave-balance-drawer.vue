@@ -35,11 +35,12 @@ import { reactive, ref } from "vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useGrantLeaveBalance } from "@/api/composables";
 import { DRAWER_WIDTH } from "@/constants";
+import { useOaDrawer } from "../use-oa-drawer";
 import { $t } from "@/core/i18n";
 
 const emit = defineEmits(["success"]);
 
-const visible = ref(false);
+const { visible, open, close } = useOaDrawer();
 const granting = ref(false);
 const form = reactive({
   userId: 1,
@@ -51,20 +52,14 @@ const form = reactive({
 const grantMutation = useGrantLeaveBalance({
   onSuccess: () => {
     ElMessage.success($t("pages.oa.leave.balanceDrawer.grantSuccess"));
-    visible.value = false;
+    close();
     emit("success");
   },
   onError: (err: Error) =>
     ElMessage.error(err.message || $t("pages.oa.leave.balanceDrawer.grantFailed")),
 });
 
-function open() {
-  visible.value = true;
-}
-
-function handleClose() {
-  visible.value = false;
-}
+const handleClose = close;
 
 function submit() {
   granting.value = true;
@@ -81,11 +76,3 @@ function submit() {
 
 defineExpose({ open });
 </script>
-
-<style lang="scss" scoped>
-.drawer-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-</style>

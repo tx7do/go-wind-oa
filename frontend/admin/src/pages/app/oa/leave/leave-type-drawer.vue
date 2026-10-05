@@ -32,30 +32,25 @@ import { reactive, ref } from "vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useCreateLeaveType } from "@/api/composables";
 import { DRAWER_WIDTH } from "@/constants";
+import { useOaDrawer } from "../use-oa-drawer";
 import { $t } from "@/core/i18n";
 
 const emit = defineEmits(["success"]);
 
-const visible = ref(false);
+const { visible, open, close } = useOaDrawer();
 const creating = ref(false);
 const form = reactive({ code: "", name: "" });
 
 const createMutation = useCreateLeaveType({
   onSuccess: () => {
     ElMessage.success($t("pages.oa.leave.typeDrawer.createSuccess"));
-    visible.value = false;
+    close();
     emit("success");
   },
   onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.createFailed")),
 });
 
-function open() {
-  visible.value = true;
-}
-
-function handleClose() {
-  visible.value = false;
-}
+const handleClose = close;
 
 function submit() {
   if (!form.code || !form.name) {
@@ -71,11 +66,3 @@ function submit() {
 
 defineExpose({ open });
 </script>
-
-<style lang="scss" scoped>
-.drawer-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-</style>

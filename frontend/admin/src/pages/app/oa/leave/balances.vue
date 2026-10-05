@@ -40,17 +40,18 @@ const pageConfig = computed<ProPageConfig>(() => ({
   },
   table: {
     listAction: async (query: any) => {
-      // 后端 proto 仅支持 userId/year 过滤（无分页参数），year=0 表示当年。
       const result = await fetchListLeaveBalances({
         userId: 0,
         year: Number(query.year) || 0,
+        page: query.page,
+        pageSize: query.pageSize,
       });
       return { items: (result as any)?.items ?? [], total: (result as any)?.total ?? 0 };
     },
     toolbar: [],
     toolbarRight: ["add"],
     defaultToolbar: ["refresh", "filter"],
-    pagination: false,
+    pagination: true,
     tableAttrs: { border: true, stripe: true },
     columns: [
       { prop: "userId", label: $t("pages.oa.leave.balances.colUserId"), width: 100 },

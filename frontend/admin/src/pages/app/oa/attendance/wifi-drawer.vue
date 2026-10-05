@@ -30,29 +30,24 @@ import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useUpsertWifiFingerprint } from "@/api/composables";
 import { $t } from "@/core/i18n";
 import { DRAWER_WIDTH } from "@/constants";
+import { useOaDrawer } from "../use-oa-drawer";
 
 const emit = defineEmits(["success"]);
 
-const visible = ref(false);
+const { visible, open, close } = useOaDrawer();
 const saving = ref(false);
 const form = reactive({ ssid: "", bssid: "" });
 
 const upsertMutation = useUpsertWifiFingerprint({
   onSuccess: () => {
     ElMessage.success($t("common.notification.saveSuccess"));
-    visible.value = false;
+    close();
     emit("success");
   },
   onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.saveFailed")),
 });
 
-function open() {
-  visible.value = true;
-}
-
-function handleClose() {
-  visible.value = false;
-}
+const handleClose = close;
 
 function save() {
   saving.value = true;
@@ -64,11 +59,3 @@ function save() {
 
 defineExpose({ open });
 </script>
-
-<style lang="scss" scoped>
-.drawer-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-</style>

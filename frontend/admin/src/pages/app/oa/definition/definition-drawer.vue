@@ -780,12 +780,6 @@ defineExpose({ open });
 </script>
 
 <style lang="scss" scoped>
-.drawer-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
 .editor-switch {
   margin-bottom: 10px;
 }

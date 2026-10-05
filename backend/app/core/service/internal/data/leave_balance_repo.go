@@ -135,7 +135,7 @@ func (r *LeaveBalanceRepo) AddUsedDays(ctx context.Context, tid, userID, typeID 
 }
 
 // List 查询额度。userID==0 时查全部（admin）。
-func (r *LeaveBalanceRepo) List(ctx context.Context, tid, userID uint32, year int) ([]*oaV1.LeaveBalance, error) {
+func (r *LeaveBalanceRepo) List(ctx context.Context, tid, userID uint32, year int, page, pageSize int32) ([]*oaV1.LeaveBalance, int, error) {
 	query := r.entClient.Client().LeaveBalance.Query().
 		Where(
 			leavebalance.TenantIDEQ(tid),
@@ -144,14 +144,26 @@ func (r *LeaveBalanceRepo) List(ctx context.Context, tid, userID uint32, year in
 	if userID != 0 {
 		query = query.Where(leavebalance.UserIDEQ(userID))
 	}
-	entities, err := query.All(ctx)
+	total, err := query.Clone().Count(ctx)
+	if err != nil {
+		r.log.Errorf("count leave balances failed: %s", err.Error())
+		return nil, 0, oaV1.ErrorInternalServerError("count leave balances failed")
+	}
+	// 不传分页参数=不限页；否则按 page/pageSize 切片
+	if pageSize > 0 {
+		if page < 1 {
+			page = 1
+		}
+		query = query.Offset((int(page) - 1) * int(pageSize)).Limit(int(pageSize))
+	}
+	entities, err := query.Order(ent.Desc(leavebalance.FieldID)).All(ctx)
 	if err != nil {
 		r.log.Errorf("list leave balances failed: %s", err.Error())
-		return nil, oaV1.ErrorInternalServerError("list leave balances failed")
+		return nil, 0, oaV1.ErrorInternalServerError("list leave balances failed")
 	}
 	items := make([]*oaV1.LeaveBalance, 0, len(entities))
 	for _, e := range entities {
 		items = append(items, leaveBalanceToDTO(e))
 	}
-	return items, nil
+	return items, total, nil
 }

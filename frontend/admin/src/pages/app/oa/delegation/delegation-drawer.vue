@@ -58,6 +58,7 @@ import { useSetWorkflowDelegation, userDisplayName } from "@/api/composables";
 import { DRAWER_WIDTH } from "@/constants";
 import type { identityservicev1_User } from "@/api/generated/admin/service/v1";
 import { $t } from "@/core/i18n";
+import { useOaDrawer } from "../use-oa-drawer";
 
 const emit = defineEmits(["success"]);
 
@@ -66,7 +67,10 @@ const props = defineProps<{
   users?: identityservicev1_User[];
 }>();
 
-const visible = ref(false);
+const { visible, open, close } = useOaDrawer(() => {
+  form.delegatorUserId = 0;
+  form.delegateUserId = 0;
+});
 const creating = ref(false);
 const form = reactive({ delegatorUserId: 0, delegateUserId: 0 });
 const users = computed(() => props.users ?? []);
@@ -74,21 +78,13 @@ const users = computed(() => props.users ?? []);
 const createMutation = useSetWorkflowDelegation({
   onSuccess: () => {
     ElMessage.success($t("common.notification.saveSuccess"));
-    visible.value = false;
+    close();
     emit("success");
   },
   onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.saveFailed")),
 });
 
-function open() {
-  form.delegatorUserId = 0;
-  form.delegateUserId = 0;
-  visible.value = true;
-}
-
-function handleClose() {
-  visible.value = false;
-}
+const handleClose = close;
 
 function submit() {
   if (!form.delegatorUserId || !form.delegateUserId) {
@@ -115,12 +111,6 @@ defineExpose({ open });
 </script>
 
 <style lang="scss" scoped>
-.drawer-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
 .hint {
   font-size: 12px;
   color: var(--el-text-color-secondary);

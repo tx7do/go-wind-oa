@@ -127,11 +127,11 @@ func (s *LeaveService) ListLeaveBalances(ctx context.Context, req *oaV1.ListLeav
 	if year == 0 {
 		year = time.Now().Year()
 	}
-	items, err := s.balanceRepo.List(ctx, tid, req.GetUserId(), year)
+	items, total, err := s.balanceRepo.List(ctx, tid, req.GetUserId(), year, req.GetPage(), req.GetPageSize())
 	if err != nil {
 		return nil, err
 	}
-	return &oaV1.ListLeaveBalancesResponse{Items: items, Total: uint64(len(items))}, nil
+	return &oaV1.ListLeaveBalancesResponse{Items: items, Total: uint64(total)}, nil
 }
 
 // SubmitLeaveApplication 提交请假申请：校验额度 → 建申请单 → 进程内提交 LEAVE 工作流。

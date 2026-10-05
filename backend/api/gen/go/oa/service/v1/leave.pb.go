@@ -743,8 +743,10 @@ func (x *GrantLeaveBalanceRequest) GetTotalDays() float64 {
 // 查询额度 - 请求
 type ListLeaveBalancesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
-	Year          int32                  `protobuf:"varint,2,opt,name=year,proto3" json:"year,omitempty"`                   // 年度
+	UserId        uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`             // 用户ID
+	Year          int32                  `protobuf:"varint,2,opt,name=year,proto3" json:"year,omitempty"`                               // 年度
+	Page          *int32                 `protobuf:"varint,3,opt,name=page,proto3,oneof" json:"page,omitempty"`                         // 页码
+	PageSize      *int32                 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"` // 每页条数
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -789,6 +791,20 @@ func (x *ListLeaveBalancesRequest) GetUserId() uint32 {
 func (x *ListLeaveBalancesRequest) GetYear() int32 {
 	if x != nil {
 		return x.Year
+	}
+	return 0
+}
+
+func (x *ListLeaveBalancesRequest) GetPage() int32 {
+	if x != nil && x.Page != nil {
+		return *x.Page
+	}
+	return 0
+}
+
+func (x *ListLeaveBalancesRequest) GetPageSize() int32 {
+	if x != nil && x.PageSize != nil {
+		return *x.PageSize
 	}
 	return 0
 }
@@ -1288,10 +1304,15 @@ const file_oa_service_v1_leave_proto_rawDesc = "" +
 	"\rleave_type_id\x18\x02 \x01(\rB\x14\xbaG\x11\x92\x02\x0e请假类型IDR\vleaveTypeId\x12 \n" +
 	"\x04year\x18\x03 \x01(\x05B\f\xbaG\t\x92\x02\x06年度R\x04year\x127\n" +
 	"\n" +
-	"total_days\x18\x04 \x01(\x01B\x18\xbaG\x15\x92\x02\x12总额度（天）R\ttotalDays\"\xae\x01\n" +
+	"total_days\x18\x04 \x01(\x01B\x18\xbaG\x15\x92\x02\x12总额度（天）R\ttotalDays\"\xda\x02\n" +
 	"\x18ListLeaveBalancesRequest\x12e\n" +
 	"\auser_id\x18\x01 \x01(\rBL\xbaGI\x92\x02F用户ID，0=全部（当前用户查本人传 0 亦按本人处理）R\x06userId\x12+\n" +
-	"\x04year\x18\x02 \x01(\x05B\x17\xbaG\x14\x92\x02\x11年度，0=当年R\x04year\"d\n" +
+	"\x04year\x18\x02 \x01(\x05B\x17\xbaG\x14\x92\x02\x11年度，0=当年R\x04year\x12G\n" +
+	"\x04page\x18\x03 \x01(\x05B.\xbaG+\x92\x02(页码（从 1 起，不传=不限页）H\x00R\x04page\x88\x01\x01\x12J\n" +
+	"\tpage_size\x18\x04 \x01(\x05B(\xbaG%\x92\x02\"每页条数（不传=不限页）H\x01R\bpageSize\x88\x01\x01B\a\n" +
+	"\x05_pageB\f\n" +
+	"\n" +
+	"_page_size\"d\n" +
 	"\x19ListLeaveBalancesResponse\x121\n" +
 	"\x05items\x18\x01 \x03(\v2\x1b.oa.service.v1.LeaveBalanceR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xa2\x04\n" +
@@ -1425,6 +1446,7 @@ func file_oa_service_v1_leave_proto_init() {
 	file_oa_service_v1_leave_proto_msgTypes[0].OneofWrappers = []any{}
 	file_oa_service_v1_leave_proto_msgTypes[1].OneofWrappers = []any{}
 	file_oa_service_v1_leave_proto_msgTypes[2].OneofWrappers = []any{}
+	file_oa_service_v1_leave_proto_msgTypes[6].OneofWrappers = []any{}
 	file_oa_service_v1_leave_proto_msgTypes[8].OneofWrappers = []any{}
 	file_oa_service_v1_leave_proto_msgTypes[10].OneofWrappers = []any{}
 	type x struct{}

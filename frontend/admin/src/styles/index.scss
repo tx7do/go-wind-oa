@@ -139,3 +139,13 @@ html.invert-mode {
 html.grayscale-mode {
   filter: grayscale(1);
 }
+
+// ============================================
+// 9. OA 抽屉通用底部按钮条
+//     原 8 个手写抽屉各自 scoped 重复定义，收拢为全局一处
+// ============================================
+.drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

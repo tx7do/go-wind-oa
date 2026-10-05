@@ -33,15 +33,13 @@ import { ElTable, ElTableColumn } from "element-plus";
 import { ref } from "vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { DRAWER_WIDTH } from "@/constants";
+import { useOaDrawer } from "../use-oa-drawer";
 import { formatDate } from "@/utils/date";
 
-const visible = ref(false);
-const items = ref<any[]>([]);
-
-function open(rowItems: any[]) {
+const { visible, open } = useOaDrawer((rowItems: any[]) => {
   items.value = rowItems ?? [];
-  visible.value = true;
-}
+});
+const items = ref<any[]>([]);
 
 defineExpose({ open });
 </script>

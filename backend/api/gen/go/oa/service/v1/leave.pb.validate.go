@@ -1225,6 +1225,14 @@ func (m *ListLeaveBalancesRequest) validate(all bool) error {
 
 	// no validation rules for Year
 
+	if m.Page != nil {
+		// no validation rules for Page
+	}
+
+	if m.PageSize != nil {
+		// no validation rules for PageSize
+	}
+
 	if len(errors) > 0 {
 		return ListLeaveBalancesRequestMultiError(errors)
 	}
