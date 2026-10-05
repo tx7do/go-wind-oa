@@ -209,8 +209,6 @@
       "workDateLabel": "工作日",
       "runSettlement": "执行当日结算",
       "attendanceSettings": "考勤设置",
-      "fieldWorkStartTime": "上班时间",
-      "fieldWorkEndTime": "下班时间",
       "settleSuccess": "结算完成，处理 {count} 条记录",
       "settleFailed": "结算失败",
       "colUserId": "用户ID",
@@ -260,7 +258,8 @@
       "colDays": "天数",
       "colReason": "事由",
       "colStatus": "状态",
-      "colInstanceId": "流程实例"
+      "colInstanceId": "流程实例",
+      "searchStatus": "状态"
     },
     "types": {
       "colCode": "代码",
@@ -311,21 +310,24 @@
       "colExpenseDate": "费用日期",
       "colDescription": "说明",
       "colInvoiceFileId": "发票文件ID"
-    }
+    },
+    "searchStatus": "状态"
   },
   "outing": {
     "colApplicant": "申请人",
     "colDestination": "目的地",
     "colDateRange": "起止",
     "colStatus": "状态",
-    "colInstanceId": "流程实例"
+    "colInstanceId": "流程实例",
+    "searchStatus": "状态"
   },
   "overtime": {
     "colApplicant": "申请人",
     "colReason": "事由",
     "colDateRange": "起止",
     "colStatus": "状态",
-    "colInstanceId": "流程实例"
+    "colInstanceId": "流程实例",
+    "searchStatus": "状态"
   },
   "businessTrip": {
     "colApplicant": "申请人",
@@ -333,7 +335,8 @@
     "colDestination": "目的地",
     "colDateRange": "起止",
     "colStatus": "状态",
-    "colInstanceId": "流程实例"
+    "colInstanceId": "流程实例",
+    "searchStatus": "状态"
   },
   "seal": {
     "colApplicant": "申请人",
@@ -342,7 +345,8 @@
     "colFileCount": "文件份数",
     "colRecipient": "收件方",
     "colStatus": "状态",
-    "colInstanceId": "流程实例"
+    "colInstanceId": "流程实例",
+    "searchStatus": "状态"
   },
   "delegation": {
     "deleteConfirmContent": "确定删除此委托记录？",

@@ -29,31 +29,31 @@ func TestUserFieldMask(t *testing.T) {
 	u := &identityV1.User{
 		Username: trans.String("UserName"),
 		Realname: trans.String("RealName"),
-		//Avatar:   trans.String("Avatar"),
-		Address: trans.String("Address"),
+		Address:  trans.String("Address"),
 	}
 
 	updateUserReq := &identityV1.UpdateUserRequest{
 		Data: &identityV1.User{
 			Username: trans.String("UserName1"),
 			Realname: trans.String("RealName1"),
-			//Avatar:   trans.String("Avatar1"),
-			Address: trans.String("Address1"),
+			Address:  trans.String("Address1"),
 		},
 		UpdateMask: &field_mask.FieldMask{
-			Paths: []string{"userName", "realName", "avatar", "roleId"},
+			// 路径以 proto 字段名为准：username/realname 全小写、roleId 的字段名是 role_id
+			Paths: []string{"username", "realname", "avatar", "role_id"},
 		},
 	}
-	updateUserReq.UpdateMask.Normalize()
 	if !updateUserReq.UpdateMask.IsValid(u) {
-		// Return an error.
-		panic("invalid field mask")
+		t.Fatalf("invalid field mask: %v", updateUserReq.UpdateMask.GetPaths())
 	}
 
+	// 按掩码过滤（原地清除掩码外字段）后再合并：address 不应被写入目标消息
 	fieldmaskutil.Filter(updateUserReq.GetData(), updateUserReq.UpdateMask.GetPaths())
 	proto.Merge(u, updateUserReq.GetData())
 
-	fmt.Println(reSpaces.ReplaceAllString(u.String(), " "))
+	assert.Equal(t, "UserName1", u.GetUsername())
+	assert.Equal(t, "RealName1", u.GetRealname())
+	assert.Equal(t, "Address", u.GetAddress())
 }
 
 func TestFilterReuseMask(t *testing.T) {

@@ -182,7 +182,7 @@ func (r *LeaveApplicationRepo) SetInstanceID(ctx context.Context, tid, id, insta
 func (r *LeaveApplicationRepo) List(
 	ctx context.Context,
 	tid, userID uint32,
-	status oaV1.LeaveApplication_LeaveStatus,
+	status *oaV1.LeaveApplication_LeaveStatus,
 	leaveTypeRepo *LeaveTypeRepo,
 	page, pageSize int32,
 ) ([]*oaV1.LeaveApplication, int, error) {
@@ -191,8 +191,8 @@ func (r *LeaveApplicationRepo) List(
 	if userID != 0 {
 		query = query.Where(leaveapplication.CreatedByEQ(userID))
 	}
-	if status != 0 {
-		query = query.Where(leaveapplication.LeaveStatusEQ(leaveStatusToEntity(status)))
+	if status != nil {
+		query = query.Where(leaveapplication.LeaveStatusEQ(leaveStatusToEntity(*status)))
 	}
 	total, err := query.Clone().Count(ctx)
 	if err != nil {

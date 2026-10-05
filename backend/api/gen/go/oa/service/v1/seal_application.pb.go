@@ -289,11 +289,11 @@ func (x *SealApplication) GetDeletedAt() *timestamppb.Timestamp {
 
 // 查询用印申请 - 请求
 type ListSealApplicationsRequest struct {
-	state         protoimpl.MessageState     `protogen:"open.v1"`
-	UserId        uint32                     `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                 // 申请人用户ID
-	Status        SealApplication_SealStatus `protobuf:"varint,2,opt,name=status,proto3,enum=oa.service.v1.SealApplication_SealStatus" json:"status,omitempty"` // 状态过滤
-	Page          *int32                     `protobuf:"varint,3,opt,name=page,proto3,oneof" json:"page,omitempty"`                                             // 页码
-	PageSize      *int32                     `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`                     // 每页条数
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	UserId        uint32                      `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                       // 申请人用户ID
+	Status        *SealApplication_SealStatus `protobuf:"varint,2,opt,name=status,proto3,enum=oa.service.v1.SealApplication_SealStatus,oneof" json:"status,omitempty"` // 状态过滤
+	Page          *int32                      `protobuf:"varint,3,opt,name=page,proto3,oneof" json:"page,omitempty"`                                                   // 页码
+	PageSize      *int32                      `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`                           // 每页条数
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -336,8 +336,8 @@ func (x *ListSealApplicationsRequest) GetUserId() uint32 {
 }
 
 func (x *ListSealApplicationsRequest) GetStatus() SealApplication_SealStatus {
-	if x != nil {
-		return x.Status
+	if x != nil && x.Status != nil {
+		return *x.Status
 	}
 	return SealApplication_PENDING
 }
@@ -638,12 +638,13 @@ const file_oa_service_v1_seal_application_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"\x95\x03\n" +
+	"\v_deleted_at\"\xa5\x03\n" +
 	"\x1bListSealApplicationsRequest\x12c\n" +
-	"\auser_id\x18\x01 \x01(\rBJ\xbaGG\x92\x02D申请人用户ID，0=全部（app 端忽略此字段按本人查）R\x06userId\x12e\n" +
-	"\x06status\x18\x02 \x01(\x0e2).oa.service.v1.SealApplication.SealStatusB\"\xbaG\x1f\x92\x02\x1c状态过滤，不传=全部R\x06status\x12G\n" +
-	"\x04page\x18\x03 \x01(\x05B.\xbaG+\x92\x02(页码（从 1 起，不传=不限页）H\x00R\x04page\x88\x01\x01\x12J\n" +
-	"\tpage_size\x18\x04 \x01(\x05B(\xbaG%\x92\x02\"每页条数（不传=不限页）H\x01R\bpageSize\x88\x01\x01B\a\n" +
+	"\auser_id\x18\x01 \x01(\rBJ\xbaGG\x92\x02D申请人用户ID，0=全部（app 端忽略此字段按本人查）R\x06userId\x12j\n" +
+	"\x06status\x18\x02 \x01(\x0e2).oa.service.v1.SealApplication.SealStatusB\"\xbaG\x1f\x92\x02\x1c状态过滤，不传=全部H\x00R\x06status\x88\x01\x01\x12G\n" +
+	"\x04page\x18\x03 \x01(\x05B.\xbaG+\x92\x02(页码（从 1 起，不传=不限页）H\x01R\x04page\x88\x01\x01\x12J\n" +
+	"\tpage_size\x18\x04 \x01(\x05B(\xbaG%\x92\x02\"每页条数（不传=不限页）H\x02R\bpageSize\x88\x01\x01B\t\n" +
+	"\a_statusB\a\n" +
 	"\x05_pageB\f\n" +
 	"\n" +
 	"_page_size\"j\n" +

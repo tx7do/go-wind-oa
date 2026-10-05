@@ -140,7 +140,7 @@ func (s *OutingService) ListOutingApplications(ctx context.Context, req *oaV1.Li
 	if !ok {
 		return nil, oaV1.ErrorForbidden("missing viewer context")
 	}
-	items, total, err := s.appRepo.List(ctx, tid, req.GetUserId(), req.GetStatus(), req.GetPage(), req.GetPageSize())
+	items, total, err := s.appRepo.List(ctx, tid, req.GetUserId(), req.Status, req.GetPage(), req.GetPageSize())
 	if err != nil {
 		return nil, err
 	}

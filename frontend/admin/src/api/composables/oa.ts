@@ -568,6 +568,14 @@ export function workflowInstanceStatusToTag(s?: string): "success" | "danger" | 
   }
 }
 
+/** 流程实例状态下拉选项（六个申请列表页的搜索框共用）。 */
+export const workflowInstanceStatusOptions = computed(() => [
+  { value: "PENDING", label: $t("enum.workflowInstance.instanceStatus.PENDING") },
+  { value: "APPROVED", label: $t("enum.workflowInstance.instanceStatus.APPROVED") },
+  { value: "REJECTED", label: $t("enum.workflowInstance.instanceStatus.REJECTED") },
+  { value: "WITHDRAWN", label: $t("enum.workflowInstance.instanceStatus.WITHDRAWN") },
+]);
+
 /** 考勤日结果 → 展示文案（enum.attendance.dayResult）。 */
 export function attendanceDayResultToName(r?: string): string {
   switch (r) {

@@ -189,7 +189,7 @@ func (r *SealApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instan
 func (r *SealApplicationRepo) List(
 	ctx context.Context,
 	tid, userID uint32,
-	status oaV1.SealApplication_SealStatus,
+	status *oaV1.SealApplication_SealStatus,
 	page, pageSize int32,
 ) ([]*oaV1.SealApplication, int, error) {
 	query := r.entClient.Client().SealApplication.Query().
@@ -197,8 +197,8 @@ func (r *SealApplicationRepo) List(
 	if userID != 0 {
 		query = query.Where(sealapplication.CreatedByEQ(userID))
 	}
-	if status != 0 {
-		query = query.Where(sealapplication.SealStatusEQ(sealStatusToEntity(status)))
+	if status != nil {
+		query = query.Where(sealapplication.SealStatusEQ(sealStatusToEntity(*status)))
 	}
 	total, err := query.Clone().Count(ctx)
 	if err != nil {

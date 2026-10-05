@@ -18,6 +18,7 @@ import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import {
   fetchListLeaveApplications,
+  workflowInstanceStatusOptions,
   workflowInstanceStatusToName,
   workflowInstanceStatusToTag,
 } from "@/api/composables";
@@ -28,11 +29,23 @@ import { $t } from "@/core/i18n";
 const pageRef = ref();
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  search: {
+    grid: true,
+    fields: [
+      {
+        type: "select",
+        label: $t("pages.oa.leave.applications.searchStatus"),
+        field: "status",
+        attrs: { placeholder: $t("common.placeholder.select"), clearable: true },
+        options: workflowInstanceStatusOptions.value,
+      },
+    ],
+  },
   table: {
     listAction: async (query: any) => {
       const req: oaservicev1_ListLeaveApplicationsRequest = {
         userId: 0,
-        status: undefined,
+        status: query.status,
         page: query.page,
         pageSize: query.pageSize,
       };

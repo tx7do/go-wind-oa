@@ -209,8 +209,6 @@
       "workDateLabel": "Work Date",
       "runSettlement": "Run Daily Settlement",
       "attendanceSettings": "Attendance Settings",
-      "fieldWorkStartTime": "Start Time",
-      "fieldWorkEndTime": "End Time",
       "settleSuccess": "Settlement completed, {count} records processed",
       "settleFailed": "Settlement failed",
       "colUserId": "User ID",
@@ -260,7 +258,8 @@
       "colDays": "Days",
       "colReason": "Reason",
       "colStatus": "Status",
-      "colInstanceId": "Workflow Instance"
+      "colInstanceId": "Workflow Instance",
+      "searchStatus": "Status"
     },
     "types": {
       "colCode": "Code",
@@ -311,21 +310,24 @@
       "colExpenseDate": "Expense Date",
       "colDescription": "Description",
       "colInvoiceFileId": "Invoice File ID"
-    }
+    },
+    "searchStatus": "Status"
   },
   "outing": {
     "colApplicant": "Applicant",
     "colDestination": "Destination",
     "colDateRange": "Start - End",
     "colStatus": "Status",
-    "colInstanceId": "Workflow Instance"
+    "colInstanceId": "Workflow Instance",
+    "searchStatus": "Status"
   },
   "overtime": {
     "colApplicant": "Applicant",
     "colReason": "Reason",
     "colDateRange": "Start - End",
     "colStatus": "Status",
-    "colInstanceId": "Workflow Instance"
+    "colInstanceId": "Workflow Instance",
+    "searchStatus": "Status"
   },
   "businessTrip": {
     "colApplicant": "Applicant",
@@ -333,7 +335,8 @@
     "colDestination": "Destination",
     "colDateRange": "Start - End",
     "colStatus": "Status",
-    "colInstanceId": "Workflow Instance"
+    "colInstanceId": "Workflow Instance",
+    "searchStatus": "Status"
   },
   "seal": {
     "colApplicant": "Applicant",
@@ -342,7 +345,8 @@
     "colFileCount": "File Copies",
     "colRecipient": "Recipient",
     "colStatus": "Status",
-    "colInstanceId": "Workflow Instance"
+    "colInstanceId": "Workflow Instance",
+    "searchStatus": "Status"
   },
   "delegation": {
     "deleteConfirmContent": "Delete this delegation record?",

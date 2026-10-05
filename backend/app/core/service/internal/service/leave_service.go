@@ -310,7 +310,7 @@ func (s *LeaveService) ListLeaveApplications(ctx context.Context, req *oaV1.List
 	if !ok {
 		return nil, oaV1.ErrorForbidden("missing viewer context")
 	}
-	items, total, err := s.appRepo.List(ctx, tid, req.GetUserId(), req.GetStatus(), s.typeRepo, req.GetPage(), req.GetPageSize())
+	items, total, err := s.appRepo.List(ctx, tid, req.GetUserId(), req.Status, s.typeRepo, req.GetPage(), req.GetPageSize())
 	if err != nil {
 		return nil, err
 	}

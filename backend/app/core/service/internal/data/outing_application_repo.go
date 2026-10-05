@@ -157,7 +157,7 @@ func (r *OutingApplicationRepo) SetInstanceID(ctx context.Context, tid, id, inst
 func (r *OutingApplicationRepo) List(
 	ctx context.Context,
 	tid, userID uint32,
-	status oaV1.OutingApplication_OutingStatus,
+	status *oaV1.OutingApplication_OutingStatus,
 	page, pageSize int32,
 ) ([]*oaV1.OutingApplication, int, error) {
 	query := r.entClient.Client().OutingApplication.Query().
@@ -165,8 +165,8 @@ func (r *OutingApplicationRepo) List(
 	if userID != 0 {
 		query = query.Where(outingapplication.CreatedByEQ(userID))
 	}
-	if status != 0 {
-		query = query.Where(outingapplication.OutingStatusEQ(outingStatusToEntity(status)))
+	if status != nil {
+		query = query.Where(outingapplication.OutingStatusEQ(outingStatusToEntity(*status)))
 	}
 	total, err := query.Clone().Count(ctx)
 	if err != nil {

@@ -13,7 +13,7 @@
       <ElButton :loading="settling" @click="runSettlement">
         {{ $t("pages.oa.attendance.records.runSettlement") }}
       </ElButton>
-      <ElButton type="primary" plain @click="openSettings">
+      <ElButton type="primary" plain @click="goSettings">
         {{ $t("pages.oa.attendance.records.attendanceSettings") }}
       </ElButton>
     </div>
@@ -24,42 +24,13 @@
         </ElTag>
       </template>
     </ProPage>
-
-    <ElDialog
-      v-model="settingsVisible"
-      :title="$t('pages.oa.attendance.records.attendanceSettings')"
-      width="420px"
-    >
-      <ElForm label-width="100px">
-        <ElFormItem :label="$t('pages.oa.attendance.records.fieldWorkStartTime')">
-          <ElInput v-model="settings.workStartTime" placeholder="09:00" />
-        </ElFormItem>
-        <ElFormItem :label="$t('pages.oa.attendance.records.fieldWorkEndTime')">
-          <ElInput v-model="settings.workEndTime" placeholder="18:00" />
-        </ElFormItem>
-      </ElForm>
-      <template #footer>
-        <ElButton @click="settingsVisible = false">{{ $t("common.button.cancel") }}</ElButton>
-        <ElButton type="primary" :loading="savingSettings" @click="saveSettings">
-          {{ $t("common.button.save") }}
-        </ElButton>
-      </template>
-    </ElDialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, reactive } from "vue";
-import {
-  ElButton,
-  ElDatePicker,
-  ElDialog,
-  ElForm,
-  ElFormItem,
-  ElInput,
-  ElMessage,
-  ElTag,
-} from "element-plus";
+import { ref, computed } from "vue";
+import { ElButton, ElDatePicker, ElMessage, ElTag } from "element-plus";
+import { useRouter } from "vue-router";
 
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
@@ -68,12 +39,11 @@ import {
   attendanceDayResultToTag,
   fetchListAttendanceRecords,
   useRunDailySettlement,
-  useUpdateAttendanceSetting,
 } from "@/api/composables";
-import { apiClient } from "@/api/client";
 import { formatDate, formatDateTime } from "@/utils/date";
 import { $t } from "@/core/i18n";
 
+const router = useRouter();
 const pageRef = ref();
 
 const today = () => formatDate(new Date());
@@ -99,31 +69,9 @@ function runSettlement() {
   );
 }
 
-const settingsVisible = ref(false);
-const savingSettings = ref(false);
-const settings = reactive({ workStartTime: "09:00", workEndTime: "18:00" });
-
-async function openSettings() {
-  const resp = await apiClient.attendanceService.GetAttendanceSetting({});
-  settings.workStartTime = resp?.workStartTime ?? "09:00";
-  settings.workEndTime = resp?.workEndTime ?? "18:00";
-  settingsVisible.value = true;
-}
-
-const settingsMutation = useUpdateAttendanceSetting({
-  onSuccess: () => {
-    ElMessage.success($t("common.notification.saveSuccess"));
-    settingsVisible.value = false;
-  },
-  onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.saveFailed")),
-});
-
-function saveSettings() {
-  savingSettings.value = true;
-  settingsMutation.mutate(
-    { workStartTime: settings.workStartTime, workEndTime: settings.workEndTime },
-    { onSettled: () => (savingSettings.value = false) }
-  );
+// 工时设置统一走独立设置页（本页不再维护第二份实现）
+function goSettings() {
+  router.push("/oa/attendance-setting");
 }
 
 function locateStr(row: any): string {

@@ -163,7 +163,7 @@ func (r *BusinessTripApplicationRepo) SetInstanceID(ctx context.Context, tid, id
 func (r *BusinessTripApplicationRepo) List(
 	ctx context.Context,
 	tid, userID uint32,
-	status oaV1.BusinessTripApplication_BusinessTripStatus,
+	status *oaV1.BusinessTripApplication_BusinessTripStatus,
 	page, pageSize int32,
 ) ([]*oaV1.BusinessTripApplication, int, error) {
 	query := r.entClient.Client().BusinessTripApplication.Query().
@@ -171,8 +171,8 @@ func (r *BusinessTripApplicationRepo) List(
 	if userID != 0 {
 		query = query.Where(businesstripapplication.CreatedByEQ(userID))
 	}
-	if status != 0 {
-		query = query.Where(businesstripapplication.TripStatusEQ(tripStatusToEntity(status)))
+	if status != nil {
+		query = query.Where(businesstripapplication.TripStatusEQ(tripStatusToEntity(*status)))
 	}
 	total, err := query.Clone().Count(ctx)
 	if err != nil {

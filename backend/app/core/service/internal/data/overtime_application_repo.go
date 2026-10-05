@@ -180,7 +180,7 @@ func (r *OvertimeApplicationRepo) SetInstanceID(ctx context.Context, tid, id, in
 func (r *OvertimeApplicationRepo) List(
 	ctx context.Context,
 	tid, userID uint32,
-	status oaV1.OvertimeApplication_OvertimeStatus,
+	status *oaV1.OvertimeApplication_OvertimeStatus,
 	page, pageSize int32,
 ) ([]*oaV1.OvertimeApplication, int, error) {
 	query := r.entClient.Client().OvertimeApplication.Query().
@@ -188,8 +188,8 @@ func (r *OvertimeApplicationRepo) List(
 	if userID != 0 {
 		query = query.Where(overtimeapplication.CreatedByEQ(userID))
 	}
-	if status != 0 {
-		query = query.Where(overtimeapplication.OvertimeStatusEQ(overtimeStatusToEntity(status)))
+	if status != nil {
+		query = query.Where(overtimeapplication.OvertimeStatusEQ(overtimeStatusToEntity(*status)))
 	}
 	total, err := query.Clone().Count(ctx)
 	if err != nil {

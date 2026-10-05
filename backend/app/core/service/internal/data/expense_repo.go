@@ -204,7 +204,7 @@ func (r *ExpenseApplicationRepo) SetInstanceID(ctx context.Context, tid, id, ins
 func (r *ExpenseApplicationRepo) List(
 	ctx context.Context,
 	tid, userID uint32,
-	status oaV1.ExpenseApplication_ExpenseStatus,
+	status *oaV1.ExpenseApplication_ExpenseStatus,
 	page, pageSize int32,
 ) ([]*oaV1.ExpenseApplication, int, error) {
 	query := r.entClient.Client().ExpenseApplication.Query().
@@ -212,8 +212,8 @@ func (r *ExpenseApplicationRepo) List(
 	if userID != 0 {
 		query = query.Where(expenseapplication.CreatedByEQ(userID))
 	}
-	if status != 0 {
-		query = query.Where(expenseapplication.ExpenseStatusEQ(expenseStatusToEntity(status)))
+	if status != nil {
+		query = query.Where(expenseapplication.ExpenseStatusEQ(expenseStatusToEntity(*status)))
 	}
 	total, err := query.Clone().Count(ctx)
 	if err != nil {

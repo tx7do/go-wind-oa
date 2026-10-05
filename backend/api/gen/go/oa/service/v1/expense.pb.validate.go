@@ -771,7 +771,9 @@ func (m *ListExpenseApplicationsRequest) validate(all bool) error {
 
 	// no validation rules for UserId
 
-	// no validation rules for Status
+	if m.Status != nil {
+		// no validation rules for Status
+	}
 
 	if m.Page != nil {
 		// no validation rules for Page

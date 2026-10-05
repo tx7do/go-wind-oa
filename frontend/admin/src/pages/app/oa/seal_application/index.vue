@@ -20,6 +20,7 @@ import type { oaservicev1_ListSealApplicationsRequest } from "@/api/generated/ad
 import {
   fetchListSealApplications,
   sealTypeToName,
+  workflowInstanceStatusOptions,
   workflowInstanceStatusToName,
   workflowInstanceStatusToTag,
 } from "@/api/composables";
@@ -28,6 +29,18 @@ import { $t } from "@/core/i18n";
 const pageRef = ref();
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  search: {
+    grid: true,
+    fields: [
+      {
+        type: "select",
+        label: $t("pages.oa.seal.searchStatus"),
+        field: "status",
+        attrs: { placeholder: $t("common.placeholder.select"), clearable: true },
+        options: workflowInstanceStatusOptions.value,
+      },
+    ],
+  },
   table: {
     listAction: async (query: any) => {
       const req: oaservicev1_ListSealApplicationsRequest = {

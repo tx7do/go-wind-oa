@@ -311,7 +311,7 @@ message ListLeaveApplicationsRequest {
     (gnostic.openapi.v3.property) = { description: "申请人用户ID，0=全部（app 端忽略此字段按本人查）" }
   ]; // 申请人用户ID
 
-  LeaveApplication.LeaveStatus status = 2 [
+  optional LeaveApplication.LeaveStatus status = 2 [
     json_name = "status",
     (gnostic.openapi.v3.property) = { description: "状态过滤，不传=全部" }
   ]; // 状态过滤

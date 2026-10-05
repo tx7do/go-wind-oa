@@ -26,6 +26,7 @@ import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import ExpenseDetailDrawer from "./expense-detail-drawer.vue";
 import {
   fetchListExpenseApplications,
+  workflowInstanceStatusOptions,
   workflowInstanceStatusToName,
   workflowInstanceStatusToTag,
 } from "@/api/composables";
@@ -41,6 +42,18 @@ function openDetail(items: any[]) {
 }
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  search: {
+    grid: true,
+    fields: [
+      {
+        type: "select",
+        label: $t("pages.oa.expense.searchStatus"),
+        field: "status",
+        attrs: { placeholder: $t("common.placeholder.select"), clearable: true },
+        options: workflowInstanceStatusOptions.value,
+      },
+    ],
+  },
   table: {
     listAction: async (query: any) => {
       const req: oaservicev1_ListExpenseApplicationsRequest = {
