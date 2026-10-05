@@ -171,12 +171,11 @@
       "approve": "通过",
       "reject": "驳回",
       "forward": "转办",
-      "forwardPrompt": "请输入转办目标用户ID",
       "addApprover": "加签",
-      "addApproverPrompt": "请输入加签目标用户ID",
-      "positiveIntUserId": "请输入正整数用户ID",
-      "pendingApproval": "待审批"
-    }
+      "pendingApproval": "待审批",
+      "placeholderSelectUser": "搜索并选择用户"
+    },
+    "pendingTag": "待办"
   },
   "attendance": {
     "fenceTitle": "考勤地理围栏",

@@ -1042,6 +1042,14 @@ func (m *MyTaskItem) validate(all bool) error {
 		// no validation rules for StatusLabel
 	}
 
+	if m.AuditAction != nil {
+		// no validation rules for AuditAction
+	}
+
+	if m.InstanceStatus != nil {
+		// no validation rules for InstanceStatus
+	}
+
 	if len(errors) > 0 {
 		return MyTaskItemMultiError(errors)
 	}

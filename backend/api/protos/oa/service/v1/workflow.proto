@@ -272,8 +272,18 @@ message MyTaskItem {
 
   optional string status_label = 3 [
     json_name = "statusLabel",
-    (gnostic.openapi.v3.property) = { description: "状态标签" }
+    (gnostic.openapi.v3.property) = { description: "状态标签（服务端拼装文本，兼容旧客户端）" }
   ]; // 状态标签
+
+  optional WorkflowLog.LogAction audit_action = 5 [
+    json_name = "auditAction",
+    (gnostic.openapi.v3.property) = { description: "审批动作（已办列表填充，客户端本地化渲染）" }
+  ]; // 审批动作
+
+  optional WorkflowInstance.InstanceStatus instance_status = 6 [
+    json_name = "instanceStatus",
+    (gnostic.openapi.v3.property) = { description: "实例状态（我发起的列表填充，客户端本地化渲染）" }
+  ]; // 实例状态
 }
 
 // 查询流程定义列表 - 回应

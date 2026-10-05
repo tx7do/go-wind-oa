@@ -171,12 +171,11 @@
       "approve": "Approve",
       "reject": "Reject",
       "forward": "Forward",
-      "forwardPrompt": "Enter the target user ID to forward to",
       "addApprover": "Add Approver",
-      "addApproverPrompt": "Enter the target user ID to add as approver",
-      "positiveIntUserId": "Please enter a positive integer user ID",
-      "pendingApproval": "Pending approval"
-    }
+      "pendingApproval": "Pending approval",
+      "placeholderSelectUser": "Search and select a user"
+    },
+    "pendingTag": "Pending"
   },
   "attendance": {
     "fenceTitle": "Attendance Geofence",

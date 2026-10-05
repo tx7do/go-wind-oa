@@ -305,6 +305,8 @@ func (r *WorkflowInstanceRepo) ListByCreator(ctx context.Context, tenantID uint3
 		if label != "" {
 			item.StatusLabel = trans.Ptr(label)
 		}
+		// 枚举形式供新客户端本地化渲染（status_label 保留兼容旧客户端）
+		item.InstanceStatus = r.instanceStatusConverter.ToDTO(e.InstanceStatus)
 		items = append(items, item)
 	}
 	return items, total, nil

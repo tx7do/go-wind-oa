@@ -879,13 +879,15 @@ func (x *WorkflowLog) GetDeletedAt() *timestamppb.Timestamp {
 
 // 我的任务列表项
 type MyTaskItem struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TaskId        *uint32                `protobuf:"varint,4,opt,name=task_id,json=taskId,proto3,oneof" json:"task_id,omitempty"`               // 任务ID
-	InstanceId    *uint32                `protobuf:"varint,1,opt,name=instance_id,json=instanceId,proto3,oneof" json:"instance_id,omitempty"`   // 实例ID
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`       // 创建时间
-	StatusLabel   *string                `protobuf:"bytes,3,opt,name=status_label,json=statusLabel,proto3,oneof" json:"status_label,omitempty"` // 状态标签
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState           `protogen:"open.v1"`
+	TaskId         *uint32                          `protobuf:"varint,4,opt,name=task_id,json=taskId,proto3,oneof" json:"task_id,omitempty"`                                                                            // 任务ID
+	InstanceId     *uint32                          `protobuf:"varint,1,opt,name=instance_id,json=instanceId,proto3,oneof" json:"instance_id,omitempty"`                                                                // 实例ID
+	CreatedAt      *timestamppb.Timestamp           `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                                    // 创建时间
+	StatusLabel    *string                          `protobuf:"bytes,3,opt,name=status_label,json=statusLabel,proto3,oneof" json:"status_label,omitempty"`                                                              // 状态标签
+	AuditAction    *WorkflowLog_LogAction           `protobuf:"varint,5,opt,name=audit_action,json=auditAction,proto3,enum=oa.service.v1.WorkflowLog_LogAction,oneof" json:"audit_action,omitempty"`                    // 审批动作
+	InstanceStatus *WorkflowInstance_InstanceStatus `protobuf:"varint,6,opt,name=instance_status,json=instanceStatus,proto3,enum=oa.service.v1.WorkflowInstance_InstanceStatus,oneof" json:"instance_status,omitempty"` // 实例状态
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *MyTaskItem) Reset() {
@@ -944,6 +946,20 @@ func (x *MyTaskItem) GetStatusLabel() string {
 		return *x.StatusLabel
 	}
 	return ""
+}
+
+func (x *MyTaskItem) GetAuditAction() WorkflowLog_LogAction {
+	if x != nil && x.AuditAction != nil {
+		return *x.AuditAction
+	}
+	return WorkflowLog_SUBMIT
+}
+
+func (x *MyTaskItem) GetInstanceStatus() WorkflowInstance_InstanceStatus {
+	if x != nil && x.InstanceStatus != nil {
+		return *x.InstanceStatus
+	}
+	return WorkflowInstance_PENDING
 }
 
 // 查询流程定义列表 - 回应
@@ -2162,20 +2178,24 @@ const file_oa_service_v1_workflow_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"\xe6\x02\n" +
+	"\v_deleted_at\"\xfd\x05\n" +
 	"\n" +
 	"MyTaskItem\x12V\n" +
 	"\atask_id\x18\x04 \x01(\rB8\xbaG5\x92\x022任务ID（待办列表填充，供进入详情）H\x00R\x06taskId\x88\x01\x01\x124\n" +
 	"\vinstance_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b实例IDH\x01R\n" +
 	"instanceId\x88\x01\x01\x12R\n" +
 	"\n" +
-	"created_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x02R\tcreatedAt\x88\x01\x01\x12:\n" +
-	"\fstatus_label\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f状态标签H\x03R\vstatusLabel\x88\x01\x01B\n" +
+	"created_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x02R\tcreatedAt\x88\x01\x01\x12j\n" +
+	"\fstatus_label\x18\x03 \x01(\tBB\xbaG?\x92\x02<状态标签（服务端拼装文本，兼容旧客户端）H\x03R\vstatusLabel\x88\x01\x01\x12\x93\x01\n" +
+	"\faudit_action\x18\x05 \x01(\x0e2$.oa.service.v1.WorkflowLog.LogActionBE\xbaGB\x92\x02?审批动作（已办列表填充，客户端本地化渲染）H\x04R\vauditAction\x88\x01\x01\x12\xa9\x01\n" +
+	"\x0finstance_status\x18\x06 \x01(\x0e2..oa.service.v1.WorkflowInstance.InstanceStatusBK\xbaGH\x92\x02E实例状态（我发起的列表填充，客户端本地化渲染）H\x05R\x0einstanceStatus\x88\x01\x01B\n" +
 	"\n" +
 	"\b_task_idB\x0e\n" +
 	"\f_instance_idB\r\n" +
 	"\v_created_atB\x0f\n" +
-	"\r_status_label\"o\n" +
+	"\r_status_labelB\x0f\n" +
+	"\r_audit_actionB\x12\n" +
+	"\x10_instance_status\"o\n" +
 	"\x1eListWorkflowDefinitionResponse\x127\n" +
 	"\x05items\x18\x01 \x03(\v2!.oa.service.v1.WorkflowDefinitionR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xcf\x01\n" +
@@ -2361,50 +2381,52 @@ var file_oa_service_v1_workflow_proto_depIdxs = []int32{
 	29, // 14: oa.service.v1.WorkflowLog.updated_at:type_name -> google.protobuf.Timestamp
 	29, // 15: oa.service.v1.WorkflowLog.deleted_at:type_name -> google.protobuf.Timestamp
 	29, // 16: oa.service.v1.MyTaskItem.created_at:type_name -> google.protobuf.Timestamp
-	6,  // 17: oa.service.v1.ListWorkflowDefinitionResponse.items:type_name -> oa.service.v1.WorkflowDefinition
-	30, // 18: oa.service.v1.GetWorkflowDefinitionRequest.view_mask:type_name -> google.protobuf.FieldMask
-	6,  // 19: oa.service.v1.CreateWorkflowDefinitionRequest.data:type_name -> oa.service.v1.WorkflowDefinition
-	6,  // 20: oa.service.v1.UpdateWorkflowDefinitionRequest.data:type_name -> oa.service.v1.WorkflowDefinition
-	30, // 21: oa.service.v1.UpdateWorkflowDefinitionRequest.update_mask:type_name -> google.protobuf.FieldMask
-	0,  // 22: oa.service.v1.AuditTaskRequest.action:type_name -> oa.service.v1.AuditAction
-	1,  // 23: oa.service.v1.GetMyTasksRequest.list_type:type_name -> oa.service.v1.ListType
-	10, // 24: oa.service.v1.GetMyTasksResponse.items:type_name -> oa.service.v1.MyTaskItem
-	8,  // 25: oa.service.v1.GetTaskResponse.task:type_name -> oa.service.v1.WorkflowTask
-	9,  // 26: oa.service.v1.GetTaskResponse.logs:type_name -> oa.service.v1.WorkflowLog
-	29, // 27: oa.service.v1.WorkflowDelegation.created_at:type_name -> google.protobuf.Timestamp
-	25, // 28: oa.service.v1.SetWorkflowDelegationRequest.data:type_name -> oa.service.v1.WorkflowDelegation
-	25, // 29: oa.service.v1.ListWorkflowDelegationResponse.items:type_name -> oa.service.v1.WorkflowDelegation
-	13, // 30: oa.service.v1.WorkflowService.CreateWorkflowDefinition:input_type -> oa.service.v1.CreateWorkflowDefinitionRequest
-	31, // 31: oa.service.v1.WorkflowService.ListWorkflowDefinition:input_type -> pagination.PagingRequest
-	14, // 32: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:input_type -> oa.service.v1.UpdateWorkflowDefinitionRequest
-	12, // 33: oa.service.v1.WorkflowService.GetWorkflowDefinition:input_type -> oa.service.v1.GetWorkflowDefinitionRequest
-	15, // 34: oa.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
-	20, // 35: oa.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
-	19, // 36: oa.service.v1.WorkflowService.WithdrawApply:input_type -> oa.service.v1.WithdrawApplyRequest
-	17, // 37: oa.service.v1.WorkflowService.GetApplyForm:input_type -> oa.service.v1.GetApplyFormRequest
-	21, // 38: oa.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
-	23, // 39: oa.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
-	26, // 40: oa.service.v1.WorkflowService.SetWorkflowDelegation:input_type -> oa.service.v1.SetWorkflowDelegationRequest
-	31, // 41: oa.service.v1.WorkflowService.ListWorkflowDelegation:input_type -> pagination.PagingRequest
-	28, // 42: oa.service.v1.WorkflowService.DeleteWorkflowDelegation:input_type -> oa.service.v1.DeleteWorkflowDelegationRequest
-	6,  // 43: oa.service.v1.WorkflowService.CreateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
-	11, // 44: oa.service.v1.WorkflowService.ListWorkflowDefinition:output_type -> oa.service.v1.ListWorkflowDefinitionResponse
-	32, // 45: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:output_type -> google.protobuf.Empty
-	6,  // 46: oa.service.v1.WorkflowService.GetWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
-	16, // 47: oa.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
-	32, // 48: oa.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
-	32, // 49: oa.service.v1.WorkflowService.WithdrawApply:output_type -> google.protobuf.Empty
-	18, // 50: oa.service.v1.WorkflowService.GetApplyForm:output_type -> oa.service.v1.GetApplyFormResponse
-	22, // 51: oa.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
-	24, // 52: oa.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
-	25, // 53: oa.service.v1.WorkflowService.SetWorkflowDelegation:output_type -> oa.service.v1.WorkflowDelegation
-	27, // 54: oa.service.v1.WorkflowService.ListWorkflowDelegation:output_type -> oa.service.v1.ListWorkflowDelegationResponse
-	32, // 55: oa.service.v1.WorkflowService.DeleteWorkflowDelegation:output_type -> google.protobuf.Empty
-	43, // [43:56] is the sub-list for method output_type
-	30, // [30:43] is the sub-list for method input_type
-	30, // [30:30] is the sub-list for extension type_name
-	30, // [30:30] is the sub-list for extension extendee
-	0,  // [0:30] is the sub-list for field type_name
+	5,  // 17: oa.service.v1.MyTaskItem.audit_action:type_name -> oa.service.v1.WorkflowLog.LogAction
+	3,  // 18: oa.service.v1.MyTaskItem.instance_status:type_name -> oa.service.v1.WorkflowInstance.InstanceStatus
+	6,  // 19: oa.service.v1.ListWorkflowDefinitionResponse.items:type_name -> oa.service.v1.WorkflowDefinition
+	30, // 20: oa.service.v1.GetWorkflowDefinitionRequest.view_mask:type_name -> google.protobuf.FieldMask
+	6,  // 21: oa.service.v1.CreateWorkflowDefinitionRequest.data:type_name -> oa.service.v1.WorkflowDefinition
+	6,  // 22: oa.service.v1.UpdateWorkflowDefinitionRequest.data:type_name -> oa.service.v1.WorkflowDefinition
+	30, // 23: oa.service.v1.UpdateWorkflowDefinitionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	0,  // 24: oa.service.v1.AuditTaskRequest.action:type_name -> oa.service.v1.AuditAction
+	1,  // 25: oa.service.v1.GetMyTasksRequest.list_type:type_name -> oa.service.v1.ListType
+	10, // 26: oa.service.v1.GetMyTasksResponse.items:type_name -> oa.service.v1.MyTaskItem
+	8,  // 27: oa.service.v1.GetTaskResponse.task:type_name -> oa.service.v1.WorkflowTask
+	9,  // 28: oa.service.v1.GetTaskResponse.logs:type_name -> oa.service.v1.WorkflowLog
+	29, // 29: oa.service.v1.WorkflowDelegation.created_at:type_name -> google.protobuf.Timestamp
+	25, // 30: oa.service.v1.SetWorkflowDelegationRequest.data:type_name -> oa.service.v1.WorkflowDelegation
+	25, // 31: oa.service.v1.ListWorkflowDelegationResponse.items:type_name -> oa.service.v1.WorkflowDelegation
+	13, // 32: oa.service.v1.WorkflowService.CreateWorkflowDefinition:input_type -> oa.service.v1.CreateWorkflowDefinitionRequest
+	31, // 33: oa.service.v1.WorkflowService.ListWorkflowDefinition:input_type -> pagination.PagingRequest
+	14, // 34: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:input_type -> oa.service.v1.UpdateWorkflowDefinitionRequest
+	12, // 35: oa.service.v1.WorkflowService.GetWorkflowDefinition:input_type -> oa.service.v1.GetWorkflowDefinitionRequest
+	15, // 36: oa.service.v1.WorkflowService.SubmitApply:input_type -> oa.service.v1.SubmitApplyRequest
+	20, // 37: oa.service.v1.WorkflowService.AuditTask:input_type -> oa.service.v1.AuditTaskRequest
+	19, // 38: oa.service.v1.WorkflowService.WithdrawApply:input_type -> oa.service.v1.WithdrawApplyRequest
+	17, // 39: oa.service.v1.WorkflowService.GetApplyForm:input_type -> oa.service.v1.GetApplyFormRequest
+	21, // 40: oa.service.v1.WorkflowService.GetMyTasks:input_type -> oa.service.v1.GetMyTasksRequest
+	23, // 41: oa.service.v1.WorkflowService.GetTask:input_type -> oa.service.v1.GetTaskRequest
+	26, // 42: oa.service.v1.WorkflowService.SetWorkflowDelegation:input_type -> oa.service.v1.SetWorkflowDelegationRequest
+	31, // 43: oa.service.v1.WorkflowService.ListWorkflowDelegation:input_type -> pagination.PagingRequest
+	28, // 44: oa.service.v1.WorkflowService.DeleteWorkflowDelegation:input_type -> oa.service.v1.DeleteWorkflowDelegationRequest
+	6,  // 45: oa.service.v1.WorkflowService.CreateWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	11, // 46: oa.service.v1.WorkflowService.ListWorkflowDefinition:output_type -> oa.service.v1.ListWorkflowDefinitionResponse
+	32, // 47: oa.service.v1.WorkflowService.UpdateWorkflowDefinition:output_type -> google.protobuf.Empty
+	6,  // 48: oa.service.v1.WorkflowService.GetWorkflowDefinition:output_type -> oa.service.v1.WorkflowDefinition
+	16, // 49: oa.service.v1.WorkflowService.SubmitApply:output_type -> oa.service.v1.SubmitApplyResponse
+	32, // 50: oa.service.v1.WorkflowService.AuditTask:output_type -> google.protobuf.Empty
+	32, // 51: oa.service.v1.WorkflowService.WithdrawApply:output_type -> google.protobuf.Empty
+	18, // 52: oa.service.v1.WorkflowService.GetApplyForm:output_type -> oa.service.v1.GetApplyFormResponse
+	22, // 53: oa.service.v1.WorkflowService.GetMyTasks:output_type -> oa.service.v1.GetMyTasksResponse
+	24, // 54: oa.service.v1.WorkflowService.GetTask:output_type -> oa.service.v1.GetTaskResponse
+	25, // 55: oa.service.v1.WorkflowService.SetWorkflowDelegation:output_type -> oa.service.v1.WorkflowDelegation
+	27, // 56: oa.service.v1.WorkflowService.ListWorkflowDelegation:output_type -> oa.service.v1.ListWorkflowDelegationResponse
+	32, // 57: oa.service.v1.WorkflowService.DeleteWorkflowDelegation:output_type -> google.protobuf.Empty
+	45, // [45:58] is the sub-list for method output_type
+	32, // [32:45] is the sub-list for method input_type
+	32, // [32:32] is the sub-list for extension type_name
+	32, // [32:32] is the sub-list for extension extendee
+	0,  // [0:32] is the sub-list for field type_name
 }
 
 func init() { file_oa_service_v1_workflow_proto_init() }

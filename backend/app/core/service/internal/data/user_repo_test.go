@@ -9,6 +9,7 @@ import (
 
 	"github.com/jinzhu/copier"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/protobuf/proto"
 
@@ -97,14 +98,14 @@ func TestMessageNil(t *testing.T) {
 
 	pr := u.ProtoReflect()
 	md := pr.Descriptor()
-	fd := md.Fields().ByName("userName")
+	// proto 字段名为全小写 username（json_name 也是 username）
+	fd := md.Fields().ByName("username")
 	if fd == nil {
-
-	} else {
-		fmt.Println(fd, fd.Name())
+		t.Fatal("field username not found")
 	}
 
 	v := pr.Get(fd)
+	fmt.Println(fd, fd.Name())
 	fmt.Println(v)
 }
 
@@ -163,7 +164,8 @@ func TestCopier(t *testing.T) {
 		assert.Equal(t, protoMsg.GetNickname(), *entMsg.Nickname)
 		assert.Equal(t, protoMsg.GetRealname(), *entMsg.Realname)
 		assert.Equal(t, protoMsg.GetEmail(), *entMsg.Email)
-		assert.Equal(t, protoMsg.GetTenantId(), entMsg.TenantID)
+		require.NotNil(t, entMsg.TenantID)
+		assert.Equal(t, protoMsg.GetTenantId(), *entMsg.TenantID)
 		assert.Equal(t, protoMsg.GetId(), entMsg.ID)
 	}
 

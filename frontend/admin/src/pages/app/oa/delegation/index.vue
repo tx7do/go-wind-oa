@@ -8,7 +8,7 @@
       </template>
     </ProPage>
 
-    <DelegationDrawer ref="drawerRef" @success="handleSuccess" />
+    <DelegationDrawer ref="drawerRef" :users="userList" @success="handleSuccess" />
   </div>
 </template>
 
@@ -43,17 +43,21 @@ const deleteMutation = useDeleteWorkflowDelegation({
 });
 
 const userMap = ref<Map<number, identityservicev1_User>>(new Map());
+const userList = ref<identityservicev1_User[]>([]);
 
 async function loadUsers() {
   try {
     const resp = await fetchUsers();
+    const items = resp.items ?? [];
+    userList.value = items;
     const m = new Map<number, identityservicev1_User>();
-    for (const u of resp.items ?? []) {
+    for (const u of items) {
       m.set(u.id as number, u);
     }
     userMap.value = m;
   } catch {
     userMap.value = new Map();
+    userList.value = [];
   }
 }
 

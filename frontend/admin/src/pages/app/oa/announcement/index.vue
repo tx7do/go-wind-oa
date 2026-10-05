@@ -64,7 +64,8 @@ import {
   ElTree,
   ElMessage,
 } from "element-plus";
-import { apiClient } from "@/api/client";
+import { fetchListOrgUnits, useSendMessage, fetchListUserIDsByOrgUnitIDs } from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/core/i18n";
 
 const form = reactive({
@@ -76,14 +77,11 @@ const orgTree = ref<any[]>([]);
 const treeRef = ref<InstanceType<typeof ElTree>>();
 const sending = ref(false);
 
+const sendMessage = useSendMessage();
+
 onMounted(async () => {
   try {
-    const resp = await apiClient.orgUnitService.List({
-      page: 1,
-      pageSize: 999,
-      noPaging: true,
-      sorting: undefined,
-    } as any);
+    const resp = await fetchListOrgUnits(new PaginationQuery());
     orgTree.value = (resp as any)?.items ?? [];
   } catch {
     orgTree.value = [];
@@ -98,7 +96,7 @@ async function send() {
   sending.value = true;
   try {
     if (form.scope === "all") {
-      await apiClient.internalMessageService.SendMessage({
+      await sendMessage.mutateAsync({
         type: "NOTIFICATION" as any,
         title: form.title,
         content: form.content,
@@ -112,7 +110,7 @@ async function send() {
         sending.value = false;
         return;
       }
-      const resp = await apiClient.userService.ListUserIDsByOrgUnitIDs({
+      const resp = await fetchListUserIDsByOrgUnitIDs({
         orgUnitIds: checked,
         excludeExpired: true,
       } as any);
@@ -122,7 +120,7 @@ async function send() {
         sending.value = false;
         return;
       }
-      await apiClient.internalMessageService.SendMessage({
+      await sendMessage.mutateAsync({
         type: "NOTIFICATION" as any,
         title: form.title,
         content: form.content,

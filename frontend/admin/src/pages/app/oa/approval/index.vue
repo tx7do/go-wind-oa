@@ -7,6 +7,15 @@
       </ElRadioGroup>
     </div>
     <ProPage ref="pageRef" :config="pageConfig">
+      <template #status="scope: any">
+        <ElTag v-if="currentListType === 'PENDING'" type="warning" size="small">
+          {{ $t("pages.oa.approval.pendingTag") }}
+        </ElTag>
+        <template v-else-if="scope.row.auditAction">
+          {{ auditActionLabel(scope.row.auditAction) }}
+        </template>
+        <template v-else>{{ scope.row.statusLabel }}</template>
+      </template>
       <template #operation="scope: any">
         <ElButton
           v-if="currentListType === 'PENDING' && scope.row.taskId"
@@ -26,12 +35,12 @@
 
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import { ElButton, ElRadioButton, ElRadioGroup } from "element-plus";
+import { ElButton, ElRadioButton, ElRadioGroup, ElTag } from "element-plus";
 
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import ApprovalDetailDrawer from "./detail-drawer.vue";
-import { fetchMyTasks } from "@/api/composables";
+import { auditActionLabel, fetchMyTasks } from "@/api/composables";
 import type { oaservicev1_ListType } from "@/api/generated/admin/service/v1";
 import { formatDateTime } from "@/utils/date";
 import { $t } from "@/core/i18n";
@@ -53,7 +62,12 @@ const pageConfig = computed<ProPageConfig>(() => ({
     tableAttrs: { border: true, stripe: true },
     columns: [
       { prop: "instanceId", label: $t("pages.oa.approval.colInstanceId"), width: 100 },
-      { prop: "statusLabel", label: $t("pages.oa.approval.colStatus"), width: 140 },
+      {
+        prop: "statusLabel",
+        label: $t("pages.oa.approval.colStatus"),
+        width: 140,
+        slotName: "status",
+      },
       {
         prop: "createdAt",
         label: $t("pages.oa.approval.colTime"),

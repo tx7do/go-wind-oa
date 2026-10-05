@@ -1566,7 +1566,7 @@ export function createBusinessTripServiceClient(
 export type oaservicev1_ListBusinessTripApplicationsRequest = {
   page?: number;
   pageSize?: number;
-  status: oaservicev1_BusinessTripApplication_BusinessTripStatus | undefined;
+  status?: oaservicev1_BusinessTripApplication_BusinessTripStatus;
   userId: number | undefined;
 };
 
@@ -2527,7 +2527,7 @@ export function createExpenseServiceClient(
 export type oaservicev1_ListExpenseApplicationsRequest = {
   page?: number;
   pageSize?: number;
-  status: oaservicev1_ExpenseApplication_ExpenseStatus | undefined;
+  status?: oaservicev1_ExpenseApplication_ExpenseStatus;
   userId: number | undefined;
 };
 
@@ -4325,7 +4325,7 @@ export type oaservicev1_LeaveBalance = {
 export type oaservicev1_ListLeaveApplicationsRequest = {
   page?: number;
   pageSize?: number;
-  status: oaservicev1_LeaveApplication_LeaveStatus | undefined;
+  status?: oaservicev1_LeaveApplication_LeaveStatus;
   userId: number | undefined;
 };
 
@@ -5987,7 +5987,7 @@ export function createOutingServiceClient(
 export type oaservicev1_ListOutingApplicationsRequest = {
   page?: number;
   pageSize?: number;
-  status: oaservicev1_OutingApplication_OutingStatus | undefined;
+  status?: oaservicev1_OutingApplication_OutingStatus;
   userId: number | undefined;
 };
 
@@ -6095,7 +6095,7 @@ export function createOvertimeServiceClient(
 export type oaservicev1_ListOvertimeApplicationsRequest = {
   page?: number;
   pageSize?: number;
-  status: oaservicev1_OvertimeApplication_OvertimeStatus | undefined;
+  status?: oaservicev1_OvertimeApplication_OvertimeStatus;
   userId: number | undefined;
 };
 
@@ -8482,7 +8482,7 @@ export function createSealApplicationServiceClient(
 export type oaservicev1_ListSealApplicationsRequest = {
   page?: number;
   pageSize?: number;
-  status: oaservicev1_SealApplication_SealStatus | undefined;
+  status?: oaservicev1_SealApplication_SealStatus;
   userId: number | undefined;
 };
 
@@ -10359,12 +10359,28 @@ export type oaservicev1_GetMyTasksResponse = {
 
 // 我的任务列表项
 export type oaservicev1_MyTaskItem = {
+  auditAction?: oaservicev1_WorkflowLog_LogAction;
   createdAt?: wellKnownTimestamp;
   instanceId?: number;
+  instanceStatus?: oaservicev1_WorkflowInstance_InstanceStatus;
   statusLabel?: string;
   taskId?: number;
 };
 
+// 日志动作
+export type oaservicev1_WorkflowLog_LogAction =
+  | 'APPROVE'
+  | 'FORWARD'
+  | 'REJECT'
+  | 'SUBMIT'
+  | 'WITHDRAW';
+// 实例状态
+export type oaservicev1_WorkflowInstance_InstanceStatus =
+  | 'APPROVED'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'SUSPENDED'
+  | 'WITHDRAWN';
 // 查询任务详情 - 请求
 export type oaservicev1_GetTaskRequest = {
   id?: number;
@@ -10417,13 +10433,6 @@ export type oaservicev1_WorkflowLog = {
   updatedBy?: number;
 };
 
-// 日志动作
-export type oaservicev1_WorkflowLog_LogAction =
-  | 'APPROVE'
-  | 'FORWARD'
-  | 'REJECT'
-  | 'SUBMIT'
-  | 'WITHDRAW';
 // 设置审批委托 - 请求
 export type oaservicev1_SetWorkflowDelegationRequest = {
   data: oaservicev1_WorkflowDelegation | undefined;

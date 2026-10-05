@@ -8,6 +8,7 @@ import {
 import type {
   identityservicev1_User,
   identityservicev1_ListUserResponse,
+  identityservicev1_ListUserIDsByOrgUnitIDsRequest,
   identityservicev1_GetUserRequest,
   identityservicev1_UserExistsRequest,
   identityservicev1_EditUserPasswordRequest,
@@ -225,4 +226,11 @@ export function genderToColor(gender?: User_Gender) {
     default:
       return "#C9CDD4";
   }
+}
+
+/** 按组织单元查用户 ID 列表（公告按部门发送用）。excludeExpired 默认排除离职。 */
+export async function fetchListUserIDsByOrgUnitIDs(
+  req: identityservicev1_ListUserIDsByOrgUnitIDsRequest
+) {
+  return apiClient.userService.ListUserIDsByOrgUnitIDs(req);
 }

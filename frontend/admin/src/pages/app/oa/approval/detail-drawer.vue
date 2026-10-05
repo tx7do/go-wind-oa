@@ -71,18 +71,49 @@
         </ElButton>
       </div>
     </div>
+
+    <!-- 转办/加签目标用户选择（替代手输用户ID） -->
+    <ElDialog
+      v-model="selectorVisible"
+      :title="selectorTitle"
+      width="380px"
+      append-to-body
+      @close="cancelSelector"
+    >
+      <ElSelect
+        v-model="selectorValue"
+        filterable
+        :placeholder="$t('pages.oa.approval.detail.placeholderSelectUser')"
+        style="width: 100%"
+      >
+        <ElOption
+          v-for="u in users"
+          :key="u.id"
+          :label="`${userDisplayName(u)} (#${u.id})`"
+          :value="u.id as number"
+        />
+      </ElSelect>
+      <template #footer>
+        <ElButton @click="cancelSelector">{{ $t("common.button.cancel") }}</ElButton>
+        <ElButton type="primary" :disabled="!selectorValue" @click="confirmSelector">
+          {{ $t("common.button.confirm") }}
+        </ElButton>
+      </template>
+    </ElDialog>
   </ProModal>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import {
   ElButton,
   ElDescriptions,
   ElDescriptionsItem,
+  ElDialog,
   ElInput,
   ElMessage,
-  ElMessageBox,
+  ElOption,
+  ElSelect,
   ElStep,
   ElSteps,
   ElTable,
@@ -90,8 +121,15 @@ import {
 } from "element-plus";
 
 import ProModal from "@/components/Pro/ProModal/index.vue";
-import { auditActionLabel, fetchTaskDetail, useAuditTask } from "@/api/composables";
+import {
+  auditActionLabel,
+  fetchTaskDetail,
+  fetchUsers,
+  userDisplayName,
+  useAuditTask,
+} from "@/api/composables";
 import type {
+  identityservicev1_User,
   oaservicev1_GetTaskResponse,
   oaservicev1_AuditAction,
 } from "@/api/generated/admin/service/v1";
@@ -185,39 +223,53 @@ function doAudit(action: oaservicev1_AuditAction, forwardTo?: number, additional
 }
 
 async function doForward() {
-  try {
-    const { value } = await ElMessageBox.prompt(
-      $t("pages.oa.approval.detail.forwardPrompt"),
-      $t("pages.oa.approval.detail.forward"),
-      {
-        inputPattern: /^[1-9]\d*$/,
-        inputErrorMessage: $t("pages.oa.approval.detail.positiveIntUserId"),
-        confirmButtonText: $t("common.button.confirm"),
-        cancelButtonText: $t("common.button.cancel"),
-      }
-    );
-    doAudit("FORWARD", Number(value));
-  } catch {
-    /* 用户取消 */
-  }
+  const uid = await promptUser($t("pages.oa.approval.detail.forward"));
+  if (uid) doAudit("FORWARD", uid);
 }
 
 async function doAddApprover() {
+  const uid = await promptUser($t("pages.oa.approval.detail.addApprover"));
+  if (uid) doAudit("ADD_APPROVER", undefined, uid);
+}
+
+// ============ 人员选择弹窗（转办/加签共用，Promise 化） ============
+
+// 人员列表尽力加载：失败时选择器为空，不阻塞审批主流程
+const users = ref<identityservicev1_User[]>([]);
+onMounted(async () => {
   try {
-    const { value } = await ElMessageBox.prompt(
-      $t("pages.oa.approval.detail.addApproverPrompt"),
-      $t("pages.oa.approval.detail.addApprover"),
-      {
-        inputPattern: /^[1-9]\d*$/,
-        inputErrorMessage: $t("pages.oa.approval.detail.positiveIntUserId"),
-        confirmButtonText: $t("common.button.confirm"),
-        cancelButtonText: $t("common.button.cancel"),
-      }
-    );
-    doAudit("ADD_APPROVER", undefined, Number(value));
+    const resp = await fetchUsers();
+    users.value = resp.items ?? [];
   } catch {
-    /* 用户取消 */
+    users.value = [];
   }
+});
+
+const selectorVisible = ref(false);
+const selectorTitle = ref("");
+const selectorValue = ref<number | undefined>(undefined);
+let selectorResolve: ((uid: number | null) => void) | null = null;
+
+function promptUser(title: string): Promise<number | null> {
+  selectorTitle.value = title;
+  selectorValue.value = undefined;
+  selectorVisible.value = true;
+  return new Promise((resolve) => {
+    selectorResolve = resolve;
+  });
+}
+
+function confirmSelector() {
+  const uid = selectorValue.value ?? null;
+  selectorVisible.value = false;
+  selectorResolve?.(uid);
+  selectorResolve = null;
+}
+
+function cancelSelector() {
+  selectorVisible.value = false;
+  selectorResolve?.(null);
+  selectorResolve = null;
 }
 
 defineExpose({ open });
