@@ -1,12 +1,10 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
-    <ProPage
-      ref="pageRef"
-      :config="pageConfig"
-      @add="handleAdd"
-    >
+    <ProPage ref="pageRef" :config="pageConfig" @add="handleAdd">
       <template #operation="scope: any">
-        <ElButton size="small" type="danger" link @click="handleDelete(scope.row)">删除</ElButton>
+        <ElButton size="small" type="danger" link @click="handleDelete(scope.row)">
+          {{ $t("common.button.delete") }}
+        </ElButton>
       </template>
     </ProPage>
 
@@ -21,24 +19,26 @@ import { ElButton, ElMessageBox, ElMessage } from "element-plus";
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import FenceDrawer from "./fence-drawer.vue";
-import {
-  fetchListGeofences,
-  useDeleteGeofence,
-} from "@/api/composables";
+import { fetchListGeofences, useDeleteGeofence } from "@/api/composables";
+import { $t } from "@/core/i18n";
 
 const pageRef = ref();
 const drawerRef = ref();
 
 const deleteMutation = useDeleteGeofence({
   onSuccess: () => {
-    ElMessage.success("已删除");
+    ElMessage.success($t("common.notification.deleteSuccess"));
     pageRef.value?.refresh();
   },
-  onError: (err: Error) => ElMessage.error(err.message || "删除失败"),
+  onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.deleteFailed")),
 });
 
 function handleDelete(row: any) {
-  ElMessageBox.confirm("删除后，该围栏不再参与打卡判定。确认删除？", "删除围栏", { type: "warning" })
+  ElMessageBox.confirm(
+    $t("pages.oa.attendance.deleteFenceConfirmContent"),
+    $t("pages.oa.attendance.deleteFenceConfirmTitle"),
+    { type: "warning" }
+  )
     .then(() => deleteMutation.mutate({ id: row.id as number }))
     .catch(() => {});
 }
@@ -63,12 +63,17 @@ const pageConfig = computed<ProPageConfig>(() => ({
     pagination: false,
     tableAttrs: { border: true, stripe: true },
     columns: [
-      { prop: "name", label: "名称", minWidth: 160 },
-      { prop: "latitude", label: "纬度", width: 140 },
-      { prop: "longitude", label: "经度", width: 140 },
-      { prop: "radiusMeters", label: "半径(米)", width: 120 },
-      { prop: "createdAt", label: "创建时间", width: 180 },
-      { prop: "operation", label: "操作", width: 100, slotName: "operation" },
+      { prop: "name", label: $t("pages.oa.attendance.fenceColName"), minWidth: 160 },
+      { prop: "latitude", label: $t("pages.oa.attendance.fenceColLatitude"), width: 140 },
+      { prop: "longitude", label: $t("pages.oa.attendance.fenceColLongitude"), width: 140 },
+      { prop: "radiusMeters", label: $t("pages.oa.attendance.fenceColRadius"), width: 120 },
+      { prop: "createdAt", label: $t("pages.oa.attendance.fenceColCreatedAt"), width: 180 },
+      {
+        prop: "operation",
+        label: $t("pages.oa.attendance.colOperation"),
+        width: 100,
+        slotName: "operation",
+      },
     ],
   },
 }));

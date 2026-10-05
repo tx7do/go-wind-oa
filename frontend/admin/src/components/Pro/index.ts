@@ -23,12 +23,6 @@ export { useTableState } from "./composables/useTableState";
 export type { UseTableConfig } from "./composables/useTableState";
 export { useModalState } from "./composables/useModalState";
 
-// Level 2: Api 命令式控制
-export { ProPageApi } from "./composables/ProPageApi";
-export type { ProPageExpose, ProPageState } from "./composables/ProPageApi";
-export { useProPage } from "./composables/useProPage";
-export type { UseProPage } from "./composables/useProPage";
-
 // Level 2.5: 弹窗抽离（connectedComponent）
 export { ProModalApi } from "./composables/useProModal";
 export type { ProModalState, UseProModalOptions } from "./composables/useProModal";

@@ -24,8 +24,8 @@ class RequestClient {
   public download: FileDownloader["download"];
   // 是否正在刷新token
   public isRefreshing = false;
-  // 刷新token队列
-  public refreshTokenQueue: ((token: string) => void)[] = [];
+  // 刷新token队列；刷新失败时以 null 回调，通知排队请求直接失败
+  public refreshTokenQueue: ((token: string | null) => void)[] = [];
   public upload: FileUploader["upload"];
 
   // ==========================
@@ -248,9 +248,22 @@ class RequestClient {
         ...config,
       });
       return response as T;
-    } catch (error: unknown) {
-      // @ts-expect-error 忽略类型检查
-      throw error.response ? error.response.data : error;
+    } catch (error: any) {
+      const data = error?.response?.data;
+      // 无响应（网络层错误）：保留 AxiosError 原样抛出（含 code/status）
+      if (data === undefined || data === null) {
+        throw error;
+      }
+      // 业务错误：保留后端 message 的展示行为（err.message || 兜底 仍成立），
+      // 同时附回状态码/原始响应/错误体，调用方可按 err.status 做分支处理
+      const message = typeof data?.message === "string" ? data.message : "";
+      const err = data instanceof Error ? data : new Error(message);
+      Object.assign(err, {
+        status: error.response.status,
+        response: error.response,
+        body: data,
+      });
+      throw err;
     }
   }
 }

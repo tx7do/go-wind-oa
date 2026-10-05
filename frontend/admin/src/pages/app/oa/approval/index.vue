@@ -2,8 +2,8 @@
   <div class="app-container h-full flex flex-1 flex-col">
     <div class="status-bar">
       <ElRadioGroup v-model="currentListType" @change="onListTypeChange">
-        <ElRadioButton value="PENDING">待我审批</ElRadioButton>
-        <ElRadioButton value="DONE">已办</ElRadioButton>
+        <ElRadioButton value="PENDING">{{ $t("pages.oa.approval.tabPending") }}</ElRadioButton>
+        <ElRadioButton value="DONE">{{ $t("pages.oa.approval.tabDone") }}</ElRadioButton>
       </ElRadioGroup>
     </div>
     <ProPage ref="pageRef" :config="pageConfig">
@@ -15,7 +15,7 @@
           link
           @click="openDetail(scope.row.taskId)"
         >
-          审批
+          {{ $t("pages.oa.approval.approve") }}
         </ElButton>
       </template>
     </ProPage>
@@ -33,23 +33,17 @@ import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import ApprovalDetailDrawer from "./detail-drawer.vue";
 import { fetchMyTasks } from "@/api/composables";
 import type { oaservicev1_ListType } from "@/api/generated/admin/service/v1";
+import { formatDateTime } from "@/utils/date";
+import { $t } from "@/core/i18n";
 
 const pageRef = ref();
 const drawerRef = ref();
 const currentListType = ref<oaservicev1_ListType>("PENDING");
 
-function fmtTime(v?: string) {
-  return v ? String(v).replace("T", " ").slice(0, 19) : "-";
-}
-
 const pageConfig = computed<ProPageConfig>(() => ({
   table: {
     listAction: async (query: any) => {
-      const result = await fetchMyTasks(
-        currentListType.value,
-        query.page,
-        query.pageSize
-      );
+      const result = await fetchMyTasks(currentListType.value, query.page, query.pageSize);
       return { items: (result as any)?.items ?? [], total: (result as any)?.total ?? 0 };
     },
     toolbar: [],
@@ -58,15 +52,20 @@ const pageConfig = computed<ProPageConfig>(() => ({
     pagination: true,
     tableAttrs: { border: true, stripe: true },
     columns: [
-      { prop: "instanceId", label: "实例ID", width: 100 },
-      { prop: "statusLabel", label: "状态", width: 140 },
+      { prop: "instanceId", label: $t("pages.oa.approval.colInstanceId"), width: 100 },
+      { prop: "statusLabel", label: $t("pages.oa.approval.colStatus"), width: 140 },
       {
         prop: "createdAt",
-        label: "时间",
+        label: $t("pages.oa.approval.colTime"),
         width: 200,
-        formatter: (row: any) => fmtTime(row.createdAt),
+        formatter: (row: any) => formatDateTime(row.createdAt),
       },
-      { prop: "operation", label: "操作", width: 140, slotName: "operation" },
+      {
+        prop: "operation",
+        label: $t("pages.oa.approval.colOperation"),
+        width: 140,
+        slotName: "operation",
+      },
     ],
   },
 }));

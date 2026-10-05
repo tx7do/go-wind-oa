@@ -1,17 +1,29 @@
 <template>
   <ProModal
     v-model:visible="visible"
-    title="报销明细"
+    :title="$t('pages.oa.expense.detail.title')"
     :config="{ component: 'drawer', drawer: { size: DRAWER_WIDTH, closeOnClickModal: false } }"
   >
     <ElTable :data="items" border size="small">
-      <ElTableColumn prop="category" label="类别" width="120" />
-      <ElTableColumn prop="amount" label="金额" width="120" />
-      <ElTableColumn label="费用日期" width="120">
-        <template #default="{ row }">{{ fmtDate(row.expenseDate) }}</template>
+      <ElTableColumn
+        prop="category"
+        :label="$t('pages.oa.expense.detail.colCategory')"
+        width="120"
+      />
+      <ElTableColumn prop="amount" :label="$t('pages.oa.expense.detail.colAmount')" width="120" />
+      <ElTableColumn :label="$t('pages.oa.expense.detail.colExpenseDate')" width="120">
+        <template #default="{ row }">{{ formatDate(row.expenseDate) }}</template>
       </ElTableColumn>
-      <ElTableColumn prop="description" label="说明" min-width="160" />
-      <ElTableColumn prop="invoiceFileId" label="发票文件ID" width="110" />
+      <ElTableColumn
+        prop="description"
+        :label="$t('pages.oa.expense.detail.colDescription')"
+        min-width="160"
+      />
+      <ElTableColumn
+        prop="invoiceFileId"
+        :label="$t('pages.oa.expense.detail.colInvoiceFileId')"
+        width="110"
+      />
     </ElTable>
   </ProModal>
 </template>
@@ -21,13 +33,10 @@ import { ElTable, ElTableColumn } from "element-plus";
 import { ref } from "vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { DRAWER_WIDTH } from "@/constants";
+import { formatDate } from "@/utils/date";
 
 const visible = ref(false);
 const items = ref<any[]>([]);
-
-function fmtDate(v?: string) {
-  return v ? String(v).slice(0, 10) : "-";
-}
 
 function open(rowItems: any[]) {
   items.value = rowItems ?? [];

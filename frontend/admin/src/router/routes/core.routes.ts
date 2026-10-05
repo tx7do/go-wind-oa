@@ -53,14 +53,6 @@ const coreRoutes: RouteRecordRaw[] = [
     redirect: LOGIN_PATH,
     children: [
       {
-        name: "Login",
-        path: "login",
-        component: Login,
-        meta: {
-          title: "登录",
-        },
-      },
-      {
         name: "MfaChallenge",
         path: "mfa-challenge",
         component: () => import("@/pages/core/login/components/MfaChallenge.vue"),
@@ -78,7 +70,7 @@ const coreRoutes: RouteRecordRaw[] = [
     path: LOGIN_PATH,
     component: Login,
     meta: {
-      title: "登录",
+      title: "pages.auth.login",
       ignoreAccess: true,
     },
   },

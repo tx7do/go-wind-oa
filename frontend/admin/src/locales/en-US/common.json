@@ -109,7 +109,9 @@
     "create_failed": "Creation failed",
     "operation_success": "Operation succeeded",
     "operation_failed": "Operation failed",
-    "update_status_failed": "Failed to update status"
+    "update_status_failed": "Failed to update status",
+    "saveSuccess": "Save successful",
+    "saveFailed": "Save failed"
   },
   "title": {
     "confirm": "Confirm",

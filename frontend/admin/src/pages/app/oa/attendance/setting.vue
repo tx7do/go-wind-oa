@@ -2,10 +2,10 @@
   <div class="app-container h-full flex flex-1 flex-col">
     <ElCard shadow="never" class="flex-1">
       <div class="hint">
-        工时设置每租户一行，用于考勤结算判定迟到/早退。默认 09:00–18:00。
+        {{ $t("pages.oa.attendance.setting.hint") }}
       </div>
       <ElForm label-width="120px" class="setting-form">
-        <ElFormItem label="上班时间">
+        <ElFormItem :label="$t('pages.oa.attendance.setting.fieldWorkStartTime')">
           <ElTimePicker
             v-model="form.workStartTime"
             value-format="HH:mm"
@@ -14,7 +14,7 @@
             style="width: 200px"
           />
         </ElFormItem>
-        <ElFormItem label="下班时间">
+        <ElFormItem :label="$t('pages.oa.attendance.setting.fieldWorkEndTime')">
           <ElTimePicker
             v-model="form.workEndTime"
             value-format="HH:mm"
@@ -24,7 +24,9 @@
           />
         </ElFormItem>
         <ElFormItem>
-          <ElButton type="primary" :loading="saving" @click="save">保存</ElButton>
+          <ElButton type="primary" :loading="saving" @click="save">
+            {{ $t("common.button.save") }}
+          </ElButton>
         </ElFormItem>
       </ElForm>
     </ElCard>
@@ -36,6 +38,7 @@ import { onMounted, reactive, ref } from "vue";
 import { ElButton, ElCard, ElForm, ElFormItem, ElMessage, ElTimePicker } from "element-plus";
 
 import { useGetAttendanceSetting, useUpdateAttendanceSetting } from "@/api/composables";
+import { $t } from "@/core/i18n";
 
 const form = reactive({ workStartTime: "09:00", workEndTime: "18:00" });
 const saving = ref(false);
@@ -44,8 +47,8 @@ const loading = ref(false);
 const getQuery = useGetAttendanceSetting({ enabled: false });
 
 const updateMutation = useUpdateAttendanceSetting({
-  onSuccess: () => ElMessage.success("已保存"),
-  onError: (err: Error) => ElMessage.error(err.message || "保存失败"),
+  onSuccess: () => ElMessage.success($t("common.notification.saveSuccess")),
+  onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.saveFailed")),
 });
 
 async function load() {

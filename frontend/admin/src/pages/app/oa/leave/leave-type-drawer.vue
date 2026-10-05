@@ -1,21 +1,26 @@
 <template>
   <ProModal
     v-model:visible="visible"
-    title="新建请假类型"
+    :title="$t('pages.oa.leave.typeDrawer.createTitle')"
     :config="{ component: 'drawer', drawer: { size: DRAWER_WIDTH, closeOnClickModal: false } }"
   >
     <ElForm label-width="80px">
-      <ElFormItem label="代码">
+      <ElFormItem :label="$t('pages.oa.leave.typeDrawer.fieldCode')">
         <ElInput v-model="form.code" placeholder="ANNUAL / SICK / PERSONAL" />
       </ElFormItem>
-      <ElFormItem label="名称">
-        <ElInput v-model="form.name" placeholder="年假 / 病假 / 事假" />
+      <ElFormItem :label="$t('pages.oa.leave.typeDrawer.fieldName')">
+        <ElInput
+          v-model="form.name"
+          :placeholder="$t('pages.oa.leave.typeDrawer.namePlaceholder')"
+        />
       </ElFormItem>
     </ElForm>
     <template #footer>
       <div class="drawer-footer">
-        <ElButton @click="handleClose">取消</ElButton>
-        <ElButton type="primary" :loading="creating" @click="submit">创建</ElButton>
+        <ElButton @click="handleClose">{{ $t("common.button.cancel") }}</ElButton>
+        <ElButton type="primary" :loading="creating" @click="submit">
+          {{ $t("pages.oa.leave.typeDrawer.create") }}
+        </ElButton>
       </div>
     </template>
   </ProModal>
@@ -27,6 +32,7 @@ import { reactive, ref } from "vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useCreateLeaveType } from "@/api/composables";
 import { DRAWER_WIDTH } from "@/constants";
+import { $t } from "@/core/i18n";
 
 const emit = defineEmits(["success"]);
 
@@ -36,11 +42,11 @@ const form = reactive({ code: "", name: "" });
 
 const createMutation = useCreateLeaveType({
   onSuccess: () => {
-    ElMessage.success("已创建");
+    ElMessage.success($t("pages.oa.leave.typeDrawer.createSuccess"));
     visible.value = false;
     emit("success");
   },
-  onError: (err: Error) => ElMessage.error(err.message || "创建失败"),
+  onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.createFailed")),
 });
 
 function open() {
@@ -53,7 +59,7 @@ function handleClose() {
 
 function submit() {
   if (!form.code || !form.name) {
-    ElMessage.warning("请填写代码与名称");
+    ElMessage.warning($t("pages.oa.leave.typeDrawer.codeNameRequired"));
     return;
   }
   creating.value = true;

@@ -2,7 +2,9 @@
   <div class="app-container h-full flex flex-1 flex-col">
     <ProPage ref="pageRef" :config="pageConfig">
       <template #sealStatus="scope: any">
-        <ElTag :type="statusTag(scope.row.sealStatus)">{{ statusLabel(scope.row.sealStatus) }}</ElTag>
+        <ElTag :type="workflowInstanceStatusToTag(scope.row.sealStatus)">
+          {{ workflowInstanceStatusToName(scope.row.sealStatus) }}
+        </ElTag>
       </template>
     </ProPage>
   </div>
@@ -14,40 +16,16 @@ import { ElTag } from "element-plus";
 
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
-import type {
-  oaservicev1_ListSealApplicationsRequest,
-} from "@/api/generated/admin/service/v1";
-import { fetchListSealApplications } from "@/api/composables";
+import type { oaservicev1_ListSealApplicationsRequest } from "@/api/generated/admin/service/v1";
+import {
+  fetchListSealApplications,
+  sealTypeToName,
+  workflowInstanceStatusToName,
+  workflowInstanceStatusToTag,
+} from "@/api/composables";
+import { $t } from "@/core/i18n";
 
 const pageRef = ref();
-
-function sealTypeLabel(s?: string): string {
-  switch (s) {
-    case "OFFICIAL_SEAL": return "公章";
-    case "CONTRACT_SEAL": return "合同章";
-    case "FINANCE_SEAL": return "财务章";
-    case "LEGAL_SEAL": return "法人章";
-    default: return "-";
-  }
-}
-
-function statusLabel(s?: string): string {
-  switch (s) {
-    case "APPROVED": return "已通过";
-    case "REJECTED": return "已驳回";
-    case "WITHDRAWN": return "已撤回";
-    default: return "审批中";
-  }
-}
-
-function statusTag(s?: string): "success" | "danger" | "info" | "warning" {
-  switch (s) {
-    case "APPROVED": return "success";
-    case "REJECTED": return "danger";
-    case "WITHDRAWN": return "info";
-    default: return "warning";
-  }
-}
 
 const pageConfig = computed<ProPageConfig>(() => ({
   table: {
@@ -68,18 +46,33 @@ const pageConfig = computed<ProPageConfig>(() => ({
     tableAttrs: { border: true, stripe: true },
     columns: [
       { prop: "id", label: "ID", width: 80 },
-      { prop: "applicantName", label: "申请人", width: 120 },
-      { prop: "purpose", label: "用印事由", minWidth: 160, showOverflowTooltip: true },
+      { prop: "applicantName", label: $t("pages.oa.seal.colApplicant"), width: 120 },
+      {
+        prop: "purpose",
+        label: $t("pages.oa.seal.colPurpose"),
+        minWidth: 160,
+        showOverflowTooltip: true,
+      },
       {
         prop: "sealType",
-        label: "印章类型",
+        label: $t("pages.oa.seal.colSealType"),
         width: 120,
-        formatter: (row: any) => sealTypeLabel(row.sealType),
+        formatter: (row: any) => sealTypeToName(row.sealType),
       },
-      { prop: "fileCount", label: "文件份数", width: 100 },
-      { prop: "recipient", label: "收件方", width: 160, showOverflowTooltip: true },
-      { prop: "sealStatus", label: "状态", width: 100, slotName: "sealStatus" },
-      { prop: "instanceId", label: "流程实例", width: 100 },
+      { prop: "fileCount", label: $t("pages.oa.seal.colFileCount"), width: 100 },
+      {
+        prop: "recipient",
+        label: $t("pages.oa.seal.colRecipient"),
+        width: 160,
+        showOverflowTooltip: true,
+      },
+      {
+        prop: "sealStatus",
+        label: $t("pages.oa.seal.colStatus"),
+        width: 100,
+        slotName: "sealStatus",
+      },
+      { prop: "instanceId", label: $t("pages.oa.seal.colInstanceId"), width: 100 },
     ],
   },
 }));

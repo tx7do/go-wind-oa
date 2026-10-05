@@ -3,7 +3,7 @@
     <ProPage ref="pageRef" :config="pageConfig" @add="handleAdd">
       <template #operation="scope: any">
         <ElButton size="small" type="danger" link @click="handleDelete(scope.row)">
-          {{ $t("common.delete") }}
+          {{ $t("common.button.delete") }}
         </ElButton>
       </template>
     </ProPage>
@@ -59,10 +59,6 @@ async function loadUsers() {
 
 loadUsers();
 
-function fmtTime(v?: string) {
-  return v ? String(v).replace("T", " ").slice(0, 19) : "-";
-}
-
 function handleAdd() {
   drawerRef.value?.open();
 }
@@ -72,11 +68,15 @@ function handleSuccess() {
 }
 
 function handleDelete(row: any) {
-  ElMessageBox.confirm("确定删除此委托记录？", "删除确认", {
-    confirmButtonText: $t("common.button.confirm"),
-    cancelButtonText: $t("common.cancel"),
-    type: "warning",
-  })
+  ElMessageBox.confirm(
+    $t("pages.oa.delegation.deleteConfirmContent"),
+    $t("common.dialog.confirm"),
+    {
+      confirmButtonText: $t("common.button.confirm"),
+      cancelButtonText: $t("common.cancel"),
+      type: "warning",
+    }
+  )
     .then(() => {
       deleteMutation.mutate({ id: row.id as number });
     })
@@ -98,7 +98,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
       { prop: "id", label: "ID", width: 80 },
       {
         prop: "delegatorUserId",
-        label: "委托人",
+        label: $t("pages.oa.delegation.colDelegator"),
         width: 200,
         formatter: (row: any) => {
           const u = userMap.value.get(row.delegatorUserId as number);
@@ -107,7 +107,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
       },
       {
         prop: "delegateUserId",
-        label: "被委托人（代理人）",
+        label: $t("pages.oa.delegation.colDelegate"),
         width: 200,
         formatter: (row: any) => {
           const u = userMap.value.get(row.delegateUserId as number);
@@ -116,14 +116,14 @@ const pageConfig = computed<ProPageConfig>(() => ({
       },
       {
         prop: "createdAt",
-        label: "创建时间",
+        label: $t("pages.oa.delegation.colCreatedAt"),
         width: 170,
         cellType: "date",
         dateFormat: "YYYY-MM-DD HH:mm:ss",
       },
       {
         prop: "operation",
-        label: "操作",
+        label: $t("pages.oa.delegation.colOperation"),
         width: 100,
         slotName: "operation",
       },

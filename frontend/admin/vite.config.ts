@@ -5,8 +5,6 @@ import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 
-import { mockDevServerPlugin } from "vite-plugin-mock-dev-server";
-
 import tailwindcss from "@tailwindcss/vite";
 import pkg from "./package.json" with { type: "json" };
 
@@ -42,7 +40,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     },
     plugins: [
       vue(),
-      ...(env.VITE_MOCK_DEV_SERVER === "true" ? [mockDevServerPlugin()] : []),
       tailwindcss(),
       // API 自动导入
       AutoImport({
@@ -200,7 +197,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
             if (id.includes("@tiptap") || id.includes("tiptap")) return "tiptap";
 
             // 工具库
-            if (id.includes("lodash") || id.includes("dayjs") || id.includes("axios")) return "utils-vendor";
+            if (id.includes("lodash") || id.includes("dayjs") || id.includes("axios"))
+              return "utils-vendor";
           },
           // 用于从入口点创建的块的打包输出格式[name]表示文件名,[hash]表示该文件内容hash值
           entryFileNames: "js/[name].[hash].js",

@@ -4,7 +4,7 @@
     :title="$t('pages.oa.definition.detailTitle')"
     :config="{ component: 'drawer', drawer: { size: DRAWER_WIDTH, closeOnClickModal: false } }"
   >
-    <ElForm label-width="140px" v-if="detail">
+    <ElForm v-if="detail" label-width="140px">
       <ElFormItem :label="$t('pages.oa.definition.fieldCode')">
         <ElInput :model-value="detail.code" readonly />
       </ElFormItem>
@@ -21,24 +21,14 @@
           {{ definitionStatusLabel(detail.definitionStatus) }}
         </ElTag>
       </ElFormItem>
-      <ElFormItem label="备注">
+      <ElFormItem :label="$t('pages.oa.definition.fieldRemark')">
         <ElInput :model-value="detail.remark" type="textarea" :rows="3" readonly />
       </ElFormItem>
       <ElFormItem :label="$t('pages.oa.definition.fieldNodeConfig')">
-        <ElInput
-          :model-value="detail.nodeConfig"
-          type="textarea"
-          :rows="8"
-          readonly
-        />
+        <ElInput :model-value="detail.nodeConfig" type="textarea" :rows="8" readonly />
       </ElFormItem>
       <ElFormItem :label="$t('pages.oa.definition.fieldFormSchema')">
-        <ElInput
-          :model-value="detail.formSchema"
-          type="textarea"
-          :rows="8"
-          readonly
-        />
+        <ElInput :model-value="detail.formSchema" type="textarea" :rows="8" readonly />
       </ElFormItem>
     </ElForm>
   </ProModal>
@@ -46,7 +36,7 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { ElForm, ElFormItem, ElInput, ElTag } from "element-plus";
+import { ElForm, ElFormItem, ElInput, ElMessage, ElTag } from "element-plus";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import {
   definitionStatusLabel,
@@ -66,6 +56,7 @@ async function open(id: number) {
     visible.value = true;
   } catch {
     detail.value = null;
+    ElMessage.error($t("common.message.getDetailFailed"));
   }
 }
 

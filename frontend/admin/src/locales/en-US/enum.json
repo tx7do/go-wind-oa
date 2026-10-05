@@ -282,6 +282,10 @@
       "EARLY_LEAVE": "Early Leave",
       "ABSENT": "Absent",
       "ON_LEAVE": "On Leave"
+    },
+    "holidayType": {
+      "HOLIDAY": "Public Holiday",
+      "WORKDAY": "Makeup Workday"
     }
   },
   "workflowInstance": {
@@ -290,6 +294,21 @@
       "APPROVED": "Approved",
       "REJECTED": "Rejected",
       "WITHDRAWN": "Withdrawn"
+    },
+    "auditAction": {
+      "SUBMIT": "Submitted",
+      "APPROVE": "Approved",
+      "REJECT": "Rejected",
+      "FORWARD": "Forwarded",
+      "WITHDRAW": "Withdrawn"
+    }
+  },
+  "sealApplication": {
+    "sealType": {
+      "OFFICIAL_SEAL": "Official Seal",
+      "CONTRACT_SEAL": "Contract Seal",
+      "FINANCE_SEAL": "Finance Seal",
+      "LEGAL_SEAL": "Legal Seal"
     }
   }
 }

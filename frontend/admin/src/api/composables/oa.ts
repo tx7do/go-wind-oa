@@ -41,7 +41,7 @@ import type {
   oaservicev1_WifiFingerprint,
   oaservicev1_ListWifiFingerprintsResponse,
 } from "@/api/generated/admin/service/v1";
-import { type PaginationQuery } from "@/core/transport/rest";
+import type { PaginationQuery } from "@/core/transport/rest";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
 
@@ -522,19 +522,97 @@ export function useDeleteWorkflowDelegation(
   });
 }
 
-/** 审批历史动作 → 展示文案。 */
+/** 审批历史动作 → 展示文案（enum.workflowInstance.auditAction）。 */
 export function auditActionLabel(action?: string): string {
   switch (action) {
     case "SUBMIT":
-      return "已提交";
+      return $t("enum.workflowInstance.auditAction.SUBMIT");
     case "APPROVE":
-      return "已审批通过";
+      return $t("enum.workflowInstance.auditAction.APPROVE");
     case "REJECT":
-      return "已审批驳回";
+      return $t("enum.workflowInstance.auditAction.REJECT");
     case "FORWARD":
-      return "已转办";
+      return $t("enum.workflowInstance.auditAction.FORWARD");
     case "WITHDRAW":
-      return "已撤回";
+      return $t("enum.workflowInstance.auditAction.WITHDRAW");
+    default:
+      return "-";
+  }
+}
+
+/** 流程实例状态 → 展示文案（enum.workflowInstance.instanceStatus）。 */
+export function workflowInstanceStatusToName(s?: string): string {
+  switch (s) {
+    case "APPROVED":
+      return $t("enum.workflowInstance.instanceStatus.APPROVED");
+    case "REJECTED":
+      return $t("enum.workflowInstance.instanceStatus.REJECTED");
+    case "WITHDRAWN":
+      return $t("enum.workflowInstance.instanceStatus.WITHDRAWN");
+    default:
+      return $t("enum.workflowInstance.instanceStatus.PENDING");
+  }
+}
+
+/** 流程实例状态 → ElTag 类型。 */
+export function workflowInstanceStatusToTag(s?: string): "success" | "danger" | "info" | "warning" {
+  switch (s) {
+    case "APPROVED":
+      return "success";
+    case "REJECTED":
+      return "danger";
+    case "WITHDRAWN":
+      return "info";
+    default:
+      return "warning";
+  }
+}
+
+/** 考勤日结果 → 展示文案（enum.attendance.dayResult）。 */
+export function attendanceDayResultToName(r?: string): string {
+  switch (r) {
+    case "NORMAL":
+      return $t("enum.attendance.dayResult.NORMAL");
+    case "LATE":
+      return $t("enum.attendance.dayResult.LATE");
+    case "EARLY_LEAVE":
+      return $t("enum.attendance.dayResult.EARLY_LEAVE");
+    case "ABSENT":
+      return $t("enum.attendance.dayResult.ABSENT");
+    case "ON_LEAVE":
+      return $t("enum.attendance.dayResult.ON_LEAVE");
+    default:
+      return $t("enum.attendance.dayResult.PENDING");
+  }
+}
+
+/** 考勤日结果 → ElTag 类型。 */
+export function attendanceDayResultToTag(r?: string): "success" | "warning" | "danger" | "info" {
+  switch (r) {
+    case "NORMAL":
+    case "ON_LEAVE":
+      return "success";
+    case "LATE":
+    case "EARLY_LEAVE":
+      return "warning";
+    case "ABSENT":
+      return "danger";
+    default:
+      return "info";
+  }
+}
+
+/** 印章类型 → 展示文案（enum.sealApplication.sealType）。 */
+export function sealTypeToName(s?: string): string {
+  switch (s) {
+    case "OFFICIAL_SEAL":
+      return $t("enum.sealApplication.sealType.OFFICIAL_SEAL");
+    case "CONTRACT_SEAL":
+      return $t("enum.sealApplication.sealType.CONTRACT_SEAL");
+    case "FINANCE_SEAL":
+      return $t("enum.sealApplication.sealType.FINANCE_SEAL");
+    case "LEGAL_SEAL":
+      return $t("enum.sealApplication.sealType.LEGAL_SEAL");
     default:
       return "-";
   }
@@ -587,9 +665,11 @@ export function useDeleteHoliday(
   });
 }
 
-/** 节假日类型 → 展示文案/标签色。 */
+/** 节假日类型 → 展示文案/标签色（enum.attendance.holidayType）。 */
 export function holidayTypeLabel(t?: string): string {
-  return t === "WORKDAY" ? "调休上班" : "法定假日";
+  return t === "WORKDAY"
+    ? $t("enum.attendance.holidayType.WORKDAY")
+    : $t("enum.attendance.holidayType.HOLIDAY");
 }
 
 export function holidayTypeTag(t?: string): "danger" | "success" {

@@ -14,13 +14,11 @@ import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import LeaveTypeDrawer from "./leave-type-drawer.vue";
 import { fetchListLeaveTypes } from "@/api/composables";
 import { PaginationQuery } from "@/core/transport/rest";
+import { formatDateTime } from "@/utils/date";
+import { $t } from "@/core/i18n";
 
 const pageRef = ref();
 const drawerRef = ref();
-
-function fmtTime(v?: string) {
-  return v ? String(v).replace("T", " ").slice(0, 19) : "-";
-}
 
 function handleAdd() {
   drawerRef.value?.open();
@@ -43,14 +41,14 @@ const pageConfig = computed<ProPageConfig>(() => ({
     tableAttrs: { border: true, stripe: true },
     columns: [
       { prop: "id", label: "ID", width: 80 },
-      { prop: "code", label: "代码", width: 160 },
-      { prop: "name", label: "名称", width: 200 },
-      { prop: "remark", label: "备注", minWidth: 200 },
+      { prop: "code", label: $t("pages.oa.leave.types.colCode"), width: 160 },
+      { prop: "name", label: $t("pages.oa.leave.types.colName"), width: 200 },
+      { prop: "remark", label: $t("pages.oa.leave.types.colRemark"), minWidth: 200 },
       {
         prop: "createdAt",
-        label: "创建时间",
+        label: $t("pages.oa.leave.types.colCreatedAt"),
         width: 170,
-        formatter: (row: any) => fmtTime(row.createdAt || row.created_at),
+        formatter: (row: any) => formatDateTime(row.createdAt || row.created_at),
       },
     ],
   },

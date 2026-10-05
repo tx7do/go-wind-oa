@@ -1,15 +1,15 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
-    <ProPage
-      ref="pageRef"
-      :config="pageConfig"
-      @add="handleAdd"
-    >
+    <ProPage ref="pageRef" :config="pageConfig" @add="handleAdd">
       <template #holidayType="scope: any">
-        <ElTag :type="holidayTypeTag(scope.row.holidayType)">{{ holidayTypeLabel(scope.row.holidayType) }}</ElTag>
+        <ElTag :type="holidayTypeTag(scope.row.holidayType)">
+          {{ holidayTypeLabel(scope.row.holidayType) }}
+        </ElTag>
       </template>
       <template #operation="scope: any">
-        <ElButton size="small" type="danger" link @click="handleDelete(scope.row)">删除</ElButton>
+        <ElButton size="small" type="danger" link @click="handleDelete(scope.row)">
+          {{ $t("common.button.delete") }}
+        </ElButton>
       </template>
     </ProPage>
 
@@ -30,6 +30,8 @@ import {
   fetchListHolidays,
   useDeleteHoliday,
 } from "@/api/composables";
+import { i18n, $t } from "@/core/i18n";
+import { formatDate } from "@/utils/date";
 
 const pageRef = ref();
 const drawerRef = ref();
@@ -37,14 +39,18 @@ const year = ref(String(new Date().getFullYear()));
 
 const deleteMutation = useDeleteHoliday({
   onSuccess: () => {
-    ElMessage.success("已删除");
+    ElMessage.success($t("common.notification.deleteSuccess"));
     pageRef.value?.refresh();
   },
-  onError: (err: Error) => ElMessage.error(err.message || "删除失败"),
+  onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.deleteFailed")),
 });
 
 function handleDelete(row: any) {
-  ElMessageBox.confirm(`确认删除 ${fmtDate(row.date)} 的设置？`, "删除", { type: "warning" })
+  ElMessageBox.confirm(
+    $t("pages.oa.attendance.holidays.deleteConfirmContent", { date: fmtDate(row.date) }),
+    $t("common.dialog.confirm"),
+    { type: "warning" }
+  )
     .then(() => deleteMutation.mutate({ id: row.id as number }))
     .catch(() => {});
 }
@@ -57,20 +63,18 @@ function handleSuccess() {
   pageRef.value?.refresh();
 }
 
-// 时间戳为 UTC 瞬间，渲染须转本地时区（直接切片会差一天）。
-function localDate(v?: string): Date | null {
-  return v ? new Date(v) : null;
-}
-
+// formatDate 统一按上海时区取日期（直接切片会随浏览器时区漂移差一天），
+// 星期名通过 Intl 跟随应用语言。
 function fmtDate(v?: string) {
-  const d = localDate(v);
-  return d ? d.toLocaleDateString("sv-SE") : "-";
+  return formatDate(v) || "-";
 }
 
-const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
-function weekdayLabel(v?: string) {
-  const d = localDate(v);
-  return d ? weekdays[d.getDay()] : "-";
+function weekdayLabel(v?: string): string {
+  if (!v) return "-";
+  return new Date(`${formatDate(v)}T00:00:00Z`).toLocaleDateString(i18n.global.locale.value, {
+    weekday: "long",
+    timeZone: "UTC",
+  });
 }
 
 const pageConfig = computed<ProPageConfig>(() => ({
@@ -90,19 +94,29 @@ const pageConfig = computed<ProPageConfig>(() => ({
     columns: [
       {
         prop: "date",
-        label: "日期",
+        label: $t("pages.oa.attendance.holidays.colDate"),
         width: 140,
         formatter: (row: any) => fmtDate(row.date),
       },
       {
         prop: "weekday",
-        label: "星期",
+        label: $t("pages.oa.attendance.holidays.colWeekday"),
         width: 90,
         formatter: (row: any) => weekdayLabel(row.date),
       },
-      { prop: "holidayType", label: "类型", width: 120, slotName: "holidayType" },
-      { prop: "name", label: "名称", minWidth: 160 },
-      { prop: "operation", label: "操作", width: 100, slotName: "operation" },
+      {
+        prop: "holidayType",
+        label: $t("pages.oa.attendance.holidays.colType"),
+        width: 120,
+        slotName: "holidayType",
+      },
+      { prop: "name", label: $t("pages.oa.attendance.holidays.colName"), minWidth: 160 },
+      {
+        prop: "operation",
+        label: $t("pages.oa.attendance.holidays.colOperation"),
+        width: 100,
+        slotName: "operation",
+      },
     ],
   },
 }));

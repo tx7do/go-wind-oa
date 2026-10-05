@@ -1,11 +1,11 @@
 <template>
   <ProModal
     v-model:visible="visible"
-    title="审批详情"
+    :title="$t('pages.oa.approval.detail.title')"
     :config="{ component: 'drawer', drawer: { size: '60%', closeOnClickModal: false } }"
   >
     <div v-if="detail" class="detail-body">
-      <div class="section-title">审批进度</div>
+      <div class="section-title">{{ $t("pages.oa.approval.detail.progress") }}</div>
       <ElSteps :active="progressActive" finish-status="success" align-center>
         <ElStep
           v-for="(step, idx) in progressSteps"
@@ -15,13 +15,17 @@
         />
       </ElSteps>
 
-      <div class="section-title">任务信息</div>
+      <div class="section-title">{{ $t("pages.oa.approval.detail.taskInfo") }}</div>
       <ElDescriptions :column="2" border size="small">
-        <ElDescriptionsItem label="任务ID">{{ taskId }}</ElDescriptionsItem>
-        <ElDescriptionsItem label="节点ID">{{ detail.task?.nodeId ?? "-" }}</ElDescriptionsItem>
+        <ElDescriptionsItem :label="$t('pages.oa.approval.detail.fieldTaskId')">
+          {{ taskId }}
+        </ElDescriptionsItem>
+        <ElDescriptionsItem :label="$t('pages.oa.approval.detail.fieldNodeId')">
+          {{ detail.task?.nodeId ?? "-" }}
+        </ElDescriptionsItem>
       </ElDescriptions>
 
-      <div class="section-title">申请表单数据</div>
+      <div class="section-title">{{ $t("pages.oa.approval.detail.formData") }}</div>
       <ElDescriptions v-if="formEntries.length" :column="1" border size="small">
         <ElDescriptionsItem v-for="e in formEntries" :key="e[0]" :label="e[0]">
           {{ e[1] }}
@@ -29,30 +33,42 @@
       </ElDescriptions>
       <ElInput v-else :model-value="detail.formData ?? '-'" type="textarea" :rows="6" readonly />
 
-      <div class="section-title">审批历史</div>
+      <div class="section-title">{{ $t("pages.oa.approval.detail.history") }}</div>
       <ElTable :data="detail.logs ?? []" border size="small">
-        <ElTableColumn label="动作" width="110">
+        <ElTableColumn :label="$t('pages.oa.approval.detail.colAction')" width="110">
           <template #default="{ row }">{{ auditActionLabel(row.logAction) }}</template>
         </ElTableColumn>
-        <ElTableColumn label="时间" width="170">
-          <template #default="{ row }">{{ fmtTime(row.createdAt) }}</template>
+        <ElTableColumn :label="$t('pages.oa.approval.detail.colTime')" width="170">
+          <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
         </ElTableColumn>
-        <ElTableColumn prop="comment" label="意见" min-width="160" />
+        <ElTableColumn
+          prop="comment"
+          :label="$t('pages.oa.approval.detail.colComment')"
+          min-width="160"
+        />
       </ElTable>
 
-      <div class="section-title">审批操作</div>
+      <div class="section-title">{{ $t("pages.oa.approval.detail.operation") }}</div>
       <ElInput
         v-model="comment"
         type="textarea"
         :rows="2"
-        placeholder="审批意见（可选）"
+        :placeholder="$t('pages.oa.approval.detail.commentPlaceholder')"
         style="margin-bottom: 12px"
       />
       <div class="actions">
-        <ElButton type="primary" :loading="acting" @click="doAudit('APPROVE')">通过</ElButton>
-        <ElButton type="danger" plain :loading="acting" @click="doAudit('REJECT')">驳回</ElButton>
-        <ElButton plain :loading="acting" @click="doForward">转办</ElButton>
-        <ElButton plain :loading="acting" @click="doAddApprover">加签</ElButton>
+        <ElButton type="primary" :loading="acting" @click="doAudit('APPROVE')">
+          {{ $t("pages.oa.approval.detail.approve") }}
+        </ElButton>
+        <ElButton type="danger" plain :loading="acting" @click="doAudit('REJECT')">
+          {{ $t("pages.oa.approval.detail.reject") }}
+        </ElButton>
+        <ElButton plain :loading="acting" @click="doForward">
+          {{ $t("pages.oa.approval.detail.forward") }}
+        </ElButton>
+        <ElButton plain :loading="acting" @click="doAddApprover">
+          {{ $t("pages.oa.approval.detail.addApprover") }}
+        </ElButton>
       </div>
     </div>
   </ProModal>
@@ -79,6 +95,8 @@ import type {
   oaservicev1_GetTaskResponse,
   oaservicev1_AuditAction,
 } from "@/api/generated/admin/service/v1";
+import { $t } from "@/core/i18n";
+import { formatDateTime } from "@/utils/date";
 
 const emit = defineEmits(["success"]);
 
@@ -112,11 +130,14 @@ const progressSteps = computed(() => {
     const action = auditActionLabel(log.logAction);
     steps.push({
       title: String(log.nodeId ?? "—"),
-      description: action + " · " + fmtTime(String(log.createdAt ?? "")),
+      description: action + " · " + formatDateTime(log.createdAt),
     });
   }
   if (currentNode && !steps.some((s) => s.title === currentNode)) {
-    steps.push({ title: String(currentNode), description: "待审批" });
+    steps.push({
+      title: String(currentNode),
+      description: $t("pages.oa.approval.detail.pendingApproval"),
+    });
   }
   return steps;
 });
@@ -130,11 +151,11 @@ const progressActive = computed(() => {
 
 const auditMutation = useAuditTask({
   onSuccess: () => {
-    ElMessage.success("操作成功");
+    ElMessage.success($t("common.message.success"));
     visible.value = false;
     emit("success");
   },
-  onError: (err: Error) => ElMessage.error(err.message || "操作失败"),
+  onError: (err: Error) => ElMessage.error(err.message || $t("common.message.operationFailed")),
 });
 
 async function open(id: number) {
@@ -145,6 +166,7 @@ async function open(id: number) {
     visible.value = true;
   } catch {
     detail.value = null;
+    ElMessage.error($t("common.message.getDetailFailed"));
   }
 }
 
@@ -164,10 +186,16 @@ function doAudit(action: oaservicev1_AuditAction, forwardTo?: number, additional
 
 async function doForward() {
   try {
-    const { value } = await ElMessageBox.prompt("请输入转办目标用户ID", "转办", {
-      inputPattern: /^[1-9]\d*$/,
-      inputErrorMessage: "请输入正整数用户ID",
-    });
+    const { value } = await ElMessageBox.prompt(
+      $t("pages.oa.approval.detail.forwardPrompt"),
+      $t("pages.oa.approval.detail.forward"),
+      {
+        inputPattern: /^[1-9]\d*$/,
+        inputErrorMessage: $t("pages.oa.approval.detail.positiveIntUserId"),
+        confirmButtonText: $t("common.button.confirm"),
+        cancelButtonText: $t("common.button.cancel"),
+      }
+    );
     doAudit("FORWARD", Number(value));
   } catch {
     /* 用户取消 */
@@ -176,18 +204,20 @@ async function doForward() {
 
 async function doAddApprover() {
   try {
-    const { value } = await ElMessageBox.prompt("请输入加签目标用户ID", "加签", {
-      inputPattern: /^[1-9]\d*$/,
-      inputErrorMessage: "请输入正整数用户ID",
-    });
+    const { value } = await ElMessageBox.prompt(
+      $t("pages.oa.approval.detail.addApproverPrompt"),
+      $t("pages.oa.approval.detail.addApprover"),
+      {
+        inputPattern: /^[1-9]\d*$/,
+        inputErrorMessage: $t("pages.oa.approval.detail.positiveIntUserId"),
+        confirmButtonText: $t("common.button.confirm"),
+        cancelButtonText: $t("common.button.cancel"),
+      }
+    );
     doAudit("ADD_APPROVER", undefined, Number(value));
   } catch {
     /* 用户取消 */
   }
-}
-
-function fmtTime(v?: string) {
-  return v ? String(v).replace("T", " ").slice(0, 19) : "-";
 }
 
 defineExpose({ open });

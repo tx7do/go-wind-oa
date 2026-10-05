@@ -1,7 +1,7 @@
 <template>
   <ProModal
     v-model:visible="visible"
-    title="新建 Wi-Fi 指纹"
+    :title="$t('pages.oa.attendance.wifiDrawer.createTitle')"
     :config="{ component: 'drawer', drawer: { size: DRAWER_WIDTH, closeOnClickModal: false } }"
   >
     <ElForm label-width="90px">
@@ -14,8 +14,10 @@
     </ElForm>
     <template #footer>
       <div class="drawer-footer">
-        <ElButton @click="handleClose">取消</ElButton>
-        <ElButton type="primary" :loading="saving" @click="save">保存</ElButton>
+        <ElButton @click="handleClose">{{ $t("common.button.cancel") }}</ElButton>
+        <ElButton type="primary" :loading="saving" @click="save">
+          {{ $t("common.button.save") }}
+        </ElButton>
       </div>
     </template>
   </ProModal>
@@ -26,6 +28,7 @@ import { ElButton, ElForm, ElFormItem, ElInput, ElMessage } from "element-plus";
 import { reactive, ref } from "vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useUpsertWifiFingerprint } from "@/api/composables";
+import { $t } from "@/core/i18n";
 import { DRAWER_WIDTH } from "@/constants";
 
 const emit = defineEmits(["success"]);
@@ -36,11 +39,11 @@ const form = reactive({ ssid: "", bssid: "" });
 
 const upsertMutation = useUpsertWifiFingerprint({
   onSuccess: () => {
-    ElMessage.success("已保存");
+    ElMessage.success($t("common.notification.saveSuccess"));
     visible.value = false;
     emit("success");
   },
-  onError: (err: Error) => ElMessage.error(err.message || "保存失败"),
+  onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.saveFailed")),
 });
 
 function open() {

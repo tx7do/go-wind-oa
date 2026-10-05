@@ -1,12 +1,10 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
-    <ProPage
-      ref="pageRef"
-      :config="pageConfig"
-      @add="handleAdd"
-    >
+    <ProPage ref="pageRef" :config="pageConfig" @add="handleAdd">
       <template #operation="scope: any">
-        <ElButton size="small" type="danger" link @click="handleDelete(scope.row)">删除</ElButton>
+        <ElButton size="small" type="danger" link @click="handleDelete(scope.row)">
+          {{ $t("common.button.delete") }}
+        </ElButton>
       </template>
     </ProPage>
 
@@ -21,24 +19,26 @@ import { ElButton, ElMessageBox, ElMessage } from "element-plus";
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import WifiDrawer from "./wifi-drawer.vue";
-import {
-  fetchListWifiFingerprints,
-  useDeleteWifiFingerprint,
-} from "@/api/composables";
+import { fetchListWifiFingerprints, useDeleteWifiFingerprint } from "@/api/composables";
+import { $t } from "@/core/i18n";
 
 const pageRef = ref();
 const drawerRef = ref();
 
 const deleteMutation = useDeleteWifiFingerprint({
   onSuccess: () => {
-    ElMessage.success("已删除");
+    ElMessage.success($t("common.notification.deleteSuccess"));
     pageRef.value?.refresh();
   },
-  onError: (err: Error) => ElMessage.error(err.message || "删除失败"),
+  onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.deleteFailed")),
 });
 
 function handleDelete(row: any) {
-  ElMessageBox.confirm("删除后，该指纹不再参与打卡判定。确认删除？", "删除 Wi-Fi 指纹", { type: "warning" })
+  ElMessageBox.confirm(
+    $t("pages.oa.attendance.deleteWifiConfirmContent"),
+    $t("pages.oa.attendance.deleteWifiConfirmTitle"),
+    { type: "warning" }
+  )
     .then(() => deleteMutation.mutate({ id: row.id as number }))
     .catch(() => {});
 }
@@ -65,8 +65,13 @@ const pageConfig = computed<ProPageConfig>(() => ({
     columns: [
       { prop: "ssid", label: "SSID", minWidth: 180 },
       { prop: "bssid", label: "BSSID", minWidth: 200 },
-      { prop: "createdAt", label: "创建时间", width: 180 },
-      { prop: "operation", label: "操作", width: 100, slotName: "operation" },
+      { prop: "createdAt", label: $t("pages.oa.attendance.wifiColCreatedAt"), width: 180 },
+      {
+        prop: "operation",
+        label: $t("pages.oa.attendance.colOperation"),
+        width: 100,
+        slotName: "operation",
+      },
     ],
   },
 }));

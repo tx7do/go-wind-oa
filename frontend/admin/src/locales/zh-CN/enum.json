@@ -282,6 +282,10 @@
       "EARLY_LEAVE": "早退",
       "ABSENT": "旷工",
       "ON_LEAVE": "请假"
+    },
+    "holidayType": {
+      "HOLIDAY": "法定假日",
+      "WORKDAY": "调休上班"
     }
   },
   "workflowInstance": {
@@ -290,6 +294,21 @@
       "APPROVED": "已通过",
       "REJECTED": "已驳回",
       "WITHDRAWN": "已撤回"
+    },
+    "auditAction": {
+      "SUBMIT": "已提交",
+      "APPROVE": "已审批通过",
+      "REJECT": "已审批驳回",
+      "FORWARD": "已转办",
+      "WITHDRAW": "已撤回"
+    }
+  },
+  "sealApplication": {
+    "sealType": {
+      "OFFICIAL_SEAL": "公章",
+      "CONTRACT_SEAL": "合同章",
+      "FINANCE_SEAL": "财务章",
+      "LEGAL_SEAL": "法人章"
     }
   }
 }

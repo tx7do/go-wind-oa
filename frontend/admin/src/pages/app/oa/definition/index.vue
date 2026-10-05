@@ -18,7 +18,7 @@
           {{ $t("common.view") }}
         </ElButton>
         <ElButton
-          v-if="scope.row.definition_status !== 'ENABLED'"
+          v-if="scope.row.definitionStatus !== 'ENABLED'"
           size="small"
           type="success"
           link
@@ -35,7 +35,9 @@
         >
           {{ $t("pages.oa.definition.disable") }}
         </ElButton>
-        <ElButton size="small" type="info" link @click="handleExport(scope.row)">导出</ElButton>
+        <ElButton size="small" type="info" link @click="handleExport(scope.row)">
+          {{ $t("pages.oa.definition.export") }}
+        </ElButton>
       </template>
     </ProPage>
 
@@ -87,10 +89,10 @@ const importInputRef = ref<HTMLInputElement>();
 
 const importMutation = useCreateWorkflowDefinition({
   onSuccess: () => {
-    ElMessage.success("导入成功");
+    ElMessage.success($t("pages.oa.definition.importSuccess"));
     pageRef.value?.refresh();
   },
-  onError: (err: Error) => ElMessage.error(err.message || "导入失败"),
+  onError: (err: Error) => ElMessage.error(err.message || $t("pages.oa.definition.importFailed")),
 });
 
 const toggleStatusMutation = useUpdateWorkflowDefinitionStatus({
@@ -218,11 +220,15 @@ function handleSuccess() {
 }
 
 function handleExport(row: oaservicev1_WorkflowDefinition) {
-  ElMessageBox.confirm("确定导出此流程定义？导出文件包含流程图配置和表单定义。", "导出确认", {
-    confirmButtonText: $t("common.button.confirm"),
-    cancelButtonText: $t("common.cancel"),
-    type: "info",
-  })
+  ElMessageBox.confirm(
+    $t("pages.oa.definition.exportConfirmContent"),
+    $t("pages.oa.definition.exportConfirmTitle"),
+    {
+      confirmButtonText: $t("common.button.confirm"),
+      cancelButtonText: $t("common.cancel"),
+      type: "info",
+    }
+  )
     .then(async () => {
       try {
         const def = await fetchWorkflowDefinition(row.id as number);
@@ -242,16 +248,12 @@ function handleExport(row: oaservicev1_WorkflowDefinition) {
         a.download = `workflow-${def.code}-v${def.version}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        ElMessage.success("已导出");
+        ElMessage.success($t("pages.oa.definition.exported"));
       } catch {
-        ElMessage.error("导出失败");
+        ElMessage.error($t("pages.oa.definition.exportFailed"));
       }
     })
     .catch(() => {});
-}
-
-function handleImportClick() {
-  importInputRef.value?.click();
 }
 
 function handleImportFile(e: Event) {
@@ -263,14 +265,18 @@ function handleImportFile(e: Event) {
     try {
       const parsed = JSON.parse(reader.result as string);
       if (!parsed.code || !parsed.version || !parsed.nodeConfig) {
-        ElMessage.error("导入文件缺少必要字段（code/version/nodeConfig）");
+        ElMessage.error($t("pages.oa.definition.importMissingFields"));
         return;
       }
-      ElMessageBox.confirm("确定导入此流程定义？将创建新的流程定义。", "导入确认", {
-        confirmButtonText: $t("common.button.confirm"),
-        cancelButtonText: $t("common.cancel"),
-        type: "warning",
-      })
+      ElMessageBox.confirm(
+        $t("pages.oa.definition.importConfirmContent"),
+        $t("pages.oa.definition.importConfirmTitle"),
+        {
+          confirmButtonText: $t("common.button.confirm"),
+          cancelButtonText: $t("common.cancel"),
+          type: "warning",
+        }
+      )
         .then(() => {
           importMutation.mutate({
             data: {
@@ -284,7 +290,7 @@ function handleImportFile(e: Event) {
         })
         .catch(() => {});
     } catch {
-      ElMessage.error("导入文件解析失败");
+      ElMessage.error($t("pages.oa.definition.importParseFailed"));
     }
     input.value = "";
   };

@@ -18,7 +18,7 @@ dateUtil.tz.setDefault(DEFAULT_TZ);
 
 export { dateUtil };
 
-export function formatDate(time: number | string, format = "YYYY-MM-DD") {
+export function formatDate(time?: number | string | Date | null, format = "YYYY-MM-DD") {
   if (time === null || time === undefined || time === "") {
     return "";
   }
@@ -41,7 +41,7 @@ export function formatDate(time: number | string, format = "YYYY-MM-DD") {
   }
 }
 
-export function formatDateTime(time: number | string) {
+export function formatDateTime(time?: number | string | Date | null) {
   if (time === null || time === undefined || time === "") {
     return "";
   }

@@ -17,7 +17,7 @@
 | 路由 | vue-router 5 |
 | 国际化 | vue-i18n 11 |
 | CSS | UnoCSS + SCSS |
-| 表单 | vee-validate + zod |
+| 表单 | Element Plus 表单校验 |
 | HTTP | axios（封装 gRPC-Web 风格 API） |
 | 包管理 | pnpm |
 

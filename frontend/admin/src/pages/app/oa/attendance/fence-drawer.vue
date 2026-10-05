@@ -1,21 +1,23 @@
 <template>
   <ProModal
     v-model:visible="visible"
-    title="新建围栏"
+    :title="$t('pages.oa.attendance.createFence')"
     :config="{ component: 'drawer', drawer: { size: WIDE_DRAWER_WIDTH, closeOnClickModal: false } }"
   >
     <ElForm label-width="90px">
-      <ElFormItem label="名称">
+      <ElFormItem :label="$t('pages.oa.attendance.fieldName')">
         <ElInput v-model="form.name" />
       </ElFormItem>
-      <ElFormItem label="位置">
+      <ElFormItem :label="$t('pages.oa.attendance.fenceDrawer.fieldLocation')">
         <AmapCirclePicker v-model="geoValue" />
       </ElFormItem>
     </ElForm>
     <template #footer>
       <div class="drawer-footer">
-        <ElButton @click="handleClose">取消</ElButton>
-        <ElButton type="primary" :loading="saving" @click="save">保存</ElButton>
+        <ElButton @click="handleClose">{{ $t("common.button.cancel") }}</ElButton>
+        <ElButton type="primary" :loading="saving" @click="save">
+          {{ $t("common.button.save") }}
+        </ElButton>
       </div>
     </template>
   </ProModal>
@@ -27,6 +29,7 @@ import { reactive, ref, watch } from "vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import AmapCirclePicker from "@/components/AmapCirclePicker/index.vue";
 import { useUpsertGeofence } from "@/api/composables";
+import { $t } from "@/core/i18n";
 
 // 围栏抽屉含地图，需比通用抽屉更宽；不改全局 DRAWER_WIDTH 以免影响其他抽屉。
 const WIDE_DRAWER_WIDTH = "720px";
@@ -58,11 +61,11 @@ watch(
 
 const upsertMutation = useUpsertGeofence({
   onSuccess: () => {
-    ElMessage.success("已保存");
+    ElMessage.success($t("common.notification.saveSuccess"));
     visible.value = false;
     emit("success");
   },
-  onError: (err: Error) => ElMessage.error(err.message || "保存失败"),
+  onError: (err: Error) => ElMessage.error(err.message || $t("common.notification.saveFailed")),
 });
 
 function open() {
@@ -75,16 +78,21 @@ function handleClose() {
 
 function save() {
   if (!form.name) {
-    ElMessage.warning("请填写围栏名称");
+    ElMessage.warning($t("pages.oa.attendance.fenceDrawer.nameRequired"));
     return;
   }
   if (!form.latitude || !form.longitude) {
-    ElMessage.warning("请在地图上圈选围栏位置");
+    ElMessage.warning($t("pages.oa.attendance.fenceDrawer.locationRequired"));
     return;
   }
   saving.value = true;
   upsertMutation.mutate(
-    { name: form.name, latitude: form.latitude, longitude: form.longitude, radiusMeters: form.radiusMeters },
+    {
+      name: form.name,
+      latitude: form.latitude,
+      longitude: form.longitude,
+      radiusMeters: form.radiusMeters,
+    },
     { onSettled: () => (saving.value = false) }
   );
 }

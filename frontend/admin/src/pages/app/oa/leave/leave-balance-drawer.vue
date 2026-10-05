@@ -1,27 +1,29 @@
 <template>
   <ProModal
     v-model:visible="visible"
-    title="授予假期额度"
+    :title="$t('pages.oa.leave.balanceDrawer.grantTitle')"
     :config="{ component: 'drawer', drawer: { size: DRAWER_WIDTH, closeOnClickModal: false } }"
   >
     <ElForm label-width="90px">
-      <ElFormItem label="用户ID">
+      <ElFormItem :label="$t('pages.oa.leave.balanceDrawer.fieldUserId')">
         <ElInputNumber v-model="form.userId" :min="1" style="width: 100%" />
       </ElFormItem>
-      <ElFormItem label="类型ID">
+      <ElFormItem :label="$t('pages.oa.leave.balanceDrawer.fieldLeaveTypeId')">
         <ElInputNumber v-model="form.leaveTypeId" :min="1" style="width: 100%" />
       </ElFormItem>
-      <ElFormItem label="年度">
+      <ElFormItem :label="$t('pages.oa.leave.balanceDrawer.fieldYear')">
         <ElInputNumber v-model="form.year" :min="2000" :max="2100" style="width: 100%" />
       </ElFormItem>
-      <ElFormItem label="总额度(天)">
+      <ElFormItem :label="$t('pages.oa.leave.balanceDrawer.fieldTotalDays')">
         <ElInputNumber v-model="form.totalDays" :min="0" :step="0.5" style="width: 100%" />
       </ElFormItem>
     </ElForm>
     <template #footer>
       <div class="drawer-footer">
-        <ElButton @click="handleClose">取消</ElButton>
-        <ElButton type="primary" :loading="granting" @click="submit">授予</ElButton>
+        <ElButton @click="handleClose">{{ $t("common.button.cancel") }}</ElButton>
+        <ElButton type="primary" :loading="granting" @click="submit">
+          {{ $t("pages.oa.leave.balanceDrawer.grant") }}
+        </ElButton>
       </div>
     </template>
   </ProModal>
@@ -33,6 +35,7 @@ import { reactive, ref } from "vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import { useGrantLeaveBalance } from "@/api/composables";
 import { DRAWER_WIDTH } from "@/constants";
+import { $t } from "@/core/i18n";
 
 const emit = defineEmits(["success"]);
 
@@ -47,11 +50,12 @@ const form = reactive({
 
 const grantMutation = useGrantLeaveBalance({
   onSuccess: () => {
-    ElMessage.success("已授予");
+    ElMessage.success($t("pages.oa.leave.balanceDrawer.grantSuccess"));
     visible.value = false;
     emit("success");
   },
-  onError: (err: Error) => ElMessage.error(err.message || "授予失败"),
+  onError: (err: Error) =>
+    ElMessage.error(err.message || $t("pages.oa.leave.balanceDrawer.grantFailed")),
 });
 
 function open() {

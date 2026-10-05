@@ -109,7 +109,9 @@
     "create_failed": "创建失败",
     "operation_success": "操作成功",
     "operation_failed": "操作失败",
-    "update_status_failed": "更新状态失败"
+    "update_status_failed": "更新状态失败",
+    "saveSuccess": "保存成功",
+    "saveFailed": "保存失败"
   },
   "title": {
     "confirm": "确认",

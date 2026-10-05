@@ -2,7 +2,9 @@
   <div class="app-container h-full flex flex-1 flex-col">
     <ProPage ref="pageRef" :config="pageConfig">
       <template #leaveStatus="scope: any">
-        <ElTag :type="statusTag(scope.row.leaveStatus)">{{ statusLabel(scope.row.leaveStatus) }}</ElTag>
+        <ElTag :type="workflowInstanceStatusToTag(scope.row.leaveStatus)">
+          {{ workflowInstanceStatusToName(scope.row.leaveStatus) }}
+        </ElTag>
       </template>
     </ProPage>
   </div>
@@ -14,32 +16,16 @@ import { ElTag } from "element-plus";
 
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
-import { fetchListLeaveApplications } from "@/api/composables";
+import {
+  fetchListLeaveApplications,
+  workflowInstanceStatusToName,
+  workflowInstanceStatusToTag,
+} from "@/api/composables";
 import type { oaservicev1_ListLeaveApplicationsRequest } from "@/api/generated/admin/service/v1";
+import { formatDate } from "@/utils/date";
+import { $t } from "@/core/i18n";
 
 const pageRef = ref();
-
-function fmtDate(v?: string) {
-  return v ? String(v).slice(0, 10) : "-";
-}
-
-function statusLabel(s?: string): string {
-  switch (s) {
-    case "APPROVED": return "已通过";
-    case "REJECTED": return "已驳回";
-    case "WITHDRAWN": return "已撤回";
-    default: return "审批中";
-  }
-}
-
-function statusTag(s?: string): "success" | "danger" | "info" | "warning" {
-  switch (s) {
-    case "APPROVED": return "success";
-    case "REJECTED": return "danger";
-    case "WITHDRAWN": return "info";
-    default: return "warning";
-  }
-}
 
 const pageConfig = computed<ProPageConfig>(() => ({
   table: {
@@ -60,17 +46,27 @@ const pageConfig = computed<ProPageConfig>(() => ({
     tableAttrs: { border: true, stripe: true },
     columns: [
       { prop: "id", label: "ID", width: 80 },
-      { prop: "createdBy", label: "申请人ID", width: 100 },
-      { prop: "leaveTypeName", label: "类型", width: 120 },
+      { prop: "createdBy", label: $t("pages.oa.leave.applications.colCreatedBy"), width: 100 },
+      { prop: "leaveTypeName", label: $t("pages.oa.leave.applications.colType"), width: 120 },
       {
-        label: "起止",
+        label: $t("pages.oa.leave.applications.colDateRange"),
         minWidth: 200,
-        formatter: (row: any) => `${fmtDate(row.startDate)} ~ ${fmtDate(row.endDate)}`,
+        formatter: (row: any) => `${formatDate(row.startDate)} ~ ${formatDate(row.endDate)}`,
       },
-      { prop: "days", label: "天数", width: 80 },
-      { prop: "reason", label: "事由", minWidth: 160, showOverflowTooltip: true },
-      { prop: "leaveStatus", label: "状态", width: 100, slotName: "leaveStatus" },
-      { prop: "instanceId", label: "流程实例", width: 100 },
+      { prop: "days", label: $t("pages.oa.leave.applications.colDays"), width: 80 },
+      {
+        prop: "reason",
+        label: $t("pages.oa.leave.applications.colReason"),
+        minWidth: 160,
+        showOverflowTooltip: true,
+      },
+      {
+        prop: "leaveStatus",
+        label: $t("pages.oa.leave.applications.colStatus"),
+        width: 100,
+        slotName: "leaveStatus",
+      },
+      { prop: "instanceId", label: $t("pages.oa.leave.applications.colInstanceId"), width: 100 },
     ],
   },
 }));
