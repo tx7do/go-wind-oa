@@ -132,6 +132,10 @@ cd frontend/mobile && flutter run
 
 ## 相关文档
 
+- [快速上手教程](./docs/oa-quick-start.md)
+- [管理后台使用教程](./docs/oa-admin-user-guide.md)
+- [移动端使用教程](./docs/oa-mobile-user-guide.md)
+- [开发者教程：新增审批业务](./docs/oa-developer-guide.md)
 - [后端架构设计](./docs/oa-workflow-design.md)
 - [移动端设计](./docs/oa-mobile-design.md)
 - [后端 README](./backend/README.md)

@@ -132,6 +132,10 @@ Required base tools, middleware, and Docker Compose one-click startup are docume
 
 ## Related Documentation
 
+- [Quick Start Tutorial (Chinese)](./docs/oa-quick-start.md)
+- [Admin Console User Guide (Chinese)](./docs/oa-admin-user-guide.md)
+- [Mobile App User Guide (Chinese)](./docs/oa-mobile-user-guide.md)
+- [Developer Guide: Adding an Approval Business (Chinese)](./docs/oa-developer-guide.md)
 - [Backend Architecture Design](./docs/oa-workflow-design.md)
 - [Mobile Design](./docs/oa-mobile-design.md)
 - [Backend README](./backend/README.md)

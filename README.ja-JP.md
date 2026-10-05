@@ -132,6 +132,10 @@ cd frontend/mobile && flutter run
 
 ## 関連ドキュメント
 
+- [クイックスタートチュートリアル（中国語）](./docs/oa-quick-start.md)
+- [管理コンソール利用ガイド（中国語）](./docs/oa-admin-user-guide.md)
+- [モバイルアプリ利用ガイド（中国語）](./docs/oa-mobile-user-guide.md)
+- [開発者チュートリアル：承認業務の追加（中国語）](./docs/oa-developer-guide.md)
 - [バックエンド アーキテクチャ設計](./docs/oa-workflow-design.md)
 - [モバイル設計](./docs/oa-mobile-design.md)
 - [バックエンド README](./backend/README.md)

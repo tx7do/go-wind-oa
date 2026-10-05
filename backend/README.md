@@ -204,6 +204,8 @@ make docker    # 构建 Docker 镜像
 
 ## 相关文档
 
+- [快速上手教程](../docs/oa-quick-start.md)
+- [开发者教程：新增审批业务](../docs/oa-developer-guide.md)
 - [协同办公系统设计](../docs/oa-workflow-design.md)
 - [移动端设计](../docs/oa-mobile-design.md)
 - [项目 README](../README.md)

@@ -27,6 +27,9 @@ go.work.sum
 # env file
 .env
 
+# 本地开发配置副本（把 compose 主机名替换成 localhost 后使用）
+configs.local/
+
 # Editor/IDE
 # .idea/
 # .vscode/
