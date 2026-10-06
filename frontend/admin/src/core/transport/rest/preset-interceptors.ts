@@ -26,6 +26,10 @@ export const authenticateResponseInterceptor = ({
   enableRefreshToken: boolean;
   formatToken: (token: string) => null | string;
 }): ResponseInterceptorConfig => {
+  /** 已由本拦截器处理的错误标记（不弹全局错误提示） */
+  const withAuthHandled = <T>(error: T): T =>
+    Object.assign(error as object, { __handledByAuthInterceptor: true }) as T;
+
   return {
     rejected: async (error) => {
       const { config, response } = error;
@@ -45,22 +49,16 @@ export const authenticateResponseInterceptor = ({
         await doReAuthenticate();
         // 标记错误已由认证拦截器处理
 
-        throw Object.assign(error, {
-          __handledByAuthInterceptor: true,
-        });
+        throw withAuthHandled(error);
       }
 
       // 如果正在刷新 token，则将请求加入队列，等待刷新完成
-      if (client.isRefreshing) {
+      if (client.isRefreshInProgress()) {
         return new Promise((resolve, reject) => {
-          client.refreshTokenQueue.push((newToken: string | null) => {
+          client.enqueueRefresh((newToken: string | null) => {
             // 刷新失败：排队请求直接失败，不携带空 token 重试
             if (!newToken) {
-              reject(
-                Object.assign(new Error("Authentication required"), {
-                  __handledByAuthInterceptor: true,
-                })
-              );
+              reject(withAuthHandled(new Error("Authentication required")));
               return;
             }
             config.headers.Authorization = formatToken(newToken);
@@ -70,36 +68,30 @@ export const authenticateResponseInterceptor = ({
       }
 
       // 标记开始刷新 token
-      client.isRefreshing = true;
+      client.beginRefresh();
       // 标记当前请求为重试请求，避免无限循环
       config.__isRetryRequest = true;
 
       try {
         const newToken = await doRefreshToken();
 
-        // 处理队列中的请求
-        client.refreshTokenQueue.forEach((callback) => callback(newToken));
-        // 清空队列
-        client.refreshTokenQueue = [];
+        // 处理队列中的请求（含清空）
+        client.flushRefreshQueue(newToken);
 
         return client.request(error.config.url, { ...error.config });
       } catch (refreshError) {
         // 如果刷新 token 失败，通知队列中的请求直接失败（避免带空 Authorization 重试），
         // 并处理错误（如强制登出或跳转登录页面）
-        client.refreshTokenQueue.forEach((callback) => callback(null));
-        client.refreshTokenQueue = [];
+        client.flushRefreshQueue(null);
 
         console.error("Refresh token failed:", refreshError);
 
         await doReAuthenticate();
 
         // 标记错误已由认证拦截器处理，不继续抛出错误，避免触发错误消息拦截器
-        const handledError = Object.assign(new Error("Authentication required"), {
-          __handledByAuthInterceptor: true,
-        });
-        return Promise.reject(handledError);
+        return Promise.reject(withAuthHandled(new Error("Authentication required")));
       } finally {
-        client.isRefreshing = false;
+        client.endRefresh();
       }
     },
   };

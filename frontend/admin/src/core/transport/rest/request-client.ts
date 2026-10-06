@@ -22,11 +22,35 @@ class RequestClient {
   public addResponseInterceptor: InterceptorManager["addResponseInterceptor"];
 
   public download: FileDownloader["download"];
-  // 是否正在刷新token
-  public isRefreshing = false;
-  // 刷新token队列；刷新失败时以 null 回调，通知排队请求直接失败
-  public refreshTokenQueue: ((token: string | null) => void)[] = [];
+  // token 刷新状态收拢为私有，经方法暴露给认证拦截器（见 preset-interceptors）
+  private refreshing = false;
+  private refreshQueue: ((token: string | null) => void)[] = [];
   public upload: FileUploader["upload"];
+
+  public isRefreshInProgress(): boolean {
+    return this.refreshing;
+  }
+
+  public beginRefresh(): void {
+    this.refreshing = true;
+  }
+
+  /** 结束刷新并清空队列（队列回调已由 flush 消费或随失败放弃） */
+  public endRefresh(): void {
+    this.refreshing = false;
+    this.refreshQueue = [];
+  }
+
+  public enqueueRefresh(callback: (token: string | null) => void): void {
+    this.refreshQueue.push(callback);
+  }
+
+  /** 消费整个队列；token 为 null 表示刷新失败，排队请求直接失败 */
+  public flushRefreshQueue(token: string | null): void {
+    const queue = [...this.refreshQueue];
+    this.refreshQueue = [];
+    queue.forEach((callback) => callback(token));
+  }
 
   // ==========================
   // 静态单例管理

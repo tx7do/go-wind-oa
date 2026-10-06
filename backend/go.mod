@@ -27,7 +27,6 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/tx7do/go-crud/api v0.0.7
 	github.com/tx7do/go-crud/entgo v0.0.52
-	github.com/tx7do/go-crud/opensearch v0.0.5
 	github.com/tx7do/go-crud/pagination v0.0.15
 	github.com/tx7do/go-crud/viewer v0.0.6
 	github.com/tx7do/go-utils v1.1.40
@@ -51,7 +50,6 @@ require (
 	github.com/tx7do/kratos-bootstrap/bootstrap v0.1.16
 	github.com/tx7do/kratos-bootstrap/cache/redis v0.1.1
 	github.com/tx7do/kratos-bootstrap/database/ent v0.1.5
-	github.com/tx7do/kratos-bootstrap/database/opensearch v0.1.1
 	github.com/tx7do/kratos-bootstrap/oss/minio v0.1.2
 	github.com/tx7do/kratos-bootstrap/registry v0.2.2
 	github.com/tx7do/kratos-bootstrap/registry/etcd v0.2.2
@@ -159,7 +157,6 @@ require (
 	github.com/olekukonko/ll v0.1.4-0.20260115111900-9e59c2286df0 // indirect
 	github.com/olekukonko/tablewriter v1.1.3 // indirect
 	github.com/open-policy-agent/opa v1.16.1 // indirect
-	github.com/opensearch-project/opensearch-go/v4 v4.6.0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/oschwald/geoip2-golang v1.13.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.1 // indirect

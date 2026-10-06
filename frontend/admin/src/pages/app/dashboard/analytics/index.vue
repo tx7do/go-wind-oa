@@ -8,7 +8,7 @@
             <div class="overview-header__text">
               <div class="title">{{ item.title }}</div>
               <div class="value-row">
-                <span class="value">{{ item.value.toLocaleString() }}</span>
+                <span class="value">{{ item.value.toLocaleString(i18n.global.locale.value) }}</span>
               </div>
             </div>
             <div class="overview-header__icon">
@@ -50,7 +50,9 @@
       <el-col :xs="24" :sm="24" :md="12">
         <el-card shadow="hover">
           <template #header>
-            <span class="card-title">{{ $t("pages.dashboard.attendanceDayResultDistribution") }}</span>
+            <span class="card-title">
+              {{ $t("pages.dashboard.attendanceDayResultDistribution") }}
+            </span>
           </template>
           <div class="chart-container chart-container-small">
             <AnalyticsDistribution
@@ -67,7 +69,7 @@
 
 <script lang="ts" setup>
 import SvgIcon from "@/components/SvgIcon/index.vue";
-import { $t } from "@/core/i18n";
+import { $t, i18n } from "@/core/i18n";
 import {
   useOaAttendanceDayResultDistribution,
   useOaDashboardOverview,
