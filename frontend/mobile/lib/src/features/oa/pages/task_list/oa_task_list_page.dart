@@ -10,7 +10,8 @@ import 'package:flutter_app/src/core/utilities/date_time.dart';
 
 /// 工作流任务列表页（三 Tab：“待我审批” / “已办” / “我发起的”）。
 ///
-/// 列表数据经 [WorkflowService] 直接调用获取（Future + setState）。
+/// 列表数据经 [WorkflowService] 直接调用获取（Future + setState），分页加载
+/// （每页 [_pageSize] 条，滚动近底部自动加载下一页，下拉刷新重置到第一页）。
 /// “待我审批”项带 taskId，点击进入详情执行审批；“我发起的”进行中的项可撤回
 /// （引擎侧校验：仅申请人本人 + 实例进行中）。AppBar 菜单提供请假/报销/通用申请入口。
 class OaTaskListPage extends StatefulWidget {
@@ -20,17 +21,37 @@ class OaTaskListPage extends StatefulWidget {
   State<OaTaskListPage> createState() => _OaTaskListPageState();
 }
 
+/// 单个 Tab 的分页列表状态。
+class _TabList {
+  _TabList(this.loadFirstPage);
+
+  final Future<void> Function(bool refresh) loadFirstPage;
+
+  List<oaApi.OaServiceV1MyTaskItem> items = const [];
+  int page = 0;
+  bool initialLoading = true;
+  bool loadingMore = false;
+  /// 末页标记：某页返回条数不足 _pageSize 即认为到底
+  bool reachedEnd = false;
+  final ScrollController controller = ScrollController();
+
+  void dispose() => controller.dispose();
+}
+
 class _OaTaskListPageState extends State<OaTaskListPage>
     with SingleTickerProviderStateMixin {
+  static const int _pageSize = 20;
+
   late final TabController _tabController;
   final _service = WorkflowService();
 
-  List<oaApi.OaServiceV1MyTaskItem> _pending = const [];
-  List<oaApi.OaServiceV1MyTaskItem> _done = const [];
-  List<oaApi.OaServiceV1MyTaskItem> _submitted = const [];
-  bool _loadingPending = true;
-  bool _loadingDone = true;
-  bool _loadingSubmitted = true;
+  late final _TabList _pending = _TabList(_loadPending)
+    ..controller.addListener(() => _onScroll(_pending));
+  late final _TabList _done = _TabList(_loadDone)
+    ..controller.addListener(() => _onScroll(_done));
+  late final _TabList _submitted = _TabList(_loadSubmitted)
+    ..controller.addListener(() => _onScroll(_submitted));
+
   bool _withdrawing = false;
 
   @override
@@ -40,50 +61,76 @@ class _OaTaskListPageState extends State<OaTaskListPage>
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         final idx = _tabController.index;
-        if (idx == 1 && _loadingDone && _done.isEmpty) _loadDone();
-        if (idx == 2 && _loadingSubmitted && _submitted.isEmpty) _loadSubmitted();
+        if (idx == 1 && _done.initialLoading) _load(_done, refresh: true);
+        if (idx == 2 && _submitted.initialLoading) {
+          _load(_submitted, refresh: true);
+        }
       }
     });
-    _loadPending();
+    _load(_pending, refresh: true);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _pending.dispose();
+    _done.dispose();
+    _submitted.dispose();
     super.dispose();
   }
 
-  Future<void> _loadPending() async {
-    final result = await _service.pendingTasks();
+  // ============ 数据加载 ============
+
+  /// 按需加载：refresh 重置到第一页，否则翻下一页（带加载中/到底守卫）
+  Future<void> _load(_TabList tab, {bool refresh = false}) async {
+    if (tab.loadingMore) return;
+    if (!refresh && tab.reachedEnd) return;
+    tab.loadingMore = true;
+    await tab.loadFirstPage(refresh);
+  }
+
+  Future<void> _loadPending(bool refresh) async {
+    final result = await _service.pendingTasks(
+        page: refresh ? 1 : _pending.page + 1, pageSize: _pageSize);
+    _applyPage(_pending, result, refresh);
+  }
+
+  Future<void> _loadDone(bool refresh) async {
+    final result = await _service.doneTasks(
+        page: refresh ? 1 : _done.page + 1, pageSize: _pageSize);
+    _applyPage(_done, result, refresh);
+  }
+
+  Future<void> _loadSubmitted(bool refresh) async {
+    final result = await _service.submittedTasks(
+        page: refresh ? 1 : _submitted.page + 1, pageSize: _pageSize);
+    _applyPage(_submitted, result, refresh);
+  }
+
+  void _applyPage(_TabList tab, dynamic result, bool refresh) {
     if (!mounted) return;
+    final resp = (result is Status)
+        ? null
+        : result as oaApi.OaServiceV1GetMyTasksResponse?;
+    final newItems = resp?.items ?? const <oaApi.OaServiceV1MyTaskItem>[];
     setState(() {
-      _pending = (result is Status)
-          ? const []
-          : (result as oaApi.OaServiceV1GetMyTasksResponse?)?.items ?? const [];
-      _loadingPending = false;
+      tab.items = refresh
+          ? newItems
+          : [...tab.items, ...newItems];
+      tab.page = refresh ? 1 : tab.page + 1;
+      tab.initialLoading = false;
+      tab.loadingMore = false;
+      tab.reachedEnd = newItems.length < _pageSize;
     });
   }
 
-  Future<void> _loadDone() async {
-    final result = await _service.doneTasks();
-    if (!mounted) return;
-    setState(() {
-      _done = (result is Status)
-          ? const []
-          : (result as oaApi.OaServiceV1GetMyTasksResponse?)?.items ?? const [];
-      _loadingDone = false;
-    });
-  }
-
-  Future<void> _loadSubmitted() async {
-    final result = await _service.submittedTasks();
-    if (!mounted) return;
-    setState(() {
-      _submitted = (result is Status)
-          ? const []
-          : (result as oaApi.OaServiceV1GetMyTasksResponse?)?.items ?? const [];
-      _loadingSubmitted = false;
-    });
+  /// 滚动近底部且未到底时加载下一页
+  void _onScroll(_TabList tab) {
+    if (!tab.controller.hasClients) return;
+    if (tab.loadingMore || tab.reachedEnd || tab.initialLoading) return;
+    if (tab.controller.position.extentAfter < 400) {
+      _load(tab);
+    }
   }
 
   Future<void> _withdraw(int instanceId) async {
@@ -112,9 +159,11 @@ class _OaTaskListPageState extends State<OaTaskListPage>
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(const SnackBar(content: Text('已撤回')));
-      _loadSubmitted();
+      _load(_submitted, refresh: true);
     }
   }
+
+  // ============ UI ============
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +213,7 @@ class _OaTaskListPageState extends State<OaTaskListPage>
               controller: _tabController,
               children: [
                 _buildPendingList(),
-                _buildSimpleList(_done, _loadingDone, _loadDone),
+                _buildDoneList(),
                 _buildSubmittedList(),
               ],
             ),
@@ -172,35 +221,56 @@ class _OaTaskListPageState extends State<OaTaskListPage>
   }
 
   Widget _buildPendingList() {
-    return _buildSimpleList(_pending, _loadingPending, _loadPending, tappable: true);
+    return _buildTaskList(_pending, tappable: true);
+  }
+
+  Widget _buildDoneList() {
+    return _buildTaskList(_done);
   }
 
   Widget _buildSubmittedList() {
     final theme = Theme.of(context);
     final loc = S.of(context);
 
-    if (_loadingSubmitted) {
+    if (_submitted.initialLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_submitted.isEmpty) {
+    if (_submitted.items.isEmpty) {
       return Center(
         child: Text(loc.oaTaskListEmpty,
             style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(120))),
       );
     }
     return RefreshIndicator(
-      onRefresh: _loadSubmitted,
+      onRefresh: () => _load(_submitted, refresh: true),
       child: ListView.separated(
+        controller: _submitted.controller,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: _submitted.length,
-        separatorBuilder: (_, __) => const Divider(height: 1),
+        itemCount: _submitted.items.length + 1,
+        separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, i) {
-          final row = _submitted[i];
-          final active = row.statusLabel == '进行中';
+          if (i == _submitted.items.length) {
+            return _buildListFooter(_submitted);
+          }
+          final row = _submitted.items[i];
+          // 实例状态走枚举本地化；SUSPENDED 等无词条态回退服务端文案
+          final statusText = switch (row.instanceStatus) {
+            oaApi.OaServiceV1WorkflowInstance$InstanceStatus.pending =>
+              loc.oaInstanceStatusPending,
+            oaApi.OaServiceV1WorkflowInstance$InstanceStatus.approved =>
+              loc.oaInstanceStatusApproved,
+            oaApi.OaServiceV1WorkflowInstance$InstanceStatus.rejected =>
+              loc.oaInstanceStatusRejected,
+            oaApi.OaServiceV1WorkflowInstance$InstanceStatus.withdrawn =>
+              loc.oaInstanceStatusWithdrawn,
+            _ => row.statusLabel ?? '-',
+          };
+          final active =
+              row.instanceStatus == oaApi.OaServiceV1WorkflowInstance$InstanceStatus.pending;
           return ListTile(
             title: Text('申请 #${row.instanceId ?? ''}'),
             subtitle: Text(
-              '${loc.oaTaskListStatus}: ${row.statusLabel ?? ''}',
+              '${loc.oaTaskListStatus}: $statusText',
               style: const TextStyle(fontSize: 12),
             ),
             trailing: active
@@ -219,37 +289,48 @@ class _OaTaskListPageState extends State<OaTaskListPage>
     );
   }
 
-  Widget _buildSimpleList(
-    List<oaApi.OaServiceV1MyTaskItem> items,
-    bool loading,
-    Future<void> Function() onRefresh, {
+  Widget _buildTaskList(
+    _TabList tab, {
     bool tappable = false,
   }) {
     final theme = Theme.of(context);
     final loc = S.of(context);
 
-    if (loading) {
+    if (tab.initialLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (items.isEmpty) {
+    if (tab.items.isEmpty) {
       return Center(
         child: Text(loc.oaTaskListEmpty,
             style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(120))),
       );
     }
     return RefreshIndicator(
-      onRefresh: onRefresh,
+      onRefresh: () => _load(tab, refresh: true),
       child: ListView.separated(
+        controller: tab.controller,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: items.length,
-        separatorBuilder: (_, __) => const Divider(height: 1),
+        itemCount: tab.items.length + 1,
+        separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, i) {
-          final row = items[i];
+          if (i == tab.items.length) {
+            return _buildListFooter(tab);
+          }
+          final row = tab.items[i];
           final int taskId = row.taskId ?? 0;
+          // 已办 Tab 的动作走枚举本地化，待办保持服务端“待办”文案
+          final statusText = switch (row.auditAction) {
+            oaApi.OaServiceV1WorkflowLog$LogAction.submit => loc.oaLogActionSubmit,
+            oaApi.OaServiceV1WorkflowLog$LogAction.approve => loc.oaLogActionApprove,
+            oaApi.OaServiceV1WorkflowLog$LogAction.reject => loc.oaLogActionReject,
+            oaApi.OaServiceV1WorkflowLog$LogAction.forward => loc.oaLogActionForward,
+            oaApi.OaServiceV1WorkflowLog$LogAction.withdraw => loc.oaLogActionWithdraw,
+            _ => row.statusLabel ?? '-',
+          };
           return ListTile(
             title: Text('申请 #${row.instanceId ?? ''}'),
             subtitle: Text(
-              '${loc.oaTaskListStatus}: ${row.statusLabel ?? ''}',
+              '${loc.oaTaskListStatus}: $statusText',
               style: const TextStyle(fontSize: 12),
             ),
             trailing: Text(
@@ -265,6 +346,27 @@ class _OaTaskListPageState extends State<OaTaskListPage>
           );
         },
       ),
+    );
+  }
+
+  /// 列表尾部：加载中指示器 / 到底提示
+  Widget _buildListFooter(_TabList tab) {
+    if (tab.reachedEnd) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: Text('没有更多了',
+              style: TextStyle(fontSize: 12, color: Colors.grey)),
+        ),
+      );
+    }
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 16),
+      child: Center(child: SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      )),
     );
   }
 }

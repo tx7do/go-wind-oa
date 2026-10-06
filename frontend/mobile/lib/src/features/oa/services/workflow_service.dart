@@ -83,10 +83,12 @@ class WorkflowService extends BaseService {
   // ─── 直接调用方法（页面用 Future 而非 Stream） ──
 
   /// 待我审批列表（直接调用）。
-  Future<dynamic> pendingTasks() async {
+  Future<dynamic> pendingTasks({int page = 0, int pageSize = 0}) async {
     try {
       return await _api.getMyTasks(oaApi.OaServiceV1GetMyTasksRequest(
         listType: oaApi.OaServiceV1ListType.pending,
+        page: page,
+        pageSize: pageSize,
       ));
     } on DioException catch (e) {
       return handleDioError(e);
@@ -94,10 +96,12 @@ class WorkflowService extends BaseService {
   }
 
   /// 已办列表（直接调用）。
-  Future<dynamic> doneTasks() async {
+  Future<dynamic> doneTasks({int page = 0, int pageSize = 0}) async {
     try {
       return await _api.getMyTasks(oaApi.OaServiceV1GetMyTasksRequest(
         listType: oaApi.OaServiceV1ListType.done,
+        page: page,
+        pageSize: pageSize,
       ));
     } on DioException catch (e) {
       return handleDioError(e);
@@ -105,10 +109,12 @@ class WorkflowService extends BaseService {
   }
 
   /// 我发起的列表（直接调用）。
-  Future<dynamic> submittedTasks() async {
+  Future<dynamic> submittedTasks({int page = 0, int pageSize = 0}) async {
     try {
       return await _api.getMyTasks(oaApi.OaServiceV1GetMyTasksRequest(
         listType: oaApi.OaServiceV1ListType.submitted,
+        page: page,
+        pageSize: pageSize,
       ));
     } on DioException catch (e) {
       return handleDioError(e);
