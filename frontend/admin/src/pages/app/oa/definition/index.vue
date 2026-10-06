@@ -1,6 +1,6 @@
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
-    <ProPage ref="pageRef" :config="pageConfig" @add="handleAdd">
+    <ProPage ref="pageRef" :config="pageConfig" @add="handleAdd" @toolbar="onToolbar">
       <!-- definition_status：枚举 Tag -->
       <template #definition_status="scope: any">
         <ElTag
@@ -142,7 +142,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
       return { items: result.items || [], total: result.total || 0 };
     },
     toolbar: [],
-    toolbarRight: ["add"],
+    toolbarRight: ["import", "add"],
     defaultToolbar: ["refresh", "filter"],
     pagination: false,
     tableAttrs: { border: true, stripe: false },
@@ -254,6 +254,12 @@ function handleExport(row: oaservicev1_WorkflowDefinition) {
       }
     })
     .catch(() => {});
+}
+
+function onToolbar(name: string) {
+  if (name === "import") {
+    importInputRef.value?.click();
+  }
 }
 
 function handleImportFile(e: Event) {

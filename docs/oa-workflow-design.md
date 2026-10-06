@@ -112,16 +112,19 @@
 
 协同办公域各业务表均通过 `mixin.TenantID[uint32]{}` 注入 `tenant_id` 列并附加 `rule.TenantPrivacy` 策略。该策略由 `entmiddleware.Server` 注入的 `UserViewer.TenantID()` 驱动，自动在所有查询/写入上叠加 `tenant_id = viewer.tenant` 谓词 —— **代码层无需手写 tenant 过滤**。
 
-### 4.1 工作流引擎表
+### 4.1 工作流引擎表（7 张）
 
-| 表 | 说明 | 关键字段 | Mixin 组成 |
-|---|---|---|---|
-| `WorkflowDefinition` | 流程模板：有序节点配置 + 表单 schema | `node_config`(any), `form_schema`(any), `code`, `version`, `definition_status` | AutoIncrementId / TimeAt / OperatorID / TenantID / Remark |
-| `WorkflowInstance` | 一次申请实例 | `form_data`(any), `instance_status`, `current_node_index`, `business_type`, `business_id` | 同上 |
-| `WorkflowTask` | 节点上对指派审批人产生的待办 | `node_index`, `assignee_user_id`, `task_status` | AutoIncrementId / TimeAt / OperatorID / TenantID |
-| `WorkflowLog` | append-only 审计日志 | `node_index`, `log_action`, `comment` | 同上 |
+| 表 | 说明 | 关键字段 |
+|---|---|---|
+| `WorkflowDefinition` | 流程模板：节点图配置 + 表单 schema | `node_config`(any), `form_schema`(any), `code`, `version`, `definition_status` |
+| `WorkflowInstance` | 一次申请实例 | `form_data`(any), `instance_status`（PENDING/APPROVED/REJECTED/WITHDRAWN/**SUSPENDED**）, `business_type`, `business_id`, `definition_id` |
+| `WorkflowTask` | 节点上对指派审批人产生的待办 | `node_id`(string，图节点 ID), `assignee_user_id`, `task_status`（PENDING/APPROVED/REJECTED/CANCELLED）, `reminded_at` / `escalated_at`（超时催办/升级幂等戳） |
+| `WorkflowLog` | append-only 审计日志 | `node_id`, `log_action`（SUBMIT/APPROVE/REJECT/FORWARD/WITHDRAW）, `comment` |
+| `WorkflowInstanceJoin` | 并行汇聚（JOIN）到达计数 | `join_node_id`, `arrived_count` |
+| `WorkflowInstanceParentLink` | 子流程父子关系 | 父实例 ID + 父图中的 SUBPROCESS 节点 ID + 子实例 ID |
+| `WorkflowDelegation` | 审批委托（一委托人一代理人） | `delegator_user_id`, `delegate_user_id` |
 
-此外 core-service `ent/schema/` 还含三张 CMS 保留的 internal_message schema，供 `InternalMessageService` 落库。
+Mixin 均为 AutoIncrementId / TimeAt / OperatorID / TenantID（部分含 Remark）。此外 core-service `ent/schema/` 还含三张 CMS 保留的 internal_message schema，供 `InternalMessageService` 落库。
 
 **`field.Any` 的选择**：`node_config` / `form_schema` / `form_data` 结构动态，采用 ent `field.Any(name)`，DB 以 JSON 落盘、Go 侧 `any`。仓库层在 `Create` 时 `json.Unmarshal` 文本→any、在定向查询时 `json.Marshal` any→文本，显式转换，不依赖 mapper。
 
@@ -131,58 +134,66 @@
 
 ---
 
-## 5. 工作流引擎状态机（core `workflow_service.go`）
+## 5. 工作流引擎（有向图模型，core `workflow_service.go` + `workflow_graph.go`）
 
-`WorkflowService` 实现 kratos 生成的 `WorkflowServiceServer`（gRPC，`oa.service.v1`），注入仓库 + `*InternalMessageService`（同进程直接调用，非跨进程 gRPC 客户端）。引擎为**线性状态机**模型，节点支持会签/或签多审批人，但节点间仍严格线性推进（无并行分支/回退）。
+`WorkflowService` 实现 kratos 生成的 `WorkflowServiceServer`（gRPC，`oa.service.v1`），注入仓库 + `*InternalMessageService`（同进程直接调用，非跨进程 gRPC 客户端）。引擎为**有向图模型**：流程定义是一张节点图（支持条件分支、并行分裂/汇聚、子流程嵌套，允许回退边），由 **walker** 从 START 沿出边推进。walker 带步数守卫（`walkerStepLimit`，防回退环路失控，不靠 visited 拒环），越限即 fail-closed 驳回实例。
 
-### 5.1 节点配置格式
+### 5.1 节点图配置格式（node_config）
 
-`node_config` 新格式（旧单人格式自动归一化兼容）：
+图格式（`version: 2`）；更早的旧节点数组格式在打开编辑器时自动转线性图兼容：
 
 ```json
-[{
-  "approvers": [
-    {"type": "USER", "id": 123},
-    {"type": "LEADER"},
-    {"type": "POSITION", "id": 456}
+{
+  "version": 2,
+  "nodes": [
+    {"id": "start", "type": "START"},
+    {"id": "task_1", "type": "TASK", "strategy": "ALL",
+     "approvers": [{"type": "USER", "id": 123}, {"type": "LEADER"}, {"type": "POSITION", "id": 456}]},
+    {"id": "gw", "type": "EXCLUSIVE_GATEWAY"},
+    {"id": "sub", "type": "SUBPROCESS", "subprocessDefinition": "LEAVE:1"},
+    {"id": "end", "type": "END"}
   ],
-  "strategy": "ALL"
-}]
+  "edges": [
+    {"from": "start", "to": "task_1"},
+    {"from": "task_1", "to": "gw"},
+    {"from": "gw", "to": "task_1", "condition": "days > 3"},
+    {"from": "gw", "to": "end", "condition": "default"}
+  ]
+}
 ```
 
-- `strategy`：`ALL`=会签（全员通过才推进，任一驳回即驳回）；`ANY`=或签（一人通过即推进并取消其余，全员驳回才驳回）。
-- 审批人类型：`USER`（显式用户）、`LEADER`（申请人主组织单元负责人，user_org_unit → org_unit.leader_id）、`POSITION`（职位在职持有者，user_position，可展开多人）。解析结果去重后每审批人一条并行 task。
-- 申请人为审批人时自动跳过（对自己视为自动同意）；整节点全为申请人则写「自动通过」APPROVE 日志后跳过该节点继续推进，可连续跳多节点直至越界终结。
+- TASK `strategy`：`ALL`=会签（全员通过才推进，任一驳回即驳回）；`ANY`=或签（一人通过即推进并取消其余，全员驳回才驳回）。
+- 审批人类型：`USER`（显式用户）、`LEADER`（申请人主组织单元负责人）、`POSITION`（职位在职持有者，可展开多人）。解析去重后每审批人一条并行 task。
+- 申请人为审批人时自动跳过（视为自动同意）；整节点全为申请人则写「自动通过」后继续。
 
-### 5.2 状态流转
+### 5.2 节点类型与执行语义
 
-```
-SubmitApply ──> Instance(PENDING, idx=0) + 节点0 N个并行Task(PENDING) + Log(SUBMIT) + notify(A0..An)
-   │
-   ▼ AuditTask(APPROVE)  ← 仅当 task.assignee==caller 且 task.PENDING 且 instance.PENDING
-   │   按节点 strategy 分支：
-   │     ALL：本 task 关闭，若节点全部 task 终结则推进 idx+1；任一 REJECT → 实例立即 REJECTED + 取消兄弟 task
-   │     ANY：本 task APPROVE → 立即推进 + 取消其余 PENDING task；全部 REJECT 才 REJECTED
-   │
-   ├─ idx+1 < len(nodes): 关闭本 task → Instance(idx=idx+1, PENDING) + 新节点 N个Task(PENDING) + Log(APPROVE) + notify
-   │
-   └─ idx+1 >= len(nodes): 关闭本 task → Instance(APPROVED) + Log(APPROVE) + 事件回调(APPROVED) + notify(applicant)   [终结]
+| 节点类型 | 语义 |
+|---|---|
+| `START` / `END` | 流程起点与终点；到达 END 即实例 APPROVED |
+| `TASK` | 审批节点（会签/或签，见上） |
+| `EXCLUSIVE_GATEWAY` | 条件分支：按出边上的条件表达式（`expr-lang` 沙箱求值，求值环境为申请表单数据）选一条走；均不中走 `default` 边；无 default 且全不中 → fail-closed 驳回 |
+| `PARALLEL_GATEWAY_FORK` | 并行分裂：同时激活全部出边，各支独立推进 |
+| `PARALLEL_GATEWAY_JOIN` | 并行汇聚：按 `WorkflowInstanceJoin` 表对到达计数，满入度才合并继续，未满则停在该节点 |
+| `SUBPROCESS` | 子流程：挂接另一条定义（`code:version`），父实例转 **SUSPENDED**，父子关系落 `WorkflowInstanceParentLink`；子实例到终态后父实例恢复 PENDING 并从该节点出边继续 |
 
-WithdrawApply  ← 仅申请人本人 + 实例 PENDING
-   → Instance(WITHDRAWN) + 全部 PENDING task→CANCELLED + Log(WITHDRAW) + 事件回调(WITHDRAWN) + notify(原审批人)   [终结]
+### 5.3 审批动作与守卫（AuditTask）
 
-AuditTask(FORWARD) → Task.assignee ← forwardTo（状态保持 PENDING，idx 不变）+ Log(FORWARD) + notify(forwardTo)
-```
+入口三重校验：`task.assignee == caller` 且 task.PENDING 且实例活跃，否则拒绝。动作分发：
 
-### 5.3 关键不变量与校验
+- `APPROVE` / `REJECT`：按节点 strategy 推进或驳回（见上）。**转办/加签目标校验**：目标用户必须同租户且在职（NORMAL），否则拒绝。
+- `FORWARD`（转办）：任务 assignee 改为目标用户（保持 PENDING），写 FORWARD 日志并通知。
+- `ADD_APPROVER`（加签）：向当前 TASK 节点追加一条并行任务（按 strategy 融入会签/或签）。
+- `WithdrawApply`：仅申请人本人 + 实例 PENDING；实例 WITHDRAWN、全部待办 CANCELLED、写日志并通知原审批人。
 
-- 任务关闭与实例状态推进在 service 层成对发生。
-- `current_node_index` 仅在 `instance_status==PENDING` 时有意义；终结态写 `nil` 清空。
-- `callerFromContext` 从 viewer context 取 `(tenantID, userID)`，二者任一为 0 即 fail-closed。
-- `AuditTask` 强校验 `task.assignee == caller` 且 `task.PENDING`，否则 `ErrorForbidden`。
-- 申请表单数据 `form_data` 仅在 `SubmitApply` 时透传落盘，后续审批流程不读不写。
+`callerFromContext` 从 viewer context 取 `(tenantID, userID)`，uid 为 0 即 fail-closed。申请表单数据 `form_data` 仅在提交时透传落盘，后续审批不读不写。列表协议：`MyTaskItem` 携带 `audit_action`（已办）/`instance_status`（我发起）枚举供客户端本地化，`status_label` 服务端文案保留兼容旧客户端；六模块申请列表的 `status` 过滤字段为 optional（可筛「进行中」）。
 
-### 5.4 业务事件挂钩
+### 5.4 审批委托与超时升级
+
+- **委托**（`WorkflowDelegation`）：一委托人对应一名代理人，任务分派时若委托人生效则自动改派给代理人。
+- **超时催办与升级**（`WorkflowTimeoutScheduler`，asynq periodic 每小时）：扫描全部 PENDING 待办，按任务年龄分级——催办阈值（默认 24h）发催办站内信；升级阈值（默认 72h）自动转办给审批人的组织负责人并通知双方。`reminded_at` / `escalated_at` 非空即跳过，各只执行一次（升级转办后不沿组织树连环上转）。
+
+### 5.7 业务事件挂钩
 
 实例携带 `business_type`/`business_id`；`WorkflowEventRegistry`（进程内 map）在三个终态（APPROVED / REJECTED / WITHDRAWN）同步回调业务模块。回调须校验单据.instance_id 关联（防伪造）且仅处理 PENDING 单据（幂等）。已注册挂钩的业务类型：
 
@@ -197,7 +208,7 @@ AuditTask(FORWARD) → Task.assignee ← forwardTo（状态保持 PENDING，idx 
 
 > 出差/加班/用印/外出四类同型审批单据，其业务表仅含四态状态枚举 + `instance_id` 关联 + `form_schema`，与报销同构；引擎通过 `ensureWorkflowDefinition` 在租户缺定义时按默认模板（提交给申请人主管 LEADER，会签）自动创建并启用。
 
-### 5.5 异步通知
+### 5.8 异步通知
 
 `notifyManyAsync` 用 `context.WithoutCancel(ctx)` + 5s 超时 + `recover`，fire-and-forget 调用同进程 `InternalMessageService` 的 `SendMessage`。`context.WithoutCancel` 保留 viewer（SendMessage 从 viewer 推导发送者，防伪造），脱离已返回的 gRPC 请求生命周期。通知落 `internal_message_recipient` 表。
 
@@ -329,7 +340,10 @@ Composables（`src/api/composables/`）将上述 client 封装为 Vue Query hook
 
 ## 11. 测试与冒烟种子
 
-- 纯逻辑单测：`internal/service/oa_logic_test.go`（computeLeaveDays 半日矩阵 / parseHHMM / truncateDate / isWeekend / 节点归一化与策略 / 迟到早退语义）。`go test -vet=off`（包内存量 vet 告警）。
+- 纯逻辑单测：`internal/service/oa_logic_test.go`（computeLeaveDays 半日矩阵 / parseHHMM / truncateDate / isWeekend / 节点归一化与策略 / 迟到早退语义）。
+- repo 层测试：`internal/data/repo_pagination_test.go`（分页语义：PagingRequest 不限页/切片/倒序/越界/租户隔离，page 直传语义，年度/用户过滤）。
+- service 层集成测试：`internal/service/workflow_audit_validation_test.go`（审批动作目标校验：转办/加签目标同租户在职、非 assignee 拒绝）。
+- 测试基建：`modernc.org/sqlite` 纯 Go 驱动（无 cgo），每用例独立临时文件库 + ent 自动迁移；`workflow_audit_validation_test.go` 为 service 层 + 真实 repo 栈的先例。注意两个坑：ent 迁移要求 sqlite DSN 带 `_fk=1`；`ent/runtime` 必须 blank import（枚举校验器包级变量）。测试种跨租户数据必须用 system viewer（`TenantPrivacy` 在普通用户上下文 Create 时强制覆盖 tenant_id 为 viewer 租户）。
 - 冒烟种子工具：`app/core/service/cmd/smokeseed`（租户/角色/权限/组织/双用户/请假类型额度，输出加密登录密码）。
 
 ---
@@ -338,7 +352,7 @@ Composables（`src/api/composables/`）将上述 client 封装为 Vue Query hook
 
 - **状态机推进路径与建单链已包事务，定义管理仍无事务**：`SubmitApply` 建实例 + 写 SUBMIT 日志、以及 `launchFromNode`/`advanceInstance`/`handleReject`/`handleApprove`/`handleForward`/`WithdrawApply` 的跨 repo 多步写，均经 `WorkflowInstanceRepo.Txn` 包入单一 `ent.Tx`，原子提交/回滚。`SubmitApply` 后续的首节点启动走 `launchFromNode` 自身事务（不嵌套）。仍无事务的：`WorkflowDefinition` CRUD（定义管理，单表操作）、单步写路径。
 - **请假额度无过期/结转机制**：半天粒度已支持；天数计算已扣除休息日（委托 `AttendanceService.isRestDay`，节假日表优先否则按周末，与考勤结算一致）。但额度按年度 total/used 无过期清理、无跨年结转。
-- **工作流通知无 SSE 实时投递，admin 端有轮询兜底**。经 §5.5 所述，工作流引擎经 core 进程内 `SendMessage` 落库的通知不会触发 SSE（SSE publisher 只存在于 admin-service 且只对 admin 自身 HTTP `SendMessage` 路径生效）。各端实际表现：
+- **工作流通知无 SSE 实时投递，admin 端有轮询兜底**。经 §5.8 所述，工作流引擎经 core 进程内 `SendMessage` 落库的通知不会触发 SSE（SSE publisher 只存在于 admin-service 且只对 admin 自身 HTTP `SendMessage` 路径生效）。各端实际表现：
   - **移动端**：app-service 的 `internal_message_service.go` 无 SSE publisher，也无 `SendMessage`；通知页经 REST `GET /app/v1/internal-message/my-messages` 轮询拉取收件箱。core 落库的工作流通知因此**延迟可见、不丢失**（取决于下次轮询时机），但无实时推送。
   - **管理后台**：`NoticeDropdown/useNotice.ts` 经 `InternalMessageRecipientService.ListUserInbox` 拉取收件箱，订阅 `globalSSEClient` 的 `"notification"` 事件（admin 自身 `SendMessage` 产生的新收件行实时到达），并以 30s 间隔定时轮询 `ListUserInbox` 兜底刷新。core 落库的工作流通知经此轮询在 ≤30s 内可见，不再需要手动重载；但仍非实时推送。
 - **通讯录无 DataScope 授权收敛**：app 只读通讯录 wrapper（`i_org_unit`/`i_user`）与 admin 侧 user/org_unit 端点均按租户隔离暴露，但未做按数据范围（DataScope）的可见性收敛。目录页展示全体租户用户及其部门标注，未做按部门过滤。留后续。

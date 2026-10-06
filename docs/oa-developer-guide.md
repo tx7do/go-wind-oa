@@ -113,7 +113,7 @@ core 是纯 gRPC，HTTP 路由全部定义在两个边端的 wrapper proto 里�
 4. 路由 `src/router/routes/modules/app/oa.ts` 加一条（title 走 i18n key，如 `routes.oaPurchase`）。
 5. `src/locales/zh-CN/routes.json` 与 `en-US/routes.json` 补标题文案。
 
-> 前端约定：表格列定义里每列都要有唯一 `prop`（映射到 vxe 表格 `field`，同时也是 Vue 的 key），不写会触发 vxe 告警。枚举值显示一律走 i18n（`enum.<域>.<枚举名>.<值>` 命名空间），不要硬编码英文枚举名；动态键用 `$t`，字面量键用 `useI18n().t`。
+> 前端约定：表格列定义里每列都要有唯一 `prop`（映射到 vxe 表格 `field`，同时也是 Vue 的 key），不写会触发 vxe 告警。枚举值显示一律走 i18n（`enum.<域>.<枚举名>.<值>` 命名空间），不要硬编码英文枚举名；动态键用 `$t`，字面量键用 `useI18n().t`。状态标签用 `oa.ts` 共享的 `workflowInstanceStatusToName/ToTag`，搜索下拉用 `workflowInstanceStatusOptions`；日期一律走 `@/utils/date` 的 `formatDate/formatDateTime`（直接字符串切片有时区错位）。列表接真分页（ProPage `pagination: true` + listAction 透传 `page/pageSize`，total 用后端返回值）；用户选择的场景复用 `fetchUsers` + `userDisplayName`（列表页与抽屉之间经 prop 共享，避免重复拉取）。
 
 ## 第六步：移动端
 
@@ -152,3 +152,7 @@ core 是纯 gRPC，HTTP 路由全部定义在两个边端的 wrapper proto 里�
 | 忘了服务发现 | admin/app 找不到 core | 新 gRPC 服务必须经 etcd 注册（wiring 里接线），边端用 discovery 客户端 |
 | 前端 vxe 表格列无 prop | 控制台告警、列状态异常 | 每列唯一 `prop` / `field` |
 | curl 冒烟带中文 | Git Bash 下 UTF-8 损坏 | 冒烟请求体用 ASCII 或走客户端 |
+| repo List 只 Count 不切片 | 列表假分页：total 正确但返回全量 | `Offset/Limit` 只在传了分页参数时生效（不传=不限页），total 用 Clone().Count |
+| proto3 枚举 0 值当过滤条件 | 「筛第一档枚举」恒返回全部 | 过滤枚举字段声明 `optional`，服务端按存在性判断（六模块 status 即此修法） |
+| TenantPrivacy 覆盖写入 | 测试里种跨租户数据悄悄落到本租户 | 普通用户上下文 Create 会强制 tenant_id=viewer 租户；种跨租户数据用 system viewer |
+| 测试里 import ent 后 hook 未初始化 | `uninitialized hook (forgotten import ent/runtime?)` | 测试文件 blank import `_ ".../ent/runtime"`；sqlite DSN 另需 `?_fk=1` |
