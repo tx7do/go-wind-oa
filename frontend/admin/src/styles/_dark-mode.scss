@@ -711,11 +711,13 @@ html.dark {
   }
 
   // 分页器优化
+  // padding 与亮色 scoped 侧（ProPagination 的 .pro-pagination）同一条：上 16 = 表格→分页器，
+  // 下 0 由列表卡 20px 内缩唯一提供，两处必须一起改，否则暗色回退到旧档。
   .pro-pagination,
   .pagination-container {
     background-color: var(--dark-bg-table) !important; // 和表格容器统一，避免模块割裂
     border-top-color: var(--dark-border) !important;
-    padding: 12px 0 !important;
+    padding: 16px 0 0 !important;
   }
 
   .el-pagination {

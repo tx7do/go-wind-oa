@@ -235,9 +235,11 @@ function updateTableHeight() {
   if (!tableWrapperRef.value) return;
   const wrapperHeight = tableWrapperRef.value.clientHeight;
   if (wrapperHeight <= 0) return;
-  // 减去分页器高度（如果存在）
+  // 减去分页器高度（如果存在）。offsetHeight 已含分页器自己的 padding-top，
+  // 那 16px 就是 §2.6 的「表格 → 分页器」间距，唯一来源在 CSS（ProPagination 的 .pro-pagination）；
+  // 原先这里还额外 +20，与分页器 padding 叠成上 36 的实测间距——两处各写一份。
   const pagerEl = tableWrapperRef.value.querySelector(".pro-pagination") as HTMLElement | null;
-    const pagerHeight = pagerEl ? pagerEl.offsetHeight + 20 : 0; // 20 = 表格与分页器之间的间距
+  const pagerHeight = pagerEl ? pagerEl.offsetHeight : 0;
   vxeTableHeight.value = wrapperHeight - pagerHeight;
 }
 

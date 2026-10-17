@@ -494,6 +494,8 @@ defineExpose({
 .pro-page {
   display: flex;
   flex-direction: column;
+  /* 搜索卡 → 列表卡 12px：8px 太挤，两块"贴一块"；16px 又让列表数据显示空间被压缩。
+     取中间值，既保留两张卡的独立感，又不浪费垂直空间。 */
   gap: 12px;
   height: 100%;
 
@@ -503,11 +505,18 @@ defineExpose({
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
-    padding: 12px;
+    /* 卡片内缩 20px（§2.2 p-5）：原先 12px 让列表内容（工具条/表头）落在 13px，
+       而搜索卡字段在 21px——盒子对齐了、内容没对齐。改成 20 后两块内容同一条竖线，
+       分页器下方留白也由这一条提供（上下不再各写一份）。 */
+    padding: 20px;
     background: var(--el-bg-color);
-    border: 1px solid var(--el-border-color-lighter);
-    border-radius: 8px;
-    box-shadow: var(--el-box-shadow-light);
+    /* 描边与投影走 §2.2/§2.3 的卡片档（`--gowind-card-*`，定义见 _element-plus.scss）：
+     * `--el-box-shadow-light` 是浮层的 12px 全向晕，静止卡片只要 1px/2px 浅落影。 */
+    border: 1px solid var(--gowind-card-border);
+    /* 卡片圆角 12（§2.4 大容器用 LG）：与 ProSearch 同档，见那里的注；
+       内层表格面仍按 proTableConfig 的 6px（外 > 内），骨架卡 .ts-table-card 是这里的镜像。 */
+    border-radius: 12px;
+    box-shadow: var(--gowind-card-shadow);
   }
 }
 </style>

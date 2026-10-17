@@ -71,6 +71,36 @@ $border: 1px solid var(--el-border-color-light);
   /* ---------- GoWind 全局组件变量 ---------- */
   --gowind-drawer-width: 480px;
   --gowind-form-item-margin-bottom: 24px;
+
+  /* ---------- 语义色"作文字"时的合格档（design-language.md §2.1）----------
+   * 基准色 --el-color-* 的亮度只适合当填充，当文字墨用时对白/浅底对比度不够；
+   * 这里按色阶派生规则用 color-mix 从基准色反解出文字档，换主色后仍随 --el-color-*
+   * 联动，不是写死的色值。自建变量（EP 的 base.css 里没有同名项），不需要 !important。 */
+  --gowind-primary-text: color-mix(in srgb, var(--el-color-primary) 90%, #0b0f19);
+  --gowind-success-text: color-mix(in srgb, var(--el-color-success) 50%, #0b0f19);
+  --gowind-warning-text: color-mix(in srgb, var(--el-color-warning) 50%, #0b0f19);
+  --gowind-danger-text: color-mix(in srgb, var(--el-color-danger) 70%, #0b0f19);
+
+  /* 卡片静止档（§2.2 定稿：投影只表达层级，卡片静止 = `0 1px 2px rgba(0,0,0,.05)`，
+   * 悬浮才是 `0 4px 12px rgba(0,0,0,.08)`）。Pro 卡/骨架卡不走 `--el-box-shadow-light`：
+   * 其运行时实测是出厂值 `0 0 12px rgba(0,0,0,.12)`（bootstrap.ts 引的是预编译
+   * dist/index.css，本文件顶部 @forward map 到不了运行时）——比悬浮档还重且无 Y 偏移，
+   * 剩下的使用者全是浮层，那圈 12px 晕正是浮层要的。描边同理走 `--gowind-card-border`
+   * （§2.2 = #E4E4E7）：`--el-border-color-lighter` 运行时实测是出厂 #EBEEF5，比权威淡一档。 */
+  --gowind-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --gowind-card-border: #e4e4e7;
+}
+
+/* 暗色档：语义色文字 = 对暗面 ≥4.5:1 的最小升档；卡片投影取 .el-card 早已采用的
+ * `0 1px 2px rgba(0,0,0,.36)`（EP 暗色的 --el-box-shadow 是 72% 黑晕，窄间距卡片间
+ * 叠出黑缝），描边落 §2.3 的分隔线档 8% 白。 */
+html.dark {
+  --gowind-primary-text: color-mix(in srgb, var(--el-color-primary) 70%, #ffffff);
+  --gowind-success-text: color-mix(in srgb, var(--el-color-success) 90%, #ffffff);
+  --gowind-warning-text: color-mix(in srgb, var(--el-color-warning) 90%, #ffffff);
+  --gowind-danger-text: color-mix(in srgb, var(--el-color-danger) 90%, #ffffff);
+  --gowind-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.36);
+  --gowind-card-border: rgba(255, 255, 255, 0.08);
 }
 
 /* ---------- el-dialog ---------- */
