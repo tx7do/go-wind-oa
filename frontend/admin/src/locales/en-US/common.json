@@ -68,6 +68,17 @@
     "confirmDelete": "Are you sure you want to delete this {moduleName}?",
     "confirmSyncPermissions": "Are you sure you want to sync {moduleName} permissions?"
   },
+  "notice": {
+    "markedRead": "Marked as read",
+    "markFailed": "Failed to mark",
+    "noUnread": "No unread messages",
+    "allMarkedRead": "All marked as read",
+    "confirmClear": "Are you sure you want to clear all messages?",
+    "noMessages": "No messages to clear",
+    "cleared": "All messages cleared",
+    "newNotificationTitle": "You have a new notification!",
+    "newMessage": "New message"
+  },
   "langSelect": {
     "message": {
       "success": "Language switched successfully"
@@ -139,6 +150,7 @@
   },
   "navbar": {
     "profile": "Profile",
+    "inbox": "Inbox",
     "logout": "Logout",
     "logoutConfirmTitle": "Notice",
     "logoutConfirmMessage": "Are you sure you want to logout and exit the system?"

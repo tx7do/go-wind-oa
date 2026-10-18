@@ -7,6 +7,33 @@
       "securitySettings": "Security Settings",
       "accountBind": "Account Bind",
       "notification": "Notification"
+    },
+    "field": {
+      "nickname": "Nickname",
+      "realname": "Name",
+      "email": "Email",
+      "mobile": "Mobile",
+      "telephone": "Telephone",
+      "gender": "Gender",
+      "region": "Region",
+      "address": "Address",
+      "description": "Description",
+      "locale": "Preferred Language",
+      "avatar": "Avatar"
+    },
+    "info": {
+      "username": "Username",
+      "roleNames": "Roles",
+      "orgUnitNames": "Organizations",
+      "positionNames": "Positions",
+      "tenantName": "Tenant",
+      "lastLoginAt": "Last Login At",
+      "lastLoginIp": "Last Login IP",
+      "createdAt": "Created At"
+    },
+    "notice": {
+      "uploadSuccess": "Avatar uploaded",
+      "uploadFailed": "Failed to upload avatar"
     }
   },
   "detail": {
@@ -67,9 +94,11 @@
   },
   "button": {
     "updatePassword": "Update Password",
-    "updateUserInfo": "Update User Info",
+    "updateUserInfo": "Update Profile",
     "editPassword": "Edit Password",
-    "banAccount": "Ban Account"
+    "banAccount": "Ban Account",
+    "uploadAvatar": "Upload Avatar",
+    "deleteAvatar": "Delete Avatar"
   },
   "msgNotify": {
     "accountPassword": "Account Password",

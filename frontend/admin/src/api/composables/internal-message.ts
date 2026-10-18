@@ -1,4 +1,5 @@
 import { computed } from "vue";
+import type { TagType } from "./shared";
 import {
   useMutation,
   type UseMutationOptions,
@@ -202,7 +203,11 @@ export function useDeleteMessageCategory(
 // ==============================
 export function useListUserInbox(
   query: PaginationQuery,
-  options?: UseQueryOptions<internal_messageservicev1_ListUserInboxResponse, Error>
+  // queryKey/queryFn 由本 hook 固定构造，调用方只传行为选项（如 enabled）
+  options?: Omit<
+    UseQueryOptions<internal_messageservicev1_ListUserInboxResponse, Error>,
+    "queryKey" | "queryFn"
+  >
 ) {
   return useQuery({
     queryKey: ["listUserInbox", query],
@@ -228,7 +233,8 @@ export function useDeleteNotificationFromInbox(
   >
 ) {
   return useMutation({
-    mutationFn: (data) => apiClient.internalMessageRecipientService.DeleteNotificationFromInbox(data),
+    mutationFn: (data) =>
+      apiClient.internalMessageRecipientService.DeleteNotificationFromInbox(data),
     ...options,
   });
 }
@@ -275,19 +281,20 @@ export function internalMessageStatusLabel(value: InternalMessage_Status): strin
   return matchedItem ? matchedItem.label : "";
 }
 
-const INTERNAL_MESSAGE_STATUS_COLOR_MAP: Record<string, string> = {
-  ARCHIVED: "#86909C",
-  DELETED: "#C9CDD4",
-  DRAFT: "#9CA3AF",
-  PUBLISHED: "#00B42A",
-  REVOKED: "#F53F3F",
-  SCHEDULED: "#165DFF",
-  DEFAULT: "#E5E7EB",
+const INTERNAL_MESSAGE_STATUS_TAG_TYPE_MAP: Record<string, TagType> = {
+  ARCHIVED: "info",
+  DELETED: "info",
+  DRAFT: "info",
+  PUBLISHED: "success",
+  REVOKED: "danger",
+  SCHEDULED: "primary",
+  DEFAULT: "info",
 };
 
-export function internalMessageStatusColor(status: InternalMessage_Status): string {
+export function internalMessageStatusToType(status: InternalMessage_Status): TagType {
   return (
-    INTERNAL_MESSAGE_STATUS_COLOR_MAP[status as string] || INTERNAL_MESSAGE_STATUS_COLOR_MAP.DEFAULT
+    INTERNAL_MESSAGE_STATUS_TAG_TYPE_MAP[status as string] ||
+    INTERNAL_MESSAGE_STATUS_TAG_TYPE_MAP.DEFAULT
   );
 }
 
@@ -297,15 +304,18 @@ export function internalMessageTypeLabel(value: InternalMessage_Type): string {
   return matchedItem ? matchedItem.label : "";
 }
 
-const INTERNAL_MESSAGE_TYPE_COLOR_MAP: Record<string, string> = {
-  GROUP: "#00B42A",
-  NOTIFICATION: "#165DFF",
-  PRIVATE: "#722ED1",
-  DEFAULT: "#C9CDD4",
+const INTERNAL_MESSAGE_TYPE_TAG_TYPE_MAP: Record<string, TagType> = {
+  GROUP: "success",
+  NOTIFICATION: "primary",
+  PRIVATE: "warning",
+  DEFAULT: "info",
 };
 
-export function internalMessageTypeColor(type: InternalMessage_Type): string {
-  return INTERNAL_MESSAGE_TYPE_COLOR_MAP[type as string] || INTERNAL_MESSAGE_TYPE_COLOR_MAP.DEFAULT;
+export function internalMessageTypeToType(type: InternalMessage_Type): TagType {
+  return (
+    INTERNAL_MESSAGE_TYPE_TAG_TYPE_MAP[type as string] ||
+    INTERNAL_MESSAGE_TYPE_TAG_TYPE_MAP.DEFAULT
+  );
 }
 
 export function internalMessageRecipientStatusLabel(
@@ -316,29 +326,20 @@ export function internalMessageRecipientStatusLabel(
   return matchedItem ? matchedItem.label : "";
 }
 
-const INTERNAL_MESSAGE_RECIPIENT_COLOR_THEME: Record<string, Record<string, string>> = {
-  light: {
-    DELETED: "#C9CDD4",
-    READ: "#86909C",
-    RECEIVED: "#165DFF",
-    REVOKED: "#F53F3F",
-    SENT: "#4096FF",
-    DEFAULT: "#E5E7EB",
-  },
-  dark: {
-    DELETED: "#6E7681",
-    READ: "#4E5969",
-    RECEIVED: "#2F77FF",
-    REVOKED: "#F87171",
-    SENT: "#69B1FF",
-    DEFAULT: "#4B5563",
-  },
+const INTERNAL_MESSAGE_RECIPIENT_TAG_TYPE_MAP: Record<string, TagType> = {
+  DELETED: "info",
+  READ: "success",
+  RECEIVED: "primary",
+  REVOKED: "danger",
+  SENT: "warning",
+  DEFAULT: "info",
 };
 
-export function internalMessageRecipientStatusColor(
-  status: InternalMessageRecipient_Status,
-  theme: "dark" | "light" = "light"
-): string {
-  const colorMap = INTERNAL_MESSAGE_RECIPIENT_COLOR_THEME[theme];
-  return colorMap[status as string] || colorMap.DEFAULT;
+export function internalMessageRecipientStatusToType(
+  status: InternalMessageRecipient_Status
+): TagType {
+  return (
+    INTERNAL_MESSAGE_RECIPIENT_TAG_TYPE_MAP[status as string] ||
+    INTERNAL_MESSAGE_RECIPIENT_TAG_TYPE_MAP.DEFAULT
+  );
 }

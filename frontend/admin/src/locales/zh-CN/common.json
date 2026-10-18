@@ -68,6 +68,17 @@
     "confirmDelete": "确定要删除该{moduleName}吗？",
     "confirmSyncPermissions": "确定要同步{moduleName}权限吗？"
   },
+  "notice": {
+    "markedRead": "已标记为已读",
+    "markFailed": "标记失败",
+    "noUnread": "没有未读消息",
+    "allMarkedRead": "已全部标记为已读",
+    "confirmClear": "确定要清空所有消息吗？",
+    "noMessages": "没有消息可清空",
+    "cleared": "已清空所有消息",
+    "newNotificationTitle": "您收到一条新的通知消息！",
+    "newMessage": "新消息"
+  },
   "langSelect": {
     "message": {
       "success": "切换语言成功"
@@ -139,6 +150,7 @@
   },
   "navbar": {
     "profile": "个人中心",
+    "inbox": "收件箱",
     "logout": "退出登录",
     "logoutConfirmTitle": "提示",
     "logoutConfirmMessage": "确定注销并退出系统吗？"
