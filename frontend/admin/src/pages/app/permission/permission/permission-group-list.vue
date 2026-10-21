@@ -108,7 +108,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
       } as ToolsButton,
     ],
     toolbarRight: ["add"],
-    defaultToolbar: ["refresh", "filter"],
+    defaultToolbar: ["exports", "refresh"],
     tableAttrs: {
       border: true,
       stripe: false,

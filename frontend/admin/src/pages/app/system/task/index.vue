@@ -119,21 +119,21 @@ const pageConfig = computed<ProPageConfig>(() => ({
       {
         name: "startAll",
         label: $t("pages.task.button.startAll"),
-        attrs: { type: "success" },
+        attrs: { type: "success", plain: true, icon: "CaretRight" },
       } as ToolsButton,
       {
         name: "stopAll",
         label: $t("pages.task.button.stopAll"),
-        attrs: { type: "danger" },
+        attrs: { type: "danger", plain: true, icon: "VideoPause" },
       } as ToolsButton,
       {
         name: "restartAll",
         label: $t("pages.task.button.restartAll"),
-        attrs: { type: "primary" },
+        attrs: { type: "warning", plain: true, icon: "Refresh" },
       } as ToolsButton,
       "add",
     ],
-    defaultToolbar: ["refresh", "exports", "filter"],
+    defaultToolbar: ["exports", "refresh", "zoom", "filter"],
     pagination: false,
     tableAttrs: { border: true, stripe: false },
     columns: [
@@ -165,7 +165,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
         prop: "action",
         label: $t("common.table.action"),
         fixed: "right",
-        width: 240,
+        width: 300,
         cellType: "tool",
         buttons: [
           { name: "edit", label: $t("common.button.edit"), icon: "lucide:pen-line" },

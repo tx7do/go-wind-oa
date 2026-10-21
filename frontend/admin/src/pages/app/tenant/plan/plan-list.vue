@@ -78,8 +78,15 @@ const pageConfig = computed<ProPageConfig>(() => ({
     },
     toolbar: [],
     toolbarRight: ["add"],
-    defaultToolbar: ["refresh", "filter"],
-    tableAttrs: { border: true, stripe: true, height: "auto" },
+    defaultToolbar: ["exports", "refresh", "zoom", "filter"],
+    tableAttrs: {
+      border: true,
+      stripe: true,
+      height: "auto",
+      "show-overflow": "title",
+      "show-header-overflow": "title",
+    },
+    // 左栏分栏主表：内容列不设宽度（均分贴合容器防横向溢出），仅操作列定宽
     columns: [
       {
         prop: "name",

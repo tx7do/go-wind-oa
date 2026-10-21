@@ -5,9 +5,10 @@
     :loading="pageLoading"
     :config="{
       component: 'drawer',
-      drawer: { size: DRAWER_WIDTH, closeOnClickModal: false },
+      drawer: { size: DRAWER_WIDTH },
     }"
-  >
+  
+    :close-guard="guard.allowClose">
     <ElForm
       ref="formRef"
       :model="formData"
@@ -79,7 +80,7 @@
 
     <template #footer>
       <div class="drawer-footer">
-        <ElButton @click="handleClose">{{ $t("common.button.cancel") }}</ElButton>
+        <ElButton @click="guard.requestClose(handleClose)">{{ $t("common.button.cancel") }}</ElButton>
         <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">
           {{ $t("common.button.confirm") }}
         </ElButton>
@@ -94,6 +95,7 @@ import { ElMessage } from "element-plus";
 import type { TreeInstance } from "element-plus";
 
 import ProModal from "@/components/Pro/ProModal/index.vue";
+import { useDrawerCloseGuard } from "@/components/Pro/composables/use-drawer-close-guard";
 
 import {
   useCreateRole,
@@ -175,6 +177,15 @@ function filterPermissionNode(value: string, data: any) {
 }
 
 // 打开抽屉
+// 关闭守卫：遮罩/ESC/X/取消统一，脏数据先确认（docs/form_drawer_close_guard.md）；
+// 权限树/授权单元树的勾选与字段权限中间态也是编辑态，纳入脏判定
+const guard = useDrawerCloseGuard(() => ({
+  ...formData,
+  permissionKeys: permissionTreeRef.value?.getCheckedKeys(false),
+  unitKeys: unitTreeRef.value?.getCheckedKeys(false),
+  userHiddenFields: userHiddenFields.value,
+}));
+
 async function open(data?: { create: boolean; row?: any }) {
   visible.value = true;
   isCreate.value = data?.create ?? true;
@@ -208,6 +219,9 @@ async function open(data?: { create: boolean; row?: any }) {
   } finally {
     pageLoading.value = false;
   }
+
+  // 填充完成后记录基线快照（回填不算脏）
+  guard.syncBaseline();
 }
 
 // 关闭抽屉

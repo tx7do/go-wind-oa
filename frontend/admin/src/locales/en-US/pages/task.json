@@ -13,8 +13,8 @@
   "taskOptionsProcessIn": "Process In",
   "taskOptionsProcessAt": "Process At",
   "button": {
-    "create": "Create",
-    "update": "Update",
+    "create": "Create Task",
+    "update": "Update Task",
     "startAll": "Start All",
     "stopAll": "Stop All",
     "restartAll": "Restart All",

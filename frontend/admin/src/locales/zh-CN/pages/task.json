@@ -13,11 +13,11 @@
   "taskOptionsProcessIn": "处理延迟",
   "taskOptionsProcessAt": "处理时间",
   "button": {
-    "create": "创建",
-    "update": "更新",
-    "startAll": "启动所有",
-    "stopAll": "停止所有",
-    "restartAll": "重启所有",
+    "create": "创建任务",
+    "update": "更新任务",
+    "startAll": "全部启动",
+    "stopAll": "全部停止",
+    "restartAll": "全部重启",
     "start": "启动",
     "stop": "停止",
     "restart": "重启"

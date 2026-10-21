@@ -65,6 +65,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
   },
 
   table: {
+    exportFilename: "roles",
     listAction: async (query: any) => {
       const { page, pageSize, ...queryParams } = query;
       const result = await fetchListRoles(
@@ -80,7 +81,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
     },
     toolbar: [],
     toolbarRight: ["add"],
-    defaultToolbar: ["refresh", "filter"],
+    defaultToolbar: ["exports", "refresh", "zoom", "filter"],
     tableAttrs: { border: true, stripe: false },
     columns: [
       { type: "index", label: $t("common.table.seq"), width: 60 },

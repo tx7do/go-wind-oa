@@ -3,14 +3,18 @@
     <!-- ==================== 左侧区域 ==================== -->
     <div class="navbar__left">
       <!-- 侧边栏显示/隐藏按钮 -->
-      <div v-if="widget.sidebarToggle" class="navbar-action" @click="toggleSidebarVisibility">
+      <ElTooltip :content="$t('common.header.sidebar')" placement="bottom">
+              <div v-if="widget.sidebarToggle" class="navbar-action" @click="toggleSidebarVisibility">
         <SvgIcon icon="collapse" :class="{ 'is-active': isSidebarEnabled }" />
       </div>
+      </ElTooltip>
 
       <!-- 刷新内容区按钮 -->
-      <div v-if="widget.refresh" class="navbar-action" @click="handleRefresh">
+      <ElTooltip :content="$t('common.header.refresh')" placement="bottom">
+              <div v-if="widget.refresh" class="navbar-action" @click="handleRefresh">
         <SvgIcon icon="refresh" :class="{ 'is-spin': contentRefreshing }" />
       </div>
+      </ElTooltip>
 
       <!-- 面包屑 -->
       <LayoutBreadcrumb />
@@ -24,33 +28,43 @@
       </div>
 
       <!-- 偏好设置 -->
-      <div
+      <ElTooltip :content="$t('common.header.preferences')" placement="bottom">
+              <div
         v-if="preferences.app.enablePreferences"
         class="navbar-action"
         @click="handleSettingsClick"
       >
         <SvgIcon icon="setting" />
       </div>
+      </ElTooltip>
 
       <!-- 主题切换 -->
-      <div v-if="widget.themeToggle" class="navbar-action navbar-action--icon">
+      <ElTooltip :content="$t('common.header.theme')" placement="bottom">
+              <div v-if="widget.themeToggle" class="navbar-action navbar-action--icon">
         <ThemeSwitch />
       </div>
+      </ElTooltip>
 
       <!-- 语言切换 -->
-      <div v-if="widget.languageToggle" class="navbar-action">
+      <ElTooltip :content="$t('common.header.language')" placement="bottom">
+              <div v-if="widget.languageToggle" class="navbar-action">
         <LangSelect />
       </div>
+      </ElTooltip>
 
       <!-- 全屏 -->
-      <div v-if="widget.fullscreen" class="navbar-action">
+      <ElTooltip :content="$t('common.header.fullscreen')" placement="bottom">
+              <div v-if="widget.fullscreen" class="navbar-action">
         <LayoutFullscreen />
       </div>
+      </ElTooltip>
 
       <!-- 通知 -->
-      <div v-if="widget.notification" class="navbar-action">
+      <ElTooltip :content="$t('common.header.notification')" placement="bottom">
+              <div v-if="widget.notification" class="navbar-action">
         <NoticeDropdown />
       </div>
+      </ElTooltip>
 
       <!-- 用户头像下拉 -->
       <div class="navbar-action navbar-action--profile">
@@ -85,6 +99,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAppUserStore } from "@/stores";
 import { useAuth } from "@/composables/use-auth";
 import { preferences, preferencesManager } from "@/core/preferences";
+import { ElTooltip } from "element-plus";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 
 import LayoutBreadcrumb from "./LayoutBreadcrumb.vue";

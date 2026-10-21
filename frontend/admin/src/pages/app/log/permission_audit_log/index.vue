@@ -53,6 +53,7 @@ function handleOperate(data: { name: string; row: any }) {
 
 const pageConfig = computed<ProPageConfig>(() => ({
   skeleton: true,
+  exportFilename: "permission-audit-logs",
   search: {
     grid: true,
     fields: [
@@ -159,7 +160,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
     },
     toolbar: [],
     toolbarRight: [],
-    defaultToolbar: ["refresh", "exports", "filter"],
+    defaultToolbar: ["exports", "refresh", "zoom", "filter"],
     tableAttrs: { border: true, stripe: false },
     columns: [
       {

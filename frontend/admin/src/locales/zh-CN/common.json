@@ -7,6 +7,7 @@
     "delete": "删除",
     "search": "搜索",
     "reset": "重置",
+    "retry": "重试",
     "export": "导出",
     "import": "导入",
     "add": "新增",
@@ -21,7 +22,8 @@
     "ok": "确定",
     "detail": "详情",
     "expand": "展开",
-    "collapse": "收起"
+    "collapse": "收起",
+    "more": "更多"
   },
   "status": {
     "enabled": "启用",
@@ -42,7 +44,8 @@
     "items": "条",
     "do_you_want_delete": "确定要删除该{moduleName}吗？",
     "do_you_want_sync_permissions": "确定要同步{moduleName}权限吗？",
-    "do_you_want_disable": "确定要禁用该{moduleName}吗？"
+    "do_you_want_disable": "确定要禁用该{moduleName}吗？",
+    "home": "首页"
   },
   "placeholder": {
     "input": "请输入",
@@ -66,7 +69,9 @@
     "operationFailed": "操作失败",
     "getDetailFailed": "获取详情失败",
     "confirmDelete": "确定要删除该{moduleName}吗？",
-    "confirmSyncPermissions": "确定要同步{moduleName}权限吗？"
+    "confirmSyncPermissions": "确定要同步{moduleName}吗？",
+    "developing": "开发中 ...",
+    "loadDataFailed": "数据加载失败"
   },
   "notice": {
     "markedRead": "已标记为已读",
@@ -78,6 +83,18 @@
     "cleared": "已清空所有消息",
     "newNotificationTitle": "您收到一条新的通知消息！",
     "newMessage": "新消息"
+  },
+  "relativeTime": {
+    "justNow": "刚刚",
+    "minutesAgo": "{n}分钟前",
+    "hoursAgo": "{n}小时前",
+    "daysAgo": "{n}天前"
+  },
+  "iconSelect": {
+    "selectPlaceholder": "点击选择图标",
+    "searchPlaceholder": "搜索图标",
+    "svgTab": "SVG 图标",
+    "elementTab": "Element 图标"
   },
   "langSelect": {
     "message": {
@@ -116,11 +133,12 @@
     "syncFailed": "同步失败",
     "password_mismatch": "两次输入的密码不一致",
     "update_status_success": "状态更新成功",
+    "passwordChanged": "密码修改成功，请重新登录",
     "create_success": "创建成功",
     "create_failed": "创建失败",
     "operation_success": "操作成功",
     "operation_failed": "操作失败",
-    "update_status_failed": "更新状态失败",
+    "update_status_failed": "状态更新失败",
     "saveSuccess": "保存成功",
     "saveFailed": "保存失败"
   },
@@ -134,7 +152,12 @@
   },
   "modal": {
     "create": "创建{moduleName}",
-    "update": "编辑{moduleName}"
+    "update": "更新{moduleName}",
+    "view": "查看{moduleName}"
+  },
+  "drawer": {
+    "unsavedMessage": "表单内容已修改，是否放弃本次编辑？",
+    "discardButton": "确定放弃"
   },
   "confirm": {
     "do_you_want_delete": "确定要删除该{moduleName}吗？",
@@ -144,16 +167,30 @@
     "searchMenu": "搜索菜单",
     "openSearch": "打开搜索面板",
     "close": "关闭",
-    "noHistory": "没有搜索历史",
+    "noHistory": "暂无最近搜索",
+    "noResults": "未找到相关页面",
+    "recent": "最近",
+    "semanticTitle": "语义搜索",
+    "searching": "正在搜索…",
     "switch": "切换",
     "select": "选择"
   },
   "navbar": {
     "profile": "个人中心",
     "inbox": "收件箱",
+    "lockScreen": "锁定屏幕",
     "logout": "退出登录",
     "logoutConfirmTitle": "提示",
     "logoutConfirmMessage": "确定注销并退出系统吗？"
+  },
+  "lockScreen": {
+    "title": "锁定屏幕",
+    "placeholder": "请输入锁屏密码",
+    "lock": "锁定",
+    "unlock": "点击解锁",
+    "entry": "进入系统",
+    "backToLogin": "返回登录",
+    "errorTip": "密码错误，请重新输入"
   },
   "sidebar": {
     "collapseMenu": "折叠菜单",
@@ -228,21 +265,69 @@
   },
   "request": {
     "error": {
-      "networkError": "网络异常，请稍后重试",
-      "timeout": "请求超时，请稍后重试",
-      "unknownError": "未知错误，请稍后重试"
+      "networkError": "网络连接错误,请检查网络设置后重试",
+      "timeout": "请求超时,请检查网络连接后重试",
+      "unknownError": "请求发生错误,请稍后重试"
     },
     "reason": {
-      "INVALID_PASSWORD": "密码错误",
+      "INVALID_PASSWORD": "密码错误，请重新输入",
       "USER_NOT_FOUND": "用户不存在",
       "USER_DISABLED": "用户已被禁用",
       "USER_LOCKED": "用户已被锁定",
-      "TOKEN_EXPIRED": "登录已过期，请重新登录",
-      "UNAUTHORIZED": "未授权，请重新登录",
-      "FORBIDDEN": "没有操作权限",
+      "TOKEN_EXPIRED": "令牌已过期",
+      "UNAUTHORIZED": "未授权，请登录",
+      "FORBIDDEN": "权限不足",
       "DUPLICATE_ENTRY": "数据已存在",
       "VALIDATION_FAILED": "数据校验失败",
-      "INTERNAL_ERROR": "服务器内部错误"
+      "INTERNAL_ERROR": "服务器内部错误",
+      "BAD_REQUEST": "请求参数错误",
+      "INVALID_GRANT_TYPE": "无效的授权类型",
+      "INVALID_USERID": "无效的用户ID",
+      "INVALID_TOKEN": "无效的令牌",
+      "USER_FREEZE": "用户被冻结，请联系管理员",
+      "INCORRECT_APP_SECRET": "应用密钥错误",
+      "INCORRECT_ACCESS_TOKEN": "访问令牌错误",
+      "INCORRECT_REFRESH_TOKEN": "刷新令牌错误",
+      "TOKEN_NOT_EXIST": "令牌不存在",
+      "PAYMENT_REQUIRED": "需要付费",
+      "NOT_FOUND": "请求的资源不存在",
+      "METHOD_NOT_ALLOWED": "请求方法不允许",
+      "NOT_ACCEPTABLE": "不可接受的请求",
+      "PROXY_AUTHENTICATION_REQUIRED": "需要代理认证",
+      "REQUEST_TIMEOUT": "请求超时",
+      "CONFLICT": "请求冲突",
+      "GONE": "资源已删除",
+      "LENGTH_REQUIRED": "需要Content-Length",
+      "PRECONDITION_FAILED": " precondition失败",
+      "PAYLOAD_TOO_LARGE": "请求体过大",
+      "URI_TOO_LONG": "请求URI过长",
+      "UNSUPPORTED_MEDIA_TYPE": "不支持的媒体类型",
+      "RANGE_NOT_SATISFIABLE": "范围不可满足",
+      "EXPECTATION_FAILED": "期望失败",
+      "IM_A_TEAPOT": "我是茶壶",
+      "MISDIRECTED_REQUEST": "请求被错误路由",
+      "UNPROCESSABLE_ENTITY": "无法处理的请求",
+      "LOCKED": "资源被锁定",
+      "FAILED_DEPENDENCY": "依赖失败",
+      "TOO_EARLY": "请求太早",
+      "UPGRADE_REQUIRED": "需要升级",
+      "PRECONDITION_REQUIRED": "需要前提条件",
+      "TOO_MANY_REQUESTS": "请求过于频繁",
+      "REQUEST_HEADER_FIELDS_TOO_LARGE": "请求头过大",
+      "UNAVAILABLE_FOR_LEGAL_REASONS": "因法律原因不可用",
+      "INTERNAL_SERVER_ERROR": "服务器内部错误，请稍后重试",
+      "NOT_IMPLEMENTED": "功能未实现",
+      "BAD_GATEWAY": "网关错误",
+      "SERVICE_UNAVAILABLE": "服务不可用",
+      "GATEWAY_TIMEOUT": "网关超时",
+      "HTTP_VERSION_NOT_SUPPORTED": "不支持的HTTP版本",
+      "VARIANT_ALSO_NEGOTIATES": "协商失败",
+      "INSUFFICIENT_STORAGE": "存储空间不足",
+      "LOOP_DETECTED": "检测到循环",
+      "NOT_EXTENDED": "未扩展",
+      "NETWORK_AUTHENTICATION_REQUIRED": "需要网络认证",
+      "NETWORK_READ_TIMEOUT_ERROR": "网络读取超时",
+      "NETWORK_CONNECT_TIMEOUT_ERROR": "网络连接超时"
     },
     "status": {
       "400": "请求错误",
@@ -332,13 +417,26 @@
     "json_parse_error": "JSON解析错误",
     "json_serialize_error": "JSON序列化错误",
     "unknown_error": "未知错误",
-    "clear_content_confirm": "确定要清空全部内容吗？"
+    "image_upload_failed": "图片上传失败",
+    "clear_content_confirm": "确定要清空所有内容吗？"
+  },
+  "loading": "加载中...",
+  "loadingMenu": "正在加载菜单",
+  "operationFailed": "操作失败",
+  "header": {
+    "settings": "系统设置",
+    "fullscreen": "全屏",
+    "layout": "布局",
+    "language": "语言",
+    "notification": "通知",
+    "sidebar": "侧边栏",
+    "refresh": "刷新内容",
+    "preferences": "偏好设置",
+    "theme": "主题切换"
   },
   "cancel": "取消",
   "view": "查看",
-  "loading": "加载中...",
   "error": "错误",
   "success": "成功",
-  "unknown": "未知",
-  "operationFailed": "操作失败"
+  "unknown": "未知"
 }

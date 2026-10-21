@@ -3,7 +3,7 @@
     <ProPage ref="pageRef" :config="pageConfig" @add="handleAdd" @edit="handleEdit">
       <!-- 类型 -->
       <template #type="scope: any">
-        <ElTag size="small" effect="dark" round :color="positionTypeToColor(scope.row.type)">
+        <ElTag size="small" round :type="positionTypeToType(scope.row.type)">
           {{ positionTypeToName(scope.row.type) }}
         </ElTag>
       </template>
@@ -31,24 +31,43 @@ import PositionDrawer from "./position-drawer.vue";
 
 import {
   positionTypeList,
-  positionTypeToColor,
+  positionTypeToType,
   positionTypeToName,
   statusList,
   statusToType,
   statusToName,
   fetchListOrgUnits,
   fetchListPositions,
+  useCreatePosition,
   useDeletePosition,
+  createImportsAction,
+  generateImportTemplate,
 } from "@/api/composables";
 import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/core/i18n";
 
 const { mutateAsync: deletePosition } = useDeletePosition();
+const { mutateAsync: createPosition } = useCreatePosition();
 
 const pageRef = ref();
 const drawerRef = ref();
 
-const pageConfig = computed<ProPageConfig>(() => ({
+const pageConfig = computed<ProPageConfig>(() => {
+  // Excel 导入字段清单：与抽屉表单一致；orgUnit 以"组织名称"列承载，
+  // 导入期解析为 orgUnitId（见下方 createRow 包装）。
+  const orgUnitList = ref<any[]>([]);
+  const importFields = [
+    { label: $t("pages.position.name"), prop: "name" },
+    { label: $t("pages.position.code"), prop: "code" },
+    { label: $t("pages.position.type"), prop: "type" },
+    { label: $t("common.table.status"), prop: "status" },
+    { label: $t("pages.position.headcount"), prop: "headcount" },
+    { label: $t("common.table.sortOrder"), prop: "sortOrder" },
+    { label: $t("pages.position.description"), prop: "description" },
+    { label: $t("pages.position.orgUnit"), prop: "__orgUnitName" },
+    { label: $t("common.table.remark"), prop: "remark" },
+  ];
+  return {
   skeleton: true,
   search: {
     grid: true,
@@ -123,13 +142,37 @@ const pageConfig = computed<ProPageConfig>(() => ({
     deleteAction: async (ids: string) => {
       await deletePosition({ id: ids as any });
     },
+    importsAction: createImportsAction(importFields, async (values) => {
+      // 解析组织名称 → orgUnitId：按名称过滤拉取后精确匹配，未命中视为行级错误
+      const orgName = values.__orgUnitName;
+      delete values.__orgUnitName;
+      if (orgName && String(orgName).trim() !== "") {
+        if (orgUnitList.value.length === 0) {
+          const result = await fetchListOrgUnits(
+            new PaginationQuery({
+              paging: { page: 1, pageSize: 500 },
+              formValues: { status: "ON" },
+            }),
+          );
+          orgUnitList.value = result.items || [];
+        }
+        const hit = orgUnitList.value.find(
+          (u: any) => u.name === String(orgName).trim(),
+        );
+        if (!hit) {
+          throw new Error(`${$t("pages.position.orgUnit")}: ${orgName}`);
+        }
+        values.orgUnitId = hit.id;
+      }
+      return createPosition(values);
+    }),
+    importTemplate: () => generateImportTemplate(importFields),
     toolbar: [],
     toolbarRight: ["add"],
-    defaultToolbar: ["refresh", "filter"],
+    defaultToolbar: ["exports", "imports", "refresh", "zoom", "filter"],
     tableAttrs: { border: true, stripe: true },
     emptyActionText: "common.button.add",
     columns: [
-      { type: "index", label: $t("common.table.seq"), width: 60 },
       { prop: "name", label: $t("pages.position.name"), minWidth: 120 },
       { prop: "code", label: $t("pages.position.code"), minWidth: 120 },
       {
@@ -174,7 +217,8 @@ const pageConfig = computed<ProPageConfig>(() => ({
       },
     ],
   },
-}));
+  };
+});
 
 function handleAdd() {
   drawerRef.value?.open({ create: true });

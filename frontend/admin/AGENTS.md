@@ -240,7 +240,7 @@ interface ProPageConfig<T = any, Q = any> {
 | 开关列 | `{ prop, cellType: "switch", activeValue, inactiveValue }` |
 | 操作列 | `{ prop: "action", fixed: "right", cellType: "tool", buttons: [...] }` |
 
-操作列 buttons：`{ name, label, icon: "lucide:pen-line", attrs?: { type: "danger" } }`
+操作列 buttons：`{ name, label, icon: "lucide:pen-line", attrs?: { type: "danger" } }`。每个按钮**必须带 label + icon**（ToolCell 渲染成图标+文本 link 钮）；声明超过 3 个时 ToolCell 自动只留前 3 个行内、其余进「更多」下拉（图标+文字选项，danger 项红墨），页面无需写溢出逻辑，width 给足（3 行内+更多 ≈260）。
 
 ### ProFormField 搜索字段类型
 

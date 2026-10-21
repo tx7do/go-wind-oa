@@ -7,6 +7,7 @@
     "delete": "Delete",
     "search": "Search",
     "reset": "Reset",
+    "retry": "Retry",
     "export": "Export",
     "import": "Import",
     "add": "Add",
@@ -21,7 +22,8 @@
     "ok": "OK",
     "detail": "Detail",
     "expand": "Expand",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "more": "More"
   },
   "status": {
     "enabled": "Enabled",
@@ -42,7 +44,8 @@
     "items": "items",
     "do_you_want_delete": "Are you sure you want to delete this {moduleName}?",
     "do_you_want_sync_permissions": "Are you sure you want to sync {moduleName} permissions?",
-    "do_you_want_disable": "Are you sure you want to disable this {moduleName}?"
+    "do_you_want_disable": "Are you sure you want to disable this {moduleName}?",
+    "home": "Home"
   },
   "placeholder": {
     "input": "Please input",
@@ -66,7 +69,9 @@
     "operationFailed": "Operation failed",
     "getDetailFailed": "Failed to get details",
     "confirmDelete": "Are you sure you want to delete this {moduleName}?",
-    "confirmSyncPermissions": "Are you sure you want to sync {moduleName} permissions?"
+    "confirmSyncPermissions": "Are you sure you want to sync the {moduleName}?",
+    "developing": "Under development ...",
+    "loadDataFailed": "Failed to load data"
   },
   "notice": {
     "markedRead": "Marked as read",
@@ -78,6 +83,18 @@
     "cleared": "All messages cleared",
     "newNotificationTitle": "You have a new notification!",
     "newMessage": "New message"
+  },
+  "relativeTime": {
+    "justNow": "Just now",
+    "minutesAgo": "{n} min ago",
+    "hoursAgo": "{n} h ago",
+    "daysAgo": "{n} d ago"
+  },
+  "iconSelect": {
+    "selectPlaceholder": "Click to select an icon",
+    "searchPlaceholder": "Search icons",
+    "svgTab": "SVG Icons",
+    "elementTab": "Element Icons"
   },
   "langSelect": {
     "message": {
@@ -116,11 +133,12 @@
     "syncFailed": "Sync failed",
     "password_mismatch": "The two passwords do not match",
     "update_status_success": "Status updated successfully",
-    "create_success": "Created successfully",
-    "create_failed": "Creation failed",
-    "operation_success": "Operation succeeded",
+    "passwordChanged": "Password changed, please sign in again",
+    "create_success": "Create successful",
+    "create_failed": "Create failed",
+    "operation_success": "Operation successful",
     "operation_failed": "Operation failed",
-    "update_status_failed": "Failed to update status",
+    "update_status_failed": "Status update failed",
     "saveSuccess": "Save successful",
     "saveFailed": "Save failed"
   },
@@ -134,7 +152,12 @@
   },
   "modal": {
     "create": "Create {moduleName}",
-    "update": "Edit {moduleName}"
+    "update": "Update {moduleName}",
+    "view": "View {moduleName}"
+  },
+  "drawer": {
+    "unsavedMessage": "The form has been modified. Do you want to discard this edit?",
+    "discardButton": "Discard"
   },
   "confirm": {
     "do_you_want_delete": "Are you sure you want to delete this {moduleName}?",
@@ -144,16 +167,30 @@
     "searchMenu": "Search Menu",
     "openSearch": "Open search panel",
     "close": "Close",
-    "noHistory": "No search history",
+    "noHistory": "No recent searches",
+    "noResults": "No matching pages found",
+    "recent": "Recent",
+    "semanticTitle": "Semantic Search",
+    "searching": "Searching…",
     "switch": "Switch",
     "select": "Select"
   },
   "navbar": {
     "profile": "Profile",
     "inbox": "Inbox",
+    "lockScreen": "Lock Screen",
     "logout": "Logout",
     "logoutConfirmTitle": "Notice",
     "logoutConfirmMessage": "Are you sure you want to logout and exit the system?"
+  },
+  "lockScreen": {
+    "title": "Lock Screen",
+    "placeholder": "Please enter password",
+    "lock": "Locking",
+    "unlock": "Click to unlock",
+    "entry": "Enter the system",
+    "backToLogin": "Back to login",
+    "errorTip": "Password error, please re-enter"
   },
   "sidebar": {
     "collapseMenu": "Collapse menu",
@@ -228,21 +265,69 @@
   },
   "request": {
     "error": {
-      "networkError": "Network error, please try again later",
-      "timeout": "Request timeout, please try again later",
-      "unknownError": "Unknown error, please try again later"
+      "networkError": "Network connection error, please check your network settings and try again",
+      "timeout": "Request timeout, please check your network connection and try again",
+      "unknownError": "Request error occurred, please try again later"
     },
     "reason": {
-      "INVALID_PASSWORD": "Incorrect password",
+      "INVALID_PASSWORD": "Invalid password, please re-enter",
       "USER_NOT_FOUND": "User not found",
       "USER_DISABLED": "User has been disabled",
       "USER_LOCKED": "User has been locked",
-      "TOKEN_EXPIRED": "Session expired, please login again",
-      "UNAUTHORIZED": "Unauthorized, please login again",
-      "FORBIDDEN": "Access denied",
+      "TOKEN_EXPIRED": "Token has expired",
+      "UNAUTHORIZED": "Unauthorized, please login",
+      "FORBIDDEN": "Insufficient permissions",
       "DUPLICATE_ENTRY": "Data already exists",
       "VALIDATION_FAILED": "Validation failed",
-      "INTERNAL_ERROR": "Internal server error"
+      "INTERNAL_ERROR": "Internal server error",
+      "BAD_REQUEST": "Bad request",
+      "INVALID_GRANT_TYPE": "Invalid grant type",
+      "INVALID_USERID": "Invalid user ID",
+      "INVALID_TOKEN": "Invalid token",
+      "USER_FREEZE": "User is frozen, please contact administrator",
+      "INCORRECT_APP_SECRET": "Incorrect app secret",
+      "INCORRECT_ACCESS_TOKEN": "Incorrect access token",
+      "INCORRECT_REFRESH_TOKEN": "Incorrect refresh token",
+      "TOKEN_NOT_EXIST": "Token does not exist",
+      "PAYMENT_REQUIRED": "Payment required",
+      "NOT_FOUND": "The requested resource does not exist",
+      "METHOD_NOT_ALLOWED": "Method not allowed",
+      "NOT_ACCEPTABLE": "Not acceptable",
+      "PROXY_AUTHENTICATION_REQUIRED": "Proxy authentication required",
+      "REQUEST_TIMEOUT": "Request timeout",
+      "CONFLICT": "Request conflict",
+      "GONE": "Resource has been deleted",
+      "LENGTH_REQUIRED": "Content-Length required",
+      "PRECONDITION_FAILED": "Precondition failed",
+      "PAYLOAD_TOO_LARGE": "Payload too large",
+      "URI_TOO_LONG": "Request URI too long",
+      "UNSUPPORTED_MEDIA_TYPE": "Unsupported media type",
+      "RANGE_NOT_SATISFIABLE": "Range not satisfiable",
+      "EXPECTATION_FAILED": "Expectation failed",
+      "IM_A_TEAPOT": "I'm a teapot",
+      "MISDIRECTED_REQUEST": "Misdirected request",
+      "UNPROCESSABLE_ENTITY": "Unprocessable entity",
+      "LOCKED": "Resource locked",
+      "FAILED_DEPENDENCY": "Dependency failed",
+      "TOO_EARLY": "Too early",
+      "UPGRADE_REQUIRED": "Upgrade required",
+      "PRECONDITION_REQUIRED": "Precondition required",
+      "TOO_MANY_REQUESTS": "Too many requests",
+      "REQUEST_HEADER_FIELDS_TOO_LARGE": "Request header fields too large",
+      "UNAVAILABLE_FOR_LEGAL_REASONS": "Unavailable for legal reasons",
+      "INTERNAL_SERVER_ERROR": "Internal server error, please try again later",
+      "NOT_IMPLEMENTED": "Not implemented",
+      "BAD_GATEWAY": "Bad gateway",
+      "SERVICE_UNAVAILABLE": "Service unavailable",
+      "GATEWAY_TIMEOUT": "Gateway timeout",
+      "HTTP_VERSION_NOT_SUPPORTED": "HTTP version not supported",
+      "VARIANT_ALSO_NEGOTIATES": "Variant also negotiates",
+      "INSUFFICIENT_STORAGE": "Insufficient storage",
+      "LOOP_DETECTED": "Loop detected",
+      "NOT_EXTENDED": "Not extended",
+      "NETWORK_AUTHENTICATION_REQUIRED": "Network authentication required",
+      "NETWORK_READ_TIMEOUT_ERROR": "Network read timeout",
+      "NETWORK_CONNECT_TIMEOUT_ERROR": "Network connect timeout"
     },
     "status": {
       "400": "Bad request",
@@ -332,13 +417,26 @@
     "json_parse_error": "JSON parse error",
     "json_serialize_error": "JSON serialization error",
     "unknown_error": "Unknown error",
+    "image_upload_failed": "Image upload failed",
     "clear_content_confirm": "Are you sure you want to clear all content?"
+  },
+  "loading": "Loading...",
+  "loadingMenu": "Loading menus",
+  "operationFailed": "Operation failed",
+  "header": {
+    "settings": "System Settings",
+    "fullscreen": "Fullscreen",
+    "layout": "Layout",
+    "language": "Language",
+    "notification": "Notifications",
+    "sidebar": "Sidebar",
+    "refresh": "Refresh Content",
+    "preferences": "Preferences",
+    "theme": "Theme"
   },
   "cancel": "Cancel",
   "view": "View",
-  "loading": "Loading...",
   "error": "Error",
   "success": "Success",
-  "unknown": "Unknown",
-  "operationFailed": "Operation failed"
+  "unknown": "Unknown"
 }

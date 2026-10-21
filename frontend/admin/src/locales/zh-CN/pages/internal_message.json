@@ -16,8 +16,8 @@
     "markAllRead": "全部已读"
   },
   "drawer": {
-    "create": "新建消息",
-    "update": "编辑消息"
+    "create": "创建消息",
+    "update": "更新消息"
   },
   "sendScope": "发送范围",
   "sendScopeAll": "全员",

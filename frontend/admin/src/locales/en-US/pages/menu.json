@@ -18,7 +18,7 @@
   "hideInTab": "Hide in Tab",
   "createdAt": "Created At",
   "button": {
-    "create": "Create",
-    "update": "Update"
+    "create": "Create Menu",
+    "update": "Update Menu"
   }
 }

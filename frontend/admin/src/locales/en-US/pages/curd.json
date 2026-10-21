@@ -6,6 +6,8 @@
     "refresh": "Refresh",
     "search": "Search",
     "batchImport": "Batch Import",
+    "fullscreen": "Fullscreen",
+    "columnSetting": "Column Settings",
     "batchExport": "Batch Export"
   },
   "search": {
@@ -19,6 +21,12 @@
     "pleaseSelectData": "Please select data"
   },
   "export": {
+    "exportAll": "Export All",
+    "csv": "CSV (Comma Separated)",
+    "xlsx": "Excel Workbook",
+    "serverXlsx": "Server-side full (XLSX)",
+    "success": "Exported {count} rows",
+    "failed": "Export failed",
     "title": "Export Data",
     "filename": "Filename",
     "filenamePlaceholder": "Please enter filename",
@@ -61,7 +69,6 @@
     "deleteSuccess": "Delete successful",
     "noDeleteAction": "deleteAction not configured",
     "selectFields": "Please select fields",
-    "selectOrigin": "Please select data source",
     "noExportsAction": "exportsAction not configured",
     "selectFile": "Please select file",
     "noImportTemplate": "importTemplate not configured",
@@ -70,8 +77,10 @@
     "noImportsAction": "importsAction not configured",
     "noDataParsed": "No data parsed",
     "readFileFailed": "Failed to read file",
+    "importFailed": "Import failed",
     "noModifyAction": "modifyAction not configured",
     "noExportAction": "exportAction not configured",
-    "operationSuccess": "Operation successful"
+    "operationSuccess": "Operation successful",
+    "selectOrigin": "Please select data source"
   }
 }

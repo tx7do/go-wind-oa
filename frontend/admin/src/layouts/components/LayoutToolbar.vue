@@ -7,7 +7,8 @@
         <CommandPalette />
       </div>
 
-      <!-- 系统设置 -->
+      <ElTooltip :content="$t('common.header.settings')" placement="bottom">
+              <!-- 系统设置 -->
       <div
         v-if="preferences.app.enablePreferences"
         class="navbar-actions__item"
@@ -15,26 +16,35 @@
       >
         <SvgIcon icon="setting" />
       </div>
+      </ElTooltip>
 
-      <!-- 全屏 -->
+      <ElTooltip :content="$t('common.header.fullscreen')" placement="bottom">
+              <!-- 全屏 -->
       <div class="navbar-actions__item">
         <LayoutFullscreen />
       </div>
+      </ElTooltip>
 
-      <!-- 布局大小 -->
+      <ElTooltip :content="$t('common.header.layout')" placement="bottom">
+              <!-- 布局大小 -->
       <div class="navbar-actions__item">
         <LayoutSizeSelect />
       </div>
+      </ElTooltip>
 
-      <!-- 语言选择 -->
+      <ElTooltip :content="$t('common.header.language')" placement="bottom">
+              <!-- 语言选择 -->
       <div class="navbar-actions__item">
         <LangSelect />
       </div>
+      </ElTooltip>
 
-      <!-- 通知 -->
+      <ElTooltip :content="$t('common.header.notification')" placement="bottom">
+              <!-- 通知 -->
       <div class="navbar-actions__item">
         <NoticeDropdown />
       </div>
+      </ElTooltip>
     </template>
 
     <!-- 用户菜单 -->
@@ -69,6 +79,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAppUserStore } from "@/stores";
 import { useAuth } from "@/composables/use-auth";
 import { preferences, usePreferences } from "@/core/preferences";
+import { ElTooltip } from "element-plus";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 
 // 导入子组件

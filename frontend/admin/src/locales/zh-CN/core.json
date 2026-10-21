@@ -77,11 +77,13 @@
     "mfaNotRequired": "当前无 MFA 验证进行中"
   },
   "notice": {
-    "title": "通知",
+    "title": "收件箱",
     "empty": "暂无消息",
-    "markAllRead": "全部标记为已读",
-    "clearAll": "清空",
-    "viewAll": "查看所有消息",
+    "markAllRead": "全部已读",
+    "unreadCount": "{count} 条未读",
+    "markAllReadSuccess": "已全部标记为已读",
+    "markAllReadFailed": "全部已读操作失败",
+    "viewAll": "进入收件箱",
     "detail": "通知详情"
   },
   "register": {

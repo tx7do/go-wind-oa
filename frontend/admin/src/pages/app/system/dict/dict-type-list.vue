@@ -28,7 +28,10 @@ import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import DictTypeDrawer from "./dict-type-drawer.vue";
 
-import { enableBoolToName, useDeleteDictType } from "@/api/composables";
+import {
+  enableBoolToName,
+  useDeleteDictType,
+} from "@/api/composables";
 import { $t } from "@/core/i18n";
 import { useDictViewStore } from "@/pages/app/system/dict/dict-view.state";
 
@@ -63,8 +66,15 @@ const pageConfig = computed<ProPageConfig>(() => ({
     },
     toolbar: [],
     toolbarRight: ["add"],
-    defaultToolbar: ["refresh", "filter"],
-    tableAttrs: { border: true, stripe: true, height: "auto" },
+    defaultToolbar: ["exports", "refresh", "zoom", "filter"],
+    tableAttrs: {
+      border: true,
+      stripe: true,
+      height: "auto",
+      "show-overflow": "title",
+      "show-header-overflow": "title",
+    },
+    // 左栏分栏主表：内容列不设宽度（均分贴合容器防横向溢出），仅操作列定宽
     columns: [
       {
         prop: "typeName",

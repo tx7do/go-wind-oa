@@ -72,7 +72,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
     },
     toolbar: [],
     toolbarRight: ["add"],
-    defaultToolbar: ["refresh", "exports", "filter"],
+    defaultToolbar: ["exports", "refresh", "zoom", "filter"],
     pagination: false,
     tableAttrs: { border: true, stripe: false },
     columns: [

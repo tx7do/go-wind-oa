@@ -16,8 +16,8 @@
     "markAllRead": "Mark All Read"
   },
   "drawer": {
-    "create": "New Message",
-    "update": "Edit Message"
+    "create": "Create Message",
+    "update": "Update Message"
   },
   "sendScope": "Send To",
   "sendScopeAll": "All Users",

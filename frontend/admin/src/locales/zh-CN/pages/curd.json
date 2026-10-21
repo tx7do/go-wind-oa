@@ -6,6 +6,8 @@
     "refresh": "刷新",
     "search": "搜索",
     "batchImport": "批量导入",
+    "fullscreen": "全屏",
+    "columnSetting": "列设置",
     "batchExport": "批量导出"
   },
   "search": {
@@ -19,6 +21,12 @@
     "pleaseSelectData": "请选择数据"
   },
   "export": {
+    "exportAll": "导出全部",
+    "csv": "CSV (逗号分隔)",
+    "xlsx": "Excel 工作簿",
+    "serverXlsx": "服务端全量 (XLSX)",
+    "success": "已导出 {count} 行",
+    "failed": "导出失败",
     "title": "导出数据",
     "filename": "文件名",
     "filenamePlaceholder": "请输入文件名",
@@ -61,7 +69,6 @@
     "deleteSuccess": "删除成功",
     "noDeleteAction": "未配置 deleteAction",
     "selectFields": "请选择要导出的字段",
-    "selectOrigin": "请选择数据来源",
     "noExportsAction": "未配置 exportsAction",
     "selectFile": "请选择要导入的文件",
     "noImportTemplate": "未配置 importTemplate",
@@ -70,8 +77,10 @@
     "noImportsAction": "未配置 importsAction",
     "noDataParsed": "未解析到数据",
     "readFileFailed": "读取文件失败",
+    "importFailed": "导入失败",
     "noModifyAction": "未配置 modifyAction",
     "noExportAction": "未配置 exportAction",
-    "operationSuccess": "操作成功"
+    "operationSuccess": "操作成功",
+    "selectOrigin": "请选择数据来源"
   }
 }

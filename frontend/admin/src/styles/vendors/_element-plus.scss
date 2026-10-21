@@ -273,6 +273,18 @@ body,
   display: flex !important;
   align-items: center !important;
   line-height: normal !important;
+
+  // 表格操作列「更多」下拉里的危险项（删除等）：常态与 hover 都钉住 danger 墨，
+  // EP 的 hover 会整体改写主色墨，不加这条 danger 项 hover 会变蓝。
+  &.pro-table__more-item--danger {
+    color: var(--el-color-danger);
+
+    &:not(.is-disabled):hover,
+    &:not(.is-disabled):focus {
+      color: var(--el-color-danger);
+      background-color: var(--el-color-danger-light-9);
+    }
+  }
 }
 
 // --- Select 选项 ---

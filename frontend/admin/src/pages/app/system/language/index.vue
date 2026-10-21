@@ -29,7 +29,8 @@ import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import LanguageDrawer from "./language-drawer.vue";
 
-import { enableBoolToName, fetchListLanguages, useDeleteLanguage } from "@/api/composables";
+import { enableBoolToName, fetchListLanguages, useDeleteLanguage,
+} from "@/api/composables";
 import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/core/i18n";
 
@@ -74,7 +75,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
     },
     toolbar: [],
     toolbarRight: ["add"],
-    defaultToolbar: ["refresh", "exports", "filter"],
+    defaultToolbar: ["exports", "refresh", "zoom", "filter"],
     tableAttrs: { border: true, stripe: false },
     columns: [
       { type: "index", label: $t("common.table.seq"), width: 60 },
