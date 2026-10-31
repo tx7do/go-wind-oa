@@ -29,7 +29,10 @@ GoWind OA 是一套面向企业的**协同办公系统**，覆盖日常办公场
 | | |
 |:---:|:---:|
 | ![登录页](docs/screenshots/login.png) | ![工作台](docs/screenshots/dashboard.png) |
-| *登录页* | *工作台（OA 工作流 / 考勤 / 请假 / 报销 / 出差 / 加班）* |
+| *管理端登录页* | *管理端工作台（OA 工作流 / 考勤 / 请假 / 报销 / 出差 / 加班）* |
+| ![App 待我审批](docs/screenshots/app-dashboard.png) | ![App 考勤打卡](docs/screenshots/app-attendance.png) |
+| *App 待我审批（工作流 tab）* | *App 考勤打卡（位置 + Wi-Fi 围栏校验）* |
+
 
 
 | 模块 | 说明 | 状态 |

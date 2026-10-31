@@ -26,8 +26,11 @@ GoWind OA は、承認フロー、人事勤怠、休暇、経費精算といっ�
 
 | | |
 |:---:|:---:|
-| ![ログイン](docs/screenshots/login.png) | ![ワークスペース](docs/screenshots/dashboard.png) |
-| *ログイン* | *ワークスペース（ワークフロー / 勤怠 / 休暇 / 経費 / 出張 / 残業）* |
+| ![管理ログイン](docs/screenshots/login.png) | ![管理ワークスペース](docs/screenshots/dashboard.png) |
+| *管理ログイン* | *管理ワークスペース（ワークフロー / 勤怠 / 休暇 / 経費 / 出張 / 残業）* |
+| ![App 承認](docs/screenshots/app-dashboard.png) | ![App 勤怠](docs/screenshots/app-attendance.png) |
+| *App 承認（ワークフロータブ）* | *App 勤怠打刻（位置 + Wi-Fi 検証）* |
+
 
 ## 機能モジュール
 

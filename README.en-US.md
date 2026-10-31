@@ -26,8 +26,11 @@ The backend is built on the [go-kratos](https://go-kratos.dev/) microservice fra
 
 | | |
 |:---:|:---:|
-| ![Login](docs/screenshots/login.png) | ![Workspace](docs/screenshots/dashboard.png) |
-| *Login* | *Workspace (workflow / attendance / leave / expense / travel / overtime)* |
+| ![Admin login](docs/screenshots/login.png) | ![Admin workspace](docs/screenshots/dashboard.png) |
+| *Admin login* | *Admin workspace (workflow / attendance / leave / expense / travel / overtime)* |
+| ![App approvals](docs/screenshots/app-dashboard.png) | ![App attendance](docs/screenshots/app-attendance.png) |
+| *App approvals (workflow tab)* | *App attendance clock-in (geofence + Wi-Fi validation)* |
+
 
 ## Modules
 
