@@ -22,6 +22,13 @@ GoWind OA は、承認フロー、人事勤怠、休暇、経費精算といっ�
 
 バックエンドは [go-kratos](https://go-kratos.dev/) マイクロサービスフレームワーク上で core/admin/app の三サービス分離アーキテクチャを採用しています。管理コンソールは Vue3 + Element Plus、モバイルクライアントは Flutter です。
 
+## スクリーンショット
+
+| | |
+|:---:|:---:|
+| ![ログイン](docs/screenshots/login.png) | ![ワークスペース](docs/screenshots/dashboard.png) |
+| *ログイン* | *ワークスペース（ワークフロー / 勤怠 / 休暇 / 経費 / 出張 / 残業）* |
+
 ## 機能モジュール
 
 | モジュール | 説明 | 状態 |

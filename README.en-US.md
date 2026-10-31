@@ -22,6 +22,13 @@ GoWind OA is an enterprise-grade **collaborative office system** covering everyd
 
 The backend is built on the [go-kratos](https://go-kratos.dev/) microservice framework with a core/admin/app three-service separation. The admin frontend uses Vue3 + Element Plus; the mobile client uses Flutter.
 
+## Screenshots
+
+| | |
+|:---:|:---:|
+| ![Login](docs/screenshots/login.png) | ![Workspace](docs/screenshots/dashboard.png) |
+| *Login* | *Workspace (workflow / attendance / leave / expense / travel / overtime)* |
+
 ## Modules
 
 | Module | Description | Status |

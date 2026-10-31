@@ -15,7 +15,7 @@ import { useAppUserStore } from "@/stores";
 import { PaginationQuery } from "@/core/transport/rest";
 import { router } from "@/router";
 import type { internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from "@/api/generated/admin/service/v1";
-import { globalSSEClient, SSE_EVENT } from "@/core/transport/sse";
+import { globalSSEClient } from "@/core/transport/sse";
 import { i18n } from "@/core/i18n";
 
 const t = i18n.global.t;
@@ -106,7 +106,7 @@ export function useNotice() {
 
   onMounted(() => {
     reloadAll();
-    globalSSEClient.on(SSE_EVENT.Notification, handleSseNotification);
+    globalSSEClient.on('notification', handleSseNotification);
     pollTimer = setInterval(reloadAll, POLL_INTERVAL);
   });
 
@@ -114,7 +114,7 @@ export function useNotice() {
     // 必须按回调引用显式注销，否则 globalSSEClient.handlers 会持续累加：
     // NoticeDropdown 每次重新挂载（布局切换/路由往返/热重载）都会重新 on()，
     // 若不 off()，一条新消息会触发 N 次回调（N=累计挂载次数）。
-    globalSSEClient.off(SSE_EVENT.Notification, handleSseNotification);
+    globalSSEClient.off('notification', handleSseNotification);
     if (pollTimer) clearInterval(pollTimer);
   });
 
