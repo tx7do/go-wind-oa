@@ -9,7 +9,7 @@
         <ElInput
           v-model="formData.code"
           :placeholder="$t('pages.oa.definition.phCode')"
-          clearable
+          style="width: 320px"
         />
       </ElFormItem>
 
@@ -41,227 +41,59 @@
           </ElRadioGroup>
         </div>
 
-        <div v-if="nodeMode === 'visual'" class="node-editor">
-          <div class="hint" style="margin-bottom: 8px">
-            {{ $t("pages.oa.definition.graphHint") }}
-          </div>
+        <div v-if="nodeMode === 'visual'" style="width: 100%">
+          <FlowDesigner
+            ref="designerRef"
+            height="52vh"
+            :document="designerDocument"
+            @ready="onDesignerReady"
+            @error="onDesignerError"
+          />
 
-          <GraphCanvas :nodes="graphNodes" :edges="graphEdges" @node-move="onNodeMove" />
-
-          <!-- 节点列表 -->
-          <div class="graph-section">
-            <div class="graph-section-title">{{ $t("pages.oa.definition.nodesTitle") }}</div>
-            <div v-for="(node, ni) in graphNodes" :key="'gn' + ni" class="graph-node-card">
-              <div class="node-head">
-                <span class="node-title">
-                  {{ $t("pages.oa.definition.nodeTitle", { index: ni + 1 }) }}
-                </span>
-                <div class="node-ops">
-                  <ElButton
-                    size="small"
-                    text
-                    type="danger"
-                    @click="
-                      graphNodes.splice(ni, 1);
-                      syncEdges();
-                    "
-                  >
-                    {{ $t("common.button.delete") }}
-                  </ElButton>
-                </div>
-              </div>
-              <ElFormItem :label="$t('pages.oa.definition.nodeIdLabel')" label-width="80px">
-                <ElInput v-model="node.id" style="width: 200px" @change="syncEdges()" />
-              </ElFormItem>
-              <ElFormItem :label="$t('pages.oa.definition.typeLabel')" label-width="80px">
-                <ElSelect v-model="node.type" style="width: 240px" @change="onNodeTypeChange(node)">
-                  <ElOption
-                    v-for="t in GRAPH_NODE_TYPE_OPTIONS"
-                    :key="t.value"
-                    :label="`${t.label} (${t.value})`"
-                    :value="t.value"
-                  />
-                </ElSelect>
-              </ElFormItem>
-
-              <!-- TASK 节点：审批策略 + 审批人列表 -->
-              <template v-if="node.type === 'TASK'">
-                <ElFormItem :label="$t('pages.oa.definition.strategyLabel')" label-width="80px">
-                  <ElRadioGroup v-model="node.strategy">
-                    <ElRadio value="ALL">
-                      {{ $t("pages.oa.definition.strategy.all") }}
-                    </ElRadio>
-                    <ElRadio value="ANY">
-                      {{ $t("pages.oa.definition.strategy.any") }}
-                    </ElRadio>
-                  </ElRadioGroup>
-                </ElFormItem>
-                <div class="approver-list">
-                  <div v-for="(ap, ai) in node.approvers" :key="ai" class="approver-row">
-                    <ElSelect
-                      v-model="ap.type"
-                      style="width: 150px"
-                      @change="onApproverTypeChange(ap)"
-                    >
-                      <ElOption :label="$t('pages.oa.definition.approverType.USER')" value="USER" />
-                      <ElOption
-                        :label="$t('pages.oa.definition.approverType.LEADER')"
-                        value="LEADER"
-                      />
-                      <ElOption
-                        :label="$t('pages.oa.definition.approverType.POSITION')"
-                        value="POSITION"
-                      />
-                    </ElSelect>
-                    <ElSelect
-                      v-if="ap.type === 'USER' && users.length"
-                      :model-value="ap.id"
-                      filterable
-                      :placeholder="$t('pages.oa.definition.phSelectUser')"
-                      style="width: 220px"
-                      @update:model-value="(v: any) => (ap.id = Number(v))"
-                    >
-                      <ElOption
-                        v-for="u in users"
-                        :key="u.id"
-                        :label="`${userDisplayName(u)} (#${u.id})`"
-                        :value="u.id!"
-                      />
-                    </ElSelect>
-                    <ElSelect
-                      v-else-if="ap.type === 'POSITION' && positions.length"
-                      :model-value="ap.id"
-                      filterable
-                      :placeholder="$t('pages.oa.definition.phSelectPosition')"
-                      style="width: 220px"
-                      @update:model-value="(v: any) => (ap.id = Number(v))"
-                    >
-                      <ElOption
-                        v-for="p in positions"
-                        :key="p.id"
-                        :label="`${positionDisplayName(p)} (#${p.id})`"
-                        :value="p.id!"
-                      />
-                    </ElSelect>
-                    <ElInputNumber
-                      v-else-if="ap.type !== 'LEADER'"
-                      v-model="ap.id"
-                      :min="1"
-                      :controls="false"
-                      :placeholder="
-                        ap.type === 'USER'
-                          ? $t('pages.oa.definition.phUserId')
-                          : $t('pages.oa.definition.phPositionId')
-                      "
-                      style="width: 160px"
-                    />
-                    <span v-else class="hint-inline">
-                      {{ $t("pages.oa.definition.leaderHint") }}
-                    </span>
-                    <ElButton
-                      size="small"
-                      text
-                      type="danger"
-                      :disabled="(node.approvers?.length ?? 0) <= 1"
-                      @click="node.approvers?.splice(ai, 1)"
-                    >
-                      {{ $t("pages.oa.definition.remove") }}
-                    </ElButton>
-                  </div>
-                  <ElButton
-                    size="small"
-                    plain
-                    @click="node.approvers?.push({ type: 'USER', id: undefined })"
-                  >
-                    {{ $t("pages.oa.definition.addApprover") }}
-                  </ElButton>
-                </div>
-              </template>
-
-              <!-- SUBPROCESS 节点：子流程定义引用 -->
-              <template v-if="node.type === 'SUBPROCESS'">
-                <ElFormItem :label="$t('pages.oa.definition.subprocessLabel')" label-width="80px">
-                  <ElInput
-                    v-model="node.subprocessDefinition"
-                    :placeholder="$t('pages.oa.definition.phSubprocess')"
-                    style="width: 300px"
-                  />
-                </ElFormItem>
-              </template>
-            </div>
-            <div class="node-toolbar">
-              <ElButton size="small" plain @click="addGraphNode('TASK')">
-                {{ $t("pages.oa.definition.addTask") }}
-              </ElButton>
-              <ElButton size="small" plain @click="addGraphNode('EXCLUSIVE_GATEWAY')">
-                {{ $t("pages.oa.definition.addGateway") }}
-              </ElButton>
-              <ElButton size="small" plain @click="addGraphNode('PARALLEL_GATEWAY_FORK')">
-                {{ $t("pages.oa.definition.addFork") }}
-              </ElButton>
-              <ElButton size="small" plain @click="addGraphNode('PARALLEL_GATEWAY_JOIN')">
-                {{ $t("pages.oa.definition.addJoin") }}
-              </ElButton>
-              <ElButton size="small" plain @click="addGraphNode('SUBPROCESS')">
-                {{ $t("pages.oa.definition.addSubprocess") }}
-              </ElButton>
-              <ElButton size="small" plain @click="addGraphNode('START')">
-                {{ $t("pages.oa.definition.addStart") }}
-              </ElButton>
-              <ElButton size="small" plain @click="addGraphNode('END')">
-                {{ $t("pages.oa.definition.addEnd") }}
-              </ElButton>
-            </div>
-          </div>
-
-          <!-- 边列表 -->
-          <div class="graph-section">
-            <div class="graph-section-title">{{ $t("pages.oa.definition.edgesTitle") }}</div>
-            <div v-for="(edge, ei) in graphEdges" :key="'ge' + ei" class="graph-edge-row">
-              <ElSelect
-                v-model="edge.from"
-                :placeholder="$t('pages.oa.definition.edgeFrom')"
-                style="width: 180px"
-                @change="onEdgeFromChange(edge)"
-              >
-                <ElOption
-                  v-for="n in graphNodes"
-                  :key="n.id"
-                  :label="n.id + ' (' + nodeTypeLabel(n.type) + ')'"
-                  :value="n.id"
-                />
-              </ElSelect>
-              <span class="edge-arrow">→</span>
-              <ElSelect
-                v-model="edge.to"
-                :placeholder="$t('pages.oa.definition.edgeTo')"
-                style="width: 180px"
-              >
-                <ElOption
-                  v-for="n in graphNodes"
-                  :key="n.id"
-                  :label="n.id + ' (' + nodeTypeLabel(n.type) + ')'"
-                  :value="n.id"
-                />
-              </ElSelect>
+          <!--
+            OA 节点配置条：go-wind-flow 0.2.0 的属性面板审批组在 bpmn-js 17 下
+            静默失效（依赖私有 _modeling），审批人/子流程配置在此补充编辑，
+            提交时合并进设计器文档再转换。
+          -->
+          <div v-if="taskNodeConfigs.length || subprocessNodeConfigs.length" class="oa-node-strip">
+            <div class="oa-strip-title">{{ $t("pages.oa.definition.nodesTitle") }}</div>
+            <div
+              v-for="cfg in taskNodeConfigs"
+              :key="'t' + cfg.id"
+              class="oa-node-row"
+            >
+              <span class="oa-node-label">审批 · {{ cfg.id }}</span>
               <ElInput
-                v-if="isExclusiveEdge(edge)"
-                v-model="edge.condition"
-                :placeholder="$t('pages.oa.definition.phCondition')"
-                style="width: 220px"
+                v-model="cfg.rulesJson"
+                placeholder='[{"kind":"LEADER"}]'
+                style="flex: 1"
               />
-              <ElButton size="small" text type="danger" @click="graphEdges.splice(ei, 1)">
-                {{ $t("common.button.delete") }}
-              </ElButton>
+              <span class="hint">kind：USER/STARTER/LEADER/POSITION（USER/POSITION 需 value 填数字 ID）</span>
+              <ElRadioGroup v-model="cfg.strategy" size="small">
+                <ElRadioButton value="ALL">会签</ElRadioButton>
+                <ElRadioButton value="ANY">或签</ElRadioButton>
+              </ElRadioGroup>
             </div>
-            <ElButton size="small" plain @click="graphEdges.push({ from: '', to: '' })">
-              {{ $t("pages.oa.definition.addEdge") }}
-            </ElButton>
-          </div>
-
-          <div v-if="graphNodes.length" class="json-preview">
-            <div class="preview-title">{{ $t("pages.oa.definition.previewTitle") }}</div>
-            <code>{{ graphConfigPreview }}</code>
+            <div
+              v-for="cfg in subprocessNodeConfigs"
+              :key="'s' + cfg.id"
+              class="oa-node-row"
+            >
+              <span class="oa-node-label">子流程 · {{ cfg.id }}</span>
+              <ElInput
+                v-model="cfg.subprocessKey"
+                placeholder="子流程编码，如 LEAVE"
+                style="width: 240px"
+              />
+              <ElInputNumber
+                v-model="cfg.subprocessVersion"
+                :min="1"
+                :max="9999"
+                :controls="false"
+                placeholder="版本"
+                style="width: 120px"
+              />
+            </div>
           </div>
         </div>
 
@@ -269,8 +101,8 @@
           v-else
           v-model="formData.node_config"
           type="textarea"
-          placeholder='[{"approvers":[{"type":"USER","id":123},{"type":"LEADER"}],"strategy":"ALL"}]'
-          :rows="8"
+          placeholder='{"version":2,"nodes":[{"id":"start","type":"START"},...],"edges":[...]}'
+          :rows="12"
         />
       </ElFormItem>
 
@@ -313,52 +145,26 @@
 
 <script lang="ts" setup>
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
-import {
-  ElButton,
-  ElInput,
-  ElInputNumber,
-  ElOption,
-  ElRadioButton,
-  ElRadioGroup,
-  ElRadio,
-  ElSelect,
-} from "element-plus";
-import { ref, reactive, computed, watch } from "vue";
+import { ElButton, ElInput, ElInputNumber, ElRadioButton, ElRadioGroup } from "element-plus";
+import { nextTick, ref, computed, watch } from "vue";
 
-import {
-  useCreateWorkflowDefinition,
-  fetchUsers,
-  fetchPositions,
-  userDisplayName,
-  positionDisplayName,
-} from "@/api/composables";
-import type {
-  identityservicev1_User,
-  identityservicev1_Position,
-} from "@/api/generated/admin/service/v1";
+import type { ApproverSpec } from "@go-wind/flow-designer-core";
+
+import { useCreateWorkflowDefinition } from "@/api/composables";
 import { $t } from "@/core/i18n";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 
-import GraphCanvas from "./graph-canvas.vue";
 import FormSchemaEditor from "./form-schema-editor.vue";
 import {
-  applyApproverTypeChange,
-  applyEdgeFromChange,
-  applyNodeTypeChange,
-  configToNodes,
-  ensureLayout,
-  fieldsToSchema,
-  filterEdges,
-  isExclusiveEdge as isExclusiveEdgeOf,
-  makeGraphNode,
-  nodesToConfig,
-  schemaToFields,
-  nodeTypeLabel,
-  type ApproverDraft,
-  type FieldDraft,
-  type GraphEdgeDraft,
-  type GraphNodeDraft,
-} from "./workflow-graph";
+  designerToNodeConfig,
+  graphToDesigner,
+  parseNodeConfig,
+  type V2Graph,
+} from "./flow-designer-convert";
+import { fieldsToSchema, schemaToFields, type FieldDraft } from "./workflow-graph";
+import "@go-wind/flow-designer-vue/style.css";
+import { FlowDesigner } from "@go-wind/flow-designer-vue";
+import type { DesignerDocument, DesignerHandle } from "@go-wind/flow-designer-core";
 
 const emit = defineEmits(["success"]);
 
@@ -370,15 +176,95 @@ const formRef = ref<FormInstance>();
 
 const nodeMode = ref<"visual" | "json">("visual");
 const formMode = ref<"visual" | "json">("visual");
-const graphNodes = ref<GraphNodeDraft[]>([]);
-const graphEdges = ref<GraphEdgeDraft[]>([]);
 const formFieldDrafts = ref<FieldDraft[]>([]);
 
-// 审批人选择器数据源（用户/职位，列表加载失败时选择器回退手填 ID）。
-const users = ref<identityservicev1_User[]>([]);
-const positions = ref<identityservicev1_Position[]>([]);
+// go-wind-flow 官方设计器（bpmn-js 内核）：ready 后持有句柄，
+// 模式切换/重开抽屉经 handle.loadDocument 推送画布内容。
+const designerRef = ref();
+const designerHandle = ref<DesignerHandle | null>(null);
+const designerDocument = ref<DesignerDocument>(defaultDesignerDocument());
 
-// 表单数据（JSON 模式下的文本框 + 提交基础字段）
+// OA 节点配置条（审批人/子流程参数，见模板内注释）。
+interface TaskNodeConfig {
+  id: string;
+  rulesJson: string;
+  strategy: "ALL" | "ANY";
+}
+interface SubprocessNodeConfig {
+  id: string;
+  subprocessKey: string;
+  subprocessVersion: number;
+}
+const taskNodeConfigs = ref<TaskNodeConfig[]>([]);
+const subprocessNodeConfigs = ref<SubprocessNodeConfig[]>([]);
+
+/** 从设计器文档同步 OA 配置条（保留已编辑值，仅增删节点行）。 */
+function syncNodeConfigs(doc: DesignerDocument) {
+  const tasks = doc.nodes.filter((n) => n.type === "userTask");
+  const subs = doc.nodes.filter((n) => n.type === "callActivity");
+
+  const nextTasks: TaskNodeConfig[] = [];
+  for (const n of tasks) {
+    const existing = taskNodeConfigs.value.find((c) => c.id === n.id);
+    if (existing) {
+      nextTasks.push(existing);
+      continue;
+    }
+    const spec: ApproverSpec = n.approver ?? {};
+    nextTasks.push({
+      id: n.id,
+      rulesJson: JSON.stringify(spec.rules ?? [{ kind: "LEADER" }]),
+      strategy: spec.strategy === "ANY" ? "ANY" : "ALL",
+    });
+  }
+  taskNodeConfigs.value = nextTasks;
+
+  const nextSubs: SubprocessNodeConfig[] = [];
+  for (const n of subs) {
+    const existing = subprocessNodeConfigs.value.find((c) => c.id === n.id);
+    if (existing) {
+      nextSubs.push(existing);
+      continue;
+    }
+    nextSubs.push({
+      id: n.id,
+      subprocessKey: n.subprocessKey ?? "",
+      subprocessVersion: n.subprocessVersion && n.subprocessVersion > 0 ? n.subprocessVersion : 1,
+    });
+  }
+  subprocessNodeConfigs.value = nextSubs;
+}
+
+/** 配置条合并进设计器文档（画布只管结构，审批人/子流程参数以此为准）。 */
+function applyNodeConfigs(doc: DesignerDocument): DesignerDocument {
+  for (const n of doc.nodes) {
+    if (n.type === "userTask") {
+      const cfg = taskNodeConfigs.value.find((c) => c.id === n.id);
+      if (!cfg) continue;
+      let rules: unknown;
+      try {
+        rules = JSON.parse(cfg.rulesJson || "[]");
+      } catch {
+        throw new Error(`审批节点「${n.name || n.id}」的办理人规则不是合法 JSON`);
+      }
+      if (!Array.isArray(rules) || rules.length === 0) {
+        throw new Error(`审批节点「${n.name || n.id}」未配置办理人规则`);
+      }
+      n.approver = { rules: rules as ApproverSpec["rules"], strategy: cfg.strategy };
+    }
+    if (n.type === "callActivity") {
+      const cfg = subprocessNodeConfigs.value.find((c) => c.id === n.id);
+      if (!cfg) continue;
+      if (!cfg.subprocessKey) {
+        throw new Error(`子流程节点「${n.name || n.id}」未配置子流程编码`);
+      }
+      n.subprocessKey = cfg.subprocessKey;
+      n.subprocessVersion = cfg.subprocessVersion;
+    }
+  }
+  return doc;
+}
+
 const formData = reactive({
   code: "",
   version: 1,
@@ -425,112 +311,13 @@ const formRules: FormRules = {
     { required: true, message: $t("common.validation.required"), trigger: "blur" },
     {
       validator: (_rule: unknown, value: string, callback: (err?: Error) => void) => {
-        let parsed: any;
         try {
-          parsed = JSON.parse(value);
-        } catch {
-          callback(new Error($t("pages.oa.definition.vNodeConfigJson")));
+          parseNodeConfig(value);
+        } catch (err) {
+          callback(new Error((err as Error).message || $t("pages.oa.definition.vNodeConfigJson")));
           return;
         }
-
-        // 图格式 {version:2, nodes:[], edges:[]}
-        if (
-          parsed &&
-          typeof parsed === "object" &&
-          !Array.isArray(parsed) &&
-          parsed.version === 2
-        ) {
-          if (!Array.isArray(parsed.nodes) || parsed.nodes.length === 0) {
-            callback(new Error($t("pages.oa.definition.vNodesEmpty")));
-            return;
-          }
-          for (const node of parsed.nodes) {
-            if (!node.id || !node.type) {
-              callback(new Error($t("pages.oa.definition.vNodeIdType")));
-              return;
-            }
-            if (node.type === "TASK") {
-              const approvers = Array.isArray(node.approvers) ? node.approvers : [];
-              if (approvers.length === 0) {
-                callback(
-                  new Error($t("pages.oa.definition.vTaskApproverRequired", { id: node.id }))
-                );
-                return;
-              }
-              for (const approver of approvers) {
-                if (!["USER", "LEADER", "POSITION"].includes(approver.type)) {
-                  callback(
-                    new Error(
-                      $t("pages.oa.definition.vApproverTypeInvalid", { type: approver.type })
-                    )
-                  );
-                  return;
-                }
-                if (approver.type !== "LEADER" && !approver.id) {
-                  callback(new Error($t("pages.oa.definition.vApproverIdRequired")));
-                  return;
-                }
-              }
-              const strategy = node.strategy ?? "ALL";
-              if (strategy !== "ALL" && strategy !== "ANY") {
-                callback(new Error($t("pages.oa.definition.vStrategyInvalid", { strategy })));
-                return;
-              }
-            }
-            if (
-              node.type === "SUBPROCESS" &&
-              (!node.subprocessDefinition || !String(node.subprocessDefinition).includes(":"))
-            ) {
-              callback(new Error($t("pages.oa.definition.vSubprocessRefInvalid", { id: node.id })));
-              return;
-            }
-          }
-          callback();
-          return;
-        }
-
-        // 旧数组格式
-        if (Array.isArray(parsed)) {
-          if (parsed.length === 0) {
-            callback(new Error($t("pages.oa.definition.vNodeConfigEmpty")));
-            return;
-          }
-          for (const node of parsed) {
-            const strategy = node.strategy ?? "ALL";
-            if (strategy !== "ALL" && strategy !== "ANY") {
-              callback(new Error($t("pages.oa.definition.vStrategyInvalid", { strategy })));
-              return;
-            }
-            const approvers =
-              Array.isArray(node.approvers) && node.approvers.length > 0
-                ? node.approvers
-                : node.approver_type === "USER" && node.approver
-                  ? [{ type: "USER", id: node.approver }]
-                  : [];
-            if (approvers.length === 0) {
-              callback(new Error($t("pages.oa.definition.vLegacyApproverRequired")));
-              return;
-            }
-            for (const approver of approvers) {
-              if (!["USER", "LEADER", "POSITION"].includes(approver.type)) {
-                callback(
-                  new Error(
-                    $t("pages.oa.definition.vLegacyApproverTypeInvalid", { type: approver.type })
-                  )
-                );
-                return;
-              }
-              if (approver.type !== "LEADER" && !approver.id) {
-                callback(new Error($t("pages.oa.definition.vApproverIdRequired")));
-                return;
-              }
-            }
-          }
-          callback();
-          return;
-        }
-
-        callback(new Error($t("pages.oa.definition.vNodeConfigFormat")));
+        callback();
       },
       trigger: "blur",
     },
@@ -541,75 +328,53 @@ const title = computed(() =>
   $t("common.modal.create", { moduleName: $t("pages.oa.definition.title") })
 );
 
-// 节点类型下拉选项（label 走词条，value 为原始类型值；computed 以响应语言切换）
-const GRAPH_NODE_TYPE_OPTIONS = computed(() =>
-  (
-    [
-      "START",
-      "END",
-      "TASK",
-      "EXCLUSIVE_GATEWAY",
-      "PARALLEL_GATEWAY_FORK",
-      "PARALLEL_GATEWAY_JOIN",
-      "SUBPROCESS",
-    ] as const
-  ).map((value) => ({ value, label: nodeTypeLabel(value) }))
-);
-
-// 选择器数据源尽力加载：失败不阻塞编辑（回退手填 ID）。
-async function loadSelectors() {
-  try {
-    const resp = await fetchUsers();
-    users.value = resp.items ?? [];
-  } catch {
-    users.value = [];
-  }
-  try {
-    const resp = await fetchPositions();
-    positions.value = resp.items ?? [];
-  } catch {
-    positions.value = [];
-  }
-}
-loadSelectors();
-
-// ============ 图节点编辑 ============
-
-function addGraphNode(type: GraphNodeDraft["type"]) {
-  graphNodes.value.push(makeGraphNode(type));
-  ensureLayout(graphNodes.value);
+/** 新建默认文档：开始 → 主管审批（会签）→ 结束。 */
+function defaultDesignerDocument(): DesignerDocument {
+  const seed: V2Graph = {
+    version: 2,
+    nodes: [
+      { id: "start", type: "START" },
+      { id: "node_0", type: "TASK", approvers: [{ type: "LEADER" }], strategy: "ALL" },
+      { id: "end", type: "END" },
+    ],
+    edges: [
+      { from: "start", to: "node_0" },
+      { from: "node_0", to: "end" },
+    ],
+  };
+  return graphToDesigner(seed, "new_process", "");
 }
 
-function onNodeTypeChange(node: GraphNodeDraft) {
-  applyNodeTypeChange(node);
+function onDesignerReady(handle: DesignerHandle) {
+  designerHandle.value = handle;
+  refreshDesignerCanvas();
+  syncNodeConfigs(designerDocument.value);
 }
 
-function onApproverTypeChange(ap: ApproverDraft) {
-  applyApproverTypeChange(ap);
+function onDesignerError(_err: unknown) {
+  ElMessage.error($t("common.message.loadFailed"));
 }
 
-/** 节点 id 变更后，删除引用了旧 id 的边。 */
-function syncEdges() {
-  graphEdges.value = filterEdges(graphNodes.value, graphEdges.value);
+/** 把当前 designerDocument 推送到画布（抽屉重开/模式切换共用）。 */
+function refreshDesignerCanvas() {
+  const handle = designerHandle.value;
+  if (!handle) return;
+  handle
+    .loadDocument(designerDocument.value)
+    .then(() => handle.zoom("fit-viewport"))
+    .catch((err: unknown) => {
+      console.error("[flow-designer] loadDocument failed:", err);
+      ElMessage.error(`画布加载失败：${(err as Error).message ?? err}`);
+    });
 }
 
-function isExclusiveEdge(edge: GraphEdgeDraft): boolean {
-  return isExclusiveEdgeOf(graphNodes.value, edge);
+/** 可视化画布 → node_config 文本（合并 OA 配置条 + 子集转换校验）。 */
+async function serializeDesigner(): Promise<string> {
+  const rawDoc = designerHandle.value
+    ? await designerHandle.value.getDocument(formData.code)
+    : designerDocument.value;
+  return designerToNodeConfig(applyNodeConfigs(rawDoc));
 }
-
-function onEdgeFromChange(edge: GraphEdgeDraft) {
-  applyEdgeFromChange(graphNodes.value, edge);
-}
-
-function onNodeMove(ni: number, x: number, y: number) {
-  const node = graphNodes.value[ni];
-  if (node) {
-    node.x = x;
-    node.y = y;
-  }
-}
-
-const graphConfigPreview = computed(() => nodesToConfig(graphNodes.value, graphEdges.value));
 
 function onAddField() {
   formFieldDrafts.value.push({
@@ -628,17 +393,28 @@ function onRemoveField(index: number) {
 // ============ 模式切换 ============
 
 function onNodeModeChange(mode: string | number | boolean | undefined) {
-  if (mode === "visual") {
-    const result = configToNodes(formData.node_config);
-    if (result.nodes.length) {
-      graphNodes.value = result.nodes;
-      graphEdges.value = result.edges;
-      ensureLayout(graphNodes.value);
-    }
-  } else {
-    const cfg = nodesToConfig(graphNodes.value, graphEdges.value);
-    if (cfg) formData.node_config = cfg;
+  if (mode === "json") {
+    // 可视化 → JSON：导出当前画布。
+    void serializeDesigner()
+      .then((cfg) => {
+        formData.node_config = cfg;
+      })
+      .catch((err: Error) => {
+        ElMessage.error(err.message);
+        nodeMode.value = "visual";
+      });
+    return;
   }
+  // JSON → 可视化：解析文本并推送画布；解析失败退回 JSON。
+  try {
+    designerDocument.value = graphToDesigner(parseNodeConfig(formData.node_config));
+  } catch (err) {
+    ElMessage.error(`画布加载失败：${(err as Error).message}`);
+    nodeMode.value = "json";
+    return;
+  }
+  syncNodeConfigs(designerDocument.value);
+  void nextTick(() => refreshDesignerCanvas());
 }
 
 function onFormModeChange(mode: string | number | boolean | undefined) {
@@ -660,25 +436,11 @@ function resetForm() {
   formData.form_schema = "";
   nodeMode.value = "visual";
   formMode.value = "visual";
-  // 新建默认给一条可用的线性图（开始 → 主管审批 → 结束），画布不再空白。
-  graphNodes.value = [
-    { id: "start", type: "START", x: 20, y: 110 },
-    {
-      id: "node_0",
-      type: "TASK",
-      strategy: "ALL",
-      approvers: [{ type: "LEADER" }],
-      x: 280,
-      y: 90,
-    },
-    { id: "end", type: "END", x: 600, y: 110 },
-  ];
-  graphEdges.value = [
-    { from: "start", to: "node_0" },
-    { from: "node_0", to: "end" },
-  ];
+  designerDocument.value = defaultDesignerDocument();
+  syncNodeConfigs(designerDocument.value);
   formFieldDrafts.value = [];
   formRef.value?.clearValidate();
+  void nextTick(() => refreshDesignerCanvas());
 }
 
 function open() {
@@ -691,79 +453,25 @@ function handleClose() {
   resetForm();
 }
 
-/** 可视化模式校验：图结构基础校验 + TASK 节点审批人校验 + 表单字段校验。 */
-function validateDrafts(): string | null {
-  // 图节点校验
-  const validNodes = graphNodes.value.filter((n) => n.id);
-  if (!validNodes.length) return $t("pages.oa.definition.vAtLeastOneNode");
-
-  const idSet = new Set<string>();
-  for (const node of validNodes) {
-    if (idSet.has(node.id)) return $t("pages.oa.definition.vNodeIdDup", { id: node.id });
-    idSet.add(node.id);
-  }
-
-  for (let i = 0; i < validNodes.length; i++) {
-    const node = validNodes[i];
-    if (node.type === "TASK") {
-      if (!node.approvers || node.approvers.length === 0)
-        return $t("pages.oa.definition.vApproverRequired", { id: node.id });
-      for (const ap of node.approvers) {
-        if (ap.type !== "LEADER" && (!ap.id || ap.id <= 0)) {
-          return $t(
-            ap.type === "USER"
-              ? "pages.oa.definition.vUserRequired"
-              : "pages.oa.definition.vPositionRequired",
-            { id: node.id }
-          );
-        }
-      }
-    }
-    if (node.type === "SUBPROCESS") {
-      if (!node.subprocessDefinition || !node.subprocessDefinition.includes(":")) {
-        return $t("pages.oa.definition.vSubprocessRequired", { id: node.id });
-      }
-    }
-  }
-
-  // 表单字段校验
-  const keys = new Set<string>();
-  for (const f of formFieldDrafts.value) {
-    if (!f.key.trim()) continue;
-    if (keys.has(f.key.trim()))
-      return $t("pages.oa.definition.vFieldKeyDup", { key: f.key.trim() });
-    keys.add(f.key.trim());
-    if (f.type === "select") {
-      const opts = f.options
-        .split(/[,，]/)
-        .map((o) => o.trim())
-        .filter(Boolean);
-      if (!opts.length) return $t("pages.oa.definition.vFieldOptionsRequired", { key: f.key });
-    }
-  }
-  return null;
-}
-
 async function handleSubmit() {
   if (!formRef.value) return;
+
+  // 可视化模式：先把画布导出为 node_config，再走统一表单校验。
+  if (nodeMode.value === "visual") {
+    try {
+      formData.node_config = await serializeDesigner();
+    } catch (err) {
+      ElMessage.error((err as Error).message);
+      return;
+    }
+  }
+  if (formMode.value === "visual") formData.form_schema = fieldsToSchema(formFieldDrafts.value);
 
   const valid = await formRef.value.validate().then(
     () => true,
     () => false
   );
   if (!valid) return;
-
-  // 可视化模式：生成 JSON 并做结构校验。
-  if (nodeMode.value === "visual" || formMode.value === "visual") {
-    const err = validateDrafts();
-    if (err) {
-      ElMessage.warning(err);
-      return;
-    }
-    if (nodeMode.value === "visual")
-      formData.node_config = nodesToConfig(graphNodes.value, graphEdges.value);
-    if (formMode.value === "visual") formData.form_schema = fieldsToSchema(formFieldDrafts.value);
-  }
 
   try {
     loading.value = true;
@@ -798,110 +506,43 @@ defineExpose({ open });
   margin-bottom: 10px;
 }
 
-.node-editor {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.hint {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
 }
 
-/* ============ 图编辑器 ============ */
-.graph-section {
+.drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.oa-node-strip {
+  width: 100%;
   border: 1px solid var(--el-border-color-light);
   border-radius: 6px;
   padding: 12px;
-  margin-bottom: 12px;
+  margin-top: 12px;
 }
 
-.graph-section-title {
+.oa-strip-title {
   font-weight: 600;
   font-size: 13px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   color: var(--el-text-color-primary);
 }
 
-.graph-node-card {
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 4px;
-  padding: 8px;
-  margin-bottom: 8px;
-  background: var(--el-bg-color);
-}
-
-.graph-edge-row {
+.oa-node-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-.edge-arrow {
-  color: var(--el-text-color-placeholder);
-  font-size: 14px;
-}
-
-.node-toolbar {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.node-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.node-title {
-  font-weight: 600;
+.oa-node-label {
+  width: 130px;
+  flex-shrink: 0;
   font-size: 13px;
-}
-
-.node-ops {
-  display: flex;
-  gap: 4px;
-}
-
-.approver-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-start;
-}
-
-.approver-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.hint {
-  margin-top: 6px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-
-.hint-inline {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-
-.json-preview {
-  margin-top: 8px;
-  padding: 8px;
-  background: var(--el-fill-color-light);
-  border-radius: 4px;
-  font-size: 12px;
-  word-break: break-all;
-
-  .preview-title {
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  code {
-    white-space: pre-wrap;
-  }
+  color: var(--el-text-color-regular);
 }
 </style>
