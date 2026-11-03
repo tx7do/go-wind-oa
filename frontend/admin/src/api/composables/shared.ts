@@ -7,6 +7,9 @@ import ExcelJS from "exceljs";
 import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/core/i18n";
 
+/** ElTag 的 type 取值（EP TagType），枚举着色工具的返回类型 */
+export type TagType = "primary" | "success" | "warning" | "danger" | "info";
+
 export const enableList = computed(() => [
   { value: "true", label: $t("enum.enable.true") },
   { value: "false", label: $t("enum.enable.false") },

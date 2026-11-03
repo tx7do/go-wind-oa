@@ -16,6 +16,7 @@ import type {
 import { makeUpdateMask, type PaginationQuery } from "@/core/transport/rest";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
+import type { TagType } from "./shared";
 import { i18n } from "@/core/i18n";
 
 const t = i18n.global.t;
@@ -134,6 +135,20 @@ export function positionTypeToName(status: Position_Status) {
   const values = positionTypeList.value;
   const matchedItem = values.find((item) => item.value === status);
   return matchedItem ? matchedItem.label : "";
+}
+
+const POSITION_TYPE_TAG_TYPE_MAP: Record<string, TagType> = {
+  REGULAR: "primary",
+  LEADER: "warning",
+  MANAGER: "success",
+  INTERN: "info",
+  CONTRACT: "info",
+  OTHER: "info",
+  DEFAULT: "info",
+};
+
+export function positionTypeToType(positionType: Position_Type): TagType {
+  return POSITION_TYPE_TAG_TYPE_MAP[positionType as string] || POSITION_TYPE_TAG_TYPE_MAP.DEFAULT;
 }
 
 const POSITION_TYPE_COLOR_THEME: Record<string, Record<string, string>> = {

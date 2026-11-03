@@ -6,6 +6,7 @@ import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 
 import tailwindcss from "@tailwindcss/vite";
+import { resolve } from "node:path";
 import pkg from "./package.json" with { type: "json" };
 
 // Vite配置  https://cn.vitejs.dev/config
@@ -17,6 +18,10 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     resolve: {
       // Vite 8 新特性：自动读取 tsconfig.json 中的 paths 别名
       tsconfigPaths: true,
+      // SCSS 预处理器不走 tsconfigPaths——显式补 @ 别名
+      alias: {
+        "@": resolve(__dirname, "src"),
+      },
     },
     css: {
       preprocessorOptions: {
@@ -75,7 +80,18 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     // "optimized dependencies changed. reloading" 整页刷新；而登录令牌仅存内存，
     // 整页刷新即被登出。下列清单由 src 全量 import 扫描生成（CSS/类型导入除外）。
     optimizeDeps: {
+      // 库产物含 monaco ?worker 导入，依赖优化器处理不了——排除走源码链路
+      exclude: ["@go-wind/editor-vue"],
       include: [
+        // 被 exclude 的子树其传递依赖同样不预构建，其中几类是裸 CJS，浏览器解析不了具名导出：
+        //   - lowlight 深引 highlight.js/lib/*（es/*.js 只是转发到 lib/*.js 的 CJS 实现）
+        // 显式纳入预构建，让优化器把它们转成 ESM 并补齐 default/具名导出
+        "lowlight",
+        "highlight.js",
+        "highlight.js/lib/core",
+        // json-editor-vue 的 ESM 产物 import json-source-map（纯 CJS、无 default 导出）
+        "json-editor-vue",
+        "json-source-map",
         // 基础框架
         "vue",
         "vue-router",

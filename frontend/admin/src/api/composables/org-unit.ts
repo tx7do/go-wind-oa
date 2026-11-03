@@ -17,6 +17,7 @@ import { makeUpdateMask, type PaginationQuery } from "@/core/transport/rest";
 import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
 import { i18n } from "@/core/i18n";
+import type { TagType } from "./shared";
 
 const t = i18n.global.t;
 
@@ -153,6 +154,26 @@ export function orgUnitTypeToName(orgUnitType: OrgUnit_Type) {
   const values = orgUnitTypeList.value;
   const matchedItem = values.find((item) => item.value === orgUnitType);
   return matchedItem ? matchedItem.label : "";
+}
+
+// 组织类型 → tag 语义 type：按层级分组着色（公司系=primary、区划系=warning、
+// 执行单元=success、特殊形态=danger/info）
+const ORG_UNIT_TAG_TYPE_MAP: Record<string, TagType> = {
+  BRANCH: "primary",
+  COMMITTEE: "info",
+  COMPANY: "primary",
+  DEPARTMENT: "success",
+  DIVISION: "warning",
+  OTHER: "info",
+  PROJECT: "danger",
+  REGION: "warning",
+  SUBSIDIARY: "primary",
+  TEAM: "success",
+  DEFAULT: "info",
+};
+
+export function orgUnitTypeToType(orgUnitType: OrgUnit_Type): TagType {
+  return ORG_UNIT_TAG_TYPE_MAP[orgUnitType as string] || ORG_UNIT_TAG_TYPE_MAP.DEFAULT;
 }
 
 const ORG_UNIT_COLOR_MAP: Record<string, string> = {

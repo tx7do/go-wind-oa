@@ -178,12 +178,12 @@ function filterPermissionNode(value: string, data: any) {
 
 // 打开抽屉
 // 关闭守卫：遮罩/ESC/X/取消统一，脏数据先确认（docs/form_drawer_close_guard.md）；
-// 权限树/授权单元树的勾选与字段权限中间态也是编辑态，纳入脏判定
+// 权限树勾选也是编辑态，纳入脏判定。
+// （上游守卫还含 unitKeys/userHiddenFields 两项——授权单元树与字段权限在本仓缓行，
+//   模板无对应控件，缺定义曾致 build 失败，故此处不纳入。）
 const guard = useDrawerCloseGuard(() => ({
   ...formData,
   permissionKeys: permissionTreeRef.value?.getCheckedKeys(false),
-  unitKeys: unitTreeRef.value?.getCheckedKeys(false),
-  userHiddenFields: userHiddenFields.value,
 }));
 
 async function open(data?: { create: boolean; row?: any }) {
