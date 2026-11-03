@@ -38,7 +38,12 @@ TRUNCATE TABLE public.sys_tenants,
                public.oa_workflow_instance_parent_link,
                public.oa_workflow_log,
                public.oa_workflow_task,
-               public.oa_workflow_delegation
+               public.oa_workflow_delegation,
+               public.oa_geofence,
+               public.oa_wifi_fingerprint,
+               public.internal_messages,
+               public.internal_message_recipients,
+               public.files
 RESTART IDENTITY CASCADE;
 
 -- ----------------------------
@@ -392,14 +397,18 @@ INSERT INTO public.oa_workflow_log (tenant_id, instance_id, node_id, log_action,
 SELECT setval('oa_workflow_log_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_log));
 
 -- ----------------------------
--- oa_attendance_record 考勤记录（user=2，近期工作日，状态混合）
+-- oa_attendance_record 考勤记录（user=2，近期工作日，状态混合；含当日仅打卡上班的进行态）
+-- work_date / 打卡时间均显式带 +08 时区：服务端按本地时区（Asia/Shanghai）零点做等值过滤，
+-- 且 psql 会话时区多为 UTC，不带偏移会把日期存成 UTC 零点，导致按日查询查不到。
 -- ----------------------------
 INSERT INTO public.oa_attendance_record (tenant_id, user_id, work_date, check_in_at, check_in_latitude, check_in_longitude, check_in_wifi_bssid, check_out_at, check_out_latitude, check_out_longitude, check_out_wifi_bssid, day_result, created_at, updated_at, created_by, updated_by) VALUES
-    (1, 2, '2026-08-17', '2026-08-17 08:55:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-08-17 18:02:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 2, 2),
-    (1, 2, '2026-08-18', '2026-08-18 10:12:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-08-18 18:05:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'LATE', now(), now(), 2, 2),
-    (1, 2, '2026-08-19', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ABSENT', now(), now(), 2, 2),
-    (1, 2, '2026-08-20', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ON_LEAVE', now(), now(), 2, 2),
-    (1, 2, '2026-08-21', '2026-08-21 08:58:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-08-21 18:00:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 2, 2);
+    (1, 2, '2026-10-26 00:00:00+08', '2026-10-26 08:55:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-10-26 18:02:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 2, 2),
+    (1, 2, '2026-10-27 00:00:00+08', '2026-10-27 10:12:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-10-27 18:05:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'LATE', now(), now(), 2, 2),
+    (1, 2, '2026-10-28 00:00:00+08', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ABSENT', now(), now(), 2, 2),
+    (1, 2, '2026-10-29 00:00:00+08', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ON_LEAVE', now(), now(), 2, 2),
+    (1, 2, '2026-10-30 00:00:00+08', '2026-10-30 08:58:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-10-30 18:00:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 2, 2),
+    (1, 2, '2026-11-02 00:00:00+08', '2026-11-02 08:52:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-11-02 18:03:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 2, 2),
+    (1, 2, '2026-11-03 00:00:00+08', '2026-11-03 08:57:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', NULL, NULL, NULL, NULL, 'NORMAL', now(), now(), 2, 2);
 SELECT setval('oa_attendance_record_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_attendance_record));
 
 -- ----------------------------
@@ -535,7 +544,9 @@ INSERT INTO public.oa_workflow_instance (tenant_id, definition_id, instance_stat
     (0, 7, 'PENDING', '{}', 'LEAVE', 5, now(), now(), 1, 1),
     (0, 8, 'APPROVED', '{"amount": 5000}', 'EXPENSE', 4, now(), now(), 1, 1),
     (0, 9, 'REJECTED', '{}', 'BUSINESS_TRIP', 4, now(), now(), 1, 1),
-    (0, 10, 'PENDING', '{}', 'OUTING', 4, now(), now(), 1, 1);
+    (0, 10, 'PENDING', '{}', 'OUTING', 4, now(), now(), 1, 1),
+    (0, 11, 'PENDING', '{}', 'OVERTIME', 4, now(), now(), 1, 1),
+    (0, 12, 'PENDING', '{"purpose": "合同用印"}', 'SEAL_APPLICATION', 4, now(), now(), 1, 1);
 SELECT setval('oa_workflow_instance_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_instance));
 
 -- ----------------------------
@@ -547,7 +558,9 @@ INSERT INTO public.oa_workflow_task (tenant_id, instance_id, node_id, assignee_u
     (0, 6, 'node_1', 1, 'APPROVED', now(), now(), 1, 1),
     (0, 7, 'node_0', 1, 'APPROVED', now(), now(), 1, 1),
     (0, 7, 'node_1', 1, 'REJECTED', now(), now(), 1, 1),
-    (0, 8, 'node_0', NULL, 'PENDING', now(), now(), 1, 1);
+    (0, 8, 'node_0', NULL, 'PENDING', now(), now(), 1, 1),
+    (0, 9, 'node_0', 1, 'PENDING', now(), now(), 1, 1),
+    (0, 10, 'node_0', 1, 'PENDING', now(), now(), 1, 1);
 SELECT setval('oa_workflow_task_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_task));
 
 -- ----------------------------
@@ -558,7 +571,9 @@ INSERT INTO public.oa_workflow_log (tenant_id, instance_id, node_id, log_action,
     (0, 6, 'node_0', 'SUBMIT', '申请人提交报销申请', now(), now(), 1, 1),
     (0, 6, 'node_1', 'APPROVE', '主管同意', now(), now(), 1, 1),
     (0, 7, 'node_0', 'SUBMIT', '申请人提交出差申请', now(), now(), 1, 1),
-    (0, 7, 'node_1', 'REJECT', '主管驳回：行程不合理', now(), now(), 1, 1);
+    (0, 7, 'node_1', 'REJECT', '主管驳回：行程不合理', now(), now(), 1, 1),
+    (0, 9, 'node_0', 'SUBMIT', '申请人提交加班申请', now(), now(), 1, 1),
+    (0, 10, 'node_0', 'SUBMIT', '申请人提交用印申请', now(), now(), 1, 1);
 SELECT setval('oa_workflow_log_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_log));
 
 -- ----------------------------
@@ -578,14 +593,17 @@ SELECT setval('oa_workflow_delegation_id_seq', (SELECT COALESCE(MAX(id), 1) FROM
 -- ----------------------------
 
 -- ----------------------------
--- oa_attendance_record 考勤记录（超管组，user=1，近期工作日，状态混合）
+-- oa_attendance_record 考勤记录（超管组，user=1，近期工作日，状态混合；含当日仅打卡上班的进行态）
+-- 时区说明同上方租户组。
 -- ----------------------------
 INSERT INTO public.oa_attendance_record (tenant_id, user_id, work_date, check_in_at, check_in_latitude, check_in_longitude, check_in_wifi_bssid, check_out_at, check_out_latitude, check_out_longitude, check_out_wifi_bssid, day_result, created_at, updated_at, created_by, updated_by) VALUES
-    (0, 1, '2026-08-17', '2026-08-17 08:55:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-08-17 18:02:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 1, 1),
-    (0, 1, '2026-08-18', '2026-08-18 10:12:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-08-18 18:05:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'LATE', now(), now(), 1, 1),
-    (0, 1, '2026-08-19', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ABSENT', now(), now(), 1, 1),
-    (0, 1, '2026-08-20', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ON_LEAVE', now(), now(), 1, 1),
-    (0, 1, '2026-08-21', '2026-08-21 08:58:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-08-21 18:00:00', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 1, 1);
+    (0, 1, '2026-10-26 00:00:00+08', '2026-10-26 08:55:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-10-26 18:02:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 1, 1),
+    (0, 1, '2026-10-27 00:00:00+08', '2026-10-27 10:12:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-10-27 18:05:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'LATE', now(), now(), 1, 1),
+    (0, 1, '2026-10-28 00:00:00+08', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ABSENT', now(), now(), 1, 1),
+    (0, 1, '2026-10-29 00:00:00+08', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ON_LEAVE', now(), now(), 1, 1),
+    (0, 1, '2026-10-30 00:00:00+08', '2026-10-30 08:58:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-10-30 18:00:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 1, 1),
+    (0, 1, '2026-11-02 00:00:00+08', '2026-11-02 08:52:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', '2026-11-02 18:03:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', 'NORMAL', now(), now(), 1, 1),
+    (0, 1, '2026-11-03 00:00:00+08', '2026-11-03 08:57:00+08', 39.9042, 116.4074, 'AA:BB:CC:DD:00:01', NULL, NULL, NULL, NULL, 'NORMAL', now(), now(), 1, 1);
 SELECT setval('oa_attendance_record_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_attendance_record));
 
 -- ----------------------------
@@ -650,7 +668,7 @@ SELECT setval('oa_outing_application_id_seq', (SELECT COALESCE(MAX(id), 1) FROM 
 -- oa_overtime_application 加班申请（超管组，状态混合；compensation_type 混合）
 -- ----------------------------
 INSERT INTO public.oa_overtime_application (tenant_id, reason, start_time, end_time, compensation_type, overtime_status, instance_id, created_at, updated_at, created_by, updated_by) VALUES
-    (0, '版本发布前紧急修复', '2026-08-22 18:30:00', '2026-08-22 22:00:00', 'COMP_LEAVE', 'PENDING', NULL, now(), now(), 1, 1),
+    (0, '版本发布前紧急修复', '2026-08-22 18:30:00', '2026-08-22 22:00:00', 'COMP_LEAVE', 'PENDING', 9, now(), now(), 1, 1),
     (0, '系统迁移', '2026-09-01 18:00:00', '2026-09-01 23:00:00', 'OVERTIME_PAY', 'APPROVED', NULL, now(), now(), 1, 1),
     (0, '客户故障处理', '2026-10-01 18:00:00', '2026-10-01 20:00:00', 'COMP_LEAVE', 'REJECTED', NULL, now(), now(), 1, 1);
 SELECT setval('oa_overtime_application_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_overtime_application));
@@ -659,10 +677,96 @@ SELECT setval('oa_overtime_application_id_seq', (SELECT COALESCE(MAX(id), 1) FRO
 -- oa_seal_application 用印申请（超管组，状态混合；seal_type 混合）
 -- ----------------------------
 INSERT INTO public.oa_seal_application (tenant_id, purpose, seal_type, file_count, recipient, seal_status, instance_id, created_at, updated_at, created_by, updated_by) VALUES
-    (0, '合同用印', 'CONTRACT_SEAL', 2, '法务部李经理', 'PENDING', NULL, now(), now(), 1, 1),
+    (0, '合同用印', 'CONTRACT_SEAL', 2, '法务部李经理', 'PENDING', 10, now(), now(), 1, 1),
     (0, '公文用印', 'OFFICIAL_SEAL', 1, '行政部王主管', 'REJECTED', NULL, now(), now(), 1, 1),
     (0, '财务报表用印', 'FINANCE_SEAL', 1, '财务部张总监', 'APPROVED', NULL, now(), now(), 1, 1);
 SELECT setval('oa_seal_application_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_seal_application));
+
+-- ----------------------------
+-- oa_geofence 考勤地理围栏（租户管理员组：总部 + 分公司两处）
+-- ----------------------------
+INSERT INTO public.oa_geofence (tenant_id, name, latitude, longitude, radius_meters, created_at, updated_at, created_by, updated_by) VALUES
+    (1, '北京总部办公区', 39.9042, 116.4074, 300, now(), now(), 2, 2),
+    (1, '广州分公司办公区', 23.1291, 113.2644, 500, now(), now(), 2, 2);
+SELECT setval('oa_geofence_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_geofence));
+
+-- ----------------------------
+-- oa_wifi_fingerprint 考勤 Wi-Fi 指纹（租户管理员组：办公 + 访客两枚）
+-- ----------------------------
+INSERT INTO public.oa_wifi_fingerprint (tenant_id, ssid, bssid, created_at, updated_at, created_by, updated_by) VALUES
+    (1, 'GoWind-Office-5G', 'AA:BB:CC:DD:00:01', now(), now(), 2, 2),
+    (1, 'GoWind-Guest', 'AA:BB:CC:DD:00:02', now(), now(), 2, 2);
+SELECT setval('oa_wifi_fingerprint_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_wifi_fingerprint));
+
+-- ----------------------------
+-- internal_messages / internal_message_recipients 站内信（租户管理员组：公告 + 维护通知）
+-- ----------------------------
+INSERT INTO public.internal_messages (tenant_id, title, content, sender_id, category_id, status, type, created_at, updated_at, created_by, updated_by) VALUES
+    (1, '关于国庆节放假安排的通知', '各位同事：2026 年 10 月 1 日至 10 月 2 日国庆节放假，共 2 天，10 月 3 日（周六）正常调休上班。请各部门提前安排好工作。', 2, 201, 'PUBLISHED', 'NOTIFICATION', now(), now(), 2, 2),
+    (1, '系统维护通知', 'OA 系统将于本周六 22:00 - 24:00 进行例行维护，期间服务可能短暂不可用，请提前保存工作内容。', 2, 202, 'PUBLISHED', 'NOTIFICATION', now(), now(), 2, 2),
+    (1, '考勤制度更新提醒', '自本月起，考勤打卡新增 Wi-Fi 围栏校验，请在办公区内完成打卡，避免打卡失败。', 2, 402, 'DRAFT', 'NOTIFICATION', now(), now(), 2, 2);
+SELECT setval('internal_messages_id_seq', (SELECT COALESCE(MAX(id), 1) FROM internal_messages));
+
+INSERT INTO public.internal_message_recipients (tenant_id, message_id, recipient_user_id, status, received_at, read_at, created_at, updated_at) VALUES
+    (1, 1, 3, 'READ', now(), now(), now(), now()),
+    (1, 2, 3, 'RECEIVED', now(), NULL, now(), now()),
+    (1, 2, 2, 'READ', now(), now(), now(), now());
+SELECT setval('internal_message_recipients_id_seq', (SELECT COALESCE(MAX(id), 1) FROM internal_message_recipients));
+
+-- ----------------------------
+-- files 文件记录（租户管理员组：报销发票 + 公告附件示例）
+-- ----------------------------
+INSERT INTO public.files (tenant_id, provider, bucket_name, file_directory, file_guid, save_file_name, file_name, extension, size, size_format, link_url, remark, created_at, updated_at, created_by, updated_by) VALUES
+    (1, 'MINIO', 'images', 'oa/expense/2026/', 'a1b2c3d4-inv-001', 'inv-20260815-001.pdf', '北京高铁发票.pdf', 'pdf', 245760, '240.00 KB', 'http://127.0.0.1:9000/images/oa/expense/2026/inv-20260815-001.pdf', '差旅费报销-北京发票', now(), now(), 2, 2),
+    (1, 'MINIO', 'images', 'oa/expense/2026/', 'e5f6a7b8-inv-002', 'inv-20260816-002.jpg', '办公用品小票.jpg', 'jpg', 1048576, '1.00 MB', 'http://127.0.0.1:9000/images/oa/expense/2026/inv-20260816-002.jpg', '办公用品采购小票', now(), now(), 2, 2);
+SELECT setval('files_id_seq', (SELECT COALESCE(MAX(id), 1) FROM files));
+
+-- ----------------------------
+-- oa_geofence 考勤地理围栏（超管组：总部 + 研发中心两处）
+-- ----------------------------
+INSERT INTO public.oa_geofence (tenant_id, name, latitude, longitude, radius_meters, created_at, updated_at, created_by, updated_by) VALUES
+    (0, '北京总部大厦', 39.9042, 116.4074, 300, now(), now(), 1, 1),
+    (0, '深圳研发中心', 22.5431, 114.0579, 400, now(), now(), 1, 1);
+SELECT setval('oa_geofence_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_geofence));
+
+-- ----------------------------
+-- oa_wifi_fingerprint 考勤 Wi-Fi 指纹（超管组：办公 + 会议室两枚）
+-- ----------------------------
+INSERT INTO public.oa_wifi_fingerprint (tenant_id, ssid, bssid, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 'GoWind-HQ-5G', 'AA:BB:CC:DD:00:01', now(), now(), 1, 1),
+    (0, 'GoWind-MeetingRoom', 'AA:BB:CC:DD:00:02', now(), now(), 1, 1);
+SELECT setval('oa_wifi_fingerprint_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_wifi_fingerprint));
+
+-- ----------------------------
+-- internal_messages / internal_message_recipients 站内信（超管组：公告 + 提醒）
+-- ----------------------------
+INSERT INTO public.internal_messages (tenant_id, title, content, sender_id, category_id, status, type, created_at, updated_at, created_by, updated_by) VALUES
+    (0, '欢迎使用风行协同办公', '欢迎使用风行协同办公平台！平台覆盖审批流转、人事考勤、请假报销等日常办公场景，祝使用愉快。', 1, 201, 'PUBLISHED', 'NOTIFICATION', now(), now(), 1, 1),
+    (0, '审批待办提醒', '您有一条待办审批任务请及时处理，避免影响同事的申请进度。', 1, 402, 'PUBLISHED', 'NOTIFICATION', now(), now(), 1, 1);
+SELECT setval('internal_messages_id_seq', (SELECT COALESCE(MAX(id), 1) FROM internal_messages));
+
+INSERT INTO public.internal_message_recipients (tenant_id, message_id, recipient_user_id, status, received_at, read_at, created_at, updated_at) VALUES
+    (0, 4, 1, 'READ', now(), now(), now(), now()),
+    (0, 5, 1, 'RECEIVED', now(), NULL, now(), now());
+SELECT setval('internal_message_recipients_id_seq', (SELECT COALESCE(MAX(id), 1) FROM internal_message_recipients));
+
+-- ----------------------------
+-- files 文件记录（超管组：发票 + 附件示例）
+-- ----------------------------
+INSERT INTO public.files (tenant_id, provider, bucket_name, file_directory, file_guid, save_file_name, file_name, extension, size, size_format, link_url, remark, created_at, updated_at, created_by, updated_by) VALUES
+    (0, 'MINIO', 'images', 'oa/expense/2026/', 'b9c0d1e2-inv-003', 'inv-20260815-003.pdf', '酒店住宿发票.pdf', 'pdf', 189440, '185.00 KB', 'http://127.0.0.1:9000/images/oa/expense/2026/inv-20260815-003.pdf', '差旅费报销-北京住宿发票', now(), now(), 1, 1),
+    (0, 'MINIO', 'images', 'oa/announcement/2026/', 'f0a1b2c3-ann-001', 'ann-20261101-001.pdf', '国庆节放假安排.pdf', 'pdf', 512000, '500.00 KB', 'http://127.0.0.1:9000/images/oa/announcement/2026/ann-20261101-001.pdf', '国庆节放假通知附件', now(), now(), 1, 1);
+SELECT setval('files_id_seq', (SELECT COALESCE(MAX(id), 1) FROM files));
+
+-- ############################################################
+-- # 未插入数据的表（保持空表，均为系统运行时自动产生）：      #
+-- #   oa_workflow_instance_join / oa_workflow_instance_parent_link #
+-- #   （引擎并行分支计数 / 父子流程链接，推进器自动写入）     #
+-- #   sys_api_audit_logs / sys_operation_audit_logs /        #
+-- #   sys_data_access_audit_logs / sys_login_audit_logs /    #
+-- #   sys_permission_audit_logs / sys_policy_evaluation_logs #
+-- #   （审计/登录日志，运行时自动记录）                       #
+-- ############################################################
 
 -- 套餐目录种子（三版本：免费/标准/企业，移植自 go-wind-admin）
 INSERT INTO public.sys_plans (id, name, version, expiry_policy, data_retention_days, description, created_at)
