@@ -79,6 +79,7 @@
     "@vueuse/core": "^14.2.1",
     "animate.css": "^4.1.1",
     "axios": "^1.13.6",
+    "bpmn-js": "^17.11.1",
     "clsx": "^2.1.1",
     "codemirror": "^5.65.21",
     "codemirror-editor-vue3": "^2.8.0",

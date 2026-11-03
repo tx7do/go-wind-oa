@@ -162,6 +162,9 @@ import {
   type V2Graph,
 } from "./flow-designer-convert";
 import { fieldsToSchema, schemaToFields, type FieldDraft } from "./workflow-graph";
+import "bpmn-js/dist/assets/diagram-js.css";
+import "bpmn-js/dist/assets/bpmn-js.css";
+import "bpmn-js/dist/assets/bpmn-font/css/bpmn.css";
 import "@bpmn-io/properties-panel/dist/assets/properties-panel.css";
 import "@go-wind/flow-designer-vue/style.css";
 import { FlowDesigner } from "@go-wind/flow-designer-vue";
