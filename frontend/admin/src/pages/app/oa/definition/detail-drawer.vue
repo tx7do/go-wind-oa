@@ -62,6 +62,7 @@ import type { oaservicev1_WorkflowDefinition } from "@/api/generated/admin/servi
 import { $t } from "@/core/i18n";
 
 import { graphToDesigner, parseNodeConfig } from "./flow-designer-convert";
+import "@bpmn-io/properties-panel/dist/assets/properties-panel.css";
 import "@go-wind/flow-designer-vue/style.css";
 import { FlowDesigner } from "@go-wind/flow-designer-vue";
 import type { DesignerDocument } from "@go-wind/flow-designer-core";

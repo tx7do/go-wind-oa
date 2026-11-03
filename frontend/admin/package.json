@@ -45,6 +45,7 @@
     ]
   },
   "dependencies": {
+    "@bpmn-io/properties-panel": "3.58.1",
     "@element-plus/icons-vue": "^2.3.2",
     "@fontsource/noto-sans-sc": "^5.2.9",
     "@go-wind/editor-vue": "0.2.4",

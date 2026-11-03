@@ -41,7 +41,7 @@
           </ElRadioGroup>
         </div>
 
-        <div v-if="nodeMode === 'visual'" style="width: 100%">
+        <div v-if="nodeMode === 'visual'" class="designer-host">
           <FlowDesigner
             ref="designerRef"
             height="52vh"
@@ -162,6 +162,7 @@ import {
   type V2Graph,
 } from "./flow-designer-convert";
 import { fieldsToSchema, schemaToFields, type FieldDraft } from "./workflow-graph";
+import "@bpmn-io/properties-panel/dist/assets/properties-panel.css";
 import "@go-wind/flow-designer-vue/style.css";
 import { FlowDesigner } from "@go-wind/flow-designer-vue";
 import type { DesignerDocument, DesignerHandle } from "@go-wind/flow-designer-core";
@@ -515,6 +516,31 @@ defineExpose({ open });
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.designer-host {
+  // go-wind-flow 组件的边框/滚动条 token 在宿主侧未定义时回退成白色，这里给默认值
+  --gwf-border: var(--el-border-color);
+
+  :deep(.gwf-designer) {
+    background: transparent;
+  }
+
+  :deep(.gwf-panel) {
+    flex: 0 0 320px;
+    background: var(--el-bg-color);
+    scrollbar-width: thin;
+    scrollbar-color: var(--el-border-color) transparent;
+  }
+
+  // @bpmn-io/properties-panel 脱离其默认布局时会被压缩，强制撑满面板列
+  :deep(.bio-properties-panel-container),
+  :deep(.bio-properties-panel),
+  :deep(.bio-properties-panel-scroll-container) {
+    width: 100%;
+    min-width: 0;
+    background: var(--el-bg-color);
+  }
 }
 
 .oa-node-strip {
