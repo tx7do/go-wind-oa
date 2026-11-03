@@ -32,9 +32,9 @@ export const PLATFORM_TENANT_ID = 0;
 export const LOGIN_PATH = "/login";
 
 /**
- * @zh_CN 默认首页地址
+ * @zh_CN 默认首页地址（审批中心——OA 系统最高频入口）
  */
-export const DEFAULT_HOME_PATH = "/oa/definitions";
+export const DEFAULT_HOME_PATH = "/approval/center";
 
 /**
  * 抽屉通用宽度

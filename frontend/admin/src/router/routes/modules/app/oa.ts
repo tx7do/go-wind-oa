@@ -3,76 +3,95 @@ import type { RouteRecordRaw } from "vue-router";
 import { Layout } from "@/layouts";
 
 /**
- * OA 管理路由模块。
+ * OA 业务路由模块——按业务域拆为四个平级菜单分组（对齐上游 base 的两级菜单模式，
+ * 不做三级嵌套）：
  *
- * 对齐 cms internal_message.ts 路由模块模式：Layout 包裹，children 为具体页面。
- * accessMode=frontend 下，routes 聚合器对 modules 目录下所有 .ts 做 eager glob
- * 自动收编本文件，无需改聚合器。
+ *   审批管理  /approval    审批中心、流程定义、审批委托
+ *   考勤管理  /attendance  记录、设置、节假日、地理围栏、Wi-Fi 指纹
+ *   假期管理  /leave       请假申请、类型配置、额度授予
+ *   行政申请  /affairs     报销、出差、加班、用印、外出
  *
- * 不设 meta.authority：OA v1 后端无角色/权限表（authz 为 noop），登录即视为
- * 可访问后台；待 identity/permission 域落地后再恢复 authority 过滤。
- *
- * 页面：流程定义管理、审批中心、考勤记录、考勤设置、节假日设置、
- *   请假管理、报销管理、出差/加班/用印/外出申请管理、公告发布、通讯录。
+ * 约定：
+ * - 路由 name 保持历史名（OaXxx）不变，避免破坏 KeepAlive include 与命名跳转；
+ * - 同级 order 全局唯一（业务区 1-5、平台区 2001+），杜绝撞号导致的排序漂移；
+ * - 不设 meta.authority：OA v1 后端无角色/权限表（authz 为 noop），登录即可访问；
+ *   待 identity/permission 域落地后再恢复 authority 过滤。
  */
-const oa: RouteRecordRaw[] = [
+const approval: RouteRecordRaw[] = [
   {
-    path: "/oa",
-    name: "OaManagement",
-    redirect: "/oa/definitions",
+    path: "/approval",
+    name: "OaApprovalModule",
+    redirect: "/approval/center",
     component: Layout,
     meta: {
-      order: 2003,
-      icon: "lucide:file-cog",
-      title: "routes.oa.moduleName",
+      order: 1,
+      icon: "lucide:clipboard-check",
+      title: "routes.approval.moduleName",
       keepAlive: true,
     },
     children: [
       {
+        path: "center",
+        name: "OaApprovalCenter",
+        meta: {
+          order: 1,
+          icon: "lucide:clipboard-check",
+          title: "routes.oa.approval",
+        },
+        component: () => import("@/pages/app/oa/approval/index.vue"),
+      },
+      {
         path: "definitions",
         name: "OaWorkflowDefinition",
         meta: {
-          order: 1,
+          order: 2,
           icon: "lucide:file-cog",
           title: "routes.oa.definition",
         },
         component: () => import("@/pages/app/oa/definition/index.vue"),
       },
       {
-        path: "approvals",
-        name: "OaApprovalCenter",
-        meta: {
-          order: 2,
-          icon: "lucide:stamp",
-          title: "routes.oa.approval",
-        },
-        component: () => import("@/pages/app/oa/approval/index.vue"),
-      },
-      {
         path: "delegations",
         name: "OaWorkflowDelegation",
         meta: {
-          order: 2,
+          order: 3,
           icon: "lucide:user-check",
           title: "routes.oa.delegation",
         },
         component: () => import("@/pages/app/oa/delegation/index.vue"),
       },
+    ],
+  },
+];
+
+const attendance: RouteRecordRaw[] = [
+  {
+    path: "/attendance",
+    name: "OaAttendanceModule",
+    redirect: "/attendance/records",
+    component: Layout,
+    meta: {
+      order: 2,
+      icon: "lucide:calendar-check",
+      title: "routes.attendance.moduleName",
+      keepAlive: true,
+    },
+    children: [
       {
-        path: "attendance-records",
+        path: "records",
         name: "OaAttendanceRecords",
         meta: {
-          order: 3,
+          order: 1,
           icon: "lucide:calendar-check",
           title: "routes.oa.attendanceRecords",
         },
         component: () => import("@/pages/app/oa/attendance/records.vue"),
       },
       {
-        path: "attendance-setting",
+        path: "setting",
         name: "OaAttendanceSetting",
         meta: {
-          order: 3,
+          order: 2,
           icon: "lucide:settings",
           title: "routes.oa.attendanceSetting",
         },
@@ -89,60 +108,94 @@ const oa: RouteRecordRaw[] = [
         component: () => import("@/pages/app/oa/attendance/holidays.vue"),
       },
       {
-        path: "attendance-fences",
+        path: "fences",
         name: "OaAttendanceFences",
         meta: {
-          order: 3,
+          order: 4,
           icon: "lucide:map-pin",
           title: "routes.oa.attendanceFence",
         },
         component: () => import("@/pages/app/oa/attendance/fences.vue"),
       },
       {
-        path: "attendance-wifis",
+        path: "wifis",
         name: "OaAttendanceWifis",
         meta: {
-          order: 3,
+          order: 5,
           icon: "lucide:wifi",
           title: "routes.oa.attendanceWifi",
         },
         component: () => import("@/pages/app/oa/attendance/wifis.vue"),
       },
+    ],
+  },
+];
+
+const leave: RouteRecordRaw[] = [
+  {
+    path: "/leave",
+    name: "OaLeaveModule",
+    redirect: "/leave/applications",
+    component: Layout,
+    meta: {
+      order: 3,
+      icon: "lucide:plane-takeoff",
+      title: "routes.leave.moduleName",
+      keepAlive: true,
+    },
+    children: [
       {
-        path: "leave/types",
-        name: "OaLeaveTypes",
-        meta: {
-          order: 4,
-          icon: "lucide:plane-takeoff",
-          title: "routes.oa.leaveTypes",
-        },
-        component: () => import("@/pages/app/oa/leave/types.vue"),
-      },
-      {
-        path: "leave/balances",
-        name: "OaLeaveBalances",
-        meta: {
-          order: 4,
-          icon: "lucide:plane-takeoff",
-          title: "routes.oa.leaveBalances",
-        },
-        component: () => import("@/pages/app/oa/leave/balances.vue"),
-      },
-      {
-        path: "leave/applications",
+        path: "applications",
         name: "OaLeaveApplications",
         meta: {
-          order: 4,
+          order: 1,
           icon: "lucide:plane-takeoff",
           title: "routes.oa.leaveApplications",
         },
         component: () => import("@/pages/app/oa/leave/applications.vue"),
       },
       {
+        path: "types",
+        name: "OaLeaveTypes",
+        meta: {
+          order: 2,
+          icon: "lucide:tags",
+          title: "routes.oa.leaveTypes",
+        },
+        component: () => import("@/pages/app/oa/leave/types.vue"),
+      },
+      {
+        path: "balances",
+        name: "OaLeaveBalances",
+        meta: {
+          order: 3,
+          icon: "lucide:wallet",
+          title: "routes.oa.leaveBalances",
+        },
+        component: () => import("@/pages/app/oa/leave/balances.vue"),
+      },
+    ],
+  },
+];
+
+const affairs: RouteRecordRaw[] = [
+  {
+    path: "/affairs",
+    name: "OaAffairsModule",
+    redirect: "/affairs/expense",
+    component: Layout,
+    meta: {
+      order: 4,
+      icon: "lucide:receipt",
+      title: "routes.affairs.moduleName",
+      keepAlive: true,
+    },
+    children: [
+      {
         path: "expense",
         name: "OaExpenseManagement",
         meta: {
-          order: 5,
+          order: 1,
           icon: "lucide:receipt",
           title: "routes.oa.expense",
         },
@@ -152,7 +205,7 @@ const oa: RouteRecordRaw[] = [
         path: "business-trip",
         name: "OaBusinessTripManagement",
         meta: {
-          order: 6,
+          order: 2,
           icon: "lucide:luggage",
           title: "routes.oa.businessTrip",
         },
@@ -162,7 +215,7 @@ const oa: RouteRecordRaw[] = [
         path: "overtime",
         name: "OaOvertimeManagement",
         meta: {
-          order: 7,
+          order: 3,
           icon: "lucide:clock-alert",
           title: "routes.oa.overtime",
         },
@@ -172,7 +225,7 @@ const oa: RouteRecordRaw[] = [
         path: "seal-application",
         name: "OaSealApplicationManagement",
         meta: {
-          order: 8,
+          order: 4,
           icon: "lucide:stamp",
           title: "routes.oa.sealApplication",
         },
@@ -182,24 +235,14 @@ const oa: RouteRecordRaw[] = [
         path: "outing",
         name: "OaOutingManagement",
         meta: {
-          order: 9,
+          order: 5,
           icon: "lucide:door-open",
           title: "routes.oa.outing",
         },
         component: () => import("@/pages/app/oa/outing/index.vue"),
       },
-      {
-        path: "announcement",
-        name: "OaAnnouncementManagement",
-        meta: {
-          order: 10,
-          icon: "lucide:megaphone",
-          title: "routes.oa.announcement",
-        },
-        component: () => import("@/pages/app/oa/announcement/index.vue"),
-      },
     ],
   },
 ];
 
-export default oa;
+export default [...approval, ...attendance, ...leave, ...affairs];

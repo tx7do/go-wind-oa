@@ -1,4 +1,16 @@
 {
+  "approval": {
+    "moduleName": "审批管理"
+  },
+  "attendance": {
+    "moduleName": "考勤管理"
+  },
+  "leave": {
+    "moduleName": "假期管理"
+  },
+  "affairs": {
+    "moduleName": "行政申请"
+  },
   "oa": {
     "moduleName": "OA 工作流",
     "definition": "流程定义",
@@ -38,7 +50,7 @@
     "api": "API管理"
   },
   "internalMessage": {
-    "moduleName": "站内消息",
+    "moduleName": "消息公告",
     "internalMessage": "消息管理",
     "internalMessageCategory": "消息分类"
   },

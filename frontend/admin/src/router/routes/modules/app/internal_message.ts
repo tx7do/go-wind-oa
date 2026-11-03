@@ -2,6 +2,10 @@ import type { RouteRecordRaw } from "vue-router";
 
 import { Layout } from "@/layouts";
 
+/**
+ * 消息公告模块：站内消息（管理端发送/分类）+ 公告发布。
+ * 公告后端复用站内信通道（oa_announcement 落 internal_messages），菜单语义上归并同组。
+ */
 const internal_message: RouteRecordRaw[] = [
   {
     path: "/internal-message",
@@ -9,7 +13,7 @@ const internal_message: RouteRecordRaw[] = [
     redirect: "/internal-message/messages",
     component: Layout,
     meta: {
-      order: 2003,
+      order: 5,
       icon: "lucide:mail",
       title: "routes.internalMessage.moduleName",
       keepAlive: true,
@@ -31,10 +35,21 @@ const internal_message: RouteRecordRaw[] = [
         name: "InternalMessageCategoryManagement",
         meta: {
           order: 2,
-          icon: "lucide:calendar-check",
+          icon: "lucide:tags",
           title: "routes.internalMessage.internalMessageCategory",
         },
         component: () => import("@/pages/app/internal_message/category/index.vue"),
+      },
+
+      {
+        path: "announcement",
+        name: "OaAnnouncementManagement",
+        meta: {
+          order: 3,
+          icon: "lucide:megaphone",
+          title: "routes.oa.announcement",
+        },
+        component: () => import("@/pages/app/oa/announcement/index.vue"),
       },
 
       {

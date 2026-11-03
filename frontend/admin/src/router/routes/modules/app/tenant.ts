@@ -8,7 +8,7 @@ const tenant: RouteRecordRaw[] = [
     component: Layout,
     redirect: "/tenant/members",
     meta: {
-      order: 2000,
+      order: 2003,
       icon: "lucide:building-2",
       title: "routes.tenant.moduleName",
     },

@@ -1,4 +1,16 @@
 {
+  "approval": {
+    "moduleName": "Approvals"
+  },
+  "attendance": {
+    "moduleName": "Attendance"
+  },
+  "leave": {
+    "moduleName": "Leave"
+  },
+  "affairs": {
+    "moduleName": "Admin Requests"
+  },
   "oa": {
     "moduleName": "OA Workflow",
     "definition": "Workflow Definition",
@@ -38,7 +50,7 @@
     "api": "API Management"
   },
   "internalMessage": {
-    "moduleName": "Internal Message Management",
+    "moduleName": "Messages & Announcements",
     "internalMessage": "Message List",
     "internalMessageCategory": "Message Category"
   },

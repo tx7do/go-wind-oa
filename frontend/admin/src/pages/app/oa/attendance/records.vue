@@ -71,7 +71,7 @@ function runSettlement() {
 
 // 工时设置统一走独立设置页（本页不再维护第二份实现）
 function goSettings() {
-  router.push("/oa/attendance-setting");
+  router.push("/attendance/setting");
 }
 
 function locateStr(row: any): string {
