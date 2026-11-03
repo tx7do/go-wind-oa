@@ -17,7 +17,7 @@
                 :content="typeof field.tips === 'string' ? field.tips : ''"
                 placement="top"
               >
-                <ElIcon class="text-gray-400"><QuestionFilled /></ElIcon>
+                <ElIcon style="--color: var(--el-text-color-secondary)"><QuestionFilled /></ElIcon>
               </ElTooltip>
               <span v-if="colon" class="ml-0.5">:</span>
             </span>
@@ -307,20 +307,22 @@ defineExpose({
 }
 
 // === Grid 布局模式（参考 Vben） ===
+// 列数按容器宽度自适应，不能用视口断点：
+// 本组件常嵌在 ElSplitter 栏位等窄容器里，视口断点会把输入框挤成细条。
+// 列宽下限须同时约束「绝对 240px」和「容器 20%」：只给 240px 下限时超宽容器会
+// 生成大量窄列，字段挤在左侧、按钮被 grid-column:-1 孤立在最右，中间全是空洞。
+// 用 auto-fit（非 auto-fill）：未占用的轨道塌缩为 0 并由 1fr 均分拉伸，
+// 字段少时铺满整行、按钮紧跟在同一行末尾，不会留下空轨道。
 .pro-search--grid {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
+  // 下限 200px：Splitter 40% 栏（约 550px）扣掉卡片内边距后只剩 ~510px，
+  // 240px 下限时布局解析出的轨道+按钮隐式列会超出容器（权限点管理左栏实测
+  // 溢出 144px）；200px 仍能在超宽容器被 20% 约束压制，不会产生大量窄列。
+  grid-template-columns: repeat(auto-fit, minmax(max(200px, 20%), 1fr));
+  // 兜底：actions 的 grid-column:-1 在 auto-fit 解析异常掉进隐式列时，
+  // 隐式列默认按内容宽（按钮组 ~144px）会把表单撑出容器，这里强制均分
+  grid-auto-columns: 1fr;
   gap: 16px;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
 
   // 让表单项内容拉伸
   :deep(.el-form-item__content) {
@@ -329,9 +331,11 @@ defineExpose({
     width: 100%;
   }
 
-  // 按钮区域包装器 - 放在最后一格，靠右对齐
+  // 按钮区域包装器 - 靠右对齐。不用 grid-column:-1 强制定到最后一列：
+  // Splitter 首帧宽度未定时 auto-fit 只解析出 1 条显式轨道，-1 会创建按
+  // 内容宽（~144px）的隐式列并把表单撑出容器（权限点管理左栏实测）；
+  // 自然流布局下按钮组跟随最后一个字段，配合 justify-self 永远靠右。
   :deep(.pro-search__actions-wrapper) {
-    grid-column: -1;
     justify-self: end;
     align-self: end;
   }
@@ -396,7 +400,7 @@ defineExpose({
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  color: var(--el-color-primary);
+  color: var(--gowind-primary-text);
   font-size: 13px;
   user-select: none;
   white-space: nowrap;

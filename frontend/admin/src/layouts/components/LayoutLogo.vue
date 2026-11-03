@@ -28,7 +28,6 @@ defineProps({
   width: 100%;
   height: 64px;
   background-color: $sidebar-logo-background;
-  border-bottom: 1px solid var(--sidebar-logo-border-color);
 
   .logo-icon {
     width: 32px;

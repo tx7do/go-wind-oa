@@ -113,15 +113,15 @@
 }
 
 // ============================================
-// 浅色模式配色
+// 浅色模式配色（对齐 design-language.md §2.2/§4：表头 #F0F2F5 系、文字 zinc 系、边框 #E4E4E7）
 [data-vxe-ui-theme="light"] {
-  --vxe-ui-table-header-background-color: #EBEDF0;
-  --vxe-ui-table-header-font-color: #1d2129;
+  --vxe-ui-table-header-background-color: #F0F2F5;
+  --vxe-ui-table-header-font-color: #1F2937;
   --vxe-ui-table-body-background-color: #ffffff;
   --vxe-ui-table-row-striped-background-color: #f8f9fb;
   --vxe-ui-table-row-hover-background-color: #f0f2f5;
   --vxe-ui-table-row-hover-striped-background-color: #f0f2f5;
-  --vxe-ui-table-border-color: #e4e7ed;
+  --vxe-ui-table-border-color: #E4E4E7;
 }
 
 // ============================================
@@ -186,22 +186,22 @@
 // 暗色模式配色
 [data-vxe-ui-theme="dark"] {
   // 表头：深灰背景
-  --vxe-ui-table-header-background-color: #1f2329;
+  --vxe-ui-table-header-background-color: #1F2937;
   --vxe-ui-table-header-font-color: #e5eaf3;
   // 表项：深色背景（普通行）
-  --vxe-ui-table-body-background-color: #14161a;
+  --vxe-ui-table-body-background-color: #111827;
   // body wrapper 背景必须与表项背景一致
-  --vxe-ui-layout-background-color: #14161a;
+  --vxe-ui-layout-background-color: #111827;
   // 斑马纹行：稍亮的灰色，形成对比
-  --vxe-ui-table-row-striped-background-color: #1e2127;
-  --vxe-ui-table-row-hover-background-color: #1e2530;
+  --vxe-ui-table-row-striped-background-color: rgba(255, 255, 255, 0.03);
+  --vxe-ui-table-row-hover-background-color: rgba(0, 107, 230, 0.08);
   --vxe-ui-table-row-current-background-color: var(--el-color-primary-light-9);
   --vxe-ui-table-row-hover-current-background-color: var(--el-color-primary-light-8);
-  --vxe-ui-table-row-hover-striped-background-color: #1e2530;
-  --vxe-ui-table-border-color: #2a2f36;
-  --vxe-ui-table-header-border-color: #2a2f36;
+  --vxe-ui-table-row-hover-striped-background-color: rgba(0, 107, 230, 0.08);
+  --vxe-ui-table-border-color: rgba(255, 255, 255, 0.08);
+  --vxe-ui-table-header-border-color: rgba(255, 255, 255, 0.08);
   --vxe-ui-font-color: #cbd5e1;
-  --vxe-ui-pager-background-color: #14161a;
+  --vxe-ui-pager-background-color: #111827;
 
   // 行高：极简紧凑（显式赋值，禁止自引用）
   --vxe-ui-table-cell-padding-top: 1px;
@@ -210,10 +210,10 @@
   --vxe-ui-table-header-cell-padding-bottom: 1px;
 
   // vxe-table v3 兼容变量
-  --vxe-table-border-color: #2a2f36;
-  --vxe-table-header-background-color: #1f2329;
-  --vxe-table-body-background-color: #14161a;
-  --vxe-table-row-hover-background-color: #1e2530;
+  --vxe-table-border-color: rgba(255, 255, 255, 0.08);
+  --vxe-table-header-background-color: #1F2937;
+  --vxe-table-body-background-color: #111827;
+  --vxe-table-row-hover-background-color: rgba(0, 107, 230, 0.08);
   --vxe-table-row-current-background-color: var(--el-color-primary-light-9);
   --vxe-table-row-hover-current-background-color: var(--el-color-primary-light-8);
   --vxe-table-header-font-color: #e5eaf3;
@@ -362,7 +362,8 @@
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    color: var(--el-text-color-placeholder);
+    // 空态文案是内容不是 placeholder（占位档对白底只有 2.30:1）
+    color: var(--el-text-color-secondary);
 
     .vxe-icon--empty {
       font-size: 48px;

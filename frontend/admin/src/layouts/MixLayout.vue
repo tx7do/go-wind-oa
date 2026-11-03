@@ -120,7 +120,7 @@ const {
 
 const { navigationPreferences } = usePreferences();
 
-const SIDEBAR_COLLAPSED_WIDTH = 54;
+const SIDEBAR_COLLAPSED_WIDTH = 48;
 
 // 侧边栏 hover 展开
 const expandOnHover = computed(() => preferences.sidebar.expandOnHover);

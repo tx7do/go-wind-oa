@@ -54,7 +54,7 @@ import { useLayout } from "./useLayout";
 
 const { showTagsView, showLogo, isSidebarOpen, toggleSidebar, routes } = useLayout();
 
-const SIDEBAR_COLLAPSED_WIDTH = 54;
+const SIDEBAR_COLLAPSED_WIDTH = 48;
 
 // =====================
 // 侧边栏基础状态

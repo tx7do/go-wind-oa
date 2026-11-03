@@ -94,7 +94,7 @@
 
     <!-- 工具按钮 -->
     <div class="tabs-bar__tools">
-      <ElTooltip v-if="showMaximize" :content="isMaximized ? '还原' : '最大化'" placement="bottom">
+      <ElTooltip v-if="showMaximize" :content="isMaximized ? t('preferences.tabbar.contextMenu.restoreMaximize') : t('preferences.tabbar.contextMenu.maximize')" placement="bottom">
         <ElIcon class="tabs-bar__tool-btn" @click="toggleMaximize">
           <FullScreen v-if="!isMaximized" />
           <ScaleToOriginal v-else />
@@ -779,7 +779,7 @@ $chrome-radius: 7px;
     transition: all 0.2s ease;
 
     &:hover {
-      color: var(--el-color-primary);
+      color: var(--gowind-primary-text);
       background: var(--el-fill-color-light);
       transform: scale(1.05);
     }
@@ -823,8 +823,7 @@ $chrome-radius: 7px;
     color: var(--el-text-color-regular);
 
     &.is-active {
-      color: var(--el-color-primary);
-      font-weight: 600;
+      color: var(--gowind-primary-text);
     }
 
     // 亮/暗模式通用：hover 文字提亮
@@ -837,7 +836,7 @@ $chrome-radius: 7px;
       padding: 0 16px;
 
       &.is-active {
-        color: var(--el-color-primary);
+        color: var(--gowind-primary-text);
         background-color: var(--tabs-bar-active-bg);
         font-weight: 600;
         border-bottom: 2px solid var(--el-color-primary);
@@ -858,7 +857,7 @@ $chrome-radius: 7px;
       border-radius: 8px 8px 0 0;
 
       &.is-active {
-        color: var(--el-color-primary);
+        color: var(--gowind-primary-text);
         background-color: var(--tabs-bar-active-bg);
         font-weight: 600;
         border-bottom: 2px solid var(--el-color-primary);
@@ -895,7 +894,7 @@ $chrome-radius: 7px;
       }
 
       &.is-active {
-        color: var(--el-color-primary);
+        color: var(--gowind-primary-text);
         background-color: var(--tabs-bar-active-bg);
         font-weight: 600;
 
@@ -945,9 +944,11 @@ $chrome-radius: 7px;
       }
 
       &.is-active {
-        color: var(--el-color-primary);
+        color: var(--gowind-primary-text);
       }
     }
+
+    // Chrome 激活标签不再叠加底部主色指示线（vben 温和配方：形状即指示，design-language.md §4）
   }
 
   // ==================== Chrome 风格特殊元素 ====================
@@ -997,12 +998,16 @@ $chrome-radius: 7px;
 
     .is-active & {
       &__content {
-        background-color: var(--el-color-primary-light-9);
+        // 主色与当前主题底色混色：亮色→淡蓝、暗色→深蓝（html.dark 下被实色规则覆盖）。
+        // 不能用 primary-light-N：主题生成器以内联变量写死为暗色调值，亮色下会是深蓝块
+        background-color: rgba(26, 102, 255, 0.12);
+        background-color: color-mix(in srgb, var(--el-color-primary) 15%, var(--el-bg-color));
       }
 
       &__before,
       &__after {
-        fill: var(--el-color-primary-light-9);
+        fill: rgba(26, 102, 255, 0.12);
+        fill: color-mix(in srgb, var(--el-color-primary) 15%, var(--el-bg-color));
       }
     }
   }
@@ -1063,7 +1068,7 @@ $chrome-radius: 7px;
 
     .tabs-bar__item.is-active & {
       opacity: 1;
-      color: var(--el-color-primary);
+      color: var(--gowind-primary-text);
     }
 
     &:hover {
@@ -1075,7 +1080,7 @@ $chrome-radius: 7px;
   &__pin {
     color: var(--el-text-color-secondary);
     .tabs-bar__item.is-active & {
-      color: var(--el-color-primary);
+      color: var(--gowind-primary-text);
     }
   }
 
@@ -1103,7 +1108,7 @@ $chrome-radius: 7px;
     transition: all 0.2s ease;
 
     &:hover {
-      color: var(--el-color-primary);
+      color: var(--gowind-primary-text);
       background: var(--el-fill-color-light);
       transform: scale(1.05);
     }
@@ -1184,19 +1189,19 @@ $chrome-radius: 7px;
 <style lang="scss">
 // ==================== 暗黑模式适配（非 scoped，确保选择器优先级稳定） ====================
 html.dark .tabs-bar {
-  --tabs-bar-border-color: rgba(255, 255, 255, 0.06);
-  --tabs-bar-hover-bg: rgba(255, 255, 255, 0.05);
+  --tabs-bar-border-color: rgba(255, 255, 255, 0.08);
+  --tabs-bar-hover-bg: rgba(255, 255, 255, 0.08);
   --tabs-bar-hover-color: #e5eaf3;
-  --tabs-bar-active-bg: #1a1d24;
+  --tabs-bar-active-bg: #111827;
 
   // 未激活文字：亮灰色，清晰可读
   .tabs-bar__item {
     color: #8a94a6;
     transition: all 0.2s ease;
 
+    // 选中：正常亮文字 + 中性微底（vben 温和配方，design-language.md §4；chrome 由 chrome-bg 承担底色）
     &.is-active {
-      color: var(--el-color-primary);
-      font-weight: 600;
+      color: #e5eaf3;
       background-color: rgba(255, 255, 255, 0.04);
       border-radius: 4px 4px 0 0;
     }
@@ -1215,14 +1220,22 @@ html.dark .tabs-bar {
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
   }
 
-  // Chrome 激活态背景（更明显的区分）
+  // Chrome 激活/悬停态：item 本体保持透明，仅由 chrome-bg 一层承担背景。
+  // 通用规则里的半透明白底会与 chrome-bg 叠加，两层圆角不一致会形成"描边"伪影
+  .tabs-bar__item--chrome.is-active,
+  .tabs-bar__item--chrome:not(.is-active):hover {
+    background-color: transparent;
+    border-radius: 0;
+  }
+
+  // Chrome 激活态背景：中性灰（vben 温和配方，design-language.md §4）
   .tabs-bar__item--chrome.is-active .tabs-bar__chrome-bg__content {
-    background-color: rgba(255, 255, 255, 0.06);
+    background-color: rgba(255, 255, 255, 0.1);
   }
 
   .tabs-bar__item--chrome.is-active .tabs-bar__chrome-bg__before,
   .tabs-bar__item--chrome.is-active .tabs-bar__chrome-bg__after {
-    fill: rgba(255, 255, 255, 0.06);
+    fill: rgba(255, 255, 255, 0.1);
   }
 
   .tabs-bar__item--chrome:not(.is-active):hover .tabs-bar__chrome-bg__content {
@@ -1272,6 +1285,15 @@ html.dark .tabs-bar {
   // 固定按钮
   .tabs-bar__pin {
     color: rgba(255, 255, 255, 0.45);
+  }
+
+  // 选中标签的关闭/固定按钮跟随中性文字色（不再用主色）
+  .tabs-bar__item.is-active .tabs-bar__close {
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .tabs-bar__item.is-active .tabs-bar__pin {
+    color: rgba(255, 255, 255, 0.75);
   }
 }
 </style>

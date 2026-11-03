@@ -2,11 +2,10 @@
   <section class="app-main" :class="mainClass" :style="{ height: appMainHeight }">
     <router-view>
       <template #default="{ Component, route: slotRoute }">
-        <transition
-          :name="transitionName"
-          mode="out-in"
-          :duration="150"
-        >
+        <!-- mode="out-in" 与 vue-router 5 懒加载路由组合有白屏竞态：
+             懒 chunk 解析完成时旧页被直接移除而新页永不挂载（2026-09 实测定位）。
+             改用同帧交叉淡入淡出，动画时长不变。 -->
+        <transition :name="transitionName" :duration="150">
           <keep-alive :include="cachedViews">
             <component
               :is="currentComponent(Component, slotRoute)"
@@ -18,7 +17,6 @@
             />
           </keep-alive>
         </transition>
-
       </template>
     </router-view>
 
@@ -47,7 +45,7 @@ const contentRefreshing = inject<Ref<boolean>>("contentRefreshing", ref(false));
 const contentRefreshKey = inject<Ref<number>>("contentRefreshKey", ref(0));
 
 // 当前组件
-const wrapperMap = new Map<string, Component>();
+const wrapperMap = new Map<string, ComponentWrapper>();
 
 // 刷新时清理 wrapperMap，确保组件完全重建
 watch(contentRefreshing, (val) => {
@@ -55,6 +53,17 @@ watch(contentRefreshing, (val) => {
     wrapperMap.clear();
   }
 });
+// vue-router 5 的 slot Component 是预构建 vnode（携带 ref 与 routeProps），
+// 不能在闭包里固化首次渲染的引用——否则后续渲染克隆的是过期 vnode，
+// 与 out-in transition/keep-alive 组合会在多次导航后白屏（router-view 塌空）。
+// wrapper 仅承担「以 fullPath 作为组件名供 keep-alive include 匹配」职责，
+// 每次渲染同步最新 Component。
+interface ComponentWrapper {
+  name: string;
+  current: Component;
+  render: () => VNode;
+}
+
 const currentComponent = (component: Component, route: RouteLocationNormalized) => {
   if (!component) return;
 
@@ -62,19 +71,24 @@ const currentComponent = (component: Component, route: RouteLocationNormalized) 
   let wrapper = wrapperMap.get(componentName);
 
   if (!wrapper) {
-    wrapper = {
+    const created: ComponentWrapper = {
       name: componentName,
+      current: component,
       render: () => {
         try {
-          return h(component);
+          return h(created.current);
         } catch (error) {
           console.error(`Error rendering component for route: ${componentName}`, error);
           return h(Error404);
         }
       },
     };
-    wrapperMap.set(componentName, wrapper);
+    wrapperMap.set(componentName, created);
+    wrapper = created;
   }
+
+  // 关键：每次渲染都同步 slot 给到的最新 vnode/组件，绝不能复用旧引用
+  wrapper.current = component;
 
   // 添加组件数量限制
   if (wrapperMap.size > 100) {

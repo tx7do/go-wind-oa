@@ -280,7 +280,7 @@ onMounted(() => {
       line-height: normal !important;
       padding: 0 16px !important;
       margin: 4px 12px !important;
-      border-radius: 6px !important;
+      border-radius: 8px !important;
       font-size: 14px !important; // 从 13px 增大到 14px
       font-weight: 400 !important;
       transition:
@@ -288,17 +288,45 @@ onMounted(() => {
         color 0.2s ease;
     }
 
-    // 二级菜单项：缩进 + 与一级菜单同字号
-    .el-menu--inline {
-      .el-menu-item {
-        padding-left: 44px !important; // 一级图标18px + 间距8px + 额外缩进18px
-        font-size: 14px !important; // 与一级菜单相同字号
-        font-weight: 400 !important;
+    // ============================================
+    // 多级菜单层级视觉（三级及以上分组菜单不再与一级菜单视觉混淆）
+    // ============================================
+    &:not(.el-menu--collapse) {
+      // 缩进交给 Element Plus 的 --el-menu-level 计算（每级 +20px）。
+      // 不能写死 padding-left，否则所有层级顶格平铺，分组菜单与一级菜单无法区分
+      .el-menu-item,
+      .el-sub-menu__title {
+        padding-left: calc(
+          var(--el-menu-base-level-padding) + var(--el-menu-level, 0) * var(--el-menu-level-padding)
+        ) !important;
+      }
 
-        .el-icon {
-          width: 16px !important;
-          height: 16px !important;
-          font-size: 16px !important;
+      // 二级及更深：图标缩小一档，强化从属关系
+      // （SvgIcon 渲染为裸 svg.iconify，不命中 .el-icon/[class^="i-"]，需一并覆盖）
+      .el-menu--inline {
+        .el-menu-item,
+        .el-sub-menu > .el-sub-menu__title {
+          > svg,
+          .el-icon,
+          [class^="i-"] {
+            width: 16px !important;
+            height: 16px !important;
+            font-size: 16px !important;
+          }
+        }
+
+        // 三级及更深：图标再小一档
+        .el-menu--inline {
+          .el-menu-item,
+          .el-sub-menu > .el-sub-menu__title {
+            > svg,
+            .el-icon,
+            [class^="i-"] {
+              width: 14px !important;
+              height: 14px !important;
+              font-size: 14px !important;
+            }
+          }
         }
       }
     }
@@ -317,28 +345,13 @@ onMounted(() => {
       background-color: #f5f7fa !important;
     }
 
-    // 选中菜单项：左侧竖条 + 主色文字 + 加粗，与暗色模式一致
+    // 选中菜单项：主色实底药丸 + 白字（react antd Menu 基准，design-language.md §4）
     .el-menu-item.is-active {
-      background-color: var(--el-color-primary-light-9) !important;
-      color: var(--el-color-primary) !important;
-      font-weight: 700 !important;
-      box-shadow: inset 3px 0 0 0 var(--el-color-primary) !important;
+      background-color: var(--el-color-primary) !important;
+      color: #fff !important;
 
       .el-icon {
-        color: var(--el-color-primary) !important;
-      }
-    }
-
-    // ============================================
-    // navigation.styleType: rounded 风格
-    // 激活菜单项带圆角背景色
-    // ============================================
-    &.nav-style--rounded {
-      .el-menu-item.is-active {
-        background-color: var(--el-color-primary-light-9) !important;
-        color: var(--el-color-primary) !important;
-        font-weight: 700 !important;
-        box-shadow: inset 3px 0 0 0 var(--el-color-primary) !important;
+        color: #fff !important;
       }
     }
 
@@ -359,26 +372,14 @@ onMounted(() => {
         color: #ffffff !important;
       }
 
-      // 选中菜单：品牌色透明度背景 + 左侧竖条 + 纯白文字
-      // 背景使用 --el-color-primary-light-9（主色极浅版，主题感知），与 box-shadow 的
-      // var(--el-color-primary) 保持同源，避免旧 Ant 蓝 #1890ff 与配置主色不同步。
+      // 选中菜单：主色实底药丸 + 白字（react antd Menu 基准，design-language.md §4）
       .el-menu-item.is-active {
-        background-color: var(--el-color-primary-light-9) !important;
+        background-color: var(--el-color-primary) !important;
         color: #ffffff !important;
-        font-weight: 700 !important;
-        box-shadow: inset 3px 0 0 0 var(--el-color-primary) !important;
 
         .el-icon {
-          color: var(--el-color-primary) !important;
+          color: #ffffff !important;
         }
-      }
-
-      // rounded 风格暗黑模式
-      &.nav-style--rounded .el-menu-item.is-active {
-        background-color: var(--el-color-primary-light-9) !important;
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        box-shadow: inset 3px 0 0 0 var(--el-color-primary) !important;
       }
     }
   }
