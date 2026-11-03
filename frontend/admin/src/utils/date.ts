@@ -27,9 +27,14 @@ export function formatDate(time?: number | string | Date | null, format = "YYYY-
   }
 
   try {
-    // 使用 tz 解析：后端返回的 UTC 时间（如 2026-08-06T12:00:00Z）
-    // 会被统一转换为上海时区展示，避免随浏览器本地时区漂移。
-    const date = dateUtil.tz(time, DEFAULT_TZ);
+    // 带时区标记（Z / ±hh:mm）的字符串表示绝对时刻：先按原时刻解析，再转换为
+    // 展示时区（dayjs.tz(str, tz) 对带偏移的串按墙钟处理，不会做时刻换算）。
+    // 不带时区的串（如本地拼接的 "YYYY-MM-DD"）仍按展示时区墙钟解析。
+    const hasTzDesignator =
+      typeof time === "string" && /(z|[+-]\d{2}:?\d{2})$/i.test(time.trim());
+    const date = hasTzDesignator
+      ? dateUtil(time).tz(DEFAULT_TZ)
+      : dateUtil.tz(time, DEFAULT_TZ);
     if (!date.isValid()) {
       // throw new Error('Invalid date');
       return "";
