@@ -380,7 +380,7 @@ function refreshDesignerCanvas() {
 /** 可视化画布 → node_config 文本（合并 OA 配置条 + 子集转换校验）。 */
 async function serializeDesigner(): Promise<string> {
   const rawDoc = designerHandle.value
-    ? await designerHandle.value.getDocument(formData.code)
+    ? await designerHandle.value.getDocument(formData.code || "new_process")
     : designerDocument.value;
   return designerToNodeConfig(applyNodeConfigs(rawDoc));
 }
@@ -416,7 +416,10 @@ function onNodeModeChange(mode: string | number | boolean | undefined) {
   }
   // JSON → 可视化：解析文本并推送画布；解析失败退回 JSON。
   try {
-    designerDocument.value = graphToDesigner(parseNodeConfig(formData.node_config));
+    designerDocument.value = graphToDesigner(
+      parseNodeConfig(formData.node_config),
+      formData.code || "new_process",
+    );
   } catch (err) {
     ElMessage.error(`画布加载失败：${(err as Error).message}`);
     nodeMode.value = "json";

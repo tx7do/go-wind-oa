@@ -112,10 +112,13 @@ const V2_TO_DESIGNER_TYPE: Record<V2Node["type"], DesignerNode["type"]> = {
   SUBPROCESS: "callActivity",
 };
 
-/** v2 图 → 设计器文档。坐标系交给 computeLayout（v2 不存布局）。 */
+/** v2 图 → 设计器文档。坐标系交给 computeLayout（v2 不存布局）。
+ * key 为空时兜底 "new_process"——documentToXML 用它作 process id 与
+ * BPMNDI 引用，空串会导致 bpmn-js 导入报 rootElement required。 */
 export function graphToDesigner(graph: V2Graph, key = "", name = ""): DesignerDocument {
-  const layout = computeLayout(toDesignerDocWithoutLayout(graph, key, name));
-  const doc = toDesignerDocWithoutLayout(graph, key, name);
+  const safeKey = key || "new_process";
+  const layout = computeLayout(toDesignerDocWithoutLayout(graph, safeKey, name));
+  const doc = toDesignerDocWithoutLayout(graph, safeKey, name);
   for (const node of doc.nodes) {
     const pos = layout.nodes[node.id];
     if (pos) node.ui = { x: pos.x, y: pos.y };
