@@ -8,12 +8,12 @@
 |------|------|------|
 | 中间件容器 | PostgreSQL / Redis / MinIO / etcd / Jaeger，一条命令全部启动 | 见下文端口表 |
 | core-service | 纯 gRPC 后端，全部业务逻辑在这里（端口随机，其他服务通过 etcd 自动发现它） | — |
-| admin-service | 管理后台的 HTTP 后端 | <http://localhost:6600>（API）/ <http://localhost:6600/docs/>（Swagger） |
-| app-service | 移动端的 HTTP 后端 | <http://localhost:6700>（API）/ <http://localhost:6700/docs/>（Swagger） |
-| 管理后台前端 | Vue3 网页 | <http://localhost:5777> |
-| 移动端 App | Flutter | 连接 `localhost:6700` |
+| admin-service | 管理后台的 HTTP 后端 | <http://localhost:6680>（API）/ <http://localhost:6680/docs/>（Swagger） |
+| app-service | 移动端的 HTTP 后端 | <http://localhost:6780>（API）/ <http://localhost:6780/docs/>（Swagger） |
+| 管理后台前端 | Vue3 网页 | <http://localhost:15787> |
+| 移动端 App | Flutter | 连接 `localhost:6780` |
 
-其他端口：admin gRPC 与 SSE 事件流 `6601`（SSE 路径 `/events`），app gRPC 与 SSE `6701`，PostgreSQL `5432`，Redis `6379`，MinIO `9000`（API）/ `9001`（控制台），etcd `2379`（服务发现），Jaeger UI `16686`。
+其他端口：admin gRPC 与 SSE 事件流 `6681`（SSE 路径 `/events`），app gRPC 与 SSE `6781`，PostgreSQL `5432`，Redis `6379`，MinIO `9000`（API）/ `9001`（控制台），etcd `2379`（服务发现），Jaeger UI `16686`。
 
 ## 演示账号
 
@@ -101,7 +101,7 @@ go run ./cmd/server --conf ./configs.local
 
 ### 验证
 
-浏览器打开 <http://localhost:6600/docs/>，能看到管理后台的 Swagger 文档即成功。日志里出现 fatal / connection refused 时，优先检查第 2 步的容器是否都在运行。
+浏览器打开 <http://localhost:6680/docs/>，能看到管理后台的 Swagger 文档即成功。日志里出现 fatal / connection refused 时，优先检查第 2 步的容器是否都在运行。
 
 ## 4. 导入演示数据
 
@@ -125,14 +125,14 @@ pnpm i
 pnpm dev
 ```
 
-浏览器打开 <http://localhost:5777>，登录：
+浏览器打开 <http://localhost:15787>，登录：
 
 - 平台超管：租户编号**留空**，账号 `admin`，密码 `admin`
 - 租户管理员：租户编号填 `super`，账号 `tenant_admin`，密码 `admin`
 
 具体每个页面怎么用，见 [管理后台使用教程](./oa-admin-user-guide.md)。
 
-> 端口与联动关系：前端开发服务器跑在 `5777`，这个端口必须出现在 admin 服务的 CORS 白名单里（`backend/app/admin/service/configs/server.yaml` 的 `cors.origins`，仓库默认已配好 `5777`）。如果你改了前端端口，记得同步改 CORS 配置并重启 admin 服务。
+> 端口与联动关系：前端开发服务器跑在 `15787`，这个端口必须出现在 admin 服务的 CORS 白名单里（`backend/app/admin/service/configs/server.yaml` 的 `cors.origins`，仓库默认已配好 `15787`）。如果你改了前端端口，记得同步改 CORS 配置并重启 admin 服务。
 
 ## 6. 启动移动端
 
@@ -140,8 +140,8 @@ pnpm dev
 
 | 运行方式 | `API_BASE_URL` 应填 |
 |----------|---------------------|
-| Windows/macOS 直接跑 | `http://localhost:6700`（默认值） |
-| Android 模拟器 | `http://10.0.2.2:6700`（模拟器里 localhost 指模拟器自己） |
+| Windows/macOS 直接跑 | `http://localhost:6780`（默认值） |
+| Android 模拟器 | `http://10.0.2.2:6780`（模拟器里 localhost 指模拟器自己） |
 | 手机真机 | `http://<电脑局域网IP>:6700`，并放行防火墙 |
 
 ```bash

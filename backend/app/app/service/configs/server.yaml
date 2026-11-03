@@ -1,6 +1,6 @@
 server:
   rest:
-    addr: "0.0.0.0:6700"
+    addr: "0.0.0.0:6780"
     timeout: 10s
     enable_swagger: false
     cors:
@@ -25,7 +25,7 @@ server:
         key: "${jwt_signing_key:dev_only_change_me_in_prod}"
 
   sse:
-    addr: ":6701"
+    addr: ":6781"
     codec: "json"
     path: "/events"
     auto_stream: true
