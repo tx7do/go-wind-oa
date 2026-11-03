@@ -97,47 +97,8 @@ func TestIsWeekend(t *testing.T) {
 }
 
 // ===================== 工作流节点解析 =====================
-
-func TestWorkflowNodeNormalizedApprovers(t *testing.T) {
-	// 新格式直取
-	n := &taskNodeApproverConfig{Approvers: []workflowApprover{{Type: approverTypeLeader}}}
-	if got := n.normalizedApprovers(); len(got) != 1 || got[0].Type != approverTypeLeader {
-		t.Fatalf("new format = %v", got)
-	}
-	// 旧格式归一化为单 USER
-	n = &taskNodeApproverConfig{ApproverType: "USER", Approver: 42}
-	if got := n.normalizedApprovers(); len(got) != 1 || got[0].Type != "USER" || got[0].ID != 42 {
-		t.Fatalf("legacy format = %v", got)
-	}
-	// 旧格式非法类型归一化为空
-	n = &taskNodeApproverConfig{ApproverType: "ROLE", Approver: 1}
-	if got := n.normalizedApprovers(); got != nil {
-		t.Fatalf("invalid legacy = %v, want nil", got)
-	}
-	// 空节点
-	n = &taskNodeApproverConfig{}
-	if got := n.normalizedApprovers(); got != nil {
-		t.Fatalf("empty node = %v, want nil", got)
-	}
-}
-
-func TestWorkflowNodeIsAnyStrategy(t *testing.T) {
-	if (&taskNodeApproverConfig{Strategy: "ANY"}).isAnyStrategy() != true {
-		t.Fatal("ANY should be or-sign")
-	}
-	if (&taskNodeApproverConfig{Strategy: "any"}).isAnyStrategy() != true { // 大小写不敏感
-		t.Fatal("any should be or-sign")
-	}
-	if (&taskNodeApproverConfig{Strategy: "ALL"}).isAnyStrategy() != false {
-		t.Fatal("ALL should be and-sign")
-	}
-	if (&taskNodeApproverConfig{}).isAnyStrategy() != false { // 缺省会签
-		t.Fatal("empty strategy should default to and-sign")
-	}
-	if (&taskNodeApproverConfig{Strategy: "WHATEVER"}).isAnyStrategy() != false { // 未知值会签
-		t.Fatal("unknown strategy should default to and-sign")
-	}
-}
+// （node_config 解析/审批人归一化已由 go-wind-flow 的 windjson 导入器承担，
+//  其用例见上游仓库与 internal/data 的 flow_store_test.go。）
 
 // ===================== 迟到/早退判定（纯时间逻辑） =====================
 

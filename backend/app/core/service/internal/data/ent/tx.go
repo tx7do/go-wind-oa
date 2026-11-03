@@ -130,14 +130,12 @@ type Tx struct {
 	WorkflowDelegation *WorkflowDelegationClient
 	// WorkflowInstance is the client for interacting with the WorkflowInstance builders.
 	WorkflowInstance *WorkflowInstanceClient
-	// WorkflowInstanceJoin is the client for interacting with the WorkflowInstanceJoin builders.
-	WorkflowInstanceJoin *WorkflowInstanceJoinClient
-	// WorkflowInstanceParentLink is the client for interacting with the WorkflowInstanceParentLink builders.
-	WorkflowInstanceParentLink *WorkflowInstanceParentLinkClient
 	// WorkflowLog is the client for interacting with the WorkflowLog builders.
 	WorkflowLog *WorkflowLogClient
 	// WorkflowTask is the client for interacting with the WorkflowTask builders.
 	WorkflowTask *WorkflowTaskClient
+	// WorkflowToken is the client for interacting with the WorkflowToken builders.
+	WorkflowToken *WorkflowTokenClient
 
 	// lazily loaded.
 	client     *Client
@@ -328,10 +326,9 @@ func (tx *Tx) init() {
 	tx.WorkflowDefinition = NewWorkflowDefinitionClient(tx.config)
 	tx.WorkflowDelegation = NewWorkflowDelegationClient(tx.config)
 	tx.WorkflowInstance = NewWorkflowInstanceClient(tx.config)
-	tx.WorkflowInstanceJoin = NewWorkflowInstanceJoinClient(tx.config)
-	tx.WorkflowInstanceParentLink = NewWorkflowInstanceParentLinkClient(tx.config)
 	tx.WorkflowLog = NewWorkflowLogClient(tx.config)
 	tx.WorkflowTask = NewWorkflowTaskClient(tx.config)
+	tx.WorkflowToken = NewWorkflowTokenClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

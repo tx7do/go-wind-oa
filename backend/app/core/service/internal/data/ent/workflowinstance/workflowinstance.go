@@ -37,16 +37,24 @@ const (
 	FieldBusinessType = "business_type"
 	// FieldBusinessID holds the string denoting the business_id field in the database.
 	FieldBusinessID = "business_id"
+	// FieldDefinitionKey holds the string denoting the definition_key field in the database.
+	FieldDefinitionKey = "definition_key"
+	// FieldDefinitionVersion holds the string denoting the definition_version field in the database.
+	FieldDefinitionVersion = "definition_version"
+	// FieldParentInstanceID holds the string denoting the parent_instance_id field in the database.
+	FieldParentInstanceID = "parent_instance_id"
+	// FieldParentTokenID holds the string denoting the parent_token_id field in the database.
+	FieldParentTokenID = "parent_token_id"
+	// FieldEndedAt holds the string denoting the ended_at field in the database.
+	FieldEndedAt = "ended_at"
 	// EdgeDefinition holds the string denoting the definition edge name in mutations.
 	EdgeDefinition = "definition"
 	// EdgeTasks holds the string denoting the tasks edge name in mutations.
 	EdgeTasks = "tasks"
 	// EdgeLogs holds the string denoting the logs edge name in mutations.
 	EdgeLogs = "logs"
-	// EdgeInstanceJoins holds the string denoting the instance_joins edge name in mutations.
-	EdgeInstanceJoins = "instance_joins"
-	// EdgeParentLinks holds the string denoting the parent_links edge name in mutations.
-	EdgeParentLinks = "parent_links"
+	// EdgeTokens holds the string denoting the tokens edge name in mutations.
+	EdgeTokens = "tokens"
 	// Table holds the table name of the workflowinstance in the database.
 	Table = "oa_workflow_instance"
 	// DefinitionTable is the table that holds the definition relation/edge.
@@ -70,20 +78,13 @@ const (
 	LogsInverseTable = "oa_workflow_log"
 	// LogsColumn is the table column denoting the logs relation/edge.
 	LogsColumn = "instance_id"
-	// InstanceJoinsTable is the table that holds the instance_joins relation/edge.
-	InstanceJoinsTable = "oa_workflow_instance_join"
-	// InstanceJoinsInverseTable is the table name for the WorkflowInstanceJoin entity.
-	// It exists in this package in order to avoid circular dependency with the "workflowinstancejoin" package.
-	InstanceJoinsInverseTable = "oa_workflow_instance_join"
-	// InstanceJoinsColumn is the table column denoting the instance_joins relation/edge.
-	InstanceJoinsColumn = "instance_id"
-	// ParentLinksTable is the table that holds the parent_links relation/edge.
-	ParentLinksTable = "oa_workflow_instance_parent_link"
-	// ParentLinksInverseTable is the table name for the WorkflowInstanceParentLink entity.
-	// It exists in this package in order to avoid circular dependency with the "workflowinstanceparentlink" package.
-	ParentLinksInverseTable = "oa_workflow_instance_parent_link"
-	// ParentLinksColumn is the table column denoting the parent_links relation/edge.
-	ParentLinksColumn = "parent_instance_id"
+	// TokensTable is the table that holds the tokens relation/edge.
+	TokensTable = "oa_workflow_token"
+	// TokensInverseTable is the table name for the WorkflowToken entity.
+	// It exists in this package in order to avoid circular dependency with the "workflowtoken" package.
+	TokensInverseTable = "oa_workflow_token"
+	// TokensColumn is the table column denoting the tokens relation/edge.
+	TokensColumn = "instance_id"
 )
 
 // Columns holds all SQL columns for workflowinstance fields.
@@ -100,6 +101,11 @@ var Columns = []string{
 	FieldFormData,
 	FieldBusinessType,
 	FieldBusinessID,
+	FieldDefinitionKey,
+	FieldDefinitionVersion,
+	FieldParentInstanceID,
+	FieldParentTokenID,
+	FieldEndedAt,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "oa_workflow_instance"
@@ -229,6 +235,31 @@ func ByBusinessID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBusinessID, opts...).ToFunc()
 }
 
+// ByDefinitionKey orders the results by the definition_key field.
+func ByDefinitionKey(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDefinitionKey, opts...).ToFunc()
+}
+
+// ByDefinitionVersion orders the results by the definition_version field.
+func ByDefinitionVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDefinitionVersion, opts...).ToFunc()
+}
+
+// ByParentInstanceID orders the results by the parent_instance_id field.
+func ByParentInstanceID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldParentInstanceID, opts...).ToFunc()
+}
+
+// ByParentTokenID orders the results by the parent_token_id field.
+func ByParentTokenID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldParentTokenID, opts...).ToFunc()
+}
+
+// ByEndedAt orders the results by the ended_at field.
+func ByEndedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEndedAt, opts...).ToFunc()
+}
+
 // ByDefinitionField orders the results by definition field.
 func ByDefinitionField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -264,31 +295,17 @@ func ByLogs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByInstanceJoinsCount orders the results by instance_joins count.
-func ByInstanceJoinsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByTokensCount orders the results by tokens count.
+func ByTokensCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newInstanceJoinsStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newTokensStep(), opts...)
 	}
 }
 
-// ByInstanceJoins orders the results by instance_joins terms.
-func ByInstanceJoins(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByTokens orders the results by tokens terms.
+func ByTokens(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newInstanceJoinsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByParentLinksCount orders the results by parent_links count.
-func ByParentLinksCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newParentLinksStep(), opts...)
-	}
-}
-
-// ByParentLinks orders the results by parent_links terms.
-func ByParentLinks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newParentLinksStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newTokensStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newDefinitionStep() *sqlgraph.Step {
@@ -312,17 +329,10 @@ func newLogsStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, LogsTable, LogsColumn),
 	)
 }
-func newInstanceJoinsStep() *sqlgraph.Step {
+func newTokensStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(InstanceJoinsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, InstanceJoinsTable, InstanceJoinsColumn),
-	)
-}
-func newParentLinksStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ParentLinksInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ParentLinksTable, ParentLinksColumn),
+		sqlgraph.To(TokensInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TokensTable, TokensColumn),
 	)
 }

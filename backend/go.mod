@@ -189,6 +189,8 @@ require (
 	github.com/tx7do/go-crud/audit v0.0.3 // indirect
 	github.com/tx7do/go-crud/cache v0.0.2 // indirect
 	github.com/tx7do/go-wind v0.0.2 // indirect
+	github.com/tx7do/go-wind-flow v0.2.0 // indirect
+	github.com/tx7do/go-wind-flow/contrib/exprlang v0.0.0-20261030111426-656235d2db24 // indirect
 	github.com/tx7do/go-wind-plugins/encoding v0.0.1 // indirect
 	github.com/tx7do/go-wind-plugins/encoding/json v0.0.1 // indirect
 	github.com/tx7do/kratos-bootstrap/config v0.2.2 // indirect

@@ -4,11 +4,10 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"go-wind-oa/app/core/service/internal/data/ent/predicate"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
-	"go-wind-oa/app/core/service/internal/data/ent/workflowinstanceparentlink"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowtoken"
 	"math"
 
 	"entgo.io/ent"
@@ -18,54 +17,54 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// WorkflowInstanceParentLinkQuery is the builder for querying WorkflowInstanceParentLink entities.
-type WorkflowInstanceParentLinkQuery struct {
+// WorkflowTokenQuery is the builder for querying WorkflowToken entities.
+type WorkflowTokenQuery struct {
 	config
-	ctx                *QueryContext
-	order              []workflowinstanceparentlink.OrderOption
-	inters             []Interceptor
-	predicates         []predicate.WorkflowInstanceParentLink
-	withParentInstance *WorkflowInstanceQuery
-	withFKs            bool
-	modifiers          []func(*sql.Selector)
+	ctx          *QueryContext
+	order        []workflowtoken.OrderOption
+	inters       []Interceptor
+	predicates   []predicate.WorkflowToken
+	withInstance *WorkflowInstanceQuery
+	withFKs      bool
+	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the WorkflowInstanceParentLinkQuery builder.
-func (_q *WorkflowInstanceParentLinkQuery) Where(ps ...predicate.WorkflowInstanceParentLink) *WorkflowInstanceParentLinkQuery {
+// Where adds a new predicate for the WorkflowTokenQuery builder.
+func (_q *WorkflowTokenQuery) Where(ps ...predicate.WorkflowToken) *WorkflowTokenQuery {
 	_q.predicates = append(_q.predicates, ps...)
 	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *WorkflowInstanceParentLinkQuery) Limit(limit int) *WorkflowInstanceParentLinkQuery {
+func (_q *WorkflowTokenQuery) Limit(limit int) *WorkflowTokenQuery {
 	_q.ctx.Limit = &limit
 	return _q
 }
 
 // Offset to start from.
-func (_q *WorkflowInstanceParentLinkQuery) Offset(offset int) *WorkflowInstanceParentLinkQuery {
+func (_q *WorkflowTokenQuery) Offset(offset int) *WorkflowTokenQuery {
 	_q.ctx.Offset = &offset
 	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *WorkflowInstanceParentLinkQuery) Unique(unique bool) *WorkflowInstanceParentLinkQuery {
+func (_q *WorkflowTokenQuery) Unique(unique bool) *WorkflowTokenQuery {
 	_q.ctx.Unique = &unique
 	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (_q *WorkflowInstanceParentLinkQuery) Order(o ...workflowinstanceparentlink.OrderOption) *WorkflowInstanceParentLinkQuery {
+func (_q *WorkflowTokenQuery) Order(o ...workflowtoken.OrderOption) *WorkflowTokenQuery {
 	_q.order = append(_q.order, o...)
 	return _q
 }
 
-// QueryParentInstance chains the current query on the "parent_instance" edge.
-func (_q *WorkflowInstanceParentLinkQuery) QueryParentInstance() *WorkflowInstanceQuery {
+// QueryInstance chains the current query on the "instance" edge.
+func (_q *WorkflowTokenQuery) QueryInstance() *WorkflowInstanceQuery {
 	query := (&WorkflowInstanceClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -76,9 +75,9 @@ func (_q *WorkflowInstanceParentLinkQuery) QueryParentInstance() *WorkflowInstan
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(workflowinstanceparentlink.Table, workflowinstanceparentlink.FieldID, selector),
+			sqlgraph.From(workflowtoken.Table, workflowtoken.FieldID, selector),
 			sqlgraph.To(workflowinstance.Table, workflowinstance.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, workflowinstanceparentlink.ParentInstanceTable, workflowinstanceparentlink.ParentInstanceColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, workflowtoken.InstanceTable, workflowtoken.InstanceColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -86,21 +85,21 @@ func (_q *WorkflowInstanceParentLinkQuery) QueryParentInstance() *WorkflowInstan
 	return query
 }
 
-// First returns the first WorkflowInstanceParentLink entity from the query.
-// Returns a *NotFoundError when no WorkflowInstanceParentLink was found.
-func (_q *WorkflowInstanceParentLinkQuery) First(ctx context.Context) (*WorkflowInstanceParentLink, error) {
+// First returns the first WorkflowToken entity from the query.
+// Returns a *NotFoundError when no WorkflowToken was found.
+func (_q *WorkflowTokenQuery) First(ctx context.Context) (*WorkflowToken, error) {
 	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{workflowinstanceparentlink.Label}
+		return nil, &NotFoundError{workflowtoken.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *WorkflowInstanceParentLinkQuery) FirstX(ctx context.Context) *WorkflowInstanceParentLink {
+func (_q *WorkflowTokenQuery) FirstX(ctx context.Context) *WorkflowToken {
 	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -108,22 +107,22 @@ func (_q *WorkflowInstanceParentLinkQuery) FirstX(ctx context.Context) *Workflow
 	return node
 }
 
-// FirstID returns the first WorkflowInstanceParentLink ID from the query.
-// Returns a *NotFoundError when no WorkflowInstanceParentLink ID was found.
-func (_q *WorkflowInstanceParentLinkQuery) FirstID(ctx context.Context) (id uint32, err error) {
+// FirstID returns the first WorkflowToken ID from the query.
+// Returns a *NotFoundError when no WorkflowToken ID was found.
+func (_q *WorkflowTokenQuery) FirstID(ctx context.Context) (id uint32, err error) {
 	var ids []uint32
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{workflowinstanceparentlink.Label}
+		err = &NotFoundError{workflowtoken.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *WorkflowInstanceParentLinkQuery) FirstIDX(ctx context.Context) uint32 {
+func (_q *WorkflowTokenQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -131,10 +130,10 @@ func (_q *WorkflowInstanceParentLinkQuery) FirstIDX(ctx context.Context) uint32 
 	return id
 }
 
-// Only returns a single WorkflowInstanceParentLink entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one WorkflowInstanceParentLink entity is found.
-// Returns a *NotFoundError when no WorkflowInstanceParentLink entities are found.
-func (_q *WorkflowInstanceParentLinkQuery) Only(ctx context.Context) (*WorkflowInstanceParentLink, error) {
+// Only returns a single WorkflowToken entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one WorkflowToken entity is found.
+// Returns a *NotFoundError when no WorkflowToken entities are found.
+func (_q *WorkflowTokenQuery) Only(ctx context.Context) (*WorkflowToken, error) {
 	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
@@ -143,14 +142,14 @@ func (_q *WorkflowInstanceParentLinkQuery) Only(ctx context.Context) (*WorkflowI
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{workflowinstanceparentlink.Label}
+		return nil, &NotFoundError{workflowtoken.Label}
 	default:
-		return nil, &NotSingularError{workflowinstanceparentlink.Label}
+		return nil, &NotSingularError{workflowtoken.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *WorkflowInstanceParentLinkQuery) OnlyX(ctx context.Context) *WorkflowInstanceParentLink {
+func (_q *WorkflowTokenQuery) OnlyX(ctx context.Context) *WorkflowToken {
 	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -158,10 +157,10 @@ func (_q *WorkflowInstanceParentLinkQuery) OnlyX(ctx context.Context) *WorkflowI
 	return node
 }
 
-// OnlyID is like Only, but returns the only WorkflowInstanceParentLink ID in the query.
-// Returns a *NotSingularError when more than one WorkflowInstanceParentLink ID is found.
+// OnlyID is like Only, but returns the only WorkflowToken ID in the query.
+// Returns a *NotSingularError when more than one WorkflowToken ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *WorkflowInstanceParentLinkQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+func (_q *WorkflowTokenQuery) OnlyID(ctx context.Context) (id uint32, err error) {
 	var ids []uint32
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
@@ -170,15 +169,15 @@ func (_q *WorkflowInstanceParentLinkQuery) OnlyID(ctx context.Context) (id uint3
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{workflowinstanceparentlink.Label}
+		err = &NotFoundError{workflowtoken.Label}
 	default:
-		err = &NotSingularError{workflowinstanceparentlink.Label}
+		err = &NotSingularError{workflowtoken.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *WorkflowInstanceParentLinkQuery) OnlyIDX(ctx context.Context) uint32 {
+func (_q *WorkflowTokenQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -186,18 +185,18 @@ func (_q *WorkflowInstanceParentLinkQuery) OnlyIDX(ctx context.Context) uint32 {
 	return id
 }
 
-// All executes the query and returns a list of WorkflowInstanceParentLinks.
-func (_q *WorkflowInstanceParentLinkQuery) All(ctx context.Context) ([]*WorkflowInstanceParentLink, error) {
+// All executes the query and returns a list of WorkflowTokens.
+func (_q *WorkflowTokenQuery) All(ctx context.Context) ([]*WorkflowToken, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*WorkflowInstanceParentLink, *WorkflowInstanceParentLinkQuery]()
-	return withInterceptors[[]*WorkflowInstanceParentLink](ctx, _q, qr, _q.inters)
+	qr := querierAll[[]*WorkflowToken, *WorkflowTokenQuery]()
+	return withInterceptors[[]*WorkflowToken](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *WorkflowInstanceParentLinkQuery) AllX(ctx context.Context) []*WorkflowInstanceParentLink {
+func (_q *WorkflowTokenQuery) AllX(ctx context.Context) []*WorkflowToken {
 	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
@@ -205,20 +204,20 @@ func (_q *WorkflowInstanceParentLinkQuery) AllX(ctx context.Context) []*Workflow
 	return nodes
 }
 
-// IDs executes the query and returns a list of WorkflowInstanceParentLink IDs.
-func (_q *WorkflowInstanceParentLinkQuery) IDs(ctx context.Context) (ids []uint32, err error) {
+// IDs executes the query and returns a list of WorkflowToken IDs.
+func (_q *WorkflowTokenQuery) IDs(ctx context.Context) (ids []uint32, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(workflowinstanceparentlink.FieldID).Scan(ctx, &ids); err != nil {
+	if err = _q.Select(workflowtoken.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *WorkflowInstanceParentLinkQuery) IDsX(ctx context.Context) []uint32 {
+func (_q *WorkflowTokenQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -227,16 +226,16 @@ func (_q *WorkflowInstanceParentLinkQuery) IDsX(ctx context.Context) []uint32 {
 }
 
 // Count returns the count of the given query.
-func (_q *WorkflowInstanceParentLinkQuery) Count(ctx context.Context) (int, error) {
+func (_q *WorkflowTokenQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*WorkflowInstanceParentLinkQuery](), _q.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*WorkflowTokenQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *WorkflowInstanceParentLinkQuery) CountX(ctx context.Context) int {
+func (_q *WorkflowTokenQuery) CountX(ctx context.Context) int {
 	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -245,7 +244,7 @@ func (_q *WorkflowInstanceParentLinkQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *WorkflowInstanceParentLinkQuery) Exist(ctx context.Context) (bool, error) {
+func (_q *WorkflowTokenQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
 	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
@@ -258,7 +257,7 @@ func (_q *WorkflowInstanceParentLinkQuery) Exist(ctx context.Context) (bool, err
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *WorkflowInstanceParentLinkQuery) ExistX(ctx context.Context) bool {
+func (_q *WorkflowTokenQuery) ExistX(ctx context.Context) bool {
 	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -266,19 +265,19 @@ func (_q *WorkflowInstanceParentLinkQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the WorkflowInstanceParentLinkQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the WorkflowTokenQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *WorkflowInstanceParentLinkQuery) Clone() *WorkflowInstanceParentLinkQuery {
+func (_q *WorkflowTokenQuery) Clone() *WorkflowTokenQuery {
 	if _q == nil {
 		return nil
 	}
-	return &WorkflowInstanceParentLinkQuery{
-		config:             _q.config,
-		ctx:                _q.ctx.Clone(),
-		order:              append([]workflowinstanceparentlink.OrderOption{}, _q.order...),
-		inters:             append([]Interceptor{}, _q.inters...),
-		predicates:         append([]predicate.WorkflowInstanceParentLink{}, _q.predicates...),
-		withParentInstance: _q.withParentInstance.Clone(),
+	return &WorkflowTokenQuery{
+		config:       _q.config,
+		ctx:          _q.ctx.Clone(),
+		order:        append([]workflowtoken.OrderOption{}, _q.order...),
+		inters:       append([]Interceptor{}, _q.inters...),
+		predicates:   append([]predicate.WorkflowToken{}, _q.predicates...),
+		withInstance: _q.withInstance.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -286,14 +285,14 @@ func (_q *WorkflowInstanceParentLinkQuery) Clone() *WorkflowInstanceParentLinkQu
 	}
 }
 
-// WithParentInstance tells the query-builder to eager-load the nodes that are connected to
-// the "parent_instance" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *WorkflowInstanceParentLinkQuery) WithParentInstance(opts ...func(*WorkflowInstanceQuery)) *WorkflowInstanceParentLinkQuery {
+// WithInstance tells the query-builder to eager-load the nodes that are connected to
+// the "instance" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *WorkflowTokenQuery) WithInstance(opts ...func(*WorkflowInstanceQuery)) *WorkflowTokenQuery {
 	query := (&WorkflowInstanceClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withParentInstance = query
+	_q.withInstance = query
 	return _q
 }
 
@@ -307,15 +306,15 @@ func (_q *WorkflowInstanceParentLinkQuery) WithParentInstance(opts ...func(*Work
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.WorkflowInstanceParentLink.Query().
-//		GroupBy(workflowinstanceparentlink.FieldCreatedAt).
+//	client.WorkflowToken.Query().
+//		GroupBy(workflowtoken.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *WorkflowInstanceParentLinkQuery) GroupBy(field string, fields ...string) *WorkflowInstanceParentLinkGroupBy {
+func (_q *WorkflowTokenQuery) GroupBy(field string, fields ...string) *WorkflowTokenGroupBy {
 	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &WorkflowInstanceParentLinkGroupBy{build: _q}
+	grbuild := &WorkflowTokenGroupBy{build: _q}
 	grbuild.flds = &_q.ctx.Fields
-	grbuild.label = workflowinstanceparentlink.Label
+	grbuild.label = workflowtoken.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -329,23 +328,23 @@ func (_q *WorkflowInstanceParentLinkQuery) GroupBy(field string, fields ...strin
 //		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.WorkflowInstanceParentLink.Query().
-//		Select(workflowinstanceparentlink.FieldCreatedAt).
+//	client.WorkflowToken.Query().
+//		Select(workflowtoken.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (_q *WorkflowInstanceParentLinkQuery) Select(fields ...string) *WorkflowInstanceParentLinkSelect {
+func (_q *WorkflowTokenQuery) Select(fields ...string) *WorkflowTokenSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &WorkflowInstanceParentLinkSelect{WorkflowInstanceParentLinkQuery: _q}
-	sbuild.label = workflowinstanceparentlink.Label
+	sbuild := &WorkflowTokenSelect{WorkflowTokenQuery: _q}
+	sbuild.label = workflowtoken.Label
 	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a WorkflowInstanceParentLinkSelect configured with the given aggregations.
-func (_q *WorkflowInstanceParentLinkQuery) Aggregate(fns ...AggregateFunc) *WorkflowInstanceParentLinkSelect {
+// Aggregate returns a WorkflowTokenSelect configured with the given aggregations.
+func (_q *WorkflowTokenQuery) Aggregate(fns ...AggregateFunc) *WorkflowTokenSelect {
 	return _q.Select().Aggregate(fns...)
 }
 
-func (_q *WorkflowInstanceParentLinkQuery) prepareQuery(ctx context.Context) error {
+func (_q *WorkflowTokenQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -357,7 +356,7 @@ func (_q *WorkflowInstanceParentLinkQuery) prepareQuery(ctx context.Context) err
 		}
 	}
 	for _, f := range _q.ctx.Fields {
-		if !workflowinstanceparentlink.ValidColumn(f) {
+		if !workflowtoken.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -368,35 +367,29 @@ func (_q *WorkflowInstanceParentLinkQuery) prepareQuery(ctx context.Context) err
 		}
 		_q.sql = prev
 	}
-	if workflowinstanceparentlink.Policy == nil {
-		return errors.New("ent: uninitialized workflowinstanceparentlink.Policy (forgotten import ent/runtime?)")
-	}
-	if err := workflowinstanceparentlink.Policy.EvalQuery(ctx, _q); err != nil {
-		return err
-	}
 	return nil
 }
 
-func (_q *WorkflowInstanceParentLinkQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*WorkflowInstanceParentLink, error) {
+func (_q *WorkflowTokenQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*WorkflowToken, error) {
 	var (
-		nodes       = []*WorkflowInstanceParentLink{}
+		nodes       = []*WorkflowToken{}
 		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
 		loadedTypes = [1]bool{
-			_q.withParentInstance != nil,
+			_q.withInstance != nil,
 		}
 	)
-	if _q.withParentInstance != nil {
+	if _q.withInstance != nil {
 		withFKs = true
 	}
 	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, workflowinstanceparentlink.ForeignKeys...)
+		_spec.Node.Columns = append(_spec.Node.Columns, workflowtoken.ForeignKeys...)
 	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*WorkflowInstanceParentLink).scanValues(nil, columns)
+		return (*WorkflowToken).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &WorkflowInstanceParentLink{config: _q.config}
+		node := &WorkflowToken{config: _q.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -413,23 +406,23 @@ func (_q *WorkflowInstanceParentLinkQuery) sqlAll(ctx context.Context, hooks ...
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withParentInstance; query != nil {
-		if err := _q.loadParentInstance(ctx, query, nodes, nil,
-			func(n *WorkflowInstanceParentLink, e *WorkflowInstance) { n.Edges.ParentInstance = e }); err != nil {
+	if query := _q.withInstance; query != nil {
+		if err := _q.loadInstance(ctx, query, nodes, nil,
+			func(n *WorkflowToken, e *WorkflowInstance) { n.Edges.Instance = e }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (_q *WorkflowInstanceParentLinkQuery) loadParentInstance(ctx context.Context, query *WorkflowInstanceQuery, nodes []*WorkflowInstanceParentLink, init func(*WorkflowInstanceParentLink), assign func(*WorkflowInstanceParentLink, *WorkflowInstance)) error {
+func (_q *WorkflowTokenQuery) loadInstance(ctx context.Context, query *WorkflowInstanceQuery, nodes []*WorkflowToken, init func(*WorkflowToken), assign func(*WorkflowToken, *WorkflowInstance)) error {
 	ids := make([]uint32, 0, len(nodes))
-	nodeids := make(map[uint32][]*WorkflowInstanceParentLink)
+	nodeids := make(map[uint32][]*WorkflowToken)
 	for i := range nodes {
-		if nodes[i].parent_instance_id == nil {
+		if nodes[i].instance_id == nil {
 			continue
 		}
-		fk := *nodes[i].parent_instance_id
+		fk := *nodes[i].instance_id
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -446,7 +439,7 @@ func (_q *WorkflowInstanceParentLinkQuery) loadParentInstance(ctx context.Contex
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "parent_instance_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "instance_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -455,7 +448,7 @@ func (_q *WorkflowInstanceParentLinkQuery) loadParentInstance(ctx context.Contex
 	return nil
 }
 
-func (_q *WorkflowInstanceParentLinkQuery) sqlCount(ctx context.Context) (int, error) {
+func (_q *WorkflowTokenQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
 	if len(_q.modifiers) > 0 {
 		_spec.Modifiers = _q.modifiers
@@ -467,8 +460,8 @@ func (_q *WorkflowInstanceParentLinkQuery) sqlCount(ctx context.Context) (int, e
 	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (_q *WorkflowInstanceParentLinkQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(workflowinstanceparentlink.Table, workflowinstanceparentlink.Columns, sqlgraph.NewFieldSpec(workflowinstanceparentlink.FieldID, field.TypeUint32))
+func (_q *WorkflowTokenQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(workflowtoken.Table, workflowtoken.Columns, sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -477,9 +470,9 @@ func (_q *WorkflowInstanceParentLinkQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, workflowinstanceparentlink.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, workflowtoken.FieldID)
 		for i := range fields {
-			if fields[i] != workflowinstanceparentlink.FieldID {
+			if fields[i] != workflowtoken.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -507,12 +500,12 @@ func (_q *WorkflowInstanceParentLinkQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *WorkflowInstanceParentLinkQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (_q *WorkflowTokenQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(_q.driver.Dialect())
-	t1 := builder.Table(workflowinstanceparentlink.Table)
+	t1 := builder.Table(workflowtoken.Table)
 	columns := _q.ctx.Fields
 	if len(columns) == 0 {
-		columns = workflowinstanceparentlink.Columns
+		columns = workflowtoken.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if _q.sql != nil {
@@ -545,7 +538,7 @@ func (_q *WorkflowInstanceParentLinkQuery) sqlQuery(ctx context.Context) *sql.Se
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being
 // updated, deleted or "selected ... for update" by other sessions, until the transaction is
 // either committed or rolled-back.
-func (_q *WorkflowInstanceParentLinkQuery) ForUpdate(opts ...sql.LockOption) *WorkflowInstanceParentLinkQuery {
+func (_q *WorkflowTokenQuery) ForUpdate(opts ...sql.LockOption) *WorkflowTokenQuery {
 	if _q.driver.Dialect() == dialect.Postgres {
 		_q.Unique(false)
 	}
@@ -558,7 +551,7 @@ func (_q *WorkflowInstanceParentLinkQuery) ForUpdate(opts ...sql.LockOption) *Wo
 // ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
 // on any rows that are read. Other sessions can read the rows, but cannot modify them
 // until your transaction commits.
-func (_q *WorkflowInstanceParentLinkQuery) ForShare(opts ...sql.LockOption) *WorkflowInstanceParentLinkQuery {
+func (_q *WorkflowTokenQuery) ForShare(opts ...sql.LockOption) *WorkflowTokenQuery {
 	if _q.driver.Dialect() == dialect.Postgres {
 		_q.Unique(false)
 	}
@@ -569,33 +562,33 @@ func (_q *WorkflowInstanceParentLinkQuery) ForShare(opts ...sql.LockOption) *Wor
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (_q *WorkflowInstanceParentLinkQuery) Modify(modifiers ...func(s *sql.Selector)) *WorkflowInstanceParentLinkSelect {
+func (_q *WorkflowTokenQuery) Modify(modifiers ...func(s *sql.Selector)) *WorkflowTokenSelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
 }
 
-// WorkflowInstanceParentLinkGroupBy is the group-by builder for WorkflowInstanceParentLink entities.
-type WorkflowInstanceParentLinkGroupBy struct {
+// WorkflowTokenGroupBy is the group-by builder for WorkflowToken entities.
+type WorkflowTokenGroupBy struct {
 	selector
-	build *WorkflowInstanceParentLinkQuery
+	build *WorkflowTokenQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *WorkflowInstanceParentLinkGroupBy) Aggregate(fns ...AggregateFunc) *WorkflowInstanceParentLinkGroupBy {
+func (_g *WorkflowTokenGroupBy) Aggregate(fns ...AggregateFunc) *WorkflowTokenGroupBy {
 	_g.fns = append(_g.fns, fns...)
 	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *WorkflowInstanceParentLinkGroupBy) Scan(ctx context.Context, v any) error {
+func (_g *WorkflowTokenGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
 	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*WorkflowInstanceParentLinkQuery, *WorkflowInstanceParentLinkGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*WorkflowTokenQuery, *WorkflowTokenGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (_g *WorkflowInstanceParentLinkGroupBy) sqlScan(ctx context.Context, root *WorkflowInstanceParentLinkQuery, v any) error {
+func (_g *WorkflowTokenGroupBy) sqlScan(ctx context.Context, root *WorkflowTokenQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(_g.fns))
 	for _, fn := range _g.fns {
@@ -622,28 +615,28 @@ func (_g *WorkflowInstanceParentLinkGroupBy) sqlScan(ctx context.Context, root *
 	return sql.ScanSlice(rows, v)
 }
 
-// WorkflowInstanceParentLinkSelect is the builder for selecting fields of WorkflowInstanceParentLink entities.
-type WorkflowInstanceParentLinkSelect struct {
-	*WorkflowInstanceParentLinkQuery
+// WorkflowTokenSelect is the builder for selecting fields of WorkflowToken entities.
+type WorkflowTokenSelect struct {
+	*WorkflowTokenQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *WorkflowInstanceParentLinkSelect) Aggregate(fns ...AggregateFunc) *WorkflowInstanceParentLinkSelect {
+func (_s *WorkflowTokenSelect) Aggregate(fns ...AggregateFunc) *WorkflowTokenSelect {
 	_s.fns = append(_s.fns, fns...)
 	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *WorkflowInstanceParentLinkSelect) Scan(ctx context.Context, v any) error {
+func (_s *WorkflowTokenSelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
 	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*WorkflowInstanceParentLinkQuery, *WorkflowInstanceParentLinkSelect](ctx, _s.WorkflowInstanceParentLinkQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*WorkflowTokenQuery, *WorkflowTokenSelect](ctx, _s.WorkflowTokenQuery, _s, _s.inters, v)
 }
 
-func (_s *WorkflowInstanceParentLinkSelect) sqlScan(ctx context.Context, root *WorkflowInstanceParentLinkQuery, v any) error {
+func (_s *WorkflowTokenSelect) sqlScan(ctx context.Context, root *WorkflowTokenQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(_s.fns))
 	for _, fn := range _s.fns {
@@ -665,7 +658,7 @@ func (_s *WorkflowInstanceParentLinkSelect) sqlScan(ctx context.Context, root *W
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (_s *WorkflowInstanceParentLinkSelect) Modify(modifiers ...func(s *sql.Selector)) *WorkflowInstanceParentLinkSelect {
+func (_s *WorkflowTokenSelect) Modify(modifiers ...func(s *sql.Selector)) *WorkflowTokenSelect {
 	_s.modifiers = append(_s.modifiers, modifiers...)
 	return _s
 }

@@ -3526,6 +3526,11 @@ var (
 		{Name: "form_data", Type: field.TypeString, Nullable: true, Comment: "申请表单数据（JSON 文本）"},
 		{Name: "business_type", Type: field.TypeString, Nullable: true, Comment: "业务单据类型（LEAVE/EXPENSE 等，审批终结时回调业务模块）"},
 		{Name: "business_id", Type: field.TypeUint32, Nullable: true, Comment: "业务单据ID"},
+		{Name: "definition_key", Type: field.TypeString, Nullable: true, Comment: "流程定义代码（go-wind-flow DefinitionKey）"},
+		{Name: "definition_version", Type: field.TypeInt, Nullable: true, Comment: "流程定义版本（go-wind-flow DefinitionVersion，在途实例锁定）"},
+		{Name: "parent_instance_id", Type: field.TypeUint32, Nullable: true, Comment: "父流程实例ID（子流程场景，go-wind-flow ParentInstanceID）"},
+		{Name: "parent_token_id", Type: field.TypeUint32, Nullable: true, Comment: "父流程令牌ID（子流程场景，go-wind-flow ParentTokenID）"},
+		{Name: "ended_at", Type: field.TypeTime, Nullable: true, Comment: "实例终结时间"},
 		{Name: "definition_id", Type: field.TypeUint32, Nullable: true},
 	}
 	// OaWorkflowInstanceTable holds the schema information for the "oa_workflow_instance" table.
@@ -3537,7 +3542,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "oa_workflow_instance_oa_workflow_definition_instances",
-				Columns:    []*schema.Column{OaWorkflowInstanceColumns[12]},
+				Columns:    []*schema.Column{OaWorkflowInstanceColumns[17]},
 				RefColumns: []*schema.Column{OaWorkflowDefinitionColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -3552,78 +3557,6 @@ var (
 				Name:    "idx_oa_workflow_inst_tenant_created_by",
 				Unique:  false,
 				Columns: []*schema.Column{OaWorkflowInstanceColumns[7], OaWorkflowInstanceColumns[4]},
-			},
-		},
-	}
-	// OaWorkflowInstanceJoinColumns holds the columns for the "oa_workflow_instance_join" table.
-	OaWorkflowInstanceJoinColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
-		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
-		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
-		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
-		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
-		{Name: "join_node_id", Type: field.TypeString, Nullable: true, Comment: "汇聚节点ID（图节点 id）"},
-		{Name: "arrived_count", Type: field.TypeInt, Nullable: true, Comment: "已到达分支数", Default: 0},
-		{Name: "instance_id", Type: field.TypeUint32, Nullable: true},
-	}
-	// OaWorkflowInstanceJoinTable holds the schema information for the "oa_workflow_instance_join" table.
-	OaWorkflowInstanceJoinTable = &schema.Table{
-		Name:       "oa_workflow_instance_join",
-		Comment:    "OA 工作流汇聚节点到达计数表",
-		Columns:    OaWorkflowInstanceJoinColumns,
-		PrimaryKey: []*schema.Column{OaWorkflowInstanceJoinColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "oa_workflow_instance_join_oa_workflow_instance_instance_joins",
-				Columns:    []*schema.Column{OaWorkflowInstanceJoinColumns[10]},
-				RefColumns: []*schema.Column{OaWorkflowInstanceColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "idx_oa_workflow_inst_join_tenant",
-				Unique:  false,
-				Columns: []*schema.Column{OaWorkflowInstanceJoinColumns[7]},
-			},
-		},
-	}
-	// OaWorkflowInstanceParentLinkColumns holds the columns for the "oa_workflow_instance_parent_link" table.
-	OaWorkflowInstanceParentLinkColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
-		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
-		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
-		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
-		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
-		{Name: "subprocess_node_id", Type: field.TypeString, Nullable: true, Comment: "父流程中 SUBPROCESS 节点的ID"},
-		{Name: "child_instance_id", Type: field.TypeUint32, Nullable: true, Comment: "子流程实例ID"},
-		{Name: "parent_instance_id", Type: field.TypeUint32, Nullable: true},
-	}
-	// OaWorkflowInstanceParentLinkTable holds the schema information for the "oa_workflow_instance_parent_link" table.
-	OaWorkflowInstanceParentLinkTable = &schema.Table{
-		Name:       "oa_workflow_instance_parent_link",
-		Comment:    "OA 工作流父子实例关联表（子流程挂起/恢复用）",
-		Columns:    OaWorkflowInstanceParentLinkColumns,
-		PrimaryKey: []*schema.Column{OaWorkflowInstanceParentLinkColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "oa_workflow_instance_parent_link_oa_workflow_instance_parent_links",
-				Columns:    []*schema.Column{OaWorkflowInstanceParentLinkColumns[10]},
-				RefColumns: []*schema.Column{OaWorkflowInstanceColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "idx_oa_workflow_inst_pl_tenant",
-				Unique:  false,
-				Columns: []*schema.Column{OaWorkflowInstanceParentLinkColumns[7]},
 			},
 		},
 	}
@@ -3684,6 +3617,13 @@ var (
 		{Name: "reminded_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次超时催办时间；非空表示已催办过，避免重复催办"},
 		{Name: "escalated_at", Type: field.TypeTime, Nullable: true, Comment: "超时自动升级时间；非空表示已升级过，避免沿组织树连环上转"},
 		{Name: "task_status", Type: field.TypeEnum, Nullable: true, Comment: "任务状态", Enums: []string{"PENDING", "APPROVED", "REJECTED", "CANCELLED"}, Default: "PENDING"},
+		{Name: "token_id", Type: field.TypeUint32, Nullable: true, Comment: "执行令牌ID（go-wind-flow TokenID，会签/或签兄弟任务分组）"},
+		{Name: "task_name", Type: field.TypeString, Nullable: true, Comment: "节点名称（go-wind-flow Task.Name）"},
+		{Name: "outcome", Type: field.TypeString, Nullable: true, Comment: "办结结果（APPROVE/REJECT）"},
+		{Name: "comment", Type: field.TypeString, Nullable: true, Comment: "办结意见"},
+		{Name: "due_at", Type: field.TypeTime, Nullable: true, Comment: "到期时刻（节点定时器，go-wind-flow Timer）"},
+		{Name: "ended_at", Type: field.TypeTime, Nullable: true, Comment: "办结时间"},
+		{Name: "candidate_groups", Type: field.TypeString, Nullable: true, Comment: "候选组（JSON 字符串数组，待认领任务）"},
 		{Name: "instance_id", Type: field.TypeUint32, Nullable: true},
 	}
 	// OaWorkflowTaskTable holds the schema information for the "oa_workflow_task" table.
@@ -3695,7 +3635,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "oa_workflow_task_oa_workflow_instance_tasks",
-				Columns:    []*schema.Column{OaWorkflowTaskColumns[13]},
+				Columns:    []*schema.Column{OaWorkflowTaskColumns[20]},
 				RefColumns: []*schema.Column{OaWorkflowInstanceColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -3710,6 +3650,52 @@ var (
 				Name:    "idx_oa_workflow_task_tenant_assignee_status",
 				Unique:  false,
 				Columns: []*schema.Column{OaWorkflowTaskColumns[7], OaWorkflowTaskColumns[9], OaWorkflowTaskColumns[12]},
+			},
+			{
+				Name:    "idx_oa_workflow_task_token",
+				Unique:  false,
+				Columns: []*schema.Column{OaWorkflowTaskColumns[13]},
+			},
+			{
+				Name:    "idx_oa_workflow_task_status_due",
+				Unique:  false,
+				Columns: []*schema.Column{OaWorkflowTaskColumns[12], OaWorkflowTaskColumns[17]},
+			},
+		},
+	}
+	// OaWorkflowTokenColumns holds the columns for the "oa_workflow_token" table.
+	OaWorkflowTokenColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "node_id", Type: field.TypeString, Nullable: true, Comment: "令牌当前所在节点ID"},
+		{Name: "token_status", Type: field.TypeEnum, Nullable: true, Comment: "令牌状态", Enums: []string{"RUNNING", "WAITING", "ENDED"}, Default: "RUNNING"},
+		{Name: "parent_id", Type: field.TypeUint32, Nullable: true, Comment: "fork 产生的子令牌指向分叉源令牌"},
+		{Name: "child_instance_id", Type: field.TypeUint32, Nullable: true, Comment: "阻塞于子流程节点时记录的子流程实例ID"},
+		{Name: "due_at", Type: field.TypeTime, Nullable: true, Comment: "阻塞于定时器节点时的到期时刻"},
+		{Name: "locals", Type: field.TypeString, Nullable: true, Comment: "令牌级局部变量（JSON 文本，并行分支隔离）"},
+		{Name: "instance_id", Type: field.TypeUint32, Nullable: true},
+	}
+	// OaWorkflowTokenTable holds the schema information for the "oa_workflow_token" table.
+	OaWorkflowTokenTable = &schema.Table{
+		Name:       "oa_workflow_token",
+		Comment:    "OA 工作流令牌表（go-wind-flow Token 状态机持久化）",
+		Columns:    OaWorkflowTokenColumns,
+		PrimaryKey: []*schema.Column{OaWorkflowTokenColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "oa_workflow_token_oa_workflow_instance_tokens",
+				Columns:    []*schema.Column{OaWorkflowTokenColumns[10]},
+				RefColumns: []*schema.Column{OaWorkflowInstanceColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_oa_workflow_token_status_due",
+				Unique:  false,
+				Columns: []*schema.Column{OaWorkflowTokenColumns[5], OaWorkflowTokenColumns[8]},
 			},
 		},
 	}
@@ -3774,10 +3760,9 @@ var (
 		OaWorkflowDefinitionTable,
 		OaWorkflowDelegationTable,
 		OaWorkflowInstanceTable,
-		OaWorkflowInstanceJoinTable,
-		OaWorkflowInstanceParentLinkTable,
 		OaWorkflowLogTable,
 		OaWorkflowTaskTable,
+		OaWorkflowTokenTable,
 	}
 )
 
@@ -4087,18 +4072,6 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
-	OaWorkflowInstanceJoinTable.ForeignKeys[0].RefTable = OaWorkflowInstanceTable
-	OaWorkflowInstanceJoinTable.Annotation = &entsql.Annotation{
-		Table:     "oa_workflow_instance_join",
-		Charset:   "utf8mb4",
-		Collation: "utf8mb4_bin",
-	}
-	OaWorkflowInstanceParentLinkTable.ForeignKeys[0].RefTable = OaWorkflowInstanceTable
-	OaWorkflowInstanceParentLinkTable.Annotation = &entsql.Annotation{
-		Table:     "oa_workflow_instance_parent_link",
-		Charset:   "utf8mb4",
-		Collation: "utf8mb4_bin",
-	}
 	OaWorkflowLogTable.ForeignKeys[0].RefTable = OaWorkflowInstanceTable
 	OaWorkflowLogTable.Annotation = &entsql.Annotation{
 		Table:     "oa_workflow_log",
@@ -4108,6 +4081,12 @@ func init() {
 	OaWorkflowTaskTable.ForeignKeys[0].RefTable = OaWorkflowInstanceTable
 	OaWorkflowTaskTable.Annotation = &entsql.Annotation{
 		Table:     "oa_workflow_task",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	OaWorkflowTokenTable.ForeignKeys[0].RefTable = OaWorkflowInstanceTable
+	OaWorkflowTokenTable.Annotation = &entsql.Annotation{
+		Table:     "oa_workflow_token",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

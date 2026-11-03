@@ -39,6 +39,20 @@ const (
 	FieldEscalatedAt = "escalated_at"
 	// FieldTaskStatus holds the string denoting the task_status field in the database.
 	FieldTaskStatus = "task_status"
+	// FieldTokenID holds the string denoting the token_id field in the database.
+	FieldTokenID = "token_id"
+	// FieldTaskName holds the string denoting the task_name field in the database.
+	FieldTaskName = "task_name"
+	// FieldOutcome holds the string denoting the outcome field in the database.
+	FieldOutcome = "outcome"
+	// FieldComment holds the string denoting the comment field in the database.
+	FieldComment = "comment"
+	// FieldDueAt holds the string denoting the due_at field in the database.
+	FieldDueAt = "due_at"
+	// FieldEndedAt holds the string denoting the ended_at field in the database.
+	FieldEndedAt = "ended_at"
+	// FieldCandidateGroups holds the string denoting the candidate_groups field in the database.
+	FieldCandidateGroups = "candidate_groups"
 	// EdgeInstance holds the string denoting the instance edge name in mutations.
 	EdgeInstance = "instance"
 	// Table holds the table name of the workflowtask in the database.
@@ -67,6 +81,13 @@ var Columns = []string{
 	FieldRemindedAt,
 	FieldEscalatedAt,
 	FieldTaskStatus,
+	FieldTokenID,
+	FieldTaskName,
+	FieldOutcome,
+	FieldComment,
+	FieldDueAt,
+	FieldEndedAt,
+	FieldCandidateGroups,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "oa_workflow_task"
@@ -198,6 +219,41 @@ func ByEscalatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByTaskStatus orders the results by the task_status field.
 func ByTaskStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTaskStatus, opts...).ToFunc()
+}
+
+// ByTokenID orders the results by the token_id field.
+func ByTokenID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenID, opts...).ToFunc()
+}
+
+// ByTaskName orders the results by the task_name field.
+func ByTaskName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTaskName, opts...).ToFunc()
+}
+
+// ByOutcome orders the results by the outcome field.
+func ByOutcome(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOutcome, opts...).ToFunc()
+}
+
+// ByComment orders the results by the comment field.
+func ByComment(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldComment, opts...).ToFunc()
+}
+
+// ByDueAt orders the results by the due_at field.
+func ByDueAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDueAt, opts...).ToFunc()
+}
+
+// ByEndedAt orders the results by the ended_at field.
+func ByEndedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEndedAt, opts...).ToFunc()
+}
+
+// ByCandidateGroups orders the results by the candidate_groups field.
+func ByCandidateGroups(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCandidateGroups, opts...).ToFunc()
 }
 
 // ByInstanceField orders the results by instance field.

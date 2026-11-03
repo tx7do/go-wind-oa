@@ -41,6 +41,16 @@ type WorkflowInstance struct {
 	BusinessType *string `json:"business_type,omitempty"`
 	// 业务单据ID
 	BusinessID *uint32 `json:"business_id,omitempty"`
+	// 流程定义代码（go-wind-flow DefinitionKey）
+	DefinitionKey *string `json:"definition_key,omitempty"`
+	// 流程定义版本（go-wind-flow DefinitionVersion，在途实例锁定）
+	DefinitionVersion *int `json:"definition_version,omitempty"`
+	// 父流程实例ID（子流程场景，go-wind-flow ParentInstanceID）
+	ParentInstanceID *uint32 `json:"parent_instance_id,omitempty"`
+	// 父流程令牌ID（子流程场景，go-wind-flow ParentTokenID）
+	ParentTokenID *uint32 `json:"parent_token_id,omitempty"`
+	// 实例终结时间
+	EndedAt *time.Time `json:"ended_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WorkflowInstanceQuery when eager-loading is set.
 	Edges         WorkflowInstanceEdges `json:"edges"`
@@ -56,13 +66,11 @@ type WorkflowInstanceEdges struct {
 	Tasks []*WorkflowTask `json:"tasks,omitempty"`
 	// Logs holds the value of the logs edge.
 	Logs []*WorkflowLog `json:"logs,omitempty"`
-	// InstanceJoins holds the value of the instance_joins edge.
-	InstanceJoins []*WorkflowInstanceJoin `json:"instance_joins,omitempty"`
-	// ParentLinks holds the value of the parent_links edge.
-	ParentLinks []*WorkflowInstanceParentLink `json:"parent_links,omitempty"`
+	// Tokens holds the value of the tokens edge.
+	Tokens []*WorkflowToken `json:"tokens,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [4]bool
 }
 
 // DefinitionOrErr returns the Definition value or an error if the edge
@@ -94,22 +102,13 @@ func (e WorkflowInstanceEdges) LogsOrErr() ([]*WorkflowLog, error) {
 	return nil, &NotLoadedError{edge: "logs"}
 }
 
-// InstanceJoinsOrErr returns the InstanceJoins value or an error if the edge
+// TokensOrErr returns the Tokens value or an error if the edge
 // was not loaded in eager-loading.
-func (e WorkflowInstanceEdges) InstanceJoinsOrErr() ([]*WorkflowInstanceJoin, error) {
+func (e WorkflowInstanceEdges) TokensOrErr() ([]*WorkflowToken, error) {
 	if e.loadedTypes[3] {
-		return e.InstanceJoins, nil
+		return e.Tokens, nil
 	}
-	return nil, &NotLoadedError{edge: "instance_joins"}
-}
-
-// ParentLinksOrErr returns the ParentLinks value or an error if the edge
-// was not loaded in eager-loading.
-func (e WorkflowInstanceEdges) ParentLinksOrErr() ([]*WorkflowInstanceParentLink, error) {
-	if e.loadedTypes[4] {
-		return e.ParentLinks, nil
-	}
-	return nil, &NotLoadedError{edge: "parent_links"}
+	return nil, &NotLoadedError{edge: "tokens"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -117,11 +116,11 @@ func (*WorkflowInstance) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case workflowinstance.FieldID, workflowinstance.FieldCreatedBy, workflowinstance.FieldUpdatedBy, workflowinstance.FieldDeletedBy, workflowinstance.FieldTenantID, workflowinstance.FieldBusinessID:
+		case workflowinstance.FieldID, workflowinstance.FieldCreatedBy, workflowinstance.FieldUpdatedBy, workflowinstance.FieldDeletedBy, workflowinstance.FieldTenantID, workflowinstance.FieldBusinessID, workflowinstance.FieldDefinitionVersion, workflowinstance.FieldParentInstanceID, workflowinstance.FieldParentTokenID:
 			values[i] = new(sql.NullInt64)
-		case workflowinstance.FieldInstanceStatus, workflowinstance.FieldFormData, workflowinstance.FieldBusinessType:
+		case workflowinstance.FieldInstanceStatus, workflowinstance.FieldFormData, workflowinstance.FieldBusinessType, workflowinstance.FieldDefinitionKey:
 			values[i] = new(sql.NullString)
-		case workflowinstance.FieldCreatedAt, workflowinstance.FieldUpdatedAt, workflowinstance.FieldDeletedAt:
+		case workflowinstance.FieldCreatedAt, workflowinstance.FieldUpdatedAt, workflowinstance.FieldDeletedAt, workflowinstance.FieldEndedAt:
 			values[i] = new(sql.NullTime)
 		case workflowinstance.ForeignKeys[0]: // definition_id
 			values[i] = new(sql.NullInt64)
@@ -223,6 +222,41 @@ func (_m *WorkflowInstance) assignValues(columns []string, values []any) error {
 				_m.BusinessID = new(uint32)
 				*_m.BusinessID = uint32(value.Int64)
 			}
+		case workflowinstance.FieldDefinitionKey:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field definition_key", values[i])
+			} else if value.Valid {
+				_m.DefinitionKey = new(string)
+				*_m.DefinitionKey = value.String
+			}
+		case workflowinstance.FieldDefinitionVersion:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field definition_version", values[i])
+			} else if value.Valid {
+				_m.DefinitionVersion = new(int)
+				*_m.DefinitionVersion = int(value.Int64)
+			}
+		case workflowinstance.FieldParentInstanceID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field parent_instance_id", values[i])
+			} else if value.Valid {
+				_m.ParentInstanceID = new(uint32)
+				*_m.ParentInstanceID = uint32(value.Int64)
+			}
+		case workflowinstance.FieldParentTokenID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field parent_token_id", values[i])
+			} else if value.Valid {
+				_m.ParentTokenID = new(uint32)
+				*_m.ParentTokenID = uint32(value.Int64)
+			}
+		case workflowinstance.FieldEndedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field ended_at", values[i])
+			} else if value.Valid {
+				_m.EndedAt = new(time.Time)
+				*_m.EndedAt = value.Time
+			}
 		case workflowinstance.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field definition_id", value)
@@ -258,14 +292,9 @@ func (_m *WorkflowInstance) QueryLogs() *WorkflowLogQuery {
 	return NewWorkflowInstanceClient(_m.config).QueryLogs(_m)
 }
 
-// QueryInstanceJoins queries the "instance_joins" edge of the WorkflowInstance entity.
-func (_m *WorkflowInstance) QueryInstanceJoins() *WorkflowInstanceJoinQuery {
-	return NewWorkflowInstanceClient(_m.config).QueryInstanceJoins(_m)
-}
-
-// QueryParentLinks queries the "parent_links" edge of the WorkflowInstance entity.
-func (_m *WorkflowInstance) QueryParentLinks() *WorkflowInstanceParentLinkQuery {
-	return NewWorkflowInstanceClient(_m.config).QueryParentLinks(_m)
+// QueryTokens queries the "tokens" edge of the WorkflowInstance entity.
+func (_m *WorkflowInstance) QueryTokens() *WorkflowTokenQuery {
+	return NewWorkflowInstanceClient(_m.config).QueryTokens(_m)
 }
 
 // Update returns a builder for updating this WorkflowInstance.
@@ -344,6 +373,31 @@ func (_m *WorkflowInstance) String() string {
 	if v := _m.BusinessID; v != nil {
 		builder.WriteString("business_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.DefinitionKey; v != nil {
+		builder.WriteString("definition_key=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.DefinitionVersion; v != nil {
+		builder.WriteString("definition_version=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.ParentInstanceID; v != nil {
+		builder.WriteString("parent_instance_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.ParentTokenID; v != nil {
+		builder.WriteString("parent_token_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.EndedAt; v != nil {
+		builder.WriteString("ended_at=")
+		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteByte(')')
 	return builder.String()

@@ -62,6 +62,41 @@ func (WorkflowTask) Fields() []ent.Field {
 			Default("PENDING").
 			Optional().
 			Nillable(),
+
+		field.Uint32("token_id").
+			Comment("执行令牌ID（go-wind-flow TokenID，会签/或签兄弟任务分组）").
+			Optional().
+			Nillable(),
+
+		field.String("task_name").
+			Comment("节点名称（go-wind-flow Task.Name）").
+			Optional().
+			Nillable(),
+
+		field.String("outcome").
+			Comment("办结结果（APPROVE/REJECT）").
+			Optional().
+			Nillable(),
+
+		field.String("comment").
+			Comment("办结意见").
+			Optional().
+			Nillable(),
+
+		field.Time("due_at").
+			Comment("到期时刻（节点定时器，go-wind-flow Timer）").
+			Optional().
+			Nillable(),
+
+		field.Time("ended_at").
+			Comment("办结时间").
+			Optional().
+			Nillable(),
+
+		field.String("candidate_groups").
+			Comment("候选组（JSON 字符串数组，待认领任务）").
+			Optional().
+			Nillable(),
 	}
 }
 
@@ -95,5 +130,13 @@ func (WorkflowTask) Indexes() []ent.Index {
 		// 按租户 + 指派审批人 + 任务状态，用于“待办”列表
 		index.Fields("tenant_id", "assignee_user_id", "task_status").
 			StorageKey("idx_oa_workflow_task_tenant_assignee_status"),
+
+		// 按令牌查同组任务（会签/或签收敛判定）
+		index.Fields("token_id").
+			StorageKey("idx_oa_workflow_task_token"),
+
+		// 到期任务扫描（go-wind-flow CheckDueTasks）
+		index.Fields("task_status", "due_at").
+			StorageKey("idx_oa_workflow_task_status_due"),
 	}
 }

@@ -69,10 +69,9 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdelegation"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
-	"go-wind-oa/app/core/service/internal/data/ent/workflowinstancejoin"
-	"go-wind-oa/app/core/service/internal/data/ent/workflowinstanceparentlink"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowlog"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowtask"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowtoken"
 	"sync"
 	"time"
 
@@ -89,69 +88,68 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAPI                        = "Api"
-	TypeApiAuditLog                = "ApiAuditLog"
-	TypeAttendanceRecord           = "AttendanceRecord"
-	TypeAttendanceSetting          = "AttendanceSetting"
-	TypeBusinessTripApplication    = "BusinessTripApplication"
-	TypeDataAccessAuditLog         = "DataAccessAuditLog"
-	TypeDictEntry                  = "DictEntry"
-	TypeDictEntryI18n              = "DictEntryI18n"
-	TypeDictType                   = "DictType"
-	TypeExpenseApplication         = "ExpenseApplication"
-	TypeExpenseItem                = "ExpenseItem"
-	TypeFile                       = "File"
-	TypeGeofence                   = "Geofence"
-	TypeHoliday                    = "Holiday"
-	TypeInternalMessage            = "InternalMessage"
-	TypeInternalMessageCategory    = "InternalMessageCategory"
-	TypeInternalMessageRecipient   = "InternalMessageRecipient"
-	TypeLanguage                   = "Language"
-	TypeLeaveApplication           = "LeaveApplication"
-	TypeLeaveBalance               = "LeaveBalance"
-	TypeLeaveType                  = "LeaveType"
-	TypeLoginAuditLog              = "LoginAuditLog"
-	TypeLoginPolicy                = "LoginPolicy"
-	TypeMembership                 = "Membership"
-	TypeMembershipOrgUnit          = "MembershipOrgUnit"
-	TypeMembershipPosition         = "MembershipPosition"
-	TypeMembershipRole             = "MembershipRole"
-	TypeMenu                       = "Menu"
-	TypeOperationAuditLog          = "OperationAuditLog"
-	TypeOrgUnit                    = "OrgUnit"
-	TypeOutingApplication          = "OutingApplication"
-	TypeOvertimeApplication        = "OvertimeApplication"
-	TypePermission                 = "Permission"
-	TypePermissionApi              = "PermissionApi"
-	TypePermissionAuditLog         = "PermissionAuditLog"
-	TypePermissionGroup            = "PermissionGroup"
-	TypePermissionMenu             = "PermissionMenu"
-	TypePermissionPolicy           = "PermissionPolicy"
-	TypePlan                       = "Plan"
-	TypePlanModule                 = "PlanModule"
-	TypePlanQuota                  = "PlanQuota"
-	TypePolicyEvaluationLog        = "PolicyEvaluationLog"
-	TypePosition                   = "Position"
-	TypeRole                       = "Role"
-	TypeRoleMetadata               = "RoleMetadata"
-	TypeRolePermission             = "RolePermission"
-	TypeSealApplication            = "SealApplication"
-	TypeTask                       = "Task"
-	TypeTenant                     = "Tenant"
-	TypeUser                       = "User"
-	TypeUserCredential             = "UserCredential"
-	TypeUserMfaFactor              = "UserMfaFactor"
-	TypeUserOrgUnit                = "UserOrgUnit"
-	TypeUserPosition               = "UserPosition"
-	TypeUserRole                   = "UserRole"
-	TypeWifiFingerprint            = "WifiFingerprint"
-	TypeWorkflowDefinition         = "WorkflowDefinition"
-	TypeWorkflowDelegation         = "WorkflowDelegation"
-	TypeWorkflowInstance           = "WorkflowInstance"
-	TypeWorkflowInstanceJoin       = "WorkflowInstanceJoin"
-	TypeWorkflowInstanceParentLink = "WorkflowInstanceParentLink"
-	TypeWorkflowLog                = "WorkflowLog"
-	TypeWorkflowTask               = "WorkflowTask"
+	TypeAPI                      = "Api"
+	TypeApiAuditLog              = "ApiAuditLog"
+	TypeAttendanceRecord         = "AttendanceRecord"
+	TypeAttendanceSetting        = "AttendanceSetting"
+	TypeBusinessTripApplication  = "BusinessTripApplication"
+	TypeDataAccessAuditLog       = "DataAccessAuditLog"
+	TypeDictEntry                = "DictEntry"
+	TypeDictEntryI18n            = "DictEntryI18n"
+	TypeDictType                 = "DictType"
+	TypeExpenseApplication       = "ExpenseApplication"
+	TypeExpenseItem              = "ExpenseItem"
+	TypeFile                     = "File"
+	TypeGeofence                 = "Geofence"
+	TypeHoliday                  = "Holiday"
+	TypeInternalMessage          = "InternalMessage"
+	TypeInternalMessageCategory  = "InternalMessageCategory"
+	TypeInternalMessageRecipient = "InternalMessageRecipient"
+	TypeLanguage                 = "Language"
+	TypeLeaveApplication         = "LeaveApplication"
+	TypeLeaveBalance             = "LeaveBalance"
+	TypeLeaveType                = "LeaveType"
+	TypeLoginAuditLog            = "LoginAuditLog"
+	TypeLoginPolicy              = "LoginPolicy"
+	TypeMembership               = "Membership"
+	TypeMembershipOrgUnit        = "MembershipOrgUnit"
+	TypeMembershipPosition       = "MembershipPosition"
+	TypeMembershipRole           = "MembershipRole"
+	TypeMenu                     = "Menu"
+	TypeOperationAuditLog        = "OperationAuditLog"
+	TypeOrgUnit                  = "OrgUnit"
+	TypeOutingApplication        = "OutingApplication"
+	TypeOvertimeApplication      = "OvertimeApplication"
+	TypePermission               = "Permission"
+	TypePermissionApi            = "PermissionApi"
+	TypePermissionAuditLog       = "PermissionAuditLog"
+	TypePermissionGroup          = "PermissionGroup"
+	TypePermissionMenu           = "PermissionMenu"
+	TypePermissionPolicy         = "PermissionPolicy"
+	TypePlan                     = "Plan"
+	TypePlanModule               = "PlanModule"
+	TypePlanQuota                = "PlanQuota"
+	TypePolicyEvaluationLog      = "PolicyEvaluationLog"
+	TypePosition                 = "Position"
+	TypeRole                     = "Role"
+	TypeRoleMetadata             = "RoleMetadata"
+	TypeRolePermission           = "RolePermission"
+	TypeSealApplication          = "SealApplication"
+	TypeTask                     = "Task"
+	TypeTenant                   = "Tenant"
+	TypeUser                     = "User"
+	TypeUserCredential           = "UserCredential"
+	TypeUserMfaFactor            = "UserMfaFactor"
+	TypeUserOrgUnit              = "UserOrgUnit"
+	TypeUserPosition             = "UserPosition"
+	TypeUserRole                 = "UserRole"
+	TypeWifiFingerprint          = "WifiFingerprint"
+	TypeWorkflowDefinition       = "WorkflowDefinition"
+	TypeWorkflowDelegation       = "WorkflowDelegation"
+	TypeWorkflowInstance         = "WorkflowInstance"
+	TypeWorkflowLog              = "WorkflowLog"
+	TypeWorkflowTask             = "WorkflowTask"
+	TypeWorkflowToken            = "WorkflowToken"
 )
 
 // APIMutation represents an operation that mutates the Api nodes in the graph.
@@ -88455,6 +88453,14 @@ type WorkflowInstanceMutation struct {
 	business_type         *string
 	business_id           *uint32
 	addbusiness_id        *int32
+	definition_key        *string
+	definition_version    *int
+	adddefinition_version *int
+	parent_instance_id    *uint32
+	addparent_instance_id *int32
+	parent_token_id       *uint32
+	addparent_token_id    *int32
+	ended_at              *time.Time
 	clearedFields         map[string]struct{}
 	definition            *uint32
 	cleareddefinition     bool
@@ -88464,12 +88470,9 @@ type WorkflowInstanceMutation struct {
 	logs                  map[uint32]struct{}
 	removedlogs           map[uint32]struct{}
 	clearedlogs           bool
-	instance_joins        map[uint32]struct{}
-	removedinstance_joins map[uint32]struct{}
-	clearedinstance_joins bool
-	parent_links          map[uint32]struct{}
-	removedparent_links   map[uint32]struct{}
-	clearedparent_links   bool
+	tokens                map[uint32]struct{}
+	removedtokens         map[uint32]struct{}
+	clearedtokens         bool
 	done                  bool
 	oldValue              func(context.Context) (*WorkflowInstance, error)
 	predicates            []predicate.WorkflowInstance
@@ -89223,6 +89226,314 @@ func (m *WorkflowInstanceMutation) ResetBusinessID() {
 	delete(m.clearedFields, workflowinstance.FieldBusinessID)
 }
 
+// SetDefinitionKey sets the "definition_key" field.
+func (m *WorkflowInstanceMutation) SetDefinitionKey(s string) {
+	m.definition_key = &s
+}
+
+// DefinitionKey returns the value of the "definition_key" field in the mutation.
+func (m *WorkflowInstanceMutation) DefinitionKey() (r string, exists bool) {
+	v := m.definition_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDefinitionKey returns the old "definition_key" field's value of the WorkflowInstance entity.
+// If the WorkflowInstance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowInstanceMutation) OldDefinitionKey(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDefinitionKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDefinitionKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDefinitionKey: %w", err)
+	}
+	return oldValue.DefinitionKey, nil
+}
+
+// ClearDefinitionKey clears the value of the "definition_key" field.
+func (m *WorkflowInstanceMutation) ClearDefinitionKey() {
+	m.definition_key = nil
+	m.clearedFields[workflowinstance.FieldDefinitionKey] = struct{}{}
+}
+
+// DefinitionKeyCleared returns if the "definition_key" field was cleared in this mutation.
+func (m *WorkflowInstanceMutation) DefinitionKeyCleared() bool {
+	_, ok := m.clearedFields[workflowinstance.FieldDefinitionKey]
+	return ok
+}
+
+// ResetDefinitionKey resets all changes to the "definition_key" field.
+func (m *WorkflowInstanceMutation) ResetDefinitionKey() {
+	m.definition_key = nil
+	delete(m.clearedFields, workflowinstance.FieldDefinitionKey)
+}
+
+// SetDefinitionVersion sets the "definition_version" field.
+func (m *WorkflowInstanceMutation) SetDefinitionVersion(i int) {
+	m.definition_version = &i
+	m.adddefinition_version = nil
+}
+
+// DefinitionVersion returns the value of the "definition_version" field in the mutation.
+func (m *WorkflowInstanceMutation) DefinitionVersion() (r int, exists bool) {
+	v := m.definition_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDefinitionVersion returns the old "definition_version" field's value of the WorkflowInstance entity.
+// If the WorkflowInstance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowInstanceMutation) OldDefinitionVersion(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDefinitionVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDefinitionVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDefinitionVersion: %w", err)
+	}
+	return oldValue.DefinitionVersion, nil
+}
+
+// AddDefinitionVersion adds i to the "definition_version" field.
+func (m *WorkflowInstanceMutation) AddDefinitionVersion(i int) {
+	if m.adddefinition_version != nil {
+		*m.adddefinition_version += i
+	} else {
+		m.adddefinition_version = &i
+	}
+}
+
+// AddedDefinitionVersion returns the value that was added to the "definition_version" field in this mutation.
+func (m *WorkflowInstanceMutation) AddedDefinitionVersion() (r int, exists bool) {
+	v := m.adddefinition_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDefinitionVersion clears the value of the "definition_version" field.
+func (m *WorkflowInstanceMutation) ClearDefinitionVersion() {
+	m.definition_version = nil
+	m.adddefinition_version = nil
+	m.clearedFields[workflowinstance.FieldDefinitionVersion] = struct{}{}
+}
+
+// DefinitionVersionCleared returns if the "definition_version" field was cleared in this mutation.
+func (m *WorkflowInstanceMutation) DefinitionVersionCleared() bool {
+	_, ok := m.clearedFields[workflowinstance.FieldDefinitionVersion]
+	return ok
+}
+
+// ResetDefinitionVersion resets all changes to the "definition_version" field.
+func (m *WorkflowInstanceMutation) ResetDefinitionVersion() {
+	m.definition_version = nil
+	m.adddefinition_version = nil
+	delete(m.clearedFields, workflowinstance.FieldDefinitionVersion)
+}
+
+// SetParentInstanceID sets the "parent_instance_id" field.
+func (m *WorkflowInstanceMutation) SetParentInstanceID(u uint32) {
+	m.parent_instance_id = &u
+	m.addparent_instance_id = nil
+}
+
+// ParentInstanceID returns the value of the "parent_instance_id" field in the mutation.
+func (m *WorkflowInstanceMutation) ParentInstanceID() (r uint32, exists bool) {
+	v := m.parent_instance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentInstanceID returns the old "parent_instance_id" field's value of the WorkflowInstance entity.
+// If the WorkflowInstance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowInstanceMutation) OldParentInstanceID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentInstanceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentInstanceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentInstanceID: %w", err)
+	}
+	return oldValue.ParentInstanceID, nil
+}
+
+// AddParentInstanceID adds u to the "parent_instance_id" field.
+func (m *WorkflowInstanceMutation) AddParentInstanceID(u int32) {
+	if m.addparent_instance_id != nil {
+		*m.addparent_instance_id += u
+	} else {
+		m.addparent_instance_id = &u
+	}
+}
+
+// AddedParentInstanceID returns the value that was added to the "parent_instance_id" field in this mutation.
+func (m *WorkflowInstanceMutation) AddedParentInstanceID() (r int32, exists bool) {
+	v := m.addparent_instance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearParentInstanceID clears the value of the "parent_instance_id" field.
+func (m *WorkflowInstanceMutation) ClearParentInstanceID() {
+	m.parent_instance_id = nil
+	m.addparent_instance_id = nil
+	m.clearedFields[workflowinstance.FieldParentInstanceID] = struct{}{}
+}
+
+// ParentInstanceIDCleared returns if the "parent_instance_id" field was cleared in this mutation.
+func (m *WorkflowInstanceMutation) ParentInstanceIDCleared() bool {
+	_, ok := m.clearedFields[workflowinstance.FieldParentInstanceID]
+	return ok
+}
+
+// ResetParentInstanceID resets all changes to the "parent_instance_id" field.
+func (m *WorkflowInstanceMutation) ResetParentInstanceID() {
+	m.parent_instance_id = nil
+	m.addparent_instance_id = nil
+	delete(m.clearedFields, workflowinstance.FieldParentInstanceID)
+}
+
+// SetParentTokenID sets the "parent_token_id" field.
+func (m *WorkflowInstanceMutation) SetParentTokenID(u uint32) {
+	m.parent_token_id = &u
+	m.addparent_token_id = nil
+}
+
+// ParentTokenID returns the value of the "parent_token_id" field in the mutation.
+func (m *WorkflowInstanceMutation) ParentTokenID() (r uint32, exists bool) {
+	v := m.parent_token_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentTokenID returns the old "parent_token_id" field's value of the WorkflowInstance entity.
+// If the WorkflowInstance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowInstanceMutation) OldParentTokenID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentTokenID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentTokenID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentTokenID: %w", err)
+	}
+	return oldValue.ParentTokenID, nil
+}
+
+// AddParentTokenID adds u to the "parent_token_id" field.
+func (m *WorkflowInstanceMutation) AddParentTokenID(u int32) {
+	if m.addparent_token_id != nil {
+		*m.addparent_token_id += u
+	} else {
+		m.addparent_token_id = &u
+	}
+}
+
+// AddedParentTokenID returns the value that was added to the "parent_token_id" field in this mutation.
+func (m *WorkflowInstanceMutation) AddedParentTokenID() (r int32, exists bool) {
+	v := m.addparent_token_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearParentTokenID clears the value of the "parent_token_id" field.
+func (m *WorkflowInstanceMutation) ClearParentTokenID() {
+	m.parent_token_id = nil
+	m.addparent_token_id = nil
+	m.clearedFields[workflowinstance.FieldParentTokenID] = struct{}{}
+}
+
+// ParentTokenIDCleared returns if the "parent_token_id" field was cleared in this mutation.
+func (m *WorkflowInstanceMutation) ParentTokenIDCleared() bool {
+	_, ok := m.clearedFields[workflowinstance.FieldParentTokenID]
+	return ok
+}
+
+// ResetParentTokenID resets all changes to the "parent_token_id" field.
+func (m *WorkflowInstanceMutation) ResetParentTokenID() {
+	m.parent_token_id = nil
+	m.addparent_token_id = nil
+	delete(m.clearedFields, workflowinstance.FieldParentTokenID)
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (m *WorkflowInstanceMutation) SetEndedAt(t time.Time) {
+	m.ended_at = &t
+}
+
+// EndedAt returns the value of the "ended_at" field in the mutation.
+func (m *WorkflowInstanceMutation) EndedAt() (r time.Time, exists bool) {
+	v := m.ended_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEndedAt returns the old "ended_at" field's value of the WorkflowInstance entity.
+// If the WorkflowInstance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowInstanceMutation) OldEndedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEndedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEndedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEndedAt: %w", err)
+	}
+	return oldValue.EndedAt, nil
+}
+
+// ClearEndedAt clears the value of the "ended_at" field.
+func (m *WorkflowInstanceMutation) ClearEndedAt() {
+	m.ended_at = nil
+	m.clearedFields[workflowinstance.FieldEndedAt] = struct{}{}
+}
+
+// EndedAtCleared returns if the "ended_at" field was cleared in this mutation.
+func (m *WorkflowInstanceMutation) EndedAtCleared() bool {
+	_, ok := m.clearedFields[workflowinstance.FieldEndedAt]
+	return ok
+}
+
+// ResetEndedAt resets all changes to the "ended_at" field.
+func (m *WorkflowInstanceMutation) ResetEndedAt() {
+	m.ended_at = nil
+	delete(m.clearedFields, workflowinstance.FieldEndedAt)
+}
+
 // SetDefinitionID sets the "definition" edge to the WorkflowDefinition entity by id.
 func (m *WorkflowInstanceMutation) SetDefinitionID(id uint32) {
 	m.definition = &id
@@ -89370,112 +89681,58 @@ func (m *WorkflowInstanceMutation) ResetLogs() {
 	m.removedlogs = nil
 }
 
-// AddInstanceJoinIDs adds the "instance_joins" edge to the WorkflowInstanceJoin entity by ids.
-func (m *WorkflowInstanceMutation) AddInstanceJoinIDs(ids ...uint32) {
-	if m.instance_joins == nil {
-		m.instance_joins = make(map[uint32]struct{})
+// AddTokenIDs adds the "tokens" edge to the WorkflowToken entity by ids.
+func (m *WorkflowInstanceMutation) AddTokenIDs(ids ...uint32) {
+	if m.tokens == nil {
+		m.tokens = make(map[uint32]struct{})
 	}
 	for i := range ids {
-		m.instance_joins[ids[i]] = struct{}{}
+		m.tokens[ids[i]] = struct{}{}
 	}
 }
 
-// ClearInstanceJoins clears the "instance_joins" edge to the WorkflowInstanceJoin entity.
-func (m *WorkflowInstanceMutation) ClearInstanceJoins() {
-	m.clearedinstance_joins = true
+// ClearTokens clears the "tokens" edge to the WorkflowToken entity.
+func (m *WorkflowInstanceMutation) ClearTokens() {
+	m.clearedtokens = true
 }
 
-// InstanceJoinsCleared reports if the "instance_joins" edge to the WorkflowInstanceJoin entity was cleared.
-func (m *WorkflowInstanceMutation) InstanceJoinsCleared() bool {
-	return m.clearedinstance_joins
+// TokensCleared reports if the "tokens" edge to the WorkflowToken entity was cleared.
+func (m *WorkflowInstanceMutation) TokensCleared() bool {
+	return m.clearedtokens
 }
 
-// RemoveInstanceJoinIDs removes the "instance_joins" edge to the WorkflowInstanceJoin entity by IDs.
-func (m *WorkflowInstanceMutation) RemoveInstanceJoinIDs(ids ...uint32) {
-	if m.removedinstance_joins == nil {
-		m.removedinstance_joins = make(map[uint32]struct{})
+// RemoveTokenIDs removes the "tokens" edge to the WorkflowToken entity by IDs.
+func (m *WorkflowInstanceMutation) RemoveTokenIDs(ids ...uint32) {
+	if m.removedtokens == nil {
+		m.removedtokens = make(map[uint32]struct{})
 	}
 	for i := range ids {
-		delete(m.instance_joins, ids[i])
-		m.removedinstance_joins[ids[i]] = struct{}{}
+		delete(m.tokens, ids[i])
+		m.removedtokens[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedInstanceJoins returns the removed IDs of the "instance_joins" edge to the WorkflowInstanceJoin entity.
-func (m *WorkflowInstanceMutation) RemovedInstanceJoinsIDs() (ids []uint32) {
-	for id := range m.removedinstance_joins {
+// RemovedTokens returns the removed IDs of the "tokens" edge to the WorkflowToken entity.
+func (m *WorkflowInstanceMutation) RemovedTokensIDs() (ids []uint32) {
+	for id := range m.removedtokens {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// InstanceJoinsIDs returns the "instance_joins" edge IDs in the mutation.
-func (m *WorkflowInstanceMutation) InstanceJoinsIDs() (ids []uint32) {
-	for id := range m.instance_joins {
+// TokensIDs returns the "tokens" edge IDs in the mutation.
+func (m *WorkflowInstanceMutation) TokensIDs() (ids []uint32) {
+	for id := range m.tokens {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetInstanceJoins resets all changes to the "instance_joins" edge.
-func (m *WorkflowInstanceMutation) ResetInstanceJoins() {
-	m.instance_joins = nil
-	m.clearedinstance_joins = false
-	m.removedinstance_joins = nil
-}
-
-// AddParentLinkIDs adds the "parent_links" edge to the WorkflowInstanceParentLink entity by ids.
-func (m *WorkflowInstanceMutation) AddParentLinkIDs(ids ...uint32) {
-	if m.parent_links == nil {
-		m.parent_links = make(map[uint32]struct{})
-	}
-	for i := range ids {
-		m.parent_links[ids[i]] = struct{}{}
-	}
-}
-
-// ClearParentLinks clears the "parent_links" edge to the WorkflowInstanceParentLink entity.
-func (m *WorkflowInstanceMutation) ClearParentLinks() {
-	m.clearedparent_links = true
-}
-
-// ParentLinksCleared reports if the "parent_links" edge to the WorkflowInstanceParentLink entity was cleared.
-func (m *WorkflowInstanceMutation) ParentLinksCleared() bool {
-	return m.clearedparent_links
-}
-
-// RemoveParentLinkIDs removes the "parent_links" edge to the WorkflowInstanceParentLink entity by IDs.
-func (m *WorkflowInstanceMutation) RemoveParentLinkIDs(ids ...uint32) {
-	if m.removedparent_links == nil {
-		m.removedparent_links = make(map[uint32]struct{})
-	}
-	for i := range ids {
-		delete(m.parent_links, ids[i])
-		m.removedparent_links[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedParentLinks returns the removed IDs of the "parent_links" edge to the WorkflowInstanceParentLink entity.
-func (m *WorkflowInstanceMutation) RemovedParentLinksIDs() (ids []uint32) {
-	for id := range m.removedparent_links {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ParentLinksIDs returns the "parent_links" edge IDs in the mutation.
-func (m *WorkflowInstanceMutation) ParentLinksIDs() (ids []uint32) {
-	for id := range m.parent_links {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetParentLinks resets all changes to the "parent_links" edge.
-func (m *WorkflowInstanceMutation) ResetParentLinks() {
-	m.parent_links = nil
-	m.clearedparent_links = false
-	m.removedparent_links = nil
+// ResetTokens resets all changes to the "tokens" edge.
+func (m *WorkflowInstanceMutation) ResetTokens() {
+	m.tokens = nil
+	m.clearedtokens = false
+	m.removedtokens = nil
 }
 
 // Where appends a list predicates to the WorkflowInstanceMutation builder.
@@ -89512,7 +89769,7 @@ func (m *WorkflowInstanceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WorkflowInstanceMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, workflowinstance.FieldCreatedAt)
 	}
@@ -89546,6 +89803,21 @@ func (m *WorkflowInstanceMutation) Fields() []string {
 	if m.business_id != nil {
 		fields = append(fields, workflowinstance.FieldBusinessID)
 	}
+	if m.definition_key != nil {
+		fields = append(fields, workflowinstance.FieldDefinitionKey)
+	}
+	if m.definition_version != nil {
+		fields = append(fields, workflowinstance.FieldDefinitionVersion)
+	}
+	if m.parent_instance_id != nil {
+		fields = append(fields, workflowinstance.FieldParentInstanceID)
+	}
+	if m.parent_token_id != nil {
+		fields = append(fields, workflowinstance.FieldParentTokenID)
+	}
+	if m.ended_at != nil {
+		fields = append(fields, workflowinstance.FieldEndedAt)
+	}
 	return fields
 }
 
@@ -89576,6 +89848,16 @@ func (m *WorkflowInstanceMutation) Field(name string) (ent.Value, bool) {
 		return m.BusinessType()
 	case workflowinstance.FieldBusinessID:
 		return m.BusinessID()
+	case workflowinstance.FieldDefinitionKey:
+		return m.DefinitionKey()
+	case workflowinstance.FieldDefinitionVersion:
+		return m.DefinitionVersion()
+	case workflowinstance.FieldParentInstanceID:
+		return m.ParentInstanceID()
+	case workflowinstance.FieldParentTokenID:
+		return m.ParentTokenID()
+	case workflowinstance.FieldEndedAt:
+		return m.EndedAt()
 	}
 	return nil, false
 }
@@ -89607,6 +89889,16 @@ func (m *WorkflowInstanceMutation) OldField(ctx context.Context, name string) (e
 		return m.OldBusinessType(ctx)
 	case workflowinstance.FieldBusinessID:
 		return m.OldBusinessID(ctx)
+	case workflowinstance.FieldDefinitionKey:
+		return m.OldDefinitionKey(ctx)
+	case workflowinstance.FieldDefinitionVersion:
+		return m.OldDefinitionVersion(ctx)
+	case workflowinstance.FieldParentInstanceID:
+		return m.OldParentInstanceID(ctx)
+	case workflowinstance.FieldParentTokenID:
+		return m.OldParentTokenID(ctx)
+	case workflowinstance.FieldEndedAt:
+		return m.OldEndedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown WorkflowInstance field %s", name)
 }
@@ -89693,6 +89985,41 @@ func (m *WorkflowInstanceMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetBusinessID(v)
 		return nil
+	case workflowinstance.FieldDefinitionKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDefinitionKey(v)
+		return nil
+	case workflowinstance.FieldDefinitionVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDefinitionVersion(v)
+		return nil
+	case workflowinstance.FieldParentInstanceID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentInstanceID(v)
+		return nil
+	case workflowinstance.FieldParentTokenID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentTokenID(v)
+		return nil
+	case workflowinstance.FieldEndedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEndedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown WorkflowInstance field %s", name)
 }
@@ -89716,6 +90043,15 @@ func (m *WorkflowInstanceMutation) AddedFields() []string {
 	if m.addbusiness_id != nil {
 		fields = append(fields, workflowinstance.FieldBusinessID)
 	}
+	if m.adddefinition_version != nil {
+		fields = append(fields, workflowinstance.FieldDefinitionVersion)
+	}
+	if m.addparent_instance_id != nil {
+		fields = append(fields, workflowinstance.FieldParentInstanceID)
+	}
+	if m.addparent_token_id != nil {
+		fields = append(fields, workflowinstance.FieldParentTokenID)
+	}
 	return fields
 }
 
@@ -89734,6 +90070,12 @@ func (m *WorkflowInstanceMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTenantID()
 	case workflowinstance.FieldBusinessID:
 		return m.AddedBusinessID()
+	case workflowinstance.FieldDefinitionVersion:
+		return m.AddedDefinitionVersion()
+	case workflowinstance.FieldParentInstanceID:
+		return m.AddedParentInstanceID()
+	case workflowinstance.FieldParentTokenID:
+		return m.AddedParentTokenID()
 	}
 	return nil, false
 }
@@ -89778,6 +90120,27 @@ func (m *WorkflowInstanceMutation) AddField(name string, value ent.Value) error 
 		}
 		m.AddBusinessID(v)
 		return nil
+	case workflowinstance.FieldDefinitionVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDefinitionVersion(v)
+		return nil
+	case workflowinstance.FieldParentInstanceID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddParentInstanceID(v)
+		return nil
+	case workflowinstance.FieldParentTokenID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddParentTokenID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown WorkflowInstance numeric field %s", name)
 }
@@ -89818,6 +90181,21 @@ func (m *WorkflowInstanceMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(workflowinstance.FieldBusinessID) {
 		fields = append(fields, workflowinstance.FieldBusinessID)
+	}
+	if m.FieldCleared(workflowinstance.FieldDefinitionKey) {
+		fields = append(fields, workflowinstance.FieldDefinitionKey)
+	}
+	if m.FieldCleared(workflowinstance.FieldDefinitionVersion) {
+		fields = append(fields, workflowinstance.FieldDefinitionVersion)
+	}
+	if m.FieldCleared(workflowinstance.FieldParentInstanceID) {
+		fields = append(fields, workflowinstance.FieldParentInstanceID)
+	}
+	if m.FieldCleared(workflowinstance.FieldParentTokenID) {
+		fields = append(fields, workflowinstance.FieldParentTokenID)
+	}
+	if m.FieldCleared(workflowinstance.FieldEndedAt) {
+		fields = append(fields, workflowinstance.FieldEndedAt)
 	}
 	return fields
 }
@@ -89866,6 +90244,21 @@ func (m *WorkflowInstanceMutation) ClearField(name string) error {
 	case workflowinstance.FieldBusinessID:
 		m.ClearBusinessID()
 		return nil
+	case workflowinstance.FieldDefinitionKey:
+		m.ClearDefinitionKey()
+		return nil
+	case workflowinstance.FieldDefinitionVersion:
+		m.ClearDefinitionVersion()
+		return nil
+	case workflowinstance.FieldParentInstanceID:
+		m.ClearParentInstanceID()
+		return nil
+	case workflowinstance.FieldParentTokenID:
+		m.ClearParentTokenID()
+		return nil
+	case workflowinstance.FieldEndedAt:
+		m.ClearEndedAt()
+		return nil
 	}
 	return fmt.Errorf("unknown WorkflowInstance nullable field %s", name)
 }
@@ -89907,13 +90300,28 @@ func (m *WorkflowInstanceMutation) ResetField(name string) error {
 	case workflowinstance.FieldBusinessID:
 		m.ResetBusinessID()
 		return nil
+	case workflowinstance.FieldDefinitionKey:
+		m.ResetDefinitionKey()
+		return nil
+	case workflowinstance.FieldDefinitionVersion:
+		m.ResetDefinitionVersion()
+		return nil
+	case workflowinstance.FieldParentInstanceID:
+		m.ResetParentInstanceID()
+		return nil
+	case workflowinstance.FieldParentTokenID:
+		m.ResetParentTokenID()
+		return nil
+	case workflowinstance.FieldEndedAt:
+		m.ResetEndedAt()
+		return nil
 	}
 	return fmt.Errorf("unknown WorkflowInstance field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WorkflowInstanceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 4)
 	if m.definition != nil {
 		edges = append(edges, workflowinstance.EdgeDefinition)
 	}
@@ -89923,11 +90331,8 @@ func (m *WorkflowInstanceMutation) AddedEdges() []string {
 	if m.logs != nil {
 		edges = append(edges, workflowinstance.EdgeLogs)
 	}
-	if m.instance_joins != nil {
-		edges = append(edges, workflowinstance.EdgeInstanceJoins)
-	}
-	if m.parent_links != nil {
-		edges = append(edges, workflowinstance.EdgeParentLinks)
+	if m.tokens != nil {
+		edges = append(edges, workflowinstance.EdgeTokens)
 	}
 	return edges
 }
@@ -89952,15 +90357,9 @@ func (m *WorkflowInstanceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case workflowinstance.EdgeInstanceJoins:
-		ids := make([]ent.Value, 0, len(m.instance_joins))
-		for id := range m.instance_joins {
-			ids = append(ids, id)
-		}
-		return ids
-	case workflowinstance.EdgeParentLinks:
-		ids := make([]ent.Value, 0, len(m.parent_links))
-		for id := range m.parent_links {
+	case workflowinstance.EdgeTokens:
+		ids := make([]ent.Value, 0, len(m.tokens))
+		for id := range m.tokens {
 			ids = append(ids, id)
 		}
 		return ids
@@ -89970,18 +90369,15 @@ func (m *WorkflowInstanceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WorkflowInstanceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 4)
 	if m.removedtasks != nil {
 		edges = append(edges, workflowinstance.EdgeTasks)
 	}
 	if m.removedlogs != nil {
 		edges = append(edges, workflowinstance.EdgeLogs)
 	}
-	if m.removedinstance_joins != nil {
-		edges = append(edges, workflowinstance.EdgeInstanceJoins)
-	}
-	if m.removedparent_links != nil {
-		edges = append(edges, workflowinstance.EdgeParentLinks)
+	if m.removedtokens != nil {
+		edges = append(edges, workflowinstance.EdgeTokens)
 	}
 	return edges
 }
@@ -90002,15 +90398,9 @@ func (m *WorkflowInstanceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case workflowinstance.EdgeInstanceJoins:
-		ids := make([]ent.Value, 0, len(m.removedinstance_joins))
-		for id := range m.removedinstance_joins {
-			ids = append(ids, id)
-		}
-		return ids
-	case workflowinstance.EdgeParentLinks:
-		ids := make([]ent.Value, 0, len(m.removedparent_links))
-		for id := range m.removedparent_links {
+	case workflowinstance.EdgeTokens:
+		ids := make([]ent.Value, 0, len(m.removedtokens))
+		for id := range m.removedtokens {
 			ids = append(ids, id)
 		}
 		return ids
@@ -90020,7 +90410,7 @@ func (m *WorkflowInstanceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WorkflowInstanceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 4)
 	if m.cleareddefinition {
 		edges = append(edges, workflowinstance.EdgeDefinition)
 	}
@@ -90030,11 +90420,8 @@ func (m *WorkflowInstanceMutation) ClearedEdges() []string {
 	if m.clearedlogs {
 		edges = append(edges, workflowinstance.EdgeLogs)
 	}
-	if m.clearedinstance_joins {
-		edges = append(edges, workflowinstance.EdgeInstanceJoins)
-	}
-	if m.clearedparent_links {
-		edges = append(edges, workflowinstance.EdgeParentLinks)
+	if m.clearedtokens {
+		edges = append(edges, workflowinstance.EdgeTokens)
 	}
 	return edges
 }
@@ -90049,10 +90436,8 @@ func (m *WorkflowInstanceMutation) EdgeCleared(name string) bool {
 		return m.clearedtasks
 	case workflowinstance.EdgeLogs:
 		return m.clearedlogs
-	case workflowinstance.EdgeInstanceJoins:
-		return m.clearedinstance_joins
-	case workflowinstance.EdgeParentLinks:
-		return m.clearedparent_links
+	case workflowinstance.EdgeTokens:
+		return m.clearedtokens
 	}
 	return false
 }
@@ -90081,2370 +90466,11 @@ func (m *WorkflowInstanceMutation) ResetEdge(name string) error {
 	case workflowinstance.EdgeLogs:
 		m.ResetLogs()
 		return nil
-	case workflowinstance.EdgeInstanceJoins:
-		m.ResetInstanceJoins()
-		return nil
-	case workflowinstance.EdgeParentLinks:
-		m.ResetParentLinks()
+	case workflowinstance.EdgeTokens:
+		m.ResetTokens()
 		return nil
 	}
 	return fmt.Errorf("unknown WorkflowInstance edge %s", name)
-}
-
-// WorkflowInstanceJoinMutation represents an operation that mutates the WorkflowInstanceJoin nodes in the graph.
-type WorkflowInstanceJoinMutation struct {
-	config
-	op               Op
-	typ              string
-	id               *uint32
-	created_at       *time.Time
-	updated_at       *time.Time
-	deleted_at       *time.Time
-	created_by       *uint32
-	addcreated_by    *int32
-	updated_by       *uint32
-	addupdated_by    *int32
-	deleted_by       *uint32
-	adddeleted_by    *int32
-	tenant_id        *uint32
-	addtenant_id     *int32
-	join_node_id     *string
-	arrived_count    *int
-	addarrived_count *int
-	clearedFields    map[string]struct{}
-	instance         *uint32
-	clearedinstance  bool
-	done             bool
-	oldValue         func(context.Context) (*WorkflowInstanceJoin, error)
-	predicates       []predicate.WorkflowInstanceJoin
-}
-
-var _ ent.Mutation = (*WorkflowInstanceJoinMutation)(nil)
-
-// workflowinstancejoinOption allows management of the mutation configuration using functional options.
-type workflowinstancejoinOption func(*WorkflowInstanceJoinMutation)
-
-// newWorkflowInstanceJoinMutation creates new mutation for the WorkflowInstanceJoin entity.
-func newWorkflowInstanceJoinMutation(c config, op Op, opts ...workflowinstancejoinOption) *WorkflowInstanceJoinMutation {
-	m := &WorkflowInstanceJoinMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeWorkflowInstanceJoin,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withWorkflowInstanceJoinID sets the ID field of the mutation.
-func withWorkflowInstanceJoinID(id uint32) workflowinstancejoinOption {
-	return func(m *WorkflowInstanceJoinMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *WorkflowInstanceJoin
-		)
-		m.oldValue = func(ctx context.Context) (*WorkflowInstanceJoin, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().WorkflowInstanceJoin.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withWorkflowInstanceJoin sets the old WorkflowInstanceJoin of the mutation.
-func withWorkflowInstanceJoin(node *WorkflowInstanceJoin) workflowinstancejoinOption {
-	return func(m *WorkflowInstanceJoinMutation) {
-		m.oldValue = func(context.Context) (*WorkflowInstanceJoin, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m WorkflowInstanceJoinMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m WorkflowInstanceJoinMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of WorkflowInstanceJoin entities.
-func (m *WorkflowInstanceJoinMutation) SetID(id uint32) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *WorkflowInstanceJoinMutation) ID() (id uint32, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *WorkflowInstanceJoinMutation) IDs(ctx context.Context) ([]uint32, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []uint32{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().WorkflowInstanceJoin.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *WorkflowInstanceJoinMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *WorkflowInstanceJoinMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the WorkflowInstanceJoin entity.
-// If the WorkflowInstanceJoin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceJoinMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ClearCreatedAt clears the value of the "created_at" field.
-func (m *WorkflowInstanceJoinMutation) ClearCreatedAt() {
-	m.created_at = nil
-	m.clearedFields[workflowinstancejoin.FieldCreatedAt] = struct{}{}
-}
-
-// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) CreatedAtCleared() bool {
-	_, ok := m.clearedFields[workflowinstancejoin.FieldCreatedAt]
-	return ok
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *WorkflowInstanceJoinMutation) ResetCreatedAt() {
-	m.created_at = nil
-	delete(m.clearedFields, workflowinstancejoin.FieldCreatedAt)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *WorkflowInstanceJoinMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *WorkflowInstanceJoinMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the WorkflowInstanceJoin entity.
-// If the WorkflowInstanceJoin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceJoinMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ClearUpdatedAt clears the value of the "updated_at" field.
-func (m *WorkflowInstanceJoinMutation) ClearUpdatedAt() {
-	m.updated_at = nil
-	m.clearedFields[workflowinstancejoin.FieldUpdatedAt] = struct{}{}
-}
-
-// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) UpdatedAtCleared() bool {
-	_, ok := m.clearedFields[workflowinstancejoin.FieldUpdatedAt]
-	return ok
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *WorkflowInstanceJoinMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-	delete(m.clearedFields, workflowinstancejoin.FieldUpdatedAt)
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *WorkflowInstanceJoinMutation) SetDeletedAt(t time.Time) {
-	m.deleted_at = &t
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *WorkflowInstanceJoinMutation) DeletedAt() (r time.Time, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the WorkflowInstanceJoin entity.
-// If the WorkflowInstanceJoin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceJoinMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *WorkflowInstanceJoinMutation) ClearDeletedAt() {
-	m.deleted_at = nil
-	m.clearedFields[workflowinstancejoin.FieldDeletedAt] = struct{}{}
-}
-
-// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[workflowinstancejoin.FieldDeletedAt]
-	return ok
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *WorkflowInstanceJoinMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	delete(m.clearedFields, workflowinstancejoin.FieldDeletedAt)
-}
-
-// SetCreatedBy sets the "created_by" field.
-func (m *WorkflowInstanceJoinMutation) SetCreatedBy(u uint32) {
-	m.created_by = &u
-	m.addcreated_by = nil
-}
-
-// CreatedBy returns the value of the "created_by" field in the mutation.
-func (m *WorkflowInstanceJoinMutation) CreatedBy() (r uint32, exists bool) {
-	v := m.created_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedBy returns the old "created_by" field's value of the WorkflowInstanceJoin entity.
-// If the WorkflowInstanceJoin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceJoinMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
-	}
-	return oldValue.CreatedBy, nil
-}
-
-// AddCreatedBy adds u to the "created_by" field.
-func (m *WorkflowInstanceJoinMutation) AddCreatedBy(u int32) {
-	if m.addcreated_by != nil {
-		*m.addcreated_by += u
-	} else {
-		m.addcreated_by = &u
-	}
-}
-
-// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
-func (m *WorkflowInstanceJoinMutation) AddedCreatedBy() (r int32, exists bool) {
-	v := m.addcreated_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearCreatedBy clears the value of the "created_by" field.
-func (m *WorkflowInstanceJoinMutation) ClearCreatedBy() {
-	m.created_by = nil
-	m.addcreated_by = nil
-	m.clearedFields[workflowinstancejoin.FieldCreatedBy] = struct{}{}
-}
-
-// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) CreatedByCleared() bool {
-	_, ok := m.clearedFields[workflowinstancejoin.FieldCreatedBy]
-	return ok
-}
-
-// ResetCreatedBy resets all changes to the "created_by" field.
-func (m *WorkflowInstanceJoinMutation) ResetCreatedBy() {
-	m.created_by = nil
-	m.addcreated_by = nil
-	delete(m.clearedFields, workflowinstancejoin.FieldCreatedBy)
-}
-
-// SetUpdatedBy sets the "updated_by" field.
-func (m *WorkflowInstanceJoinMutation) SetUpdatedBy(u uint32) {
-	m.updated_by = &u
-	m.addupdated_by = nil
-}
-
-// UpdatedBy returns the value of the "updated_by" field in the mutation.
-func (m *WorkflowInstanceJoinMutation) UpdatedBy() (r uint32, exists bool) {
-	v := m.updated_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedBy returns the old "updated_by" field's value of the WorkflowInstanceJoin entity.
-// If the WorkflowInstanceJoin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceJoinMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
-	}
-	return oldValue.UpdatedBy, nil
-}
-
-// AddUpdatedBy adds u to the "updated_by" field.
-func (m *WorkflowInstanceJoinMutation) AddUpdatedBy(u int32) {
-	if m.addupdated_by != nil {
-		*m.addupdated_by += u
-	} else {
-		m.addupdated_by = &u
-	}
-}
-
-// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
-func (m *WorkflowInstanceJoinMutation) AddedUpdatedBy() (r int32, exists bool) {
-	v := m.addupdated_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearUpdatedBy clears the value of the "updated_by" field.
-func (m *WorkflowInstanceJoinMutation) ClearUpdatedBy() {
-	m.updated_by = nil
-	m.addupdated_by = nil
-	m.clearedFields[workflowinstancejoin.FieldUpdatedBy] = struct{}{}
-}
-
-// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) UpdatedByCleared() bool {
-	_, ok := m.clearedFields[workflowinstancejoin.FieldUpdatedBy]
-	return ok
-}
-
-// ResetUpdatedBy resets all changes to the "updated_by" field.
-func (m *WorkflowInstanceJoinMutation) ResetUpdatedBy() {
-	m.updated_by = nil
-	m.addupdated_by = nil
-	delete(m.clearedFields, workflowinstancejoin.FieldUpdatedBy)
-}
-
-// SetDeletedBy sets the "deleted_by" field.
-func (m *WorkflowInstanceJoinMutation) SetDeletedBy(u uint32) {
-	m.deleted_by = &u
-	m.adddeleted_by = nil
-}
-
-// DeletedBy returns the value of the "deleted_by" field in the mutation.
-func (m *WorkflowInstanceJoinMutation) DeletedBy() (r uint32, exists bool) {
-	v := m.deleted_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedBy returns the old "deleted_by" field's value of the WorkflowInstanceJoin entity.
-// If the WorkflowInstanceJoin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceJoinMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
-	}
-	return oldValue.DeletedBy, nil
-}
-
-// AddDeletedBy adds u to the "deleted_by" field.
-func (m *WorkflowInstanceJoinMutation) AddDeletedBy(u int32) {
-	if m.adddeleted_by != nil {
-		*m.adddeleted_by += u
-	} else {
-		m.adddeleted_by = &u
-	}
-}
-
-// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
-func (m *WorkflowInstanceJoinMutation) AddedDeletedBy() (r int32, exists bool) {
-	v := m.adddeleted_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearDeletedBy clears the value of the "deleted_by" field.
-func (m *WorkflowInstanceJoinMutation) ClearDeletedBy() {
-	m.deleted_by = nil
-	m.adddeleted_by = nil
-	m.clearedFields[workflowinstancejoin.FieldDeletedBy] = struct{}{}
-}
-
-// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) DeletedByCleared() bool {
-	_, ok := m.clearedFields[workflowinstancejoin.FieldDeletedBy]
-	return ok
-}
-
-// ResetDeletedBy resets all changes to the "deleted_by" field.
-func (m *WorkflowInstanceJoinMutation) ResetDeletedBy() {
-	m.deleted_by = nil
-	m.adddeleted_by = nil
-	delete(m.clearedFields, workflowinstancejoin.FieldDeletedBy)
-}
-
-// SetTenantID sets the "tenant_id" field.
-func (m *WorkflowInstanceJoinMutation) SetTenantID(u uint32) {
-	m.tenant_id = &u
-	m.addtenant_id = nil
-}
-
-// TenantID returns the value of the "tenant_id" field in the mutation.
-func (m *WorkflowInstanceJoinMutation) TenantID() (r uint32, exists bool) {
-	v := m.tenant_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTenantID returns the old "tenant_id" field's value of the WorkflowInstanceJoin entity.
-// If the WorkflowInstanceJoin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceJoinMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTenantID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
-	}
-	return oldValue.TenantID, nil
-}
-
-// AddTenantID adds u to the "tenant_id" field.
-func (m *WorkflowInstanceJoinMutation) AddTenantID(u int32) {
-	if m.addtenant_id != nil {
-		*m.addtenant_id += u
-	} else {
-		m.addtenant_id = &u
-	}
-}
-
-// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
-func (m *WorkflowInstanceJoinMutation) AddedTenantID() (r int32, exists bool) {
-	v := m.addtenant_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearTenantID clears the value of the "tenant_id" field.
-func (m *WorkflowInstanceJoinMutation) ClearTenantID() {
-	m.tenant_id = nil
-	m.addtenant_id = nil
-	m.clearedFields[workflowinstancejoin.FieldTenantID] = struct{}{}
-}
-
-// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) TenantIDCleared() bool {
-	_, ok := m.clearedFields[workflowinstancejoin.FieldTenantID]
-	return ok
-}
-
-// ResetTenantID resets all changes to the "tenant_id" field.
-func (m *WorkflowInstanceJoinMutation) ResetTenantID() {
-	m.tenant_id = nil
-	m.addtenant_id = nil
-	delete(m.clearedFields, workflowinstancejoin.FieldTenantID)
-}
-
-// SetJoinNodeID sets the "join_node_id" field.
-func (m *WorkflowInstanceJoinMutation) SetJoinNodeID(s string) {
-	m.join_node_id = &s
-}
-
-// JoinNodeID returns the value of the "join_node_id" field in the mutation.
-func (m *WorkflowInstanceJoinMutation) JoinNodeID() (r string, exists bool) {
-	v := m.join_node_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldJoinNodeID returns the old "join_node_id" field's value of the WorkflowInstanceJoin entity.
-// If the WorkflowInstanceJoin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceJoinMutation) OldJoinNodeID(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldJoinNodeID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldJoinNodeID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldJoinNodeID: %w", err)
-	}
-	return oldValue.JoinNodeID, nil
-}
-
-// ClearJoinNodeID clears the value of the "join_node_id" field.
-func (m *WorkflowInstanceJoinMutation) ClearJoinNodeID() {
-	m.join_node_id = nil
-	m.clearedFields[workflowinstancejoin.FieldJoinNodeID] = struct{}{}
-}
-
-// JoinNodeIDCleared returns if the "join_node_id" field was cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) JoinNodeIDCleared() bool {
-	_, ok := m.clearedFields[workflowinstancejoin.FieldJoinNodeID]
-	return ok
-}
-
-// ResetJoinNodeID resets all changes to the "join_node_id" field.
-func (m *WorkflowInstanceJoinMutation) ResetJoinNodeID() {
-	m.join_node_id = nil
-	delete(m.clearedFields, workflowinstancejoin.FieldJoinNodeID)
-}
-
-// SetArrivedCount sets the "arrived_count" field.
-func (m *WorkflowInstanceJoinMutation) SetArrivedCount(i int) {
-	m.arrived_count = &i
-	m.addarrived_count = nil
-}
-
-// ArrivedCount returns the value of the "arrived_count" field in the mutation.
-func (m *WorkflowInstanceJoinMutation) ArrivedCount() (r int, exists bool) {
-	v := m.arrived_count
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldArrivedCount returns the old "arrived_count" field's value of the WorkflowInstanceJoin entity.
-// If the WorkflowInstanceJoin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceJoinMutation) OldArrivedCount(ctx context.Context) (v *int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldArrivedCount is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldArrivedCount requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldArrivedCount: %w", err)
-	}
-	return oldValue.ArrivedCount, nil
-}
-
-// AddArrivedCount adds i to the "arrived_count" field.
-func (m *WorkflowInstanceJoinMutation) AddArrivedCount(i int) {
-	if m.addarrived_count != nil {
-		*m.addarrived_count += i
-	} else {
-		m.addarrived_count = &i
-	}
-}
-
-// AddedArrivedCount returns the value that was added to the "arrived_count" field in this mutation.
-func (m *WorkflowInstanceJoinMutation) AddedArrivedCount() (r int, exists bool) {
-	v := m.addarrived_count
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearArrivedCount clears the value of the "arrived_count" field.
-func (m *WorkflowInstanceJoinMutation) ClearArrivedCount() {
-	m.arrived_count = nil
-	m.addarrived_count = nil
-	m.clearedFields[workflowinstancejoin.FieldArrivedCount] = struct{}{}
-}
-
-// ArrivedCountCleared returns if the "arrived_count" field was cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) ArrivedCountCleared() bool {
-	_, ok := m.clearedFields[workflowinstancejoin.FieldArrivedCount]
-	return ok
-}
-
-// ResetArrivedCount resets all changes to the "arrived_count" field.
-func (m *WorkflowInstanceJoinMutation) ResetArrivedCount() {
-	m.arrived_count = nil
-	m.addarrived_count = nil
-	delete(m.clearedFields, workflowinstancejoin.FieldArrivedCount)
-}
-
-// SetInstanceID sets the "instance" edge to the WorkflowInstance entity by id.
-func (m *WorkflowInstanceJoinMutation) SetInstanceID(id uint32) {
-	m.instance = &id
-}
-
-// ClearInstance clears the "instance" edge to the WorkflowInstance entity.
-func (m *WorkflowInstanceJoinMutation) ClearInstance() {
-	m.clearedinstance = true
-}
-
-// InstanceCleared reports if the "instance" edge to the WorkflowInstance entity was cleared.
-func (m *WorkflowInstanceJoinMutation) InstanceCleared() bool {
-	return m.clearedinstance
-}
-
-// InstanceID returns the "instance" edge ID in the mutation.
-func (m *WorkflowInstanceJoinMutation) InstanceID() (id uint32, exists bool) {
-	if m.instance != nil {
-		return *m.instance, true
-	}
-	return
-}
-
-// InstanceIDs returns the "instance" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// InstanceID instead. It exists only for internal usage by the builders.
-func (m *WorkflowInstanceJoinMutation) InstanceIDs() (ids []uint32) {
-	if id := m.instance; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetInstance resets all changes to the "instance" edge.
-func (m *WorkflowInstanceJoinMutation) ResetInstance() {
-	m.instance = nil
-	m.clearedinstance = false
-}
-
-// Where appends a list predicates to the WorkflowInstanceJoinMutation builder.
-func (m *WorkflowInstanceJoinMutation) Where(ps ...predicate.WorkflowInstanceJoin) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the WorkflowInstanceJoinMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *WorkflowInstanceJoinMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.WorkflowInstanceJoin, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *WorkflowInstanceJoinMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *WorkflowInstanceJoinMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (WorkflowInstanceJoin).
-func (m *WorkflowInstanceJoinMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *WorkflowInstanceJoinMutation) Fields() []string {
-	fields := make([]string, 0, 9)
-	if m.created_at != nil {
-		fields = append(fields, workflowinstancejoin.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, workflowinstancejoin.FieldUpdatedAt)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, workflowinstancejoin.FieldDeletedAt)
-	}
-	if m.created_by != nil {
-		fields = append(fields, workflowinstancejoin.FieldCreatedBy)
-	}
-	if m.updated_by != nil {
-		fields = append(fields, workflowinstancejoin.FieldUpdatedBy)
-	}
-	if m.deleted_by != nil {
-		fields = append(fields, workflowinstancejoin.FieldDeletedBy)
-	}
-	if m.tenant_id != nil {
-		fields = append(fields, workflowinstancejoin.FieldTenantID)
-	}
-	if m.join_node_id != nil {
-		fields = append(fields, workflowinstancejoin.FieldJoinNodeID)
-	}
-	if m.arrived_count != nil {
-		fields = append(fields, workflowinstancejoin.FieldArrivedCount)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *WorkflowInstanceJoinMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case workflowinstancejoin.FieldCreatedAt:
-		return m.CreatedAt()
-	case workflowinstancejoin.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case workflowinstancejoin.FieldDeletedAt:
-		return m.DeletedAt()
-	case workflowinstancejoin.FieldCreatedBy:
-		return m.CreatedBy()
-	case workflowinstancejoin.FieldUpdatedBy:
-		return m.UpdatedBy()
-	case workflowinstancejoin.FieldDeletedBy:
-		return m.DeletedBy()
-	case workflowinstancejoin.FieldTenantID:
-		return m.TenantID()
-	case workflowinstancejoin.FieldJoinNodeID:
-		return m.JoinNodeID()
-	case workflowinstancejoin.FieldArrivedCount:
-		return m.ArrivedCount()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *WorkflowInstanceJoinMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case workflowinstancejoin.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case workflowinstancejoin.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case workflowinstancejoin.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
-	case workflowinstancejoin.FieldCreatedBy:
-		return m.OldCreatedBy(ctx)
-	case workflowinstancejoin.FieldUpdatedBy:
-		return m.OldUpdatedBy(ctx)
-	case workflowinstancejoin.FieldDeletedBy:
-		return m.OldDeletedBy(ctx)
-	case workflowinstancejoin.FieldTenantID:
-		return m.OldTenantID(ctx)
-	case workflowinstancejoin.FieldJoinNodeID:
-		return m.OldJoinNodeID(ctx)
-	case workflowinstancejoin.FieldArrivedCount:
-		return m.OldArrivedCount(ctx)
-	}
-	return nil, fmt.Errorf("unknown WorkflowInstanceJoin field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *WorkflowInstanceJoinMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case workflowinstancejoin.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case workflowinstancejoin.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case workflowinstancejoin.FieldDeletedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
-		return nil
-	case workflowinstancejoin.FieldCreatedBy:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedBy(v)
-		return nil
-	case workflowinstancejoin.FieldUpdatedBy:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedBy(v)
-		return nil
-	case workflowinstancejoin.FieldDeletedBy:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedBy(v)
-		return nil
-	case workflowinstancejoin.FieldTenantID:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTenantID(v)
-		return nil
-	case workflowinstancejoin.FieldJoinNodeID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetJoinNodeID(v)
-		return nil
-	case workflowinstancejoin.FieldArrivedCount:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetArrivedCount(v)
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceJoin field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *WorkflowInstanceJoinMutation) AddedFields() []string {
-	var fields []string
-	if m.addcreated_by != nil {
-		fields = append(fields, workflowinstancejoin.FieldCreatedBy)
-	}
-	if m.addupdated_by != nil {
-		fields = append(fields, workflowinstancejoin.FieldUpdatedBy)
-	}
-	if m.adddeleted_by != nil {
-		fields = append(fields, workflowinstancejoin.FieldDeletedBy)
-	}
-	if m.addtenant_id != nil {
-		fields = append(fields, workflowinstancejoin.FieldTenantID)
-	}
-	if m.addarrived_count != nil {
-		fields = append(fields, workflowinstancejoin.FieldArrivedCount)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *WorkflowInstanceJoinMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case workflowinstancejoin.FieldCreatedBy:
-		return m.AddedCreatedBy()
-	case workflowinstancejoin.FieldUpdatedBy:
-		return m.AddedUpdatedBy()
-	case workflowinstancejoin.FieldDeletedBy:
-		return m.AddedDeletedBy()
-	case workflowinstancejoin.FieldTenantID:
-		return m.AddedTenantID()
-	case workflowinstancejoin.FieldArrivedCount:
-		return m.AddedArrivedCount()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *WorkflowInstanceJoinMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case workflowinstancejoin.FieldCreatedBy:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddCreatedBy(v)
-		return nil
-	case workflowinstancejoin.FieldUpdatedBy:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddUpdatedBy(v)
-		return nil
-	case workflowinstancejoin.FieldDeletedBy:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddDeletedBy(v)
-		return nil
-	case workflowinstancejoin.FieldTenantID:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddTenantID(v)
-		return nil
-	case workflowinstancejoin.FieldArrivedCount:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddArrivedCount(v)
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceJoin numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *WorkflowInstanceJoinMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(workflowinstancejoin.FieldCreatedAt) {
-		fields = append(fields, workflowinstancejoin.FieldCreatedAt)
-	}
-	if m.FieldCleared(workflowinstancejoin.FieldUpdatedAt) {
-		fields = append(fields, workflowinstancejoin.FieldUpdatedAt)
-	}
-	if m.FieldCleared(workflowinstancejoin.FieldDeletedAt) {
-		fields = append(fields, workflowinstancejoin.FieldDeletedAt)
-	}
-	if m.FieldCleared(workflowinstancejoin.FieldCreatedBy) {
-		fields = append(fields, workflowinstancejoin.FieldCreatedBy)
-	}
-	if m.FieldCleared(workflowinstancejoin.FieldUpdatedBy) {
-		fields = append(fields, workflowinstancejoin.FieldUpdatedBy)
-	}
-	if m.FieldCleared(workflowinstancejoin.FieldDeletedBy) {
-		fields = append(fields, workflowinstancejoin.FieldDeletedBy)
-	}
-	if m.FieldCleared(workflowinstancejoin.FieldTenantID) {
-		fields = append(fields, workflowinstancejoin.FieldTenantID)
-	}
-	if m.FieldCleared(workflowinstancejoin.FieldJoinNodeID) {
-		fields = append(fields, workflowinstancejoin.FieldJoinNodeID)
-	}
-	if m.FieldCleared(workflowinstancejoin.FieldArrivedCount) {
-		fields = append(fields, workflowinstancejoin.FieldArrivedCount)
-	}
-	return fields
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *WorkflowInstanceJoinMutation) ClearField(name string) error {
-	switch name {
-	case workflowinstancejoin.FieldCreatedAt:
-		m.ClearCreatedAt()
-		return nil
-	case workflowinstancejoin.FieldUpdatedAt:
-		m.ClearUpdatedAt()
-		return nil
-	case workflowinstancejoin.FieldDeletedAt:
-		m.ClearDeletedAt()
-		return nil
-	case workflowinstancejoin.FieldCreatedBy:
-		m.ClearCreatedBy()
-		return nil
-	case workflowinstancejoin.FieldUpdatedBy:
-		m.ClearUpdatedBy()
-		return nil
-	case workflowinstancejoin.FieldDeletedBy:
-		m.ClearDeletedBy()
-		return nil
-	case workflowinstancejoin.FieldTenantID:
-		m.ClearTenantID()
-		return nil
-	case workflowinstancejoin.FieldJoinNodeID:
-		m.ClearJoinNodeID()
-		return nil
-	case workflowinstancejoin.FieldArrivedCount:
-		m.ClearArrivedCount()
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceJoin nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *WorkflowInstanceJoinMutation) ResetField(name string) error {
-	switch name {
-	case workflowinstancejoin.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case workflowinstancejoin.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case workflowinstancejoin.FieldDeletedAt:
-		m.ResetDeletedAt()
-		return nil
-	case workflowinstancejoin.FieldCreatedBy:
-		m.ResetCreatedBy()
-		return nil
-	case workflowinstancejoin.FieldUpdatedBy:
-		m.ResetUpdatedBy()
-		return nil
-	case workflowinstancejoin.FieldDeletedBy:
-		m.ResetDeletedBy()
-		return nil
-	case workflowinstancejoin.FieldTenantID:
-		m.ResetTenantID()
-		return nil
-	case workflowinstancejoin.FieldJoinNodeID:
-		m.ResetJoinNodeID()
-		return nil
-	case workflowinstancejoin.FieldArrivedCount:
-		m.ResetArrivedCount()
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceJoin field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *WorkflowInstanceJoinMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.instance != nil {
-		edges = append(edges, workflowinstancejoin.EdgeInstance)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *WorkflowInstanceJoinMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case workflowinstancejoin.EdgeInstance:
-		if id := m.instance; id != nil {
-			return []ent.Value{*id}
-		}
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *WorkflowInstanceJoinMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *WorkflowInstanceJoinMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedinstance {
-		edges = append(edges, workflowinstancejoin.EdgeInstance)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *WorkflowInstanceJoinMutation) EdgeCleared(name string) bool {
-	switch name {
-	case workflowinstancejoin.EdgeInstance:
-		return m.clearedinstance
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *WorkflowInstanceJoinMutation) ClearEdge(name string) error {
-	switch name {
-	case workflowinstancejoin.EdgeInstance:
-		m.ClearInstance()
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceJoin unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *WorkflowInstanceJoinMutation) ResetEdge(name string) error {
-	switch name {
-	case workflowinstancejoin.EdgeInstance:
-		m.ResetInstance()
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceJoin edge %s", name)
-}
-
-// WorkflowInstanceParentLinkMutation represents an operation that mutates the WorkflowInstanceParentLink nodes in the graph.
-type WorkflowInstanceParentLinkMutation struct {
-	config
-	op                     Op
-	typ                    string
-	id                     *uint32
-	created_at             *time.Time
-	updated_at             *time.Time
-	deleted_at             *time.Time
-	created_by             *uint32
-	addcreated_by          *int32
-	updated_by             *uint32
-	addupdated_by          *int32
-	deleted_by             *uint32
-	adddeleted_by          *int32
-	tenant_id              *uint32
-	addtenant_id           *int32
-	subprocess_node_id     *string
-	child_instance_id      *uint32
-	addchild_instance_id   *int32
-	clearedFields          map[string]struct{}
-	parent_instance        *uint32
-	clearedparent_instance bool
-	done                   bool
-	oldValue               func(context.Context) (*WorkflowInstanceParentLink, error)
-	predicates             []predicate.WorkflowInstanceParentLink
-}
-
-var _ ent.Mutation = (*WorkflowInstanceParentLinkMutation)(nil)
-
-// workflowinstanceparentlinkOption allows management of the mutation configuration using functional options.
-type workflowinstanceparentlinkOption func(*WorkflowInstanceParentLinkMutation)
-
-// newWorkflowInstanceParentLinkMutation creates new mutation for the WorkflowInstanceParentLink entity.
-func newWorkflowInstanceParentLinkMutation(c config, op Op, opts ...workflowinstanceparentlinkOption) *WorkflowInstanceParentLinkMutation {
-	m := &WorkflowInstanceParentLinkMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeWorkflowInstanceParentLink,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withWorkflowInstanceParentLinkID sets the ID field of the mutation.
-func withWorkflowInstanceParentLinkID(id uint32) workflowinstanceparentlinkOption {
-	return func(m *WorkflowInstanceParentLinkMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *WorkflowInstanceParentLink
-		)
-		m.oldValue = func(ctx context.Context) (*WorkflowInstanceParentLink, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().WorkflowInstanceParentLink.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withWorkflowInstanceParentLink sets the old WorkflowInstanceParentLink of the mutation.
-func withWorkflowInstanceParentLink(node *WorkflowInstanceParentLink) workflowinstanceparentlinkOption {
-	return func(m *WorkflowInstanceParentLinkMutation) {
-		m.oldValue = func(context.Context) (*WorkflowInstanceParentLink, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m WorkflowInstanceParentLinkMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m WorkflowInstanceParentLinkMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of WorkflowInstanceParentLink entities.
-func (m *WorkflowInstanceParentLinkMutation) SetID(id uint32) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *WorkflowInstanceParentLinkMutation) ID() (id uint32, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *WorkflowInstanceParentLinkMutation) IDs(ctx context.Context) ([]uint32, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []uint32{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().WorkflowInstanceParentLink.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *WorkflowInstanceParentLinkMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *WorkflowInstanceParentLinkMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the WorkflowInstanceParentLink entity.
-// If the WorkflowInstanceParentLink object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceParentLinkMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ClearCreatedAt clears the value of the "created_at" field.
-func (m *WorkflowInstanceParentLinkMutation) ClearCreatedAt() {
-	m.created_at = nil
-	m.clearedFields[workflowinstanceparentlink.FieldCreatedAt] = struct{}{}
-}
-
-// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) CreatedAtCleared() bool {
-	_, ok := m.clearedFields[workflowinstanceparentlink.FieldCreatedAt]
-	return ok
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *WorkflowInstanceParentLinkMutation) ResetCreatedAt() {
-	m.created_at = nil
-	delete(m.clearedFields, workflowinstanceparentlink.FieldCreatedAt)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *WorkflowInstanceParentLinkMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *WorkflowInstanceParentLinkMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the WorkflowInstanceParentLink entity.
-// If the WorkflowInstanceParentLink object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceParentLinkMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ClearUpdatedAt clears the value of the "updated_at" field.
-func (m *WorkflowInstanceParentLinkMutation) ClearUpdatedAt() {
-	m.updated_at = nil
-	m.clearedFields[workflowinstanceparentlink.FieldUpdatedAt] = struct{}{}
-}
-
-// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) UpdatedAtCleared() bool {
-	_, ok := m.clearedFields[workflowinstanceparentlink.FieldUpdatedAt]
-	return ok
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *WorkflowInstanceParentLinkMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-	delete(m.clearedFields, workflowinstanceparentlink.FieldUpdatedAt)
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *WorkflowInstanceParentLinkMutation) SetDeletedAt(t time.Time) {
-	m.deleted_at = &t
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *WorkflowInstanceParentLinkMutation) DeletedAt() (r time.Time, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the WorkflowInstanceParentLink entity.
-// If the WorkflowInstanceParentLink object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceParentLinkMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *WorkflowInstanceParentLinkMutation) ClearDeletedAt() {
-	m.deleted_at = nil
-	m.clearedFields[workflowinstanceparentlink.FieldDeletedAt] = struct{}{}
-}
-
-// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[workflowinstanceparentlink.FieldDeletedAt]
-	return ok
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *WorkflowInstanceParentLinkMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	delete(m.clearedFields, workflowinstanceparentlink.FieldDeletedAt)
-}
-
-// SetCreatedBy sets the "created_by" field.
-func (m *WorkflowInstanceParentLinkMutation) SetCreatedBy(u uint32) {
-	m.created_by = &u
-	m.addcreated_by = nil
-}
-
-// CreatedBy returns the value of the "created_by" field in the mutation.
-func (m *WorkflowInstanceParentLinkMutation) CreatedBy() (r uint32, exists bool) {
-	v := m.created_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedBy returns the old "created_by" field's value of the WorkflowInstanceParentLink entity.
-// If the WorkflowInstanceParentLink object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceParentLinkMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
-	}
-	return oldValue.CreatedBy, nil
-}
-
-// AddCreatedBy adds u to the "created_by" field.
-func (m *WorkflowInstanceParentLinkMutation) AddCreatedBy(u int32) {
-	if m.addcreated_by != nil {
-		*m.addcreated_by += u
-	} else {
-		m.addcreated_by = &u
-	}
-}
-
-// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) AddedCreatedBy() (r int32, exists bool) {
-	v := m.addcreated_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearCreatedBy clears the value of the "created_by" field.
-func (m *WorkflowInstanceParentLinkMutation) ClearCreatedBy() {
-	m.created_by = nil
-	m.addcreated_by = nil
-	m.clearedFields[workflowinstanceparentlink.FieldCreatedBy] = struct{}{}
-}
-
-// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) CreatedByCleared() bool {
-	_, ok := m.clearedFields[workflowinstanceparentlink.FieldCreatedBy]
-	return ok
-}
-
-// ResetCreatedBy resets all changes to the "created_by" field.
-func (m *WorkflowInstanceParentLinkMutation) ResetCreatedBy() {
-	m.created_by = nil
-	m.addcreated_by = nil
-	delete(m.clearedFields, workflowinstanceparentlink.FieldCreatedBy)
-}
-
-// SetUpdatedBy sets the "updated_by" field.
-func (m *WorkflowInstanceParentLinkMutation) SetUpdatedBy(u uint32) {
-	m.updated_by = &u
-	m.addupdated_by = nil
-}
-
-// UpdatedBy returns the value of the "updated_by" field in the mutation.
-func (m *WorkflowInstanceParentLinkMutation) UpdatedBy() (r uint32, exists bool) {
-	v := m.updated_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedBy returns the old "updated_by" field's value of the WorkflowInstanceParentLink entity.
-// If the WorkflowInstanceParentLink object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceParentLinkMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
-	}
-	return oldValue.UpdatedBy, nil
-}
-
-// AddUpdatedBy adds u to the "updated_by" field.
-func (m *WorkflowInstanceParentLinkMutation) AddUpdatedBy(u int32) {
-	if m.addupdated_by != nil {
-		*m.addupdated_by += u
-	} else {
-		m.addupdated_by = &u
-	}
-}
-
-// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) AddedUpdatedBy() (r int32, exists bool) {
-	v := m.addupdated_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearUpdatedBy clears the value of the "updated_by" field.
-func (m *WorkflowInstanceParentLinkMutation) ClearUpdatedBy() {
-	m.updated_by = nil
-	m.addupdated_by = nil
-	m.clearedFields[workflowinstanceparentlink.FieldUpdatedBy] = struct{}{}
-}
-
-// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) UpdatedByCleared() bool {
-	_, ok := m.clearedFields[workflowinstanceparentlink.FieldUpdatedBy]
-	return ok
-}
-
-// ResetUpdatedBy resets all changes to the "updated_by" field.
-func (m *WorkflowInstanceParentLinkMutation) ResetUpdatedBy() {
-	m.updated_by = nil
-	m.addupdated_by = nil
-	delete(m.clearedFields, workflowinstanceparentlink.FieldUpdatedBy)
-}
-
-// SetDeletedBy sets the "deleted_by" field.
-func (m *WorkflowInstanceParentLinkMutation) SetDeletedBy(u uint32) {
-	m.deleted_by = &u
-	m.adddeleted_by = nil
-}
-
-// DeletedBy returns the value of the "deleted_by" field in the mutation.
-func (m *WorkflowInstanceParentLinkMutation) DeletedBy() (r uint32, exists bool) {
-	v := m.deleted_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedBy returns the old "deleted_by" field's value of the WorkflowInstanceParentLink entity.
-// If the WorkflowInstanceParentLink object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceParentLinkMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
-	}
-	return oldValue.DeletedBy, nil
-}
-
-// AddDeletedBy adds u to the "deleted_by" field.
-func (m *WorkflowInstanceParentLinkMutation) AddDeletedBy(u int32) {
-	if m.adddeleted_by != nil {
-		*m.adddeleted_by += u
-	} else {
-		m.adddeleted_by = &u
-	}
-}
-
-// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) AddedDeletedBy() (r int32, exists bool) {
-	v := m.adddeleted_by
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearDeletedBy clears the value of the "deleted_by" field.
-func (m *WorkflowInstanceParentLinkMutation) ClearDeletedBy() {
-	m.deleted_by = nil
-	m.adddeleted_by = nil
-	m.clearedFields[workflowinstanceparentlink.FieldDeletedBy] = struct{}{}
-}
-
-// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) DeletedByCleared() bool {
-	_, ok := m.clearedFields[workflowinstanceparentlink.FieldDeletedBy]
-	return ok
-}
-
-// ResetDeletedBy resets all changes to the "deleted_by" field.
-func (m *WorkflowInstanceParentLinkMutation) ResetDeletedBy() {
-	m.deleted_by = nil
-	m.adddeleted_by = nil
-	delete(m.clearedFields, workflowinstanceparentlink.FieldDeletedBy)
-}
-
-// SetTenantID sets the "tenant_id" field.
-func (m *WorkflowInstanceParentLinkMutation) SetTenantID(u uint32) {
-	m.tenant_id = &u
-	m.addtenant_id = nil
-}
-
-// TenantID returns the value of the "tenant_id" field in the mutation.
-func (m *WorkflowInstanceParentLinkMutation) TenantID() (r uint32, exists bool) {
-	v := m.tenant_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTenantID returns the old "tenant_id" field's value of the WorkflowInstanceParentLink entity.
-// If the WorkflowInstanceParentLink object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceParentLinkMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTenantID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
-	}
-	return oldValue.TenantID, nil
-}
-
-// AddTenantID adds u to the "tenant_id" field.
-func (m *WorkflowInstanceParentLinkMutation) AddTenantID(u int32) {
-	if m.addtenant_id != nil {
-		*m.addtenant_id += u
-	} else {
-		m.addtenant_id = &u
-	}
-}
-
-// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) AddedTenantID() (r int32, exists bool) {
-	v := m.addtenant_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearTenantID clears the value of the "tenant_id" field.
-func (m *WorkflowInstanceParentLinkMutation) ClearTenantID() {
-	m.tenant_id = nil
-	m.addtenant_id = nil
-	m.clearedFields[workflowinstanceparentlink.FieldTenantID] = struct{}{}
-}
-
-// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) TenantIDCleared() bool {
-	_, ok := m.clearedFields[workflowinstanceparentlink.FieldTenantID]
-	return ok
-}
-
-// ResetTenantID resets all changes to the "tenant_id" field.
-func (m *WorkflowInstanceParentLinkMutation) ResetTenantID() {
-	m.tenant_id = nil
-	m.addtenant_id = nil
-	delete(m.clearedFields, workflowinstanceparentlink.FieldTenantID)
-}
-
-// SetSubprocessNodeID sets the "subprocess_node_id" field.
-func (m *WorkflowInstanceParentLinkMutation) SetSubprocessNodeID(s string) {
-	m.subprocess_node_id = &s
-}
-
-// SubprocessNodeID returns the value of the "subprocess_node_id" field in the mutation.
-func (m *WorkflowInstanceParentLinkMutation) SubprocessNodeID() (r string, exists bool) {
-	v := m.subprocess_node_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSubprocessNodeID returns the old "subprocess_node_id" field's value of the WorkflowInstanceParentLink entity.
-// If the WorkflowInstanceParentLink object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceParentLinkMutation) OldSubprocessNodeID(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSubprocessNodeID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSubprocessNodeID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSubprocessNodeID: %w", err)
-	}
-	return oldValue.SubprocessNodeID, nil
-}
-
-// ClearSubprocessNodeID clears the value of the "subprocess_node_id" field.
-func (m *WorkflowInstanceParentLinkMutation) ClearSubprocessNodeID() {
-	m.subprocess_node_id = nil
-	m.clearedFields[workflowinstanceparentlink.FieldSubprocessNodeID] = struct{}{}
-}
-
-// SubprocessNodeIDCleared returns if the "subprocess_node_id" field was cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) SubprocessNodeIDCleared() bool {
-	_, ok := m.clearedFields[workflowinstanceparentlink.FieldSubprocessNodeID]
-	return ok
-}
-
-// ResetSubprocessNodeID resets all changes to the "subprocess_node_id" field.
-func (m *WorkflowInstanceParentLinkMutation) ResetSubprocessNodeID() {
-	m.subprocess_node_id = nil
-	delete(m.clearedFields, workflowinstanceparentlink.FieldSubprocessNodeID)
-}
-
-// SetChildInstanceID sets the "child_instance_id" field.
-func (m *WorkflowInstanceParentLinkMutation) SetChildInstanceID(u uint32) {
-	m.child_instance_id = &u
-	m.addchild_instance_id = nil
-}
-
-// ChildInstanceID returns the value of the "child_instance_id" field in the mutation.
-func (m *WorkflowInstanceParentLinkMutation) ChildInstanceID() (r uint32, exists bool) {
-	v := m.child_instance_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldChildInstanceID returns the old "child_instance_id" field's value of the WorkflowInstanceParentLink entity.
-// If the WorkflowInstanceParentLink object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkflowInstanceParentLinkMutation) OldChildInstanceID(ctx context.Context) (v *uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldChildInstanceID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldChildInstanceID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldChildInstanceID: %w", err)
-	}
-	return oldValue.ChildInstanceID, nil
-}
-
-// AddChildInstanceID adds u to the "child_instance_id" field.
-func (m *WorkflowInstanceParentLinkMutation) AddChildInstanceID(u int32) {
-	if m.addchild_instance_id != nil {
-		*m.addchild_instance_id += u
-	} else {
-		m.addchild_instance_id = &u
-	}
-}
-
-// AddedChildInstanceID returns the value that was added to the "child_instance_id" field in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) AddedChildInstanceID() (r int32, exists bool) {
-	v := m.addchild_instance_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearChildInstanceID clears the value of the "child_instance_id" field.
-func (m *WorkflowInstanceParentLinkMutation) ClearChildInstanceID() {
-	m.child_instance_id = nil
-	m.addchild_instance_id = nil
-	m.clearedFields[workflowinstanceparentlink.FieldChildInstanceID] = struct{}{}
-}
-
-// ChildInstanceIDCleared returns if the "child_instance_id" field was cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) ChildInstanceIDCleared() bool {
-	_, ok := m.clearedFields[workflowinstanceparentlink.FieldChildInstanceID]
-	return ok
-}
-
-// ResetChildInstanceID resets all changes to the "child_instance_id" field.
-func (m *WorkflowInstanceParentLinkMutation) ResetChildInstanceID() {
-	m.child_instance_id = nil
-	m.addchild_instance_id = nil
-	delete(m.clearedFields, workflowinstanceparentlink.FieldChildInstanceID)
-}
-
-// SetParentInstanceID sets the "parent_instance" edge to the WorkflowInstance entity by id.
-func (m *WorkflowInstanceParentLinkMutation) SetParentInstanceID(id uint32) {
-	m.parent_instance = &id
-}
-
-// ClearParentInstance clears the "parent_instance" edge to the WorkflowInstance entity.
-func (m *WorkflowInstanceParentLinkMutation) ClearParentInstance() {
-	m.clearedparent_instance = true
-}
-
-// ParentInstanceCleared reports if the "parent_instance" edge to the WorkflowInstance entity was cleared.
-func (m *WorkflowInstanceParentLinkMutation) ParentInstanceCleared() bool {
-	return m.clearedparent_instance
-}
-
-// ParentInstanceID returns the "parent_instance" edge ID in the mutation.
-func (m *WorkflowInstanceParentLinkMutation) ParentInstanceID() (id uint32, exists bool) {
-	if m.parent_instance != nil {
-		return *m.parent_instance, true
-	}
-	return
-}
-
-// ParentInstanceIDs returns the "parent_instance" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ParentInstanceID instead. It exists only for internal usage by the builders.
-func (m *WorkflowInstanceParentLinkMutation) ParentInstanceIDs() (ids []uint32) {
-	if id := m.parent_instance; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetParentInstance resets all changes to the "parent_instance" edge.
-func (m *WorkflowInstanceParentLinkMutation) ResetParentInstance() {
-	m.parent_instance = nil
-	m.clearedparent_instance = false
-}
-
-// Where appends a list predicates to the WorkflowInstanceParentLinkMutation builder.
-func (m *WorkflowInstanceParentLinkMutation) Where(ps ...predicate.WorkflowInstanceParentLink) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the WorkflowInstanceParentLinkMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *WorkflowInstanceParentLinkMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.WorkflowInstanceParentLink, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *WorkflowInstanceParentLinkMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *WorkflowInstanceParentLinkMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (WorkflowInstanceParentLink).
-func (m *WorkflowInstanceParentLinkMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *WorkflowInstanceParentLinkMutation) Fields() []string {
-	fields := make([]string, 0, 9)
-	if m.created_at != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldUpdatedAt)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldDeletedAt)
-	}
-	if m.created_by != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldCreatedBy)
-	}
-	if m.updated_by != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldUpdatedBy)
-	}
-	if m.deleted_by != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldDeletedBy)
-	}
-	if m.tenant_id != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldTenantID)
-	}
-	if m.subprocess_node_id != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldSubprocessNodeID)
-	}
-	if m.child_instance_id != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldChildInstanceID)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *WorkflowInstanceParentLinkMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case workflowinstanceparentlink.FieldCreatedAt:
-		return m.CreatedAt()
-	case workflowinstanceparentlink.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case workflowinstanceparentlink.FieldDeletedAt:
-		return m.DeletedAt()
-	case workflowinstanceparentlink.FieldCreatedBy:
-		return m.CreatedBy()
-	case workflowinstanceparentlink.FieldUpdatedBy:
-		return m.UpdatedBy()
-	case workflowinstanceparentlink.FieldDeletedBy:
-		return m.DeletedBy()
-	case workflowinstanceparentlink.FieldTenantID:
-		return m.TenantID()
-	case workflowinstanceparentlink.FieldSubprocessNodeID:
-		return m.SubprocessNodeID()
-	case workflowinstanceparentlink.FieldChildInstanceID:
-		return m.ChildInstanceID()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *WorkflowInstanceParentLinkMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case workflowinstanceparentlink.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case workflowinstanceparentlink.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case workflowinstanceparentlink.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
-	case workflowinstanceparentlink.FieldCreatedBy:
-		return m.OldCreatedBy(ctx)
-	case workflowinstanceparentlink.FieldUpdatedBy:
-		return m.OldUpdatedBy(ctx)
-	case workflowinstanceparentlink.FieldDeletedBy:
-		return m.OldDeletedBy(ctx)
-	case workflowinstanceparentlink.FieldTenantID:
-		return m.OldTenantID(ctx)
-	case workflowinstanceparentlink.FieldSubprocessNodeID:
-		return m.OldSubprocessNodeID(ctx)
-	case workflowinstanceparentlink.FieldChildInstanceID:
-		return m.OldChildInstanceID(ctx)
-	}
-	return nil, fmt.Errorf("unknown WorkflowInstanceParentLink field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *WorkflowInstanceParentLinkMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case workflowinstanceparentlink.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case workflowinstanceparentlink.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case workflowinstanceparentlink.FieldDeletedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
-		return nil
-	case workflowinstanceparentlink.FieldCreatedBy:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedBy(v)
-		return nil
-	case workflowinstanceparentlink.FieldUpdatedBy:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedBy(v)
-		return nil
-	case workflowinstanceparentlink.FieldDeletedBy:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedBy(v)
-		return nil
-	case workflowinstanceparentlink.FieldTenantID:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTenantID(v)
-		return nil
-	case workflowinstanceparentlink.FieldSubprocessNodeID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSubprocessNodeID(v)
-		return nil
-	case workflowinstanceparentlink.FieldChildInstanceID:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetChildInstanceID(v)
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceParentLink field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *WorkflowInstanceParentLinkMutation) AddedFields() []string {
-	var fields []string
-	if m.addcreated_by != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldCreatedBy)
-	}
-	if m.addupdated_by != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldUpdatedBy)
-	}
-	if m.adddeleted_by != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldDeletedBy)
-	}
-	if m.addtenant_id != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldTenantID)
-	}
-	if m.addchild_instance_id != nil {
-		fields = append(fields, workflowinstanceparentlink.FieldChildInstanceID)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *WorkflowInstanceParentLinkMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case workflowinstanceparentlink.FieldCreatedBy:
-		return m.AddedCreatedBy()
-	case workflowinstanceparentlink.FieldUpdatedBy:
-		return m.AddedUpdatedBy()
-	case workflowinstanceparentlink.FieldDeletedBy:
-		return m.AddedDeletedBy()
-	case workflowinstanceparentlink.FieldTenantID:
-		return m.AddedTenantID()
-	case workflowinstanceparentlink.FieldChildInstanceID:
-		return m.AddedChildInstanceID()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *WorkflowInstanceParentLinkMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case workflowinstanceparentlink.FieldCreatedBy:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddCreatedBy(v)
-		return nil
-	case workflowinstanceparentlink.FieldUpdatedBy:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddUpdatedBy(v)
-		return nil
-	case workflowinstanceparentlink.FieldDeletedBy:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddDeletedBy(v)
-		return nil
-	case workflowinstanceparentlink.FieldTenantID:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddTenantID(v)
-		return nil
-	case workflowinstanceparentlink.FieldChildInstanceID:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddChildInstanceID(v)
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceParentLink numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *WorkflowInstanceParentLinkMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(workflowinstanceparentlink.FieldCreatedAt) {
-		fields = append(fields, workflowinstanceparentlink.FieldCreatedAt)
-	}
-	if m.FieldCleared(workflowinstanceparentlink.FieldUpdatedAt) {
-		fields = append(fields, workflowinstanceparentlink.FieldUpdatedAt)
-	}
-	if m.FieldCleared(workflowinstanceparentlink.FieldDeletedAt) {
-		fields = append(fields, workflowinstanceparentlink.FieldDeletedAt)
-	}
-	if m.FieldCleared(workflowinstanceparentlink.FieldCreatedBy) {
-		fields = append(fields, workflowinstanceparentlink.FieldCreatedBy)
-	}
-	if m.FieldCleared(workflowinstanceparentlink.FieldUpdatedBy) {
-		fields = append(fields, workflowinstanceparentlink.FieldUpdatedBy)
-	}
-	if m.FieldCleared(workflowinstanceparentlink.FieldDeletedBy) {
-		fields = append(fields, workflowinstanceparentlink.FieldDeletedBy)
-	}
-	if m.FieldCleared(workflowinstanceparentlink.FieldTenantID) {
-		fields = append(fields, workflowinstanceparentlink.FieldTenantID)
-	}
-	if m.FieldCleared(workflowinstanceparentlink.FieldSubprocessNodeID) {
-		fields = append(fields, workflowinstanceparentlink.FieldSubprocessNodeID)
-	}
-	if m.FieldCleared(workflowinstanceparentlink.FieldChildInstanceID) {
-		fields = append(fields, workflowinstanceparentlink.FieldChildInstanceID)
-	}
-	return fields
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *WorkflowInstanceParentLinkMutation) ClearField(name string) error {
-	switch name {
-	case workflowinstanceparentlink.FieldCreatedAt:
-		m.ClearCreatedAt()
-		return nil
-	case workflowinstanceparentlink.FieldUpdatedAt:
-		m.ClearUpdatedAt()
-		return nil
-	case workflowinstanceparentlink.FieldDeletedAt:
-		m.ClearDeletedAt()
-		return nil
-	case workflowinstanceparentlink.FieldCreatedBy:
-		m.ClearCreatedBy()
-		return nil
-	case workflowinstanceparentlink.FieldUpdatedBy:
-		m.ClearUpdatedBy()
-		return nil
-	case workflowinstanceparentlink.FieldDeletedBy:
-		m.ClearDeletedBy()
-		return nil
-	case workflowinstanceparentlink.FieldTenantID:
-		m.ClearTenantID()
-		return nil
-	case workflowinstanceparentlink.FieldSubprocessNodeID:
-		m.ClearSubprocessNodeID()
-		return nil
-	case workflowinstanceparentlink.FieldChildInstanceID:
-		m.ClearChildInstanceID()
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceParentLink nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *WorkflowInstanceParentLinkMutation) ResetField(name string) error {
-	switch name {
-	case workflowinstanceparentlink.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case workflowinstanceparentlink.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case workflowinstanceparentlink.FieldDeletedAt:
-		m.ResetDeletedAt()
-		return nil
-	case workflowinstanceparentlink.FieldCreatedBy:
-		m.ResetCreatedBy()
-		return nil
-	case workflowinstanceparentlink.FieldUpdatedBy:
-		m.ResetUpdatedBy()
-		return nil
-	case workflowinstanceparentlink.FieldDeletedBy:
-		m.ResetDeletedBy()
-		return nil
-	case workflowinstanceparentlink.FieldTenantID:
-		m.ResetTenantID()
-		return nil
-	case workflowinstanceparentlink.FieldSubprocessNodeID:
-		m.ResetSubprocessNodeID()
-		return nil
-	case workflowinstanceparentlink.FieldChildInstanceID:
-		m.ResetChildInstanceID()
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceParentLink field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.parent_instance != nil {
-		edges = append(edges, workflowinstanceparentlink.EdgeParentInstance)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case workflowinstanceparentlink.EdgeParentInstance:
-		if id := m.parent_instance; id != nil {
-			return []ent.Value{*id}
-		}
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedparent_instance {
-		edges = append(edges, workflowinstanceparentlink.EdgeParentInstance)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *WorkflowInstanceParentLinkMutation) EdgeCleared(name string) bool {
-	switch name {
-	case workflowinstanceparentlink.EdgeParentInstance:
-		return m.clearedparent_instance
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *WorkflowInstanceParentLinkMutation) ClearEdge(name string) error {
-	switch name {
-	case workflowinstanceparentlink.EdgeParentInstance:
-		m.ClearParentInstance()
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceParentLink unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *WorkflowInstanceParentLinkMutation) ResetEdge(name string) error {
-	switch name {
-	case workflowinstanceparentlink.EdgeParentInstance:
-		m.ResetParentInstance()
-		return nil
-	}
-	return fmt.Errorf("unknown WorkflowInstanceParentLink edge %s", name)
 }
 
 // WorkflowLogMutation represents an operation that mutates the WorkflowLog nodes in the graph.
@@ -93687,6 +91713,14 @@ type WorkflowTaskMutation struct {
 	reminded_at         *time.Time
 	escalated_at        *time.Time
 	task_status         *workflowtask.TaskStatus
+	token_id            *uint32
+	addtoken_id         *int32
+	task_name           *string
+	outcome             *string
+	comment             *string
+	due_at              *time.Time
+	ended_at            *time.Time
+	candidate_groups    *string
 	clearedFields       map[string]struct{}
 	instance            *uint32
 	clearedinstance     bool
@@ -94492,6 +92526,370 @@ func (m *WorkflowTaskMutation) ResetTaskStatus() {
 	delete(m.clearedFields, workflowtask.FieldTaskStatus)
 }
 
+// SetTokenID sets the "token_id" field.
+func (m *WorkflowTaskMutation) SetTokenID(u uint32) {
+	m.token_id = &u
+	m.addtoken_id = nil
+}
+
+// TokenID returns the value of the "token_id" field in the mutation.
+func (m *WorkflowTaskMutation) TokenID() (r uint32, exists bool) {
+	v := m.token_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenID returns the old "token_id" field's value of the WorkflowTask entity.
+// If the WorkflowTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTaskMutation) OldTokenID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenID: %w", err)
+	}
+	return oldValue.TokenID, nil
+}
+
+// AddTokenID adds u to the "token_id" field.
+func (m *WorkflowTaskMutation) AddTokenID(u int32) {
+	if m.addtoken_id != nil {
+		*m.addtoken_id += u
+	} else {
+		m.addtoken_id = &u
+	}
+}
+
+// AddedTokenID returns the value that was added to the "token_id" field in this mutation.
+func (m *WorkflowTaskMutation) AddedTokenID() (r int32, exists bool) {
+	v := m.addtoken_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenID clears the value of the "token_id" field.
+func (m *WorkflowTaskMutation) ClearTokenID() {
+	m.token_id = nil
+	m.addtoken_id = nil
+	m.clearedFields[workflowtask.FieldTokenID] = struct{}{}
+}
+
+// TokenIDCleared returns if the "token_id" field was cleared in this mutation.
+func (m *WorkflowTaskMutation) TokenIDCleared() bool {
+	_, ok := m.clearedFields[workflowtask.FieldTokenID]
+	return ok
+}
+
+// ResetTokenID resets all changes to the "token_id" field.
+func (m *WorkflowTaskMutation) ResetTokenID() {
+	m.token_id = nil
+	m.addtoken_id = nil
+	delete(m.clearedFields, workflowtask.FieldTokenID)
+}
+
+// SetTaskName sets the "task_name" field.
+func (m *WorkflowTaskMutation) SetTaskName(s string) {
+	m.task_name = &s
+}
+
+// TaskName returns the value of the "task_name" field in the mutation.
+func (m *WorkflowTaskMutation) TaskName() (r string, exists bool) {
+	v := m.task_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskName returns the old "task_name" field's value of the WorkflowTask entity.
+// If the WorkflowTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTaskMutation) OldTaskName(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskName: %w", err)
+	}
+	return oldValue.TaskName, nil
+}
+
+// ClearTaskName clears the value of the "task_name" field.
+func (m *WorkflowTaskMutation) ClearTaskName() {
+	m.task_name = nil
+	m.clearedFields[workflowtask.FieldTaskName] = struct{}{}
+}
+
+// TaskNameCleared returns if the "task_name" field was cleared in this mutation.
+func (m *WorkflowTaskMutation) TaskNameCleared() bool {
+	_, ok := m.clearedFields[workflowtask.FieldTaskName]
+	return ok
+}
+
+// ResetTaskName resets all changes to the "task_name" field.
+func (m *WorkflowTaskMutation) ResetTaskName() {
+	m.task_name = nil
+	delete(m.clearedFields, workflowtask.FieldTaskName)
+}
+
+// SetOutcome sets the "outcome" field.
+func (m *WorkflowTaskMutation) SetOutcome(s string) {
+	m.outcome = &s
+}
+
+// Outcome returns the value of the "outcome" field in the mutation.
+func (m *WorkflowTaskMutation) Outcome() (r string, exists bool) {
+	v := m.outcome
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutcome returns the old "outcome" field's value of the WorkflowTask entity.
+// If the WorkflowTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTaskMutation) OldOutcome(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutcome is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutcome requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutcome: %w", err)
+	}
+	return oldValue.Outcome, nil
+}
+
+// ClearOutcome clears the value of the "outcome" field.
+func (m *WorkflowTaskMutation) ClearOutcome() {
+	m.outcome = nil
+	m.clearedFields[workflowtask.FieldOutcome] = struct{}{}
+}
+
+// OutcomeCleared returns if the "outcome" field was cleared in this mutation.
+func (m *WorkflowTaskMutation) OutcomeCleared() bool {
+	_, ok := m.clearedFields[workflowtask.FieldOutcome]
+	return ok
+}
+
+// ResetOutcome resets all changes to the "outcome" field.
+func (m *WorkflowTaskMutation) ResetOutcome() {
+	m.outcome = nil
+	delete(m.clearedFields, workflowtask.FieldOutcome)
+}
+
+// SetComment sets the "comment" field.
+func (m *WorkflowTaskMutation) SetComment(s string) {
+	m.comment = &s
+}
+
+// Comment returns the value of the "comment" field in the mutation.
+func (m *WorkflowTaskMutation) Comment() (r string, exists bool) {
+	v := m.comment
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldComment returns the old "comment" field's value of the WorkflowTask entity.
+// If the WorkflowTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTaskMutation) OldComment(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldComment is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldComment requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldComment: %w", err)
+	}
+	return oldValue.Comment, nil
+}
+
+// ClearComment clears the value of the "comment" field.
+func (m *WorkflowTaskMutation) ClearComment() {
+	m.comment = nil
+	m.clearedFields[workflowtask.FieldComment] = struct{}{}
+}
+
+// CommentCleared returns if the "comment" field was cleared in this mutation.
+func (m *WorkflowTaskMutation) CommentCleared() bool {
+	_, ok := m.clearedFields[workflowtask.FieldComment]
+	return ok
+}
+
+// ResetComment resets all changes to the "comment" field.
+func (m *WorkflowTaskMutation) ResetComment() {
+	m.comment = nil
+	delete(m.clearedFields, workflowtask.FieldComment)
+}
+
+// SetDueAt sets the "due_at" field.
+func (m *WorkflowTaskMutation) SetDueAt(t time.Time) {
+	m.due_at = &t
+}
+
+// DueAt returns the value of the "due_at" field in the mutation.
+func (m *WorkflowTaskMutation) DueAt() (r time.Time, exists bool) {
+	v := m.due_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDueAt returns the old "due_at" field's value of the WorkflowTask entity.
+// If the WorkflowTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTaskMutation) OldDueAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDueAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDueAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDueAt: %w", err)
+	}
+	return oldValue.DueAt, nil
+}
+
+// ClearDueAt clears the value of the "due_at" field.
+func (m *WorkflowTaskMutation) ClearDueAt() {
+	m.due_at = nil
+	m.clearedFields[workflowtask.FieldDueAt] = struct{}{}
+}
+
+// DueAtCleared returns if the "due_at" field was cleared in this mutation.
+func (m *WorkflowTaskMutation) DueAtCleared() bool {
+	_, ok := m.clearedFields[workflowtask.FieldDueAt]
+	return ok
+}
+
+// ResetDueAt resets all changes to the "due_at" field.
+func (m *WorkflowTaskMutation) ResetDueAt() {
+	m.due_at = nil
+	delete(m.clearedFields, workflowtask.FieldDueAt)
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (m *WorkflowTaskMutation) SetEndedAt(t time.Time) {
+	m.ended_at = &t
+}
+
+// EndedAt returns the value of the "ended_at" field in the mutation.
+func (m *WorkflowTaskMutation) EndedAt() (r time.Time, exists bool) {
+	v := m.ended_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEndedAt returns the old "ended_at" field's value of the WorkflowTask entity.
+// If the WorkflowTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTaskMutation) OldEndedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEndedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEndedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEndedAt: %w", err)
+	}
+	return oldValue.EndedAt, nil
+}
+
+// ClearEndedAt clears the value of the "ended_at" field.
+func (m *WorkflowTaskMutation) ClearEndedAt() {
+	m.ended_at = nil
+	m.clearedFields[workflowtask.FieldEndedAt] = struct{}{}
+}
+
+// EndedAtCleared returns if the "ended_at" field was cleared in this mutation.
+func (m *WorkflowTaskMutation) EndedAtCleared() bool {
+	_, ok := m.clearedFields[workflowtask.FieldEndedAt]
+	return ok
+}
+
+// ResetEndedAt resets all changes to the "ended_at" field.
+func (m *WorkflowTaskMutation) ResetEndedAt() {
+	m.ended_at = nil
+	delete(m.clearedFields, workflowtask.FieldEndedAt)
+}
+
+// SetCandidateGroups sets the "candidate_groups" field.
+func (m *WorkflowTaskMutation) SetCandidateGroups(s string) {
+	m.candidate_groups = &s
+}
+
+// CandidateGroups returns the value of the "candidate_groups" field in the mutation.
+func (m *WorkflowTaskMutation) CandidateGroups() (r string, exists bool) {
+	v := m.candidate_groups
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCandidateGroups returns the old "candidate_groups" field's value of the WorkflowTask entity.
+// If the WorkflowTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTaskMutation) OldCandidateGroups(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCandidateGroups is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCandidateGroups requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCandidateGroups: %w", err)
+	}
+	return oldValue.CandidateGroups, nil
+}
+
+// ClearCandidateGroups clears the value of the "candidate_groups" field.
+func (m *WorkflowTaskMutation) ClearCandidateGroups() {
+	m.candidate_groups = nil
+	m.clearedFields[workflowtask.FieldCandidateGroups] = struct{}{}
+}
+
+// CandidateGroupsCleared returns if the "candidate_groups" field was cleared in this mutation.
+func (m *WorkflowTaskMutation) CandidateGroupsCleared() bool {
+	_, ok := m.clearedFields[workflowtask.FieldCandidateGroups]
+	return ok
+}
+
+// ResetCandidateGroups resets all changes to the "candidate_groups" field.
+func (m *WorkflowTaskMutation) ResetCandidateGroups() {
+	m.candidate_groups = nil
+	delete(m.clearedFields, workflowtask.FieldCandidateGroups)
+}
+
 // SetInstanceID sets the "instance" edge to the WorkflowInstance entity by id.
 func (m *WorkflowTaskMutation) SetInstanceID(id uint32) {
 	m.instance = &id
@@ -94565,7 +92963,7 @@ func (m *WorkflowTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WorkflowTaskMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, workflowtask.FieldCreatedAt)
 	}
@@ -94602,6 +93000,27 @@ func (m *WorkflowTaskMutation) Fields() []string {
 	if m.task_status != nil {
 		fields = append(fields, workflowtask.FieldTaskStatus)
 	}
+	if m.token_id != nil {
+		fields = append(fields, workflowtask.FieldTokenID)
+	}
+	if m.task_name != nil {
+		fields = append(fields, workflowtask.FieldTaskName)
+	}
+	if m.outcome != nil {
+		fields = append(fields, workflowtask.FieldOutcome)
+	}
+	if m.comment != nil {
+		fields = append(fields, workflowtask.FieldComment)
+	}
+	if m.due_at != nil {
+		fields = append(fields, workflowtask.FieldDueAt)
+	}
+	if m.ended_at != nil {
+		fields = append(fields, workflowtask.FieldEndedAt)
+	}
+	if m.candidate_groups != nil {
+		fields = append(fields, workflowtask.FieldCandidateGroups)
+	}
 	return fields
 }
 
@@ -94634,6 +93053,20 @@ func (m *WorkflowTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.EscalatedAt()
 	case workflowtask.FieldTaskStatus:
 		return m.TaskStatus()
+	case workflowtask.FieldTokenID:
+		return m.TokenID()
+	case workflowtask.FieldTaskName:
+		return m.TaskName()
+	case workflowtask.FieldOutcome:
+		return m.Outcome()
+	case workflowtask.FieldComment:
+		return m.Comment()
+	case workflowtask.FieldDueAt:
+		return m.DueAt()
+	case workflowtask.FieldEndedAt:
+		return m.EndedAt()
+	case workflowtask.FieldCandidateGroups:
+		return m.CandidateGroups()
 	}
 	return nil, false
 }
@@ -94667,6 +93100,20 @@ func (m *WorkflowTaskMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldEscalatedAt(ctx)
 	case workflowtask.FieldTaskStatus:
 		return m.OldTaskStatus(ctx)
+	case workflowtask.FieldTokenID:
+		return m.OldTokenID(ctx)
+	case workflowtask.FieldTaskName:
+		return m.OldTaskName(ctx)
+	case workflowtask.FieldOutcome:
+		return m.OldOutcome(ctx)
+	case workflowtask.FieldComment:
+		return m.OldComment(ctx)
+	case workflowtask.FieldDueAt:
+		return m.OldDueAt(ctx)
+	case workflowtask.FieldEndedAt:
+		return m.OldEndedAt(ctx)
+	case workflowtask.FieldCandidateGroups:
+		return m.OldCandidateGroups(ctx)
 	}
 	return nil, fmt.Errorf("unknown WorkflowTask field %s", name)
 }
@@ -94760,6 +93207,55 @@ func (m *WorkflowTaskMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTaskStatus(v)
 		return nil
+	case workflowtask.FieldTokenID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenID(v)
+		return nil
+	case workflowtask.FieldTaskName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskName(v)
+		return nil
+	case workflowtask.FieldOutcome:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOutcome(v)
+		return nil
+	case workflowtask.FieldComment:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetComment(v)
+		return nil
+	case workflowtask.FieldDueAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDueAt(v)
+		return nil
+	case workflowtask.FieldEndedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEndedAt(v)
+		return nil
+	case workflowtask.FieldCandidateGroups:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCandidateGroups(v)
+		return nil
 	}
 	return fmt.Errorf("unknown WorkflowTask field %s", name)
 }
@@ -94783,6 +93279,9 @@ func (m *WorkflowTaskMutation) AddedFields() []string {
 	if m.addassignee_user_id != nil {
 		fields = append(fields, workflowtask.FieldAssigneeUserID)
 	}
+	if m.addtoken_id != nil {
+		fields = append(fields, workflowtask.FieldTokenID)
+	}
 	return fields
 }
 
@@ -94801,6 +93300,8 @@ func (m *WorkflowTaskMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTenantID()
 	case workflowtask.FieldAssigneeUserID:
 		return m.AddedAssigneeUserID()
+	case workflowtask.FieldTokenID:
+		return m.AddedTokenID()
 	}
 	return nil, false
 }
@@ -94845,6 +93346,13 @@ func (m *WorkflowTaskMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddAssigneeUserID(v)
 		return nil
+	case workflowtask.FieldTokenID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown WorkflowTask numeric field %s", name)
 }
@@ -94888,6 +93396,27 @@ func (m *WorkflowTaskMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(workflowtask.FieldTaskStatus) {
 		fields = append(fields, workflowtask.FieldTaskStatus)
+	}
+	if m.FieldCleared(workflowtask.FieldTokenID) {
+		fields = append(fields, workflowtask.FieldTokenID)
+	}
+	if m.FieldCleared(workflowtask.FieldTaskName) {
+		fields = append(fields, workflowtask.FieldTaskName)
+	}
+	if m.FieldCleared(workflowtask.FieldOutcome) {
+		fields = append(fields, workflowtask.FieldOutcome)
+	}
+	if m.FieldCleared(workflowtask.FieldComment) {
+		fields = append(fields, workflowtask.FieldComment)
+	}
+	if m.FieldCleared(workflowtask.FieldDueAt) {
+		fields = append(fields, workflowtask.FieldDueAt)
+	}
+	if m.FieldCleared(workflowtask.FieldEndedAt) {
+		fields = append(fields, workflowtask.FieldEndedAt)
+	}
+	if m.FieldCleared(workflowtask.FieldCandidateGroups) {
+		fields = append(fields, workflowtask.FieldCandidateGroups)
 	}
 	return fields
 }
@@ -94939,6 +93468,27 @@ func (m *WorkflowTaskMutation) ClearField(name string) error {
 	case workflowtask.FieldTaskStatus:
 		m.ClearTaskStatus()
 		return nil
+	case workflowtask.FieldTokenID:
+		m.ClearTokenID()
+		return nil
+	case workflowtask.FieldTaskName:
+		m.ClearTaskName()
+		return nil
+	case workflowtask.FieldOutcome:
+		m.ClearOutcome()
+		return nil
+	case workflowtask.FieldComment:
+		m.ClearComment()
+		return nil
+	case workflowtask.FieldDueAt:
+		m.ClearDueAt()
+		return nil
+	case workflowtask.FieldEndedAt:
+		m.ClearEndedAt()
+		return nil
+	case workflowtask.FieldCandidateGroups:
+		m.ClearCandidateGroups()
+		return nil
 	}
 	return fmt.Errorf("unknown WorkflowTask nullable field %s", name)
 }
@@ -94982,6 +93532,27 @@ func (m *WorkflowTaskMutation) ResetField(name string) error {
 		return nil
 	case workflowtask.FieldTaskStatus:
 		m.ResetTaskStatus()
+		return nil
+	case workflowtask.FieldTokenID:
+		m.ResetTokenID()
+		return nil
+	case workflowtask.FieldTaskName:
+		m.ResetTaskName()
+		return nil
+	case workflowtask.FieldOutcome:
+		m.ResetOutcome()
+		return nil
+	case workflowtask.FieldComment:
+		m.ResetComment()
+		return nil
+	case workflowtask.FieldDueAt:
+		m.ResetDueAt()
+		return nil
+	case workflowtask.FieldEndedAt:
+		m.ResetEndedAt()
+		return nil
+	case workflowtask.FieldCandidateGroups:
+		m.ResetCandidateGroups()
 		return nil
 	}
 	return fmt.Errorf("unknown WorkflowTask field %s", name)
@@ -95059,4 +93630,1080 @@ func (m *WorkflowTaskMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown WorkflowTask edge %s", name)
+}
+
+// WorkflowTokenMutation represents an operation that mutates the WorkflowToken nodes in the graph.
+type WorkflowTokenMutation struct {
+	config
+	op                   Op
+	typ                  string
+	id                   *uint32
+	created_at           *time.Time
+	updated_at           *time.Time
+	deleted_at           *time.Time
+	node_id              *string
+	token_status         *workflowtoken.TokenStatus
+	parent_id            *uint32
+	addparent_id         *int32
+	child_instance_id    *uint32
+	addchild_instance_id *int32
+	due_at               *time.Time
+	locals               *string
+	clearedFields        map[string]struct{}
+	instance             *uint32
+	clearedinstance      bool
+	done                 bool
+	oldValue             func(context.Context) (*WorkflowToken, error)
+	predicates           []predicate.WorkflowToken
+}
+
+var _ ent.Mutation = (*WorkflowTokenMutation)(nil)
+
+// workflowtokenOption allows management of the mutation configuration using functional options.
+type workflowtokenOption func(*WorkflowTokenMutation)
+
+// newWorkflowTokenMutation creates new mutation for the WorkflowToken entity.
+func newWorkflowTokenMutation(c config, op Op, opts ...workflowtokenOption) *WorkflowTokenMutation {
+	m := &WorkflowTokenMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeWorkflowToken,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withWorkflowTokenID sets the ID field of the mutation.
+func withWorkflowTokenID(id uint32) workflowtokenOption {
+	return func(m *WorkflowTokenMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *WorkflowToken
+		)
+		m.oldValue = func(ctx context.Context) (*WorkflowToken, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().WorkflowToken.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withWorkflowToken sets the old WorkflowToken of the mutation.
+func withWorkflowToken(node *WorkflowToken) workflowtokenOption {
+	return func(m *WorkflowTokenMutation) {
+		m.oldValue = func(context.Context) (*WorkflowToken, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m WorkflowTokenMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m WorkflowTokenMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of WorkflowToken entities.
+func (m *WorkflowTokenMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *WorkflowTokenMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *WorkflowTokenMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().WorkflowToken.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *WorkflowTokenMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *WorkflowTokenMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the WorkflowToken entity.
+// If the WorkflowToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTokenMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *WorkflowTokenMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[workflowtoken.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *WorkflowTokenMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[workflowtoken.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *WorkflowTokenMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, workflowtoken.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *WorkflowTokenMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *WorkflowTokenMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the WorkflowToken entity.
+// If the WorkflowToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTokenMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *WorkflowTokenMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[workflowtoken.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *WorkflowTokenMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[workflowtoken.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *WorkflowTokenMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, workflowtoken.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *WorkflowTokenMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *WorkflowTokenMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the WorkflowToken entity.
+// If the WorkflowToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTokenMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *WorkflowTokenMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[workflowtoken.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *WorkflowTokenMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[workflowtoken.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *WorkflowTokenMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, workflowtoken.FieldDeletedAt)
+}
+
+// SetNodeID sets the "node_id" field.
+func (m *WorkflowTokenMutation) SetNodeID(s string) {
+	m.node_id = &s
+}
+
+// NodeID returns the value of the "node_id" field in the mutation.
+func (m *WorkflowTokenMutation) NodeID() (r string, exists bool) {
+	v := m.node_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNodeID returns the old "node_id" field's value of the WorkflowToken entity.
+// If the WorkflowToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTokenMutation) OldNodeID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNodeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNodeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNodeID: %w", err)
+	}
+	return oldValue.NodeID, nil
+}
+
+// ClearNodeID clears the value of the "node_id" field.
+func (m *WorkflowTokenMutation) ClearNodeID() {
+	m.node_id = nil
+	m.clearedFields[workflowtoken.FieldNodeID] = struct{}{}
+}
+
+// NodeIDCleared returns if the "node_id" field was cleared in this mutation.
+func (m *WorkflowTokenMutation) NodeIDCleared() bool {
+	_, ok := m.clearedFields[workflowtoken.FieldNodeID]
+	return ok
+}
+
+// ResetNodeID resets all changes to the "node_id" field.
+func (m *WorkflowTokenMutation) ResetNodeID() {
+	m.node_id = nil
+	delete(m.clearedFields, workflowtoken.FieldNodeID)
+}
+
+// SetTokenStatus sets the "token_status" field.
+func (m *WorkflowTokenMutation) SetTokenStatus(ws workflowtoken.TokenStatus) {
+	m.token_status = &ws
+}
+
+// TokenStatus returns the value of the "token_status" field in the mutation.
+func (m *WorkflowTokenMutation) TokenStatus() (r workflowtoken.TokenStatus, exists bool) {
+	v := m.token_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenStatus returns the old "token_status" field's value of the WorkflowToken entity.
+// If the WorkflowToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTokenMutation) OldTokenStatus(ctx context.Context) (v *workflowtoken.TokenStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenStatus: %w", err)
+	}
+	return oldValue.TokenStatus, nil
+}
+
+// ClearTokenStatus clears the value of the "token_status" field.
+func (m *WorkflowTokenMutation) ClearTokenStatus() {
+	m.token_status = nil
+	m.clearedFields[workflowtoken.FieldTokenStatus] = struct{}{}
+}
+
+// TokenStatusCleared returns if the "token_status" field was cleared in this mutation.
+func (m *WorkflowTokenMutation) TokenStatusCleared() bool {
+	_, ok := m.clearedFields[workflowtoken.FieldTokenStatus]
+	return ok
+}
+
+// ResetTokenStatus resets all changes to the "token_status" field.
+func (m *WorkflowTokenMutation) ResetTokenStatus() {
+	m.token_status = nil
+	delete(m.clearedFields, workflowtoken.FieldTokenStatus)
+}
+
+// SetParentID sets the "parent_id" field.
+func (m *WorkflowTokenMutation) SetParentID(u uint32) {
+	m.parent_id = &u
+	m.addparent_id = nil
+}
+
+// ParentID returns the value of the "parent_id" field in the mutation.
+func (m *WorkflowTokenMutation) ParentID() (r uint32, exists bool) {
+	v := m.parent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentID returns the old "parent_id" field's value of the WorkflowToken entity.
+// If the WorkflowToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTokenMutation) OldParentID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+	}
+	return oldValue.ParentID, nil
+}
+
+// AddParentID adds u to the "parent_id" field.
+func (m *WorkflowTokenMutation) AddParentID(u int32) {
+	if m.addparent_id != nil {
+		*m.addparent_id += u
+	} else {
+		m.addparent_id = &u
+	}
+}
+
+// AddedParentID returns the value that was added to the "parent_id" field in this mutation.
+func (m *WorkflowTokenMutation) AddedParentID() (r int32, exists bool) {
+	v := m.addparent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (m *WorkflowTokenMutation) ClearParentID() {
+	m.parent_id = nil
+	m.addparent_id = nil
+	m.clearedFields[workflowtoken.FieldParentID] = struct{}{}
+}
+
+// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
+func (m *WorkflowTokenMutation) ParentIDCleared() bool {
+	_, ok := m.clearedFields[workflowtoken.FieldParentID]
+	return ok
+}
+
+// ResetParentID resets all changes to the "parent_id" field.
+func (m *WorkflowTokenMutation) ResetParentID() {
+	m.parent_id = nil
+	m.addparent_id = nil
+	delete(m.clearedFields, workflowtoken.FieldParentID)
+}
+
+// SetChildInstanceID sets the "child_instance_id" field.
+func (m *WorkflowTokenMutation) SetChildInstanceID(u uint32) {
+	m.child_instance_id = &u
+	m.addchild_instance_id = nil
+}
+
+// ChildInstanceID returns the value of the "child_instance_id" field in the mutation.
+func (m *WorkflowTokenMutation) ChildInstanceID() (r uint32, exists bool) {
+	v := m.child_instance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChildInstanceID returns the old "child_instance_id" field's value of the WorkflowToken entity.
+// If the WorkflowToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTokenMutation) OldChildInstanceID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChildInstanceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChildInstanceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChildInstanceID: %w", err)
+	}
+	return oldValue.ChildInstanceID, nil
+}
+
+// AddChildInstanceID adds u to the "child_instance_id" field.
+func (m *WorkflowTokenMutation) AddChildInstanceID(u int32) {
+	if m.addchild_instance_id != nil {
+		*m.addchild_instance_id += u
+	} else {
+		m.addchild_instance_id = &u
+	}
+}
+
+// AddedChildInstanceID returns the value that was added to the "child_instance_id" field in this mutation.
+func (m *WorkflowTokenMutation) AddedChildInstanceID() (r int32, exists bool) {
+	v := m.addchild_instance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearChildInstanceID clears the value of the "child_instance_id" field.
+func (m *WorkflowTokenMutation) ClearChildInstanceID() {
+	m.child_instance_id = nil
+	m.addchild_instance_id = nil
+	m.clearedFields[workflowtoken.FieldChildInstanceID] = struct{}{}
+}
+
+// ChildInstanceIDCleared returns if the "child_instance_id" field was cleared in this mutation.
+func (m *WorkflowTokenMutation) ChildInstanceIDCleared() bool {
+	_, ok := m.clearedFields[workflowtoken.FieldChildInstanceID]
+	return ok
+}
+
+// ResetChildInstanceID resets all changes to the "child_instance_id" field.
+func (m *WorkflowTokenMutation) ResetChildInstanceID() {
+	m.child_instance_id = nil
+	m.addchild_instance_id = nil
+	delete(m.clearedFields, workflowtoken.FieldChildInstanceID)
+}
+
+// SetDueAt sets the "due_at" field.
+func (m *WorkflowTokenMutation) SetDueAt(t time.Time) {
+	m.due_at = &t
+}
+
+// DueAt returns the value of the "due_at" field in the mutation.
+func (m *WorkflowTokenMutation) DueAt() (r time.Time, exists bool) {
+	v := m.due_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDueAt returns the old "due_at" field's value of the WorkflowToken entity.
+// If the WorkflowToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTokenMutation) OldDueAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDueAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDueAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDueAt: %w", err)
+	}
+	return oldValue.DueAt, nil
+}
+
+// ClearDueAt clears the value of the "due_at" field.
+func (m *WorkflowTokenMutation) ClearDueAt() {
+	m.due_at = nil
+	m.clearedFields[workflowtoken.FieldDueAt] = struct{}{}
+}
+
+// DueAtCleared returns if the "due_at" field was cleared in this mutation.
+func (m *WorkflowTokenMutation) DueAtCleared() bool {
+	_, ok := m.clearedFields[workflowtoken.FieldDueAt]
+	return ok
+}
+
+// ResetDueAt resets all changes to the "due_at" field.
+func (m *WorkflowTokenMutation) ResetDueAt() {
+	m.due_at = nil
+	delete(m.clearedFields, workflowtoken.FieldDueAt)
+}
+
+// SetLocals sets the "locals" field.
+func (m *WorkflowTokenMutation) SetLocals(s string) {
+	m.locals = &s
+}
+
+// Locals returns the value of the "locals" field in the mutation.
+func (m *WorkflowTokenMutation) Locals() (r string, exists bool) {
+	v := m.locals
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocals returns the old "locals" field's value of the WorkflowToken entity.
+// If the WorkflowToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkflowTokenMutation) OldLocals(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocals is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocals requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocals: %w", err)
+	}
+	return oldValue.Locals, nil
+}
+
+// ClearLocals clears the value of the "locals" field.
+func (m *WorkflowTokenMutation) ClearLocals() {
+	m.locals = nil
+	m.clearedFields[workflowtoken.FieldLocals] = struct{}{}
+}
+
+// LocalsCleared returns if the "locals" field was cleared in this mutation.
+func (m *WorkflowTokenMutation) LocalsCleared() bool {
+	_, ok := m.clearedFields[workflowtoken.FieldLocals]
+	return ok
+}
+
+// ResetLocals resets all changes to the "locals" field.
+func (m *WorkflowTokenMutation) ResetLocals() {
+	m.locals = nil
+	delete(m.clearedFields, workflowtoken.FieldLocals)
+}
+
+// SetInstanceID sets the "instance" edge to the WorkflowInstance entity by id.
+func (m *WorkflowTokenMutation) SetInstanceID(id uint32) {
+	m.instance = &id
+}
+
+// ClearInstance clears the "instance" edge to the WorkflowInstance entity.
+func (m *WorkflowTokenMutation) ClearInstance() {
+	m.clearedinstance = true
+}
+
+// InstanceCleared reports if the "instance" edge to the WorkflowInstance entity was cleared.
+func (m *WorkflowTokenMutation) InstanceCleared() bool {
+	return m.clearedinstance
+}
+
+// InstanceID returns the "instance" edge ID in the mutation.
+func (m *WorkflowTokenMutation) InstanceID() (id uint32, exists bool) {
+	if m.instance != nil {
+		return *m.instance, true
+	}
+	return
+}
+
+// InstanceIDs returns the "instance" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// InstanceID instead. It exists only for internal usage by the builders.
+func (m *WorkflowTokenMutation) InstanceIDs() (ids []uint32) {
+	if id := m.instance; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetInstance resets all changes to the "instance" edge.
+func (m *WorkflowTokenMutation) ResetInstance() {
+	m.instance = nil
+	m.clearedinstance = false
+}
+
+// Where appends a list predicates to the WorkflowTokenMutation builder.
+func (m *WorkflowTokenMutation) Where(ps ...predicate.WorkflowToken) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the WorkflowTokenMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *WorkflowTokenMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.WorkflowToken, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *WorkflowTokenMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *WorkflowTokenMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (WorkflowToken).
+func (m *WorkflowTokenMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *WorkflowTokenMutation) Fields() []string {
+	fields := make([]string, 0, 9)
+	if m.created_at != nil {
+		fields = append(fields, workflowtoken.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, workflowtoken.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, workflowtoken.FieldDeletedAt)
+	}
+	if m.node_id != nil {
+		fields = append(fields, workflowtoken.FieldNodeID)
+	}
+	if m.token_status != nil {
+		fields = append(fields, workflowtoken.FieldTokenStatus)
+	}
+	if m.parent_id != nil {
+		fields = append(fields, workflowtoken.FieldParentID)
+	}
+	if m.child_instance_id != nil {
+		fields = append(fields, workflowtoken.FieldChildInstanceID)
+	}
+	if m.due_at != nil {
+		fields = append(fields, workflowtoken.FieldDueAt)
+	}
+	if m.locals != nil {
+		fields = append(fields, workflowtoken.FieldLocals)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *WorkflowTokenMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case workflowtoken.FieldCreatedAt:
+		return m.CreatedAt()
+	case workflowtoken.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case workflowtoken.FieldDeletedAt:
+		return m.DeletedAt()
+	case workflowtoken.FieldNodeID:
+		return m.NodeID()
+	case workflowtoken.FieldTokenStatus:
+		return m.TokenStatus()
+	case workflowtoken.FieldParentID:
+		return m.ParentID()
+	case workflowtoken.FieldChildInstanceID:
+		return m.ChildInstanceID()
+	case workflowtoken.FieldDueAt:
+		return m.DueAt()
+	case workflowtoken.FieldLocals:
+		return m.Locals()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *WorkflowTokenMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case workflowtoken.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case workflowtoken.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case workflowtoken.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case workflowtoken.FieldNodeID:
+		return m.OldNodeID(ctx)
+	case workflowtoken.FieldTokenStatus:
+		return m.OldTokenStatus(ctx)
+	case workflowtoken.FieldParentID:
+		return m.OldParentID(ctx)
+	case workflowtoken.FieldChildInstanceID:
+		return m.OldChildInstanceID(ctx)
+	case workflowtoken.FieldDueAt:
+		return m.OldDueAt(ctx)
+	case workflowtoken.FieldLocals:
+		return m.OldLocals(ctx)
+	}
+	return nil, fmt.Errorf("unknown WorkflowToken field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WorkflowTokenMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case workflowtoken.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case workflowtoken.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case workflowtoken.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case workflowtoken.FieldNodeID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNodeID(v)
+		return nil
+	case workflowtoken.FieldTokenStatus:
+		v, ok := value.(workflowtoken.TokenStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenStatus(v)
+		return nil
+	case workflowtoken.FieldParentID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentID(v)
+		return nil
+	case workflowtoken.FieldChildInstanceID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChildInstanceID(v)
+		return nil
+	case workflowtoken.FieldDueAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDueAt(v)
+		return nil
+	case workflowtoken.FieldLocals:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocals(v)
+		return nil
+	}
+	return fmt.Errorf("unknown WorkflowToken field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *WorkflowTokenMutation) AddedFields() []string {
+	var fields []string
+	if m.addparent_id != nil {
+		fields = append(fields, workflowtoken.FieldParentID)
+	}
+	if m.addchild_instance_id != nil {
+		fields = append(fields, workflowtoken.FieldChildInstanceID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *WorkflowTokenMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case workflowtoken.FieldParentID:
+		return m.AddedParentID()
+	case workflowtoken.FieldChildInstanceID:
+		return m.AddedChildInstanceID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WorkflowTokenMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case workflowtoken.FieldParentID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddParentID(v)
+		return nil
+	case workflowtoken.FieldChildInstanceID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddChildInstanceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown WorkflowToken numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *WorkflowTokenMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(workflowtoken.FieldCreatedAt) {
+		fields = append(fields, workflowtoken.FieldCreatedAt)
+	}
+	if m.FieldCleared(workflowtoken.FieldUpdatedAt) {
+		fields = append(fields, workflowtoken.FieldUpdatedAt)
+	}
+	if m.FieldCleared(workflowtoken.FieldDeletedAt) {
+		fields = append(fields, workflowtoken.FieldDeletedAt)
+	}
+	if m.FieldCleared(workflowtoken.FieldNodeID) {
+		fields = append(fields, workflowtoken.FieldNodeID)
+	}
+	if m.FieldCleared(workflowtoken.FieldTokenStatus) {
+		fields = append(fields, workflowtoken.FieldTokenStatus)
+	}
+	if m.FieldCleared(workflowtoken.FieldParentID) {
+		fields = append(fields, workflowtoken.FieldParentID)
+	}
+	if m.FieldCleared(workflowtoken.FieldChildInstanceID) {
+		fields = append(fields, workflowtoken.FieldChildInstanceID)
+	}
+	if m.FieldCleared(workflowtoken.FieldDueAt) {
+		fields = append(fields, workflowtoken.FieldDueAt)
+	}
+	if m.FieldCleared(workflowtoken.FieldLocals) {
+		fields = append(fields, workflowtoken.FieldLocals)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *WorkflowTokenMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *WorkflowTokenMutation) ClearField(name string) error {
+	switch name {
+	case workflowtoken.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case workflowtoken.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case workflowtoken.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case workflowtoken.FieldNodeID:
+		m.ClearNodeID()
+		return nil
+	case workflowtoken.FieldTokenStatus:
+		m.ClearTokenStatus()
+		return nil
+	case workflowtoken.FieldParentID:
+		m.ClearParentID()
+		return nil
+	case workflowtoken.FieldChildInstanceID:
+		m.ClearChildInstanceID()
+		return nil
+	case workflowtoken.FieldDueAt:
+		m.ClearDueAt()
+		return nil
+	case workflowtoken.FieldLocals:
+		m.ClearLocals()
+		return nil
+	}
+	return fmt.Errorf("unknown WorkflowToken nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *WorkflowTokenMutation) ResetField(name string) error {
+	switch name {
+	case workflowtoken.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case workflowtoken.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case workflowtoken.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case workflowtoken.FieldNodeID:
+		m.ResetNodeID()
+		return nil
+	case workflowtoken.FieldTokenStatus:
+		m.ResetTokenStatus()
+		return nil
+	case workflowtoken.FieldParentID:
+		m.ResetParentID()
+		return nil
+	case workflowtoken.FieldChildInstanceID:
+		m.ResetChildInstanceID()
+		return nil
+	case workflowtoken.FieldDueAt:
+		m.ResetDueAt()
+		return nil
+	case workflowtoken.FieldLocals:
+		m.ResetLocals()
+		return nil
+	}
+	return fmt.Errorf("unknown WorkflowToken field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *WorkflowTokenMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.instance != nil {
+		edges = append(edges, workflowtoken.EdgeInstance)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *WorkflowTokenMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case workflowtoken.EdgeInstance:
+		if id := m.instance; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *WorkflowTokenMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *WorkflowTokenMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *WorkflowTokenMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedinstance {
+		edges = append(edges, workflowtoken.EdgeInstance)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *WorkflowTokenMutation) EdgeCleared(name string) bool {
+	switch name {
+	case workflowtoken.EdgeInstance:
+		return m.clearedinstance
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *WorkflowTokenMutation) ClearEdge(name string) error {
+	switch name {
+	case workflowtoken.EdgeInstance:
+		m.ClearInstance()
+		return nil
+	}
+	return fmt.Errorf("unknown WorkflowToken unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *WorkflowTokenMutation) ResetEdge(name string) error {
+	switch name {
+	case workflowtoken.EdgeInstance:
+		m.ResetInstance()
+		return nil
+	}
+	return fmt.Errorf("unknown WorkflowToken edge %s", name)
 }

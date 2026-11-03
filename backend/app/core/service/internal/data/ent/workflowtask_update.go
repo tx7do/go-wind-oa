@@ -258,6 +258,153 @@ func (_u *WorkflowTaskUpdate) ClearTaskStatus() *WorkflowTaskUpdate {
 	return _u
 }
 
+// SetTokenID sets the "token_id" field.
+func (_u *WorkflowTaskUpdate) SetTokenID(v uint32) *WorkflowTaskUpdate {
+	_u.mutation.ResetTokenID()
+	_u.mutation.SetTokenID(v)
+	return _u
+}
+
+// SetNillableTokenID sets the "token_id" field if the given value is not nil.
+func (_u *WorkflowTaskUpdate) SetNillableTokenID(v *uint32) *WorkflowTaskUpdate {
+	if v != nil {
+		_u.SetTokenID(*v)
+	}
+	return _u
+}
+
+// AddTokenID adds value to the "token_id" field.
+func (_u *WorkflowTaskUpdate) AddTokenID(v int32) *WorkflowTaskUpdate {
+	_u.mutation.AddTokenID(v)
+	return _u
+}
+
+// ClearTokenID clears the value of the "token_id" field.
+func (_u *WorkflowTaskUpdate) ClearTokenID() *WorkflowTaskUpdate {
+	_u.mutation.ClearTokenID()
+	return _u
+}
+
+// SetTaskName sets the "task_name" field.
+func (_u *WorkflowTaskUpdate) SetTaskName(v string) *WorkflowTaskUpdate {
+	_u.mutation.SetTaskName(v)
+	return _u
+}
+
+// SetNillableTaskName sets the "task_name" field if the given value is not nil.
+func (_u *WorkflowTaskUpdate) SetNillableTaskName(v *string) *WorkflowTaskUpdate {
+	if v != nil {
+		_u.SetTaskName(*v)
+	}
+	return _u
+}
+
+// ClearTaskName clears the value of the "task_name" field.
+func (_u *WorkflowTaskUpdate) ClearTaskName() *WorkflowTaskUpdate {
+	_u.mutation.ClearTaskName()
+	return _u
+}
+
+// SetOutcome sets the "outcome" field.
+func (_u *WorkflowTaskUpdate) SetOutcome(v string) *WorkflowTaskUpdate {
+	_u.mutation.SetOutcome(v)
+	return _u
+}
+
+// SetNillableOutcome sets the "outcome" field if the given value is not nil.
+func (_u *WorkflowTaskUpdate) SetNillableOutcome(v *string) *WorkflowTaskUpdate {
+	if v != nil {
+		_u.SetOutcome(*v)
+	}
+	return _u
+}
+
+// ClearOutcome clears the value of the "outcome" field.
+func (_u *WorkflowTaskUpdate) ClearOutcome() *WorkflowTaskUpdate {
+	_u.mutation.ClearOutcome()
+	return _u
+}
+
+// SetComment sets the "comment" field.
+func (_u *WorkflowTaskUpdate) SetComment(v string) *WorkflowTaskUpdate {
+	_u.mutation.SetComment(v)
+	return _u
+}
+
+// SetNillableComment sets the "comment" field if the given value is not nil.
+func (_u *WorkflowTaskUpdate) SetNillableComment(v *string) *WorkflowTaskUpdate {
+	if v != nil {
+		_u.SetComment(*v)
+	}
+	return _u
+}
+
+// ClearComment clears the value of the "comment" field.
+func (_u *WorkflowTaskUpdate) ClearComment() *WorkflowTaskUpdate {
+	_u.mutation.ClearComment()
+	return _u
+}
+
+// SetDueAt sets the "due_at" field.
+func (_u *WorkflowTaskUpdate) SetDueAt(v time.Time) *WorkflowTaskUpdate {
+	_u.mutation.SetDueAt(v)
+	return _u
+}
+
+// SetNillableDueAt sets the "due_at" field if the given value is not nil.
+func (_u *WorkflowTaskUpdate) SetNillableDueAt(v *time.Time) *WorkflowTaskUpdate {
+	if v != nil {
+		_u.SetDueAt(*v)
+	}
+	return _u
+}
+
+// ClearDueAt clears the value of the "due_at" field.
+func (_u *WorkflowTaskUpdate) ClearDueAt() *WorkflowTaskUpdate {
+	_u.mutation.ClearDueAt()
+	return _u
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (_u *WorkflowTaskUpdate) SetEndedAt(v time.Time) *WorkflowTaskUpdate {
+	_u.mutation.SetEndedAt(v)
+	return _u
+}
+
+// SetNillableEndedAt sets the "ended_at" field if the given value is not nil.
+func (_u *WorkflowTaskUpdate) SetNillableEndedAt(v *time.Time) *WorkflowTaskUpdate {
+	if v != nil {
+		_u.SetEndedAt(*v)
+	}
+	return _u
+}
+
+// ClearEndedAt clears the value of the "ended_at" field.
+func (_u *WorkflowTaskUpdate) ClearEndedAt() *WorkflowTaskUpdate {
+	_u.mutation.ClearEndedAt()
+	return _u
+}
+
+// SetCandidateGroups sets the "candidate_groups" field.
+func (_u *WorkflowTaskUpdate) SetCandidateGroups(v string) *WorkflowTaskUpdate {
+	_u.mutation.SetCandidateGroups(v)
+	return _u
+}
+
+// SetNillableCandidateGroups sets the "candidate_groups" field if the given value is not nil.
+func (_u *WorkflowTaskUpdate) SetNillableCandidateGroups(v *string) *WorkflowTaskUpdate {
+	if v != nil {
+		_u.SetCandidateGroups(*v)
+	}
+	return _u
+}
+
+// ClearCandidateGroups clears the value of the "candidate_groups" field.
+func (_u *WorkflowTaskUpdate) ClearCandidateGroups() *WorkflowTaskUpdate {
+	_u.mutation.ClearCandidateGroups()
+	return _u
+}
+
 // SetInstanceID sets the "instance" edge to the WorkflowInstance entity by ID.
 func (_u *WorkflowTaskUpdate) SetInstanceID(id uint32) *WorkflowTaskUpdate {
 	_u.mutation.SetInstanceID(id)
@@ -420,6 +567,51 @@ func (_u *WorkflowTaskUpdate) sqlSave(ctx context.Context) (_node int, err error
 	}
 	if _u.mutation.TaskStatusCleared() {
 		_spec.ClearField(workflowtask.FieldTaskStatus, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.TokenID(); ok {
+		_spec.SetField(workflowtask.FieldTokenID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedTokenID(); ok {
+		_spec.AddField(workflowtask.FieldTokenID, field.TypeUint32, value)
+	}
+	if _u.mutation.TokenIDCleared() {
+		_spec.ClearField(workflowtask.FieldTokenID, field.TypeUint32)
+	}
+	if value, ok := _u.mutation.TaskName(); ok {
+		_spec.SetField(workflowtask.FieldTaskName, field.TypeString, value)
+	}
+	if _u.mutation.TaskNameCleared() {
+		_spec.ClearField(workflowtask.FieldTaskName, field.TypeString)
+	}
+	if value, ok := _u.mutation.Outcome(); ok {
+		_spec.SetField(workflowtask.FieldOutcome, field.TypeString, value)
+	}
+	if _u.mutation.OutcomeCleared() {
+		_spec.ClearField(workflowtask.FieldOutcome, field.TypeString)
+	}
+	if value, ok := _u.mutation.Comment(); ok {
+		_spec.SetField(workflowtask.FieldComment, field.TypeString, value)
+	}
+	if _u.mutation.CommentCleared() {
+		_spec.ClearField(workflowtask.FieldComment, field.TypeString)
+	}
+	if value, ok := _u.mutation.DueAt(); ok {
+		_spec.SetField(workflowtask.FieldDueAt, field.TypeTime, value)
+	}
+	if _u.mutation.DueAtCleared() {
+		_spec.ClearField(workflowtask.FieldDueAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.EndedAt(); ok {
+		_spec.SetField(workflowtask.FieldEndedAt, field.TypeTime, value)
+	}
+	if _u.mutation.EndedAtCleared() {
+		_spec.ClearField(workflowtask.FieldEndedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.CandidateGroups(); ok {
+		_spec.SetField(workflowtask.FieldCandidateGroups, field.TypeString, value)
+	}
+	if _u.mutation.CandidateGroupsCleared() {
+		_spec.ClearField(workflowtask.FieldCandidateGroups, field.TypeString)
 	}
 	if _u.mutation.InstanceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -700,6 +892,153 @@ func (_u *WorkflowTaskUpdateOne) ClearTaskStatus() *WorkflowTaskUpdateOne {
 	return _u
 }
 
+// SetTokenID sets the "token_id" field.
+func (_u *WorkflowTaskUpdateOne) SetTokenID(v uint32) *WorkflowTaskUpdateOne {
+	_u.mutation.ResetTokenID()
+	_u.mutation.SetTokenID(v)
+	return _u
+}
+
+// SetNillableTokenID sets the "token_id" field if the given value is not nil.
+func (_u *WorkflowTaskUpdateOne) SetNillableTokenID(v *uint32) *WorkflowTaskUpdateOne {
+	if v != nil {
+		_u.SetTokenID(*v)
+	}
+	return _u
+}
+
+// AddTokenID adds value to the "token_id" field.
+func (_u *WorkflowTaskUpdateOne) AddTokenID(v int32) *WorkflowTaskUpdateOne {
+	_u.mutation.AddTokenID(v)
+	return _u
+}
+
+// ClearTokenID clears the value of the "token_id" field.
+func (_u *WorkflowTaskUpdateOne) ClearTokenID() *WorkflowTaskUpdateOne {
+	_u.mutation.ClearTokenID()
+	return _u
+}
+
+// SetTaskName sets the "task_name" field.
+func (_u *WorkflowTaskUpdateOne) SetTaskName(v string) *WorkflowTaskUpdateOne {
+	_u.mutation.SetTaskName(v)
+	return _u
+}
+
+// SetNillableTaskName sets the "task_name" field if the given value is not nil.
+func (_u *WorkflowTaskUpdateOne) SetNillableTaskName(v *string) *WorkflowTaskUpdateOne {
+	if v != nil {
+		_u.SetTaskName(*v)
+	}
+	return _u
+}
+
+// ClearTaskName clears the value of the "task_name" field.
+func (_u *WorkflowTaskUpdateOne) ClearTaskName() *WorkflowTaskUpdateOne {
+	_u.mutation.ClearTaskName()
+	return _u
+}
+
+// SetOutcome sets the "outcome" field.
+func (_u *WorkflowTaskUpdateOne) SetOutcome(v string) *WorkflowTaskUpdateOne {
+	_u.mutation.SetOutcome(v)
+	return _u
+}
+
+// SetNillableOutcome sets the "outcome" field if the given value is not nil.
+func (_u *WorkflowTaskUpdateOne) SetNillableOutcome(v *string) *WorkflowTaskUpdateOne {
+	if v != nil {
+		_u.SetOutcome(*v)
+	}
+	return _u
+}
+
+// ClearOutcome clears the value of the "outcome" field.
+func (_u *WorkflowTaskUpdateOne) ClearOutcome() *WorkflowTaskUpdateOne {
+	_u.mutation.ClearOutcome()
+	return _u
+}
+
+// SetComment sets the "comment" field.
+func (_u *WorkflowTaskUpdateOne) SetComment(v string) *WorkflowTaskUpdateOne {
+	_u.mutation.SetComment(v)
+	return _u
+}
+
+// SetNillableComment sets the "comment" field if the given value is not nil.
+func (_u *WorkflowTaskUpdateOne) SetNillableComment(v *string) *WorkflowTaskUpdateOne {
+	if v != nil {
+		_u.SetComment(*v)
+	}
+	return _u
+}
+
+// ClearComment clears the value of the "comment" field.
+func (_u *WorkflowTaskUpdateOne) ClearComment() *WorkflowTaskUpdateOne {
+	_u.mutation.ClearComment()
+	return _u
+}
+
+// SetDueAt sets the "due_at" field.
+func (_u *WorkflowTaskUpdateOne) SetDueAt(v time.Time) *WorkflowTaskUpdateOne {
+	_u.mutation.SetDueAt(v)
+	return _u
+}
+
+// SetNillableDueAt sets the "due_at" field if the given value is not nil.
+func (_u *WorkflowTaskUpdateOne) SetNillableDueAt(v *time.Time) *WorkflowTaskUpdateOne {
+	if v != nil {
+		_u.SetDueAt(*v)
+	}
+	return _u
+}
+
+// ClearDueAt clears the value of the "due_at" field.
+func (_u *WorkflowTaskUpdateOne) ClearDueAt() *WorkflowTaskUpdateOne {
+	_u.mutation.ClearDueAt()
+	return _u
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (_u *WorkflowTaskUpdateOne) SetEndedAt(v time.Time) *WorkflowTaskUpdateOne {
+	_u.mutation.SetEndedAt(v)
+	return _u
+}
+
+// SetNillableEndedAt sets the "ended_at" field if the given value is not nil.
+func (_u *WorkflowTaskUpdateOne) SetNillableEndedAt(v *time.Time) *WorkflowTaskUpdateOne {
+	if v != nil {
+		_u.SetEndedAt(*v)
+	}
+	return _u
+}
+
+// ClearEndedAt clears the value of the "ended_at" field.
+func (_u *WorkflowTaskUpdateOne) ClearEndedAt() *WorkflowTaskUpdateOne {
+	_u.mutation.ClearEndedAt()
+	return _u
+}
+
+// SetCandidateGroups sets the "candidate_groups" field.
+func (_u *WorkflowTaskUpdateOne) SetCandidateGroups(v string) *WorkflowTaskUpdateOne {
+	_u.mutation.SetCandidateGroups(v)
+	return _u
+}
+
+// SetNillableCandidateGroups sets the "candidate_groups" field if the given value is not nil.
+func (_u *WorkflowTaskUpdateOne) SetNillableCandidateGroups(v *string) *WorkflowTaskUpdateOne {
+	if v != nil {
+		_u.SetCandidateGroups(*v)
+	}
+	return _u
+}
+
+// ClearCandidateGroups clears the value of the "candidate_groups" field.
+func (_u *WorkflowTaskUpdateOne) ClearCandidateGroups() *WorkflowTaskUpdateOne {
+	_u.mutation.ClearCandidateGroups()
+	return _u
+}
+
 // SetInstanceID sets the "instance" edge to the WorkflowInstance entity by ID.
 func (_u *WorkflowTaskUpdateOne) SetInstanceID(id uint32) *WorkflowTaskUpdateOne {
 	_u.mutation.SetInstanceID(id)
@@ -892,6 +1231,51 @@ func (_u *WorkflowTaskUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowTa
 	}
 	if _u.mutation.TaskStatusCleared() {
 		_spec.ClearField(workflowtask.FieldTaskStatus, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.TokenID(); ok {
+		_spec.SetField(workflowtask.FieldTokenID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedTokenID(); ok {
+		_spec.AddField(workflowtask.FieldTokenID, field.TypeUint32, value)
+	}
+	if _u.mutation.TokenIDCleared() {
+		_spec.ClearField(workflowtask.FieldTokenID, field.TypeUint32)
+	}
+	if value, ok := _u.mutation.TaskName(); ok {
+		_spec.SetField(workflowtask.FieldTaskName, field.TypeString, value)
+	}
+	if _u.mutation.TaskNameCleared() {
+		_spec.ClearField(workflowtask.FieldTaskName, field.TypeString)
+	}
+	if value, ok := _u.mutation.Outcome(); ok {
+		_spec.SetField(workflowtask.FieldOutcome, field.TypeString, value)
+	}
+	if _u.mutation.OutcomeCleared() {
+		_spec.ClearField(workflowtask.FieldOutcome, field.TypeString)
+	}
+	if value, ok := _u.mutation.Comment(); ok {
+		_spec.SetField(workflowtask.FieldComment, field.TypeString, value)
+	}
+	if _u.mutation.CommentCleared() {
+		_spec.ClearField(workflowtask.FieldComment, field.TypeString)
+	}
+	if value, ok := _u.mutation.DueAt(); ok {
+		_spec.SetField(workflowtask.FieldDueAt, field.TypeTime, value)
+	}
+	if _u.mutation.DueAtCleared() {
+		_spec.ClearField(workflowtask.FieldDueAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.EndedAt(); ok {
+		_spec.SetField(workflowtask.FieldEndedAt, field.TypeTime, value)
+	}
+	if _u.mutation.EndedAtCleared() {
+		_spec.ClearField(workflowtask.FieldEndedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.CandidateGroups(); ok {
+		_spec.SetField(workflowtask.FieldCandidateGroups, field.TypeString, value)
+	}
+	if _u.mutation.CandidateGroupsCleared() {
+		_spec.ClearField(workflowtask.FieldCandidateGroups, field.TypeString)
 	}
 	if _u.mutation.InstanceCleared() {
 		edge := &sqlgraph.EdgeSpec{

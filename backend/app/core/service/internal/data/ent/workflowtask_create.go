@@ -191,6 +191,104 @@ func (_c *WorkflowTaskCreate) SetNillableTaskStatus(v *workflowtask.TaskStatus) 
 	return _c
 }
 
+// SetTokenID sets the "token_id" field.
+func (_c *WorkflowTaskCreate) SetTokenID(v uint32) *WorkflowTaskCreate {
+	_c.mutation.SetTokenID(v)
+	return _c
+}
+
+// SetNillableTokenID sets the "token_id" field if the given value is not nil.
+func (_c *WorkflowTaskCreate) SetNillableTokenID(v *uint32) *WorkflowTaskCreate {
+	if v != nil {
+		_c.SetTokenID(*v)
+	}
+	return _c
+}
+
+// SetTaskName sets the "task_name" field.
+func (_c *WorkflowTaskCreate) SetTaskName(v string) *WorkflowTaskCreate {
+	_c.mutation.SetTaskName(v)
+	return _c
+}
+
+// SetNillableTaskName sets the "task_name" field if the given value is not nil.
+func (_c *WorkflowTaskCreate) SetNillableTaskName(v *string) *WorkflowTaskCreate {
+	if v != nil {
+		_c.SetTaskName(*v)
+	}
+	return _c
+}
+
+// SetOutcome sets the "outcome" field.
+func (_c *WorkflowTaskCreate) SetOutcome(v string) *WorkflowTaskCreate {
+	_c.mutation.SetOutcome(v)
+	return _c
+}
+
+// SetNillableOutcome sets the "outcome" field if the given value is not nil.
+func (_c *WorkflowTaskCreate) SetNillableOutcome(v *string) *WorkflowTaskCreate {
+	if v != nil {
+		_c.SetOutcome(*v)
+	}
+	return _c
+}
+
+// SetComment sets the "comment" field.
+func (_c *WorkflowTaskCreate) SetComment(v string) *WorkflowTaskCreate {
+	_c.mutation.SetComment(v)
+	return _c
+}
+
+// SetNillableComment sets the "comment" field if the given value is not nil.
+func (_c *WorkflowTaskCreate) SetNillableComment(v *string) *WorkflowTaskCreate {
+	if v != nil {
+		_c.SetComment(*v)
+	}
+	return _c
+}
+
+// SetDueAt sets the "due_at" field.
+func (_c *WorkflowTaskCreate) SetDueAt(v time.Time) *WorkflowTaskCreate {
+	_c.mutation.SetDueAt(v)
+	return _c
+}
+
+// SetNillableDueAt sets the "due_at" field if the given value is not nil.
+func (_c *WorkflowTaskCreate) SetNillableDueAt(v *time.Time) *WorkflowTaskCreate {
+	if v != nil {
+		_c.SetDueAt(*v)
+	}
+	return _c
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (_c *WorkflowTaskCreate) SetEndedAt(v time.Time) *WorkflowTaskCreate {
+	_c.mutation.SetEndedAt(v)
+	return _c
+}
+
+// SetNillableEndedAt sets the "ended_at" field if the given value is not nil.
+func (_c *WorkflowTaskCreate) SetNillableEndedAt(v *time.Time) *WorkflowTaskCreate {
+	if v != nil {
+		_c.SetEndedAt(*v)
+	}
+	return _c
+}
+
+// SetCandidateGroups sets the "candidate_groups" field.
+func (_c *WorkflowTaskCreate) SetCandidateGroups(v string) *WorkflowTaskCreate {
+	_c.mutation.SetCandidateGroups(v)
+	return _c
+}
+
+// SetNillableCandidateGroups sets the "candidate_groups" field if the given value is not nil.
+func (_c *WorkflowTaskCreate) SetNillableCandidateGroups(v *string) *WorkflowTaskCreate {
+	if v != nil {
+		_c.SetCandidateGroups(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *WorkflowTaskCreate) SetID(v uint32) *WorkflowTaskCreate {
 	_c.mutation.SetID(v)
@@ -356,6 +454,34 @@ func (_c *WorkflowTaskCreate) createSpec() (*WorkflowTask, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.TaskStatus(); ok {
 		_spec.SetField(workflowtask.FieldTaskStatus, field.TypeEnum, value)
 		_node.TaskStatus = &value
+	}
+	if value, ok := _c.mutation.TokenID(); ok {
+		_spec.SetField(workflowtask.FieldTokenID, field.TypeUint32, value)
+		_node.TokenID = &value
+	}
+	if value, ok := _c.mutation.TaskName(); ok {
+		_spec.SetField(workflowtask.FieldTaskName, field.TypeString, value)
+		_node.TaskName = &value
+	}
+	if value, ok := _c.mutation.Outcome(); ok {
+		_spec.SetField(workflowtask.FieldOutcome, field.TypeString, value)
+		_node.Outcome = &value
+	}
+	if value, ok := _c.mutation.Comment(); ok {
+		_spec.SetField(workflowtask.FieldComment, field.TypeString, value)
+		_node.Comment = &value
+	}
+	if value, ok := _c.mutation.DueAt(); ok {
+		_spec.SetField(workflowtask.FieldDueAt, field.TypeTime, value)
+		_node.DueAt = &value
+	}
+	if value, ok := _c.mutation.EndedAt(); ok {
+		_spec.SetField(workflowtask.FieldEndedAt, field.TypeTime, value)
+		_node.EndedAt = &value
+	}
+	if value, ok := _c.mutation.CandidateGroups(); ok {
+		_spec.SetField(workflowtask.FieldCandidateGroups, field.TypeString, value)
+		_node.CandidateGroups = &value
 	}
 	if nodes := _c.mutation.InstanceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -627,6 +753,138 @@ func (u *WorkflowTaskUpsert) UpdateTaskStatus() *WorkflowTaskUpsert {
 // ClearTaskStatus clears the value of the "task_status" field.
 func (u *WorkflowTaskUpsert) ClearTaskStatus() *WorkflowTaskUpsert {
 	u.SetNull(workflowtask.FieldTaskStatus)
+	return u
+}
+
+// SetTokenID sets the "token_id" field.
+func (u *WorkflowTaskUpsert) SetTokenID(v uint32) *WorkflowTaskUpsert {
+	u.Set(workflowtask.FieldTokenID, v)
+	return u
+}
+
+// UpdateTokenID sets the "token_id" field to the value that was provided on create.
+func (u *WorkflowTaskUpsert) UpdateTokenID() *WorkflowTaskUpsert {
+	u.SetExcluded(workflowtask.FieldTokenID)
+	return u
+}
+
+// AddTokenID adds v to the "token_id" field.
+func (u *WorkflowTaskUpsert) AddTokenID(v uint32) *WorkflowTaskUpsert {
+	u.Add(workflowtask.FieldTokenID, v)
+	return u
+}
+
+// ClearTokenID clears the value of the "token_id" field.
+func (u *WorkflowTaskUpsert) ClearTokenID() *WorkflowTaskUpsert {
+	u.SetNull(workflowtask.FieldTokenID)
+	return u
+}
+
+// SetTaskName sets the "task_name" field.
+func (u *WorkflowTaskUpsert) SetTaskName(v string) *WorkflowTaskUpsert {
+	u.Set(workflowtask.FieldTaskName, v)
+	return u
+}
+
+// UpdateTaskName sets the "task_name" field to the value that was provided on create.
+func (u *WorkflowTaskUpsert) UpdateTaskName() *WorkflowTaskUpsert {
+	u.SetExcluded(workflowtask.FieldTaskName)
+	return u
+}
+
+// ClearTaskName clears the value of the "task_name" field.
+func (u *WorkflowTaskUpsert) ClearTaskName() *WorkflowTaskUpsert {
+	u.SetNull(workflowtask.FieldTaskName)
+	return u
+}
+
+// SetOutcome sets the "outcome" field.
+func (u *WorkflowTaskUpsert) SetOutcome(v string) *WorkflowTaskUpsert {
+	u.Set(workflowtask.FieldOutcome, v)
+	return u
+}
+
+// UpdateOutcome sets the "outcome" field to the value that was provided on create.
+func (u *WorkflowTaskUpsert) UpdateOutcome() *WorkflowTaskUpsert {
+	u.SetExcluded(workflowtask.FieldOutcome)
+	return u
+}
+
+// ClearOutcome clears the value of the "outcome" field.
+func (u *WorkflowTaskUpsert) ClearOutcome() *WorkflowTaskUpsert {
+	u.SetNull(workflowtask.FieldOutcome)
+	return u
+}
+
+// SetComment sets the "comment" field.
+func (u *WorkflowTaskUpsert) SetComment(v string) *WorkflowTaskUpsert {
+	u.Set(workflowtask.FieldComment, v)
+	return u
+}
+
+// UpdateComment sets the "comment" field to the value that was provided on create.
+func (u *WorkflowTaskUpsert) UpdateComment() *WorkflowTaskUpsert {
+	u.SetExcluded(workflowtask.FieldComment)
+	return u
+}
+
+// ClearComment clears the value of the "comment" field.
+func (u *WorkflowTaskUpsert) ClearComment() *WorkflowTaskUpsert {
+	u.SetNull(workflowtask.FieldComment)
+	return u
+}
+
+// SetDueAt sets the "due_at" field.
+func (u *WorkflowTaskUpsert) SetDueAt(v time.Time) *WorkflowTaskUpsert {
+	u.Set(workflowtask.FieldDueAt, v)
+	return u
+}
+
+// UpdateDueAt sets the "due_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsert) UpdateDueAt() *WorkflowTaskUpsert {
+	u.SetExcluded(workflowtask.FieldDueAt)
+	return u
+}
+
+// ClearDueAt clears the value of the "due_at" field.
+func (u *WorkflowTaskUpsert) ClearDueAt() *WorkflowTaskUpsert {
+	u.SetNull(workflowtask.FieldDueAt)
+	return u
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (u *WorkflowTaskUpsert) SetEndedAt(v time.Time) *WorkflowTaskUpsert {
+	u.Set(workflowtask.FieldEndedAt, v)
+	return u
+}
+
+// UpdateEndedAt sets the "ended_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsert) UpdateEndedAt() *WorkflowTaskUpsert {
+	u.SetExcluded(workflowtask.FieldEndedAt)
+	return u
+}
+
+// ClearEndedAt clears the value of the "ended_at" field.
+func (u *WorkflowTaskUpsert) ClearEndedAt() *WorkflowTaskUpsert {
+	u.SetNull(workflowtask.FieldEndedAt)
+	return u
+}
+
+// SetCandidateGroups sets the "candidate_groups" field.
+func (u *WorkflowTaskUpsert) SetCandidateGroups(v string) *WorkflowTaskUpsert {
+	u.Set(workflowtask.FieldCandidateGroups, v)
+	return u
+}
+
+// UpdateCandidateGroups sets the "candidate_groups" field to the value that was provided on create.
+func (u *WorkflowTaskUpsert) UpdateCandidateGroups() *WorkflowTaskUpsert {
+	u.SetExcluded(workflowtask.FieldCandidateGroups)
+	return u
+}
+
+// ClearCandidateGroups clears the value of the "candidate_groups" field.
+func (u *WorkflowTaskUpsert) ClearCandidateGroups() *WorkflowTaskUpsert {
+	u.SetNull(workflowtask.FieldCandidateGroups)
 	return u
 }
 
@@ -919,6 +1177,160 @@ func (u *WorkflowTaskUpsertOne) UpdateTaskStatus() *WorkflowTaskUpsertOne {
 func (u *WorkflowTaskUpsertOne) ClearTaskStatus() *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.ClearTaskStatus()
+	})
+}
+
+// SetTokenID sets the "token_id" field.
+func (u *WorkflowTaskUpsertOne) SetTokenID(v uint32) *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetTokenID(v)
+	})
+}
+
+// AddTokenID adds v to the "token_id" field.
+func (u *WorkflowTaskUpsertOne) AddTokenID(v uint32) *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.AddTokenID(v)
+	})
+}
+
+// UpdateTokenID sets the "token_id" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertOne) UpdateTokenID() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateTokenID()
+	})
+}
+
+// ClearTokenID clears the value of the "token_id" field.
+func (u *WorkflowTaskUpsertOne) ClearTokenID() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearTokenID()
+	})
+}
+
+// SetTaskName sets the "task_name" field.
+func (u *WorkflowTaskUpsertOne) SetTaskName(v string) *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetTaskName(v)
+	})
+}
+
+// UpdateTaskName sets the "task_name" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertOne) UpdateTaskName() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateTaskName()
+	})
+}
+
+// ClearTaskName clears the value of the "task_name" field.
+func (u *WorkflowTaskUpsertOne) ClearTaskName() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearTaskName()
+	})
+}
+
+// SetOutcome sets the "outcome" field.
+func (u *WorkflowTaskUpsertOne) SetOutcome(v string) *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetOutcome(v)
+	})
+}
+
+// UpdateOutcome sets the "outcome" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertOne) UpdateOutcome() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateOutcome()
+	})
+}
+
+// ClearOutcome clears the value of the "outcome" field.
+func (u *WorkflowTaskUpsertOne) ClearOutcome() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearOutcome()
+	})
+}
+
+// SetComment sets the "comment" field.
+func (u *WorkflowTaskUpsertOne) SetComment(v string) *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetComment(v)
+	})
+}
+
+// UpdateComment sets the "comment" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertOne) UpdateComment() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateComment()
+	})
+}
+
+// ClearComment clears the value of the "comment" field.
+func (u *WorkflowTaskUpsertOne) ClearComment() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearComment()
+	})
+}
+
+// SetDueAt sets the "due_at" field.
+func (u *WorkflowTaskUpsertOne) SetDueAt(v time.Time) *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetDueAt(v)
+	})
+}
+
+// UpdateDueAt sets the "due_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertOne) UpdateDueAt() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateDueAt()
+	})
+}
+
+// ClearDueAt clears the value of the "due_at" field.
+func (u *WorkflowTaskUpsertOne) ClearDueAt() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearDueAt()
+	})
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (u *WorkflowTaskUpsertOne) SetEndedAt(v time.Time) *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetEndedAt(v)
+	})
+}
+
+// UpdateEndedAt sets the "ended_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertOne) UpdateEndedAt() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateEndedAt()
+	})
+}
+
+// ClearEndedAt clears the value of the "ended_at" field.
+func (u *WorkflowTaskUpsertOne) ClearEndedAt() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearEndedAt()
+	})
+}
+
+// SetCandidateGroups sets the "candidate_groups" field.
+func (u *WorkflowTaskUpsertOne) SetCandidateGroups(v string) *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetCandidateGroups(v)
+	})
+}
+
+// UpdateCandidateGroups sets the "candidate_groups" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertOne) UpdateCandidateGroups() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateCandidateGroups()
+	})
+}
+
+// ClearCandidateGroups clears the value of the "candidate_groups" field.
+func (u *WorkflowTaskUpsertOne) ClearCandidateGroups() *WorkflowTaskUpsertOne {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearCandidateGroups()
 	})
 }
 
@@ -1377,6 +1789,160 @@ func (u *WorkflowTaskUpsertBulk) UpdateTaskStatus() *WorkflowTaskUpsertBulk {
 func (u *WorkflowTaskUpsertBulk) ClearTaskStatus() *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.ClearTaskStatus()
+	})
+}
+
+// SetTokenID sets the "token_id" field.
+func (u *WorkflowTaskUpsertBulk) SetTokenID(v uint32) *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetTokenID(v)
+	})
+}
+
+// AddTokenID adds v to the "token_id" field.
+func (u *WorkflowTaskUpsertBulk) AddTokenID(v uint32) *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.AddTokenID(v)
+	})
+}
+
+// UpdateTokenID sets the "token_id" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertBulk) UpdateTokenID() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateTokenID()
+	})
+}
+
+// ClearTokenID clears the value of the "token_id" field.
+func (u *WorkflowTaskUpsertBulk) ClearTokenID() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearTokenID()
+	})
+}
+
+// SetTaskName sets the "task_name" field.
+func (u *WorkflowTaskUpsertBulk) SetTaskName(v string) *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetTaskName(v)
+	})
+}
+
+// UpdateTaskName sets the "task_name" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertBulk) UpdateTaskName() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateTaskName()
+	})
+}
+
+// ClearTaskName clears the value of the "task_name" field.
+func (u *WorkflowTaskUpsertBulk) ClearTaskName() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearTaskName()
+	})
+}
+
+// SetOutcome sets the "outcome" field.
+func (u *WorkflowTaskUpsertBulk) SetOutcome(v string) *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetOutcome(v)
+	})
+}
+
+// UpdateOutcome sets the "outcome" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertBulk) UpdateOutcome() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateOutcome()
+	})
+}
+
+// ClearOutcome clears the value of the "outcome" field.
+func (u *WorkflowTaskUpsertBulk) ClearOutcome() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearOutcome()
+	})
+}
+
+// SetComment sets the "comment" field.
+func (u *WorkflowTaskUpsertBulk) SetComment(v string) *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetComment(v)
+	})
+}
+
+// UpdateComment sets the "comment" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertBulk) UpdateComment() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateComment()
+	})
+}
+
+// ClearComment clears the value of the "comment" field.
+func (u *WorkflowTaskUpsertBulk) ClearComment() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearComment()
+	})
+}
+
+// SetDueAt sets the "due_at" field.
+func (u *WorkflowTaskUpsertBulk) SetDueAt(v time.Time) *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetDueAt(v)
+	})
+}
+
+// UpdateDueAt sets the "due_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertBulk) UpdateDueAt() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateDueAt()
+	})
+}
+
+// ClearDueAt clears the value of the "due_at" field.
+func (u *WorkflowTaskUpsertBulk) ClearDueAt() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearDueAt()
+	})
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (u *WorkflowTaskUpsertBulk) SetEndedAt(v time.Time) *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetEndedAt(v)
+	})
+}
+
+// UpdateEndedAt sets the "ended_at" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertBulk) UpdateEndedAt() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateEndedAt()
+	})
+}
+
+// ClearEndedAt clears the value of the "ended_at" field.
+func (u *WorkflowTaskUpsertBulk) ClearEndedAt() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearEndedAt()
+	})
+}
+
+// SetCandidateGroups sets the "candidate_groups" field.
+func (u *WorkflowTaskUpsertBulk) SetCandidateGroups(v string) *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.SetCandidateGroups(v)
+	})
+}
+
+// UpdateCandidateGroups sets the "candidate_groups" field to the value that was provided on create.
+func (u *WorkflowTaskUpsertBulk) UpdateCandidateGroups() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.UpdateCandidateGroups()
+	})
+}
+
+// ClearCandidateGroups clears the value of the "candidate_groups" field.
+func (u *WorkflowTaskUpsertBulk) ClearCandidateGroups() *WorkflowTaskUpsertBulk {
+	return u.Update(func(s *WorkflowTaskUpsert) {
+		s.ClearCandidateGroups()
 	})
 }
 

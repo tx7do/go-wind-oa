@@ -112,17 +112,18 @@
 
 协同办公域各业务表均通过 `mixin.TenantID[uint32]{}` 注入 `tenant_id` 列并附加 `rule.TenantPrivacy` 策略。该策略由 `entmiddleware.Server` 注入的 `UserViewer.TenantID()` 驱动，自动在所有查询/写入上叠加 `tenant_id = viewer.tenant` 谓词 —— **代码层无需手写 tenant 过滤**。
 
-### 4.1 工作流引擎表（7 张）
+### 4.1 工作流引擎表（6 张）
 
 | 表 | 说明 | 关键字段 |
 |---|---|---|
 | `WorkflowDefinition` | 流程模板：节点图配置 + 表单 schema | `node_config`(any), `form_schema`(any), `code`, `version`, `definition_status` |
-| `WorkflowInstance` | 一次申请实例 | `form_data`(any), `instance_status`（PENDING/APPROVED/REJECTED/WITHDRAWN/**SUSPENDED**）, `business_type`, `business_id`, `definition_id` |
-| `WorkflowTask` | 节点上对指派审批人产生的待办 | `node_id`(string，图节点 ID), `assignee_user_id`, `task_status`（PENDING/APPROVED/REJECTED/CANCELLED）, `reminded_at` / `escalated_at`（超时催办/升级幂等戳） |
+| `WorkflowInstance` | 一次申请实例 | `form_data`(any), `instance_status`（PENDING/APPROVED/REJECTED/WITHDRAWN；SUSPENDED 为展示层推断值，见 §5.2）, `business_type`, `business_id`, `definition_id`, `definition_key` / `definition_version`（引擎版本锁定）, `parent_instance_id` / `parent_token_id`（子流程回链）, `ended_at` |
+| `WorkflowTask` | 节点上对指派审批人产生的待办 | `node_id`(string，图节点 ID), `assignee_user_id`, `task_status`（PENDING/APPROVED/REJECTED/CANCELLED）, `token_id`（令牌分组，会签/或签收敛用）, `outcome` / `comment` / `ended_at`, `due_at`, `candidate_groups`, `reminded_at` / `escalated_at`（超时催办/升级幂等戳） |
+| `WorkflowToken` | go-wind-flow 执行令牌（引擎游标，运行时状态） | `instance_id`, `node_id`, `token_status`（RUNNING/WAITING/ENDED）, `parent_id`（fork 子令牌回链）, `child_instance_id`（阻塞于子流程时的子实例）, `due_at`, `locals`(any，分支隔离局部变量) |
 | `WorkflowLog` | append-only 审计日志 | `node_id`, `log_action`（SUBMIT/APPROVE/REJECT/FORWARD/WITHDRAW）, `comment` |
-| `WorkflowInstanceJoin` | 并行汇聚（JOIN）到达计数 | `join_node_id`, `arrived_count` |
-| `WorkflowInstanceParentLink` | 子流程父子关系 | 父实例 ID + 父图中的 SUBPROCESS 节点 ID + 子实例 ID |
 | `WorkflowDelegation` | 审批委托（一委托人一代理人） | `delegator_user_id`, `delegate_user_id` |
+
+并行汇聚计数由引擎令牌的 WAITING 语义承担（不再有 join 计数表），子流程父子关系由实例行的 `parent_instance_id` / `parent_token_id` 承担（不再有 parent_link 表）。
 
 Mixin 均为 AutoIncrementId / TimeAt / OperatorID / TenantID（部分含 Remark）。此外 core-service `ent/schema/` 还含三张 CMS 保留的 internal_message schema，供 `InternalMessageService` 落库。
 
@@ -134,9 +135,11 @@ Mixin 均为 AutoIncrementId / TimeAt / OperatorID / TenantID（部分含 Remark
 
 ---
 
-## 5. 工作流引擎（有向图模型，core `workflow_service.go` + `workflow_graph.go`）
+## 5. 工作流引擎（go-wind-flow 库 + core 适配层）
 
-`WorkflowService` 实现 kratos 生成的 `WorkflowServiceServer`（gRPC，`oa.service.v1`），注入仓库 + `*InternalMessageService`（同进程直接调用，非跨进程 gRPC 客户端）。引擎为**有向图模型**：流程定义是一张节点图（支持条件分支、并行分裂/汇聚、子流程嵌套，允许回退边），由 **walker** 从 START 沿出边推进。walker 带步数守卫（`walkerStepLimit`，防回退环路失控，不靠 visited 拒环），越限即 fail-closed 驳回实例。
+引擎内核由开源库 **github.com/tx7do/go-wind-flow**（`flow` 包，Token 状态机 + 持久化驱动）承担：图遍历（walker）、网关/子流程/定时器语义、条件表达式（`contrib/exprlang`，expr-lang 沙箱）、定义导入（`format/windjson` 直接读取存量 `node_config`）。core 侧只做适配（`workflow_engine.go` 装配 + `internal/data/flow_store.go` 存储适配）：`flow.Store` SPI 映射到 `oa_workflow_*` 六张表（ID 双向换算、状态映射、POSITION 审批人 id/code 字段修正），`flow.IdentityProvider` 对接寻人（LEADER/POSITION）与委托叠加，`flow.Listener` 承接申请人剔除后的自审自动通过、站内信通知与业务终结回调。
+
+`WorkflowService`（`workflow_service.go`）实现 kratos 生成的 `WorkflowServiceServer`（gRPC，`oa.service.v1`），RPC 契约不变：定义/委托 CRUD 与三类列表直读仓储；状态迁移（SubmitApply/AuditTask/WithdrawApply）经 `FlowStore.WithTx` 包事务后调引擎入口。定义是一张节点图（支持条件分支、并行分裂/汇聚、子流程嵌套），引擎从 START 推进令牌至阻塞点，步数越限 fail-closed。
 
 ### 5.1 节点图配置格式（node_config）
 
@@ -173,9 +176,8 @@ Mixin 均为 AutoIncrementId / TimeAt / OperatorID / TenantID（部分含 Remark
 | `START` / `END` | 流程起点与终点；到达 END 即实例 APPROVED |
 | `TASK` | 审批节点（会签/或签，见上） |
 | `EXCLUSIVE_GATEWAY` | 条件分支：按出边上的条件表达式（`expr-lang` 沙箱求值，求值环境为申请表单数据）选一条走；均不中走 `default` 边；无 default 且全不中 → fail-closed 驳回 |
-| `PARALLEL_GATEWAY_FORK` | 并行分裂：同时激活全部出边，各支独立推进 |
-| `PARALLEL_GATEWAY_JOIN` | 并行汇聚：按 `WorkflowInstanceJoin` 表对到达计数，满入度才合并继续，未满则停在该节点 |
-| `SUBPROCESS` | 子流程：挂接另一条定义（`code:version`），父实例转 **SUSPENDED**，父子关系落 `WorkflowInstanceParentLink`；子实例到终态后父实例恢复 PENDING 并从该节点出边继续 |
+| `PARALLEL_GATEWAY_FORK` / `PARALLEL_GATEWAY_JOIN` | 并行分裂/汇聚合用 `PARALLEL_GATEWAY` 类型（按出入度区分）：分叉按出边各生成分支令牌；汇合处每支令牌 WAITING 等待，聚齐入度数后合并继续 |
+| `SUBPROCESS` | 子流程：挂接另一条定义（`code:version`），父令牌停在 callActivity、父实例保持 PENDING（展示层按「挂有子流程令牌」推断为 **SUSPENDED** 返回给客户端），子实例行记录 `parent_instance_id`/`parent_token_id`；子实例 APPROVED 后父令牌从该节点出边继续，子流程驳回则父实例整体驳回（fail-closed） |
 
 ### 5.3 审批动作与守卫（AuditTask）
 
@@ -191,7 +193,7 @@ Mixin 均为 AutoIncrementId / TimeAt / OperatorID / TenantID（部分含 Remark
 ### 5.4 审批委托与超时升级
 
 - **委托**（`WorkflowDelegation`）：一委托人对应一名代理人，任务分派时若委托人生效则自动改派给代理人。
-- **超时催办与升级**（`WorkflowTimeoutScheduler`，asynq periodic 每小时）：扫描全部 PENDING 待办，按任务年龄分级——催办阈值（默认 24h）发催办站内信；升级阈值（默认 72h）自动转办给审批人的组织负责人并通知双方。`reminded_at` / `escalated_at` 非空即跳过，各只执行一次（升级转办后不沿组织树连环上转）。
+- **超时催办与升级**（`WorkflowTimeoutScheduler`，asynq periodic 每小时）：扫描全部 PENDING 待办，按任务年龄分级——催办阈值（默认 24h）发催办站内信；升级阈值（默认 72h）自动转办给审批人的组织负责人并通知双方。`reminded_at` / `escalated_at` 非空即跳过，各只执行一次（升级转办后不沿组织树连环上转）。同一时点顺带驱动 go-wind-flow 的两条宿主 cron 链路（`ResumeDueTimers` 定时器令牌续跑 + `CheckDueTasks` 到期任务广播/自动动作；OA 定义格式不产定时器节点，常态为空扫描，为 BPMN 导入等未来形态保留）。
 
 ### 5.7 业务事件挂钩
 
@@ -350,7 +352,7 @@ Composables（`src/api/composables/`）将上述 client 封装为 Vue Query hook
 
 ## 12. 已知边界与后续工作
 
-- **状态机推进路径与建单链已包事务，定义管理仍无事务**：`SubmitApply` 建实例 + 写 SUBMIT 日志、以及 `launchFromNode`/`advanceInstance`/`handleReject`/`handleApprove`/`handleForward`/`WithdrawApply` 的跨 repo 多步写，均经 `WorkflowInstanceRepo.Txn` 包入单一 `ent.Tx`，原子提交/回滚。`SubmitApply` 后续的首节点启动走 `launchFromNode` 自身事务（不嵌套）。仍无事务的：`WorkflowDefinition` CRUD（定义管理，单表操作）、单步写路径。
+- **引擎入口全量包事务，定义管理仍无事务**：`SubmitApply` / `AuditTask`（通过/驳回/转办/加签）/ `WithdrawApply` 均经 `FlowStore.WithTx` 把引擎的整段状态迁移（实例/令牌/任务/日志落库）包入单一 `ent.Tx`，原子提交/回滚——中途失败不再残留半死实例（旧引擎 walker 在事务外推进，存在孤儿 PENDING 实例的暴露面）。仍无事务的：`WorkflowDefinition` CRUD（定义管理，单表操作）、列表查询。
 - **请假额度无过期/结转机制**：半天粒度已支持；天数计算已扣除休息日（委托 `AttendanceService.isRestDay`，节假日表优先否则按周末，与考勤结算一致）。但额度按年度 total/used 无过期清理、无跨年结转。
 - **工作流通知无 SSE 实时投递，admin 端有轮询兜底**。经 §5.8 所述，工作流引擎经 core 进程内 `SendMessage` 落库的通知不会触发 SSE（SSE publisher 只存在于 admin-service 且只对 admin 自身 HTTP `SendMessage` 路径生效）。各端实际表现：
   - **移动端**：app-service 的 `internal_message_service.go` 无 SSE publisher，也无 `SendMessage`；通知页经 REST `GET /app/v1/internal-message/my-messages` 轮询拉取收件箱。core 落库的工作流通知因此**延迟可见、不丢失**（取决于下次轮询时机），但无实时推送。

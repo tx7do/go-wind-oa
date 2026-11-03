@@ -183,14 +183,11 @@ type WorkflowDelegation func(*sql.Selector)
 // WorkflowInstance is the predicate function for workflowinstance builders.
 type WorkflowInstance func(*sql.Selector)
 
-// WorkflowInstanceJoin is the predicate function for workflowinstancejoin builders.
-type WorkflowInstanceJoin func(*sql.Selector)
-
-// WorkflowInstanceParentLink is the predicate function for workflowinstanceparentlink builders.
-type WorkflowInstanceParentLink func(*sql.Selector)
-
 // WorkflowLog is the predicate function for workflowlog builders.
 type WorkflowLog func(*sql.Selector)
 
 // WorkflowTask is the predicate function for workflowtask builders.
 type WorkflowTask func(*sql.Selector)
+
+// WorkflowToken is the predicate function for workflowtoken builders.
+type WorkflowToken func(*sql.Selector)

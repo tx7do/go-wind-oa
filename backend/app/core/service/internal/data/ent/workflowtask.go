@@ -43,6 +43,20 @@ type WorkflowTask struct {
 	EscalatedAt *time.Time `json:"escalated_at,omitempty"`
 	// 任务状态
 	TaskStatus *workflowtask.TaskStatus `json:"task_status,omitempty"`
+	// 执行令牌ID（go-wind-flow TokenID，会签/或签兄弟任务分组）
+	TokenID *uint32 `json:"token_id,omitempty"`
+	// 节点名称（go-wind-flow Task.Name）
+	TaskName *string `json:"task_name,omitempty"`
+	// 办结结果（APPROVE/REJECT）
+	Outcome *string `json:"outcome,omitempty"`
+	// 办结意见
+	Comment *string `json:"comment,omitempty"`
+	// 到期时刻（节点定时器，go-wind-flow Timer）
+	DueAt *time.Time `json:"due_at,omitempty"`
+	// 办结时间
+	EndedAt *time.Time `json:"ended_at,omitempty"`
+	// 候选组（JSON 字符串数组，待认领任务）
+	CandidateGroups *string `json:"candidate_groups,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WorkflowTaskQuery when eager-loading is set.
 	Edges        WorkflowTaskEdges `json:"edges"`
@@ -75,11 +89,11 @@ func (*WorkflowTask) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case workflowtask.FieldID, workflowtask.FieldCreatedBy, workflowtask.FieldUpdatedBy, workflowtask.FieldDeletedBy, workflowtask.FieldTenantID, workflowtask.FieldAssigneeUserID:
+		case workflowtask.FieldID, workflowtask.FieldCreatedBy, workflowtask.FieldUpdatedBy, workflowtask.FieldDeletedBy, workflowtask.FieldTenantID, workflowtask.FieldAssigneeUserID, workflowtask.FieldTokenID:
 			values[i] = new(sql.NullInt64)
-		case workflowtask.FieldNodeID, workflowtask.FieldTaskStatus:
+		case workflowtask.FieldNodeID, workflowtask.FieldTaskStatus, workflowtask.FieldTaskName, workflowtask.FieldOutcome, workflowtask.FieldComment, workflowtask.FieldCandidateGroups:
 			values[i] = new(sql.NullString)
-		case workflowtask.FieldCreatedAt, workflowtask.FieldUpdatedAt, workflowtask.FieldDeletedAt, workflowtask.FieldRemindedAt, workflowtask.FieldEscalatedAt:
+		case workflowtask.FieldCreatedAt, workflowtask.FieldUpdatedAt, workflowtask.FieldDeletedAt, workflowtask.FieldRemindedAt, workflowtask.FieldEscalatedAt, workflowtask.FieldDueAt, workflowtask.FieldEndedAt:
 			values[i] = new(sql.NullTime)
 		case workflowtask.ForeignKeys[0]: // instance_id
 			values[i] = new(sql.NullInt64)
@@ -188,6 +202,55 @@ func (_m *WorkflowTask) assignValues(columns []string, values []any) error {
 				_m.TaskStatus = new(workflowtask.TaskStatus)
 				*_m.TaskStatus = workflowtask.TaskStatus(value.String)
 			}
+		case workflowtask.FieldTokenID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_id", values[i])
+			} else if value.Valid {
+				_m.TokenID = new(uint32)
+				*_m.TokenID = uint32(value.Int64)
+			}
+		case workflowtask.FieldTaskName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field task_name", values[i])
+			} else if value.Valid {
+				_m.TaskName = new(string)
+				*_m.TaskName = value.String
+			}
+		case workflowtask.FieldOutcome:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field outcome", values[i])
+			} else if value.Valid {
+				_m.Outcome = new(string)
+				*_m.Outcome = value.String
+			}
+		case workflowtask.FieldComment:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field comment", values[i])
+			} else if value.Valid {
+				_m.Comment = new(string)
+				*_m.Comment = value.String
+			}
+		case workflowtask.FieldDueAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field due_at", values[i])
+			} else if value.Valid {
+				_m.DueAt = new(time.Time)
+				*_m.DueAt = value.Time
+			}
+		case workflowtask.FieldEndedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field ended_at", values[i])
+			} else if value.Valid {
+				_m.EndedAt = new(time.Time)
+				*_m.EndedAt = value.Time
+			}
+		case workflowtask.FieldCandidateGroups:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field candidate_groups", values[i])
+			} else if value.Valid {
+				_m.CandidateGroups = new(string)
+				*_m.CandidateGroups = value.String
+			}
 		case workflowtask.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field instance_id", value)
@@ -294,6 +357,41 @@ func (_m *WorkflowTask) String() string {
 	if v := _m.TaskStatus; v != nil {
 		builder.WriteString("task_status=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenID; v != nil {
+		builder.WriteString("token_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TaskName; v != nil {
+		builder.WriteString("task_name=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Outcome; v != nil {
+		builder.WriteString("outcome=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Comment; v != nil {
+		builder.WriteString("comment=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.DueAt; v != nil {
+		builder.WriteString("due_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.EndedAt; v != nil {
+		builder.WriteString("ended_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.CandidateGroups; v != nil {
+		builder.WriteString("candidate_groups=")
+		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

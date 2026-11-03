@@ -5,8 +5,10 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"github.com/tx7do/go-utils/trans"
+	"github.com/tx7do/kratos-bootstrap/bootstrap"
+
+	"github.com/tx7do/go-wind-flow/flow"
 
 	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
 	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
@@ -24,6 +26,11 @@ import (
 // 催办/升级各执行一次：任务的 reminded_at / escalated_at 非空即跳过，
 // 避免重复催办、以及升级转办后按新审批人沿组织树连环上转。
 // 调度由 asynq 周期任务保证多实例下每小时只执行一次。
+//
+// 同一时点顺带驱动 go-wind-flow 引擎的两条宿主 cron 链路（OA 定义格式不
+// 产定时器节点，常态为空扫描，为 BPMN 导入等未来定义形态保留）：
+//   - ResumeDueTimers：到期的定时器/边界令牌续跑；
+//   - CheckDueTasks：到期任务广播与 auto_approve/auto_reject 动作。
 type WorkflowTimeoutScheduler struct {
 	log                 *log.Helper
 	taskRepo            *data.WorkflowTaskRepo
@@ -31,6 +38,8 @@ type WorkflowTimeoutScheduler struct {
 	resolverRepo        *data.WorkflowResolverRepo
 	logRepo             *data.WorkflowLogRepo
 	notificationService *InternalMessageService
+	flowStore           *data.FlowStore
+	engine              *flow.Engine
 }
 
 func NewWorkflowTimeoutScheduler(
@@ -40,6 +49,8 @@ func NewWorkflowTimeoutScheduler(
 	resolverRepo *data.WorkflowResolverRepo,
 	logRepo *data.WorkflowLogRepo,
 	notificationService *InternalMessageService,
+	flowStore *data.FlowStore,
+	engine *flow.Engine,
 ) *WorkflowTimeoutScheduler {
 	return &WorkflowTimeoutScheduler{
 		log:                 ctx.NewLoggerHelper("workflow-timeout/scheduler/core-service"),
@@ -48,6 +59,8 @@ func NewWorkflowTimeoutScheduler(
 		resolverRepo:        resolverRepo,
 		logRepo:             logRepo,
 		notificationService: notificationService,
+		flowStore:           flowStore,
+		engine:              engine,
 	}
 }
 
@@ -90,6 +103,25 @@ func (s *WorkflowTimeoutScheduler) scanTimeouts(now time.Time) {
 		} else if age >= reminderThreshold && task.RemindedAt == nil {
 			s.remindTask(ctx, task)
 		}
+	}
+
+	s.driveEngineTimers(ctx, now)
+}
+
+// driveEngineTimers 驱动 go-wind-flow 引擎的定时器链路（令牌续跑 + 任务到期广播）。
+// 扫描失败仅记日志，不影响催办/升级结果。
+func (s *WorkflowTimeoutScheduler) driveEngineTimers(ctx context.Context, now time.Time) {
+	err := s.flowStore.WithTx(ctx, func(ctx context.Context) error {
+		if _, err := s.engine.ResumeDueTimers(ctx, now); err != nil {
+			return err
+		}
+		if _, err := s.engine.CheckDueTasks(ctx, now); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		s.log.Errorf("drive engine timers failed: %s", err.Error())
 	}
 }
 

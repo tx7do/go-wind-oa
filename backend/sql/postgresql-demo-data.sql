@@ -34,8 +34,7 @@ TRUNCATE TABLE public.sys_tenants,
                public.oa_seal_application,
                public.oa_workflow_definition,
                public.oa_workflow_instance,
-               public.oa_workflow_instance_join,
-               public.oa_workflow_instance_parent_link,
+               public.oa_workflow_token,
                public.oa_workflow_log,
                public.oa_workflow_task,
                public.oa_workflow_delegation,
@@ -586,10 +585,12 @@ INSERT INTO public.oa_workflow_delegation (tenant_id, delegator_user_id, delegat
 SELECT setval('oa_workflow_delegation_id_seq', (SELECT COALESCE(MAX(id), 1) FROM oa_workflow_delegation));
 
 -- ----------------------------
--- oa_workflow_instance_join / oa_workflow_instance_parent_link 保持空表：
--- 两表是引擎运行时状态（并行分支到达计数 / 父子流程挂起链接），由推进器在执行
--- PARALLEL_GATEWAY_JOIN / SUBPROCESS 节点时自动写入。demo 实例没有进行中的并行
--- 分支或子流程，人工造行会留下与图结构不一致的脏状态，故不插入。
+-- oa_workflow_token 保持空表：
+-- 令牌是 go-wind-flow 引擎的执行游标（运行时状态），由引擎在推进实例时自动
+-- 写入。demo 实例为静态展示数据（不经过引擎推进），人工造令牌会留下与图结构
+-- 不一致的脏状态，故不插入。「我的申请」列表的挂起推断查询空表时返回空集，
+-- 兼容正常。（并行分支由引擎令牌等待语义承担，旧的 join 计数表与父子挂起
+-- 链接表已随引擎替换移除。）
 -- ----------------------------
 
 -- ----------------------------
@@ -760,8 +761,8 @@ SELECT setval('files_id_seq', (SELECT COALESCE(MAX(id), 1) FROM files));
 
 -- ############################################################
 -- # 未插入数据的表（保持空表，均为系统运行时自动产生）：      #
--- #   oa_workflow_instance_join / oa_workflow_instance_parent_link #
--- #   （引擎并行分支计数 / 父子流程链接，推进器自动写入）     #
+-- #   oa_workflow_token                                      #
+-- #   （go-wind-flow 引擎执行令牌，推进实例时自动写入）       #
 -- #   sys_api_audit_logs / sys_operation_audit_logs /        #
 -- #   sys_data_access_audit_logs / sys_login_audit_logs /    #
 -- #   sys_permission_audit_logs / sys_policy_evaluation_logs #

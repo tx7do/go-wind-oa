@@ -65,10 +65,9 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdelegation"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
-	"go-wind-oa/app/core/service/internal/data/ent/workflowinstancejoin"
-	"go-wind-oa/app/core/service/internal/data/ent/workflowinstanceparentlink"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowlog"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowtask"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowtoken"
 
 	"entgo.io/ent"
 	"entgo.io/ent/privacy"
@@ -1927,58 +1926,6 @@ func init() {
 	workflowinstanceDescID := workflowinstanceMixinFields0[0].Descriptor()
 	// workflowinstance.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	workflowinstance.IDValidator = workflowinstanceDescID.Validators[0].(func(uint32) error)
-	workflowinstancejoinMixin := schema.WorkflowInstanceJoin{}.Mixin()
-	workflowinstancejoin.Policy = privacy.NewPolicies(workflowinstancejoinMixin[3], schema.WorkflowInstanceJoin{})
-	workflowinstancejoin.Hooks[0] = func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := workflowinstancejoin.Policy.EvalMutation(ctx, m); err != nil {
-				return nil, err
-			}
-			return next.Mutate(ctx, m)
-		})
-	}
-	workflowinstancejoinMixinFields0 := workflowinstancejoinMixin[0].Fields()
-	_ = workflowinstancejoinMixinFields0
-	workflowinstancejoinMixinFields3 := workflowinstancejoinMixin[3].Fields()
-	_ = workflowinstancejoinMixinFields3
-	workflowinstancejoinFields := schema.WorkflowInstanceJoin{}.Fields()
-	_ = workflowinstancejoinFields
-	// workflowinstancejoinDescTenantID is the schema descriptor for tenant_id field.
-	workflowinstancejoinDescTenantID := workflowinstancejoinMixinFields3[0].Descriptor()
-	// workflowinstancejoin.DefaultTenantID holds the default value on creation for the tenant_id field.
-	workflowinstancejoin.DefaultTenantID = workflowinstancejoinDescTenantID.Default.(uint32)
-	// workflowinstancejoinDescArrivedCount is the schema descriptor for arrived_count field.
-	workflowinstancejoinDescArrivedCount := workflowinstancejoinFields[1].Descriptor()
-	// workflowinstancejoin.DefaultArrivedCount holds the default value on creation for the arrived_count field.
-	workflowinstancejoin.DefaultArrivedCount = workflowinstancejoinDescArrivedCount.Default.(int)
-	// workflowinstancejoinDescID is the schema descriptor for id field.
-	workflowinstancejoinDescID := workflowinstancejoinMixinFields0[0].Descriptor()
-	// workflowinstancejoin.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	workflowinstancejoin.IDValidator = workflowinstancejoinDescID.Validators[0].(func(uint32) error)
-	workflowinstanceparentlinkMixin := schema.WorkflowInstanceParentLink{}.Mixin()
-	workflowinstanceparentlink.Policy = privacy.NewPolicies(workflowinstanceparentlinkMixin[3], schema.WorkflowInstanceParentLink{})
-	workflowinstanceparentlink.Hooks[0] = func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := workflowinstanceparentlink.Policy.EvalMutation(ctx, m); err != nil {
-				return nil, err
-			}
-			return next.Mutate(ctx, m)
-		})
-	}
-	workflowinstanceparentlinkMixinFields0 := workflowinstanceparentlinkMixin[0].Fields()
-	_ = workflowinstanceparentlinkMixinFields0
-	workflowinstanceparentlinkMixinFields3 := workflowinstanceparentlinkMixin[3].Fields()
-	_ = workflowinstanceparentlinkMixinFields3
-	workflowinstanceparentlinkFields := schema.WorkflowInstanceParentLink{}.Fields()
-	_ = workflowinstanceparentlinkFields
-	// workflowinstanceparentlinkDescTenantID is the schema descriptor for tenant_id field.
-	workflowinstanceparentlinkDescTenantID := workflowinstanceparentlinkMixinFields3[0].Descriptor()
-	// workflowinstanceparentlink.DefaultTenantID holds the default value on creation for the tenant_id field.
-	workflowinstanceparentlink.DefaultTenantID = workflowinstanceparentlinkDescTenantID.Default.(uint32)
-	// workflowinstanceparentlinkDescID is the schema descriptor for id field.
-	workflowinstanceparentlinkDescID := workflowinstanceparentlinkMixinFields0[0].Descriptor()
-	// workflowinstanceparentlink.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	workflowinstanceparentlink.IDValidator = workflowinstanceparentlinkDescID.Validators[0].(func(uint32) error)
 	workflowlogMixin := schema.WorkflowLog{}.Mixin()
 	workflowlog.Policy = privacy.NewPolicies(workflowlogMixin[3], schema.WorkflowLog{})
 	workflowlog.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -2027,6 +1974,15 @@ func init() {
 	workflowtaskDescID := workflowtaskMixinFields0[0].Descriptor()
 	// workflowtask.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	workflowtask.IDValidator = workflowtaskDescID.Validators[0].(func(uint32) error)
+	workflowtokenMixin := schema.WorkflowToken{}.Mixin()
+	workflowtokenMixinFields0 := workflowtokenMixin[0].Fields()
+	_ = workflowtokenMixinFields0
+	workflowtokenFields := schema.WorkflowToken{}.Fields()
+	_ = workflowtokenFields
+	// workflowtokenDescID is the schema descriptor for id field.
+	workflowtokenDescID := workflowtokenMixinFields0[0].Descriptor()
+	// workflowtoken.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	workflowtoken.IDValidator = workflowtokenDescID.Validators[0].(func(uint32) error)
 }
 
 const (

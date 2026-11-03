@@ -8,10 +8,9 @@ import (
 	"fmt"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowdefinition"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowinstance"
-	"go-wind-oa/app/core/service/internal/data/ent/workflowinstancejoin"
-	"go-wind-oa/app/core/service/internal/data/ent/workflowinstanceparentlink"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowlog"
 	"go-wind-oa/app/core/service/internal/data/ent/workflowtask"
+	"go-wind-oa/app/core/service/internal/data/ent/workflowtoken"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -181,6 +180,76 @@ func (_c *WorkflowInstanceCreate) SetNillableBusinessID(v *uint32) *WorkflowInst
 	return _c
 }
 
+// SetDefinitionKey sets the "definition_key" field.
+func (_c *WorkflowInstanceCreate) SetDefinitionKey(v string) *WorkflowInstanceCreate {
+	_c.mutation.SetDefinitionKey(v)
+	return _c
+}
+
+// SetNillableDefinitionKey sets the "definition_key" field if the given value is not nil.
+func (_c *WorkflowInstanceCreate) SetNillableDefinitionKey(v *string) *WorkflowInstanceCreate {
+	if v != nil {
+		_c.SetDefinitionKey(*v)
+	}
+	return _c
+}
+
+// SetDefinitionVersion sets the "definition_version" field.
+func (_c *WorkflowInstanceCreate) SetDefinitionVersion(v int) *WorkflowInstanceCreate {
+	_c.mutation.SetDefinitionVersion(v)
+	return _c
+}
+
+// SetNillableDefinitionVersion sets the "definition_version" field if the given value is not nil.
+func (_c *WorkflowInstanceCreate) SetNillableDefinitionVersion(v *int) *WorkflowInstanceCreate {
+	if v != nil {
+		_c.SetDefinitionVersion(*v)
+	}
+	return _c
+}
+
+// SetParentInstanceID sets the "parent_instance_id" field.
+func (_c *WorkflowInstanceCreate) SetParentInstanceID(v uint32) *WorkflowInstanceCreate {
+	_c.mutation.SetParentInstanceID(v)
+	return _c
+}
+
+// SetNillableParentInstanceID sets the "parent_instance_id" field if the given value is not nil.
+func (_c *WorkflowInstanceCreate) SetNillableParentInstanceID(v *uint32) *WorkflowInstanceCreate {
+	if v != nil {
+		_c.SetParentInstanceID(*v)
+	}
+	return _c
+}
+
+// SetParentTokenID sets the "parent_token_id" field.
+func (_c *WorkflowInstanceCreate) SetParentTokenID(v uint32) *WorkflowInstanceCreate {
+	_c.mutation.SetParentTokenID(v)
+	return _c
+}
+
+// SetNillableParentTokenID sets the "parent_token_id" field if the given value is not nil.
+func (_c *WorkflowInstanceCreate) SetNillableParentTokenID(v *uint32) *WorkflowInstanceCreate {
+	if v != nil {
+		_c.SetParentTokenID(*v)
+	}
+	return _c
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (_c *WorkflowInstanceCreate) SetEndedAt(v time.Time) *WorkflowInstanceCreate {
+	_c.mutation.SetEndedAt(v)
+	return _c
+}
+
+// SetNillableEndedAt sets the "ended_at" field if the given value is not nil.
+func (_c *WorkflowInstanceCreate) SetNillableEndedAt(v *time.Time) *WorkflowInstanceCreate {
+	if v != nil {
+		_c.SetEndedAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *WorkflowInstanceCreate) SetID(v uint32) *WorkflowInstanceCreate {
 	_c.mutation.SetID(v)
@@ -236,34 +305,19 @@ func (_c *WorkflowInstanceCreate) AddLogs(v ...*WorkflowLog) *WorkflowInstanceCr
 	return _c.AddLogIDs(ids...)
 }
 
-// AddInstanceJoinIDs adds the "instance_joins" edge to the WorkflowInstanceJoin entity by IDs.
-func (_c *WorkflowInstanceCreate) AddInstanceJoinIDs(ids ...uint32) *WorkflowInstanceCreate {
-	_c.mutation.AddInstanceJoinIDs(ids...)
+// AddTokenIDs adds the "tokens" edge to the WorkflowToken entity by IDs.
+func (_c *WorkflowInstanceCreate) AddTokenIDs(ids ...uint32) *WorkflowInstanceCreate {
+	_c.mutation.AddTokenIDs(ids...)
 	return _c
 }
 
-// AddInstanceJoins adds the "instance_joins" edges to the WorkflowInstanceJoin entity.
-func (_c *WorkflowInstanceCreate) AddInstanceJoins(v ...*WorkflowInstanceJoin) *WorkflowInstanceCreate {
+// AddTokens adds the "tokens" edges to the WorkflowToken entity.
+func (_c *WorkflowInstanceCreate) AddTokens(v ...*WorkflowToken) *WorkflowInstanceCreate {
 	ids := make([]uint32, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddInstanceJoinIDs(ids...)
-}
-
-// AddParentLinkIDs adds the "parent_links" edge to the WorkflowInstanceParentLink entity by IDs.
-func (_c *WorkflowInstanceCreate) AddParentLinkIDs(ids ...uint32) *WorkflowInstanceCreate {
-	_c.mutation.AddParentLinkIDs(ids...)
-	return _c
-}
-
-// AddParentLinks adds the "parent_links" edges to the WorkflowInstanceParentLink entity.
-func (_c *WorkflowInstanceCreate) AddParentLinks(v ...*WorkflowInstanceParentLink) *WorkflowInstanceCreate {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddParentLinkIDs(ids...)
+	return _c.AddTokenIDs(ids...)
 }
 
 // Mutation returns the WorkflowInstanceMutation object of the builder.
@@ -403,6 +457,26 @@ func (_c *WorkflowInstanceCreate) createSpec() (*WorkflowInstance, *sqlgraph.Cre
 		_spec.SetField(workflowinstance.FieldBusinessID, field.TypeUint32, value)
 		_node.BusinessID = &value
 	}
+	if value, ok := _c.mutation.DefinitionKey(); ok {
+		_spec.SetField(workflowinstance.FieldDefinitionKey, field.TypeString, value)
+		_node.DefinitionKey = &value
+	}
+	if value, ok := _c.mutation.DefinitionVersion(); ok {
+		_spec.SetField(workflowinstance.FieldDefinitionVersion, field.TypeInt, value)
+		_node.DefinitionVersion = &value
+	}
+	if value, ok := _c.mutation.ParentInstanceID(); ok {
+		_spec.SetField(workflowinstance.FieldParentInstanceID, field.TypeUint32, value)
+		_node.ParentInstanceID = &value
+	}
+	if value, ok := _c.mutation.ParentTokenID(); ok {
+		_spec.SetField(workflowinstance.FieldParentTokenID, field.TypeUint32, value)
+		_node.ParentTokenID = &value
+	}
+	if value, ok := _c.mutation.EndedAt(); ok {
+		_spec.SetField(workflowinstance.FieldEndedAt, field.TypeTime, value)
+		_node.EndedAt = &value
+	}
 	if nodes := _c.mutation.DefinitionIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -452,31 +526,15 @@ func (_c *WorkflowInstanceCreate) createSpec() (*WorkflowInstance, *sqlgraph.Cre
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.InstanceJoinsIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.TokensIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   workflowinstance.InstanceJoinsTable,
-			Columns: []string{workflowinstance.InstanceJoinsColumn},
+			Table:   workflowinstance.TokensTable,
+			Columns: []string{workflowinstance.TokensColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstancejoin.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.ParentLinksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   workflowinstance.ParentLinksTable,
-			Columns: []string{workflowinstance.ParentLinksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstanceparentlink.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32),
 			},
 		}
 		for _, k := range nodes {
@@ -719,6 +777,114 @@ func (u *WorkflowInstanceUpsert) AddBusinessID(v uint32) *WorkflowInstanceUpsert
 // ClearBusinessID clears the value of the "business_id" field.
 func (u *WorkflowInstanceUpsert) ClearBusinessID() *WorkflowInstanceUpsert {
 	u.SetNull(workflowinstance.FieldBusinessID)
+	return u
+}
+
+// SetDefinitionKey sets the "definition_key" field.
+func (u *WorkflowInstanceUpsert) SetDefinitionKey(v string) *WorkflowInstanceUpsert {
+	u.Set(workflowinstance.FieldDefinitionKey, v)
+	return u
+}
+
+// UpdateDefinitionKey sets the "definition_key" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsert) UpdateDefinitionKey() *WorkflowInstanceUpsert {
+	u.SetExcluded(workflowinstance.FieldDefinitionKey)
+	return u
+}
+
+// ClearDefinitionKey clears the value of the "definition_key" field.
+func (u *WorkflowInstanceUpsert) ClearDefinitionKey() *WorkflowInstanceUpsert {
+	u.SetNull(workflowinstance.FieldDefinitionKey)
+	return u
+}
+
+// SetDefinitionVersion sets the "definition_version" field.
+func (u *WorkflowInstanceUpsert) SetDefinitionVersion(v int) *WorkflowInstanceUpsert {
+	u.Set(workflowinstance.FieldDefinitionVersion, v)
+	return u
+}
+
+// UpdateDefinitionVersion sets the "definition_version" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsert) UpdateDefinitionVersion() *WorkflowInstanceUpsert {
+	u.SetExcluded(workflowinstance.FieldDefinitionVersion)
+	return u
+}
+
+// AddDefinitionVersion adds v to the "definition_version" field.
+func (u *WorkflowInstanceUpsert) AddDefinitionVersion(v int) *WorkflowInstanceUpsert {
+	u.Add(workflowinstance.FieldDefinitionVersion, v)
+	return u
+}
+
+// ClearDefinitionVersion clears the value of the "definition_version" field.
+func (u *WorkflowInstanceUpsert) ClearDefinitionVersion() *WorkflowInstanceUpsert {
+	u.SetNull(workflowinstance.FieldDefinitionVersion)
+	return u
+}
+
+// SetParentInstanceID sets the "parent_instance_id" field.
+func (u *WorkflowInstanceUpsert) SetParentInstanceID(v uint32) *WorkflowInstanceUpsert {
+	u.Set(workflowinstance.FieldParentInstanceID, v)
+	return u
+}
+
+// UpdateParentInstanceID sets the "parent_instance_id" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsert) UpdateParentInstanceID() *WorkflowInstanceUpsert {
+	u.SetExcluded(workflowinstance.FieldParentInstanceID)
+	return u
+}
+
+// AddParentInstanceID adds v to the "parent_instance_id" field.
+func (u *WorkflowInstanceUpsert) AddParentInstanceID(v uint32) *WorkflowInstanceUpsert {
+	u.Add(workflowinstance.FieldParentInstanceID, v)
+	return u
+}
+
+// ClearParentInstanceID clears the value of the "parent_instance_id" field.
+func (u *WorkflowInstanceUpsert) ClearParentInstanceID() *WorkflowInstanceUpsert {
+	u.SetNull(workflowinstance.FieldParentInstanceID)
+	return u
+}
+
+// SetParentTokenID sets the "parent_token_id" field.
+func (u *WorkflowInstanceUpsert) SetParentTokenID(v uint32) *WorkflowInstanceUpsert {
+	u.Set(workflowinstance.FieldParentTokenID, v)
+	return u
+}
+
+// UpdateParentTokenID sets the "parent_token_id" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsert) UpdateParentTokenID() *WorkflowInstanceUpsert {
+	u.SetExcluded(workflowinstance.FieldParentTokenID)
+	return u
+}
+
+// AddParentTokenID adds v to the "parent_token_id" field.
+func (u *WorkflowInstanceUpsert) AddParentTokenID(v uint32) *WorkflowInstanceUpsert {
+	u.Add(workflowinstance.FieldParentTokenID, v)
+	return u
+}
+
+// ClearParentTokenID clears the value of the "parent_token_id" field.
+func (u *WorkflowInstanceUpsert) ClearParentTokenID() *WorkflowInstanceUpsert {
+	u.SetNull(workflowinstance.FieldParentTokenID)
+	return u
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (u *WorkflowInstanceUpsert) SetEndedAt(v time.Time) *WorkflowInstanceUpsert {
+	u.Set(workflowinstance.FieldEndedAt, v)
+	return u
+}
+
+// UpdateEndedAt sets the "ended_at" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsert) UpdateEndedAt() *WorkflowInstanceUpsert {
+	u.SetExcluded(workflowinstance.FieldEndedAt)
+	return u
+}
+
+// ClearEndedAt clears the value of the "ended_at" field.
+func (u *WorkflowInstanceUpsert) ClearEndedAt() *WorkflowInstanceUpsert {
+	u.SetNull(workflowinstance.FieldEndedAt)
 	return u
 }
 
@@ -990,6 +1156,132 @@ func (u *WorkflowInstanceUpsertOne) UpdateBusinessID() *WorkflowInstanceUpsertOn
 func (u *WorkflowInstanceUpsertOne) ClearBusinessID() *WorkflowInstanceUpsertOne {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
 		s.ClearBusinessID()
+	})
+}
+
+// SetDefinitionKey sets the "definition_key" field.
+func (u *WorkflowInstanceUpsertOne) SetDefinitionKey(v string) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetDefinitionKey(v)
+	})
+}
+
+// UpdateDefinitionKey sets the "definition_key" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertOne) UpdateDefinitionKey() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateDefinitionKey()
+	})
+}
+
+// ClearDefinitionKey clears the value of the "definition_key" field.
+func (u *WorkflowInstanceUpsertOne) ClearDefinitionKey() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearDefinitionKey()
+	})
+}
+
+// SetDefinitionVersion sets the "definition_version" field.
+func (u *WorkflowInstanceUpsertOne) SetDefinitionVersion(v int) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetDefinitionVersion(v)
+	})
+}
+
+// AddDefinitionVersion adds v to the "definition_version" field.
+func (u *WorkflowInstanceUpsertOne) AddDefinitionVersion(v int) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.AddDefinitionVersion(v)
+	})
+}
+
+// UpdateDefinitionVersion sets the "definition_version" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertOne) UpdateDefinitionVersion() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateDefinitionVersion()
+	})
+}
+
+// ClearDefinitionVersion clears the value of the "definition_version" field.
+func (u *WorkflowInstanceUpsertOne) ClearDefinitionVersion() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearDefinitionVersion()
+	})
+}
+
+// SetParentInstanceID sets the "parent_instance_id" field.
+func (u *WorkflowInstanceUpsertOne) SetParentInstanceID(v uint32) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetParentInstanceID(v)
+	})
+}
+
+// AddParentInstanceID adds v to the "parent_instance_id" field.
+func (u *WorkflowInstanceUpsertOne) AddParentInstanceID(v uint32) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.AddParentInstanceID(v)
+	})
+}
+
+// UpdateParentInstanceID sets the "parent_instance_id" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertOne) UpdateParentInstanceID() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateParentInstanceID()
+	})
+}
+
+// ClearParentInstanceID clears the value of the "parent_instance_id" field.
+func (u *WorkflowInstanceUpsertOne) ClearParentInstanceID() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearParentInstanceID()
+	})
+}
+
+// SetParentTokenID sets the "parent_token_id" field.
+func (u *WorkflowInstanceUpsertOne) SetParentTokenID(v uint32) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetParentTokenID(v)
+	})
+}
+
+// AddParentTokenID adds v to the "parent_token_id" field.
+func (u *WorkflowInstanceUpsertOne) AddParentTokenID(v uint32) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.AddParentTokenID(v)
+	})
+}
+
+// UpdateParentTokenID sets the "parent_token_id" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertOne) UpdateParentTokenID() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateParentTokenID()
+	})
+}
+
+// ClearParentTokenID clears the value of the "parent_token_id" field.
+func (u *WorkflowInstanceUpsertOne) ClearParentTokenID() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearParentTokenID()
+	})
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (u *WorkflowInstanceUpsertOne) SetEndedAt(v time.Time) *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetEndedAt(v)
+	})
+}
+
+// UpdateEndedAt sets the "ended_at" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertOne) UpdateEndedAt() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateEndedAt()
+	})
+}
+
+// ClearEndedAt clears the value of the "ended_at" field.
+func (u *WorkflowInstanceUpsertOne) ClearEndedAt() *WorkflowInstanceUpsertOne {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearEndedAt()
 	})
 }
 
@@ -1427,6 +1719,132 @@ func (u *WorkflowInstanceUpsertBulk) UpdateBusinessID() *WorkflowInstanceUpsertB
 func (u *WorkflowInstanceUpsertBulk) ClearBusinessID() *WorkflowInstanceUpsertBulk {
 	return u.Update(func(s *WorkflowInstanceUpsert) {
 		s.ClearBusinessID()
+	})
+}
+
+// SetDefinitionKey sets the "definition_key" field.
+func (u *WorkflowInstanceUpsertBulk) SetDefinitionKey(v string) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetDefinitionKey(v)
+	})
+}
+
+// UpdateDefinitionKey sets the "definition_key" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertBulk) UpdateDefinitionKey() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateDefinitionKey()
+	})
+}
+
+// ClearDefinitionKey clears the value of the "definition_key" field.
+func (u *WorkflowInstanceUpsertBulk) ClearDefinitionKey() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearDefinitionKey()
+	})
+}
+
+// SetDefinitionVersion sets the "definition_version" field.
+func (u *WorkflowInstanceUpsertBulk) SetDefinitionVersion(v int) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetDefinitionVersion(v)
+	})
+}
+
+// AddDefinitionVersion adds v to the "definition_version" field.
+func (u *WorkflowInstanceUpsertBulk) AddDefinitionVersion(v int) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.AddDefinitionVersion(v)
+	})
+}
+
+// UpdateDefinitionVersion sets the "definition_version" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertBulk) UpdateDefinitionVersion() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateDefinitionVersion()
+	})
+}
+
+// ClearDefinitionVersion clears the value of the "definition_version" field.
+func (u *WorkflowInstanceUpsertBulk) ClearDefinitionVersion() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearDefinitionVersion()
+	})
+}
+
+// SetParentInstanceID sets the "parent_instance_id" field.
+func (u *WorkflowInstanceUpsertBulk) SetParentInstanceID(v uint32) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetParentInstanceID(v)
+	})
+}
+
+// AddParentInstanceID adds v to the "parent_instance_id" field.
+func (u *WorkflowInstanceUpsertBulk) AddParentInstanceID(v uint32) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.AddParentInstanceID(v)
+	})
+}
+
+// UpdateParentInstanceID sets the "parent_instance_id" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertBulk) UpdateParentInstanceID() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateParentInstanceID()
+	})
+}
+
+// ClearParentInstanceID clears the value of the "parent_instance_id" field.
+func (u *WorkflowInstanceUpsertBulk) ClearParentInstanceID() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearParentInstanceID()
+	})
+}
+
+// SetParentTokenID sets the "parent_token_id" field.
+func (u *WorkflowInstanceUpsertBulk) SetParentTokenID(v uint32) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetParentTokenID(v)
+	})
+}
+
+// AddParentTokenID adds v to the "parent_token_id" field.
+func (u *WorkflowInstanceUpsertBulk) AddParentTokenID(v uint32) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.AddParentTokenID(v)
+	})
+}
+
+// UpdateParentTokenID sets the "parent_token_id" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertBulk) UpdateParentTokenID() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateParentTokenID()
+	})
+}
+
+// ClearParentTokenID clears the value of the "parent_token_id" field.
+func (u *WorkflowInstanceUpsertBulk) ClearParentTokenID() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearParentTokenID()
+	})
+}
+
+// SetEndedAt sets the "ended_at" field.
+func (u *WorkflowInstanceUpsertBulk) SetEndedAt(v time.Time) *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.SetEndedAt(v)
+	})
+}
+
+// UpdateEndedAt sets the "ended_at" field to the value that was provided on create.
+func (u *WorkflowInstanceUpsertBulk) UpdateEndedAt() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.UpdateEndedAt()
+	})
+}
+
+// ClearEndedAt clears the value of the "ended_at" field.
+func (u *WorkflowInstanceUpsertBulk) ClearEndedAt() *WorkflowInstanceUpsertBulk {
+	return u.Update(func(s *WorkflowInstanceUpsert) {
+		s.ClearEndedAt()
 	})
 }
 

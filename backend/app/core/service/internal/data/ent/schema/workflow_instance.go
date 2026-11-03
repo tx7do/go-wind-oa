@@ -58,6 +58,31 @@ func (WorkflowInstance) Fields() []ent.Field {
 			Comment("业务单据ID").
 			Optional().
 			Nillable(),
+
+		field.String("definition_key").
+			Comment("流程定义代码（go-wind-flow DefinitionKey）").
+			Optional().
+			Nillable(),
+
+		field.Int("definition_version").
+			Comment("流程定义版本（go-wind-flow DefinitionVersion，在途实例锁定）").
+			Optional().
+			Nillable(),
+
+		field.Uint32("parent_instance_id").
+			Comment("父流程实例ID（子流程场景，go-wind-flow ParentInstanceID）").
+			Optional().
+			Nillable(),
+
+		field.Uint32("parent_token_id").
+			Comment("父流程令牌ID（子流程场景，go-wind-flow ParentTokenID）").
+			Optional().
+			Nillable(),
+
+		field.Time("ended_at").
+			Comment("实例终结时间").
+			Optional().
+			Nillable(),
 	}
 }
 
@@ -94,19 +119,12 @@ func (WorkflowInstance) Edges() []ent.Edge {
 			}).
 			StorageKey(edge.Column("instance_id")),
 
-		// 正向：实例→汇聚计数。外鍵列 instance_id 在此側宣告，級聯刪除。
-		edge.To("instance_joins", WorkflowInstanceJoin.Type).
+		// 正向：实例→令牌。外鍵列 instance_id 在此側宣告，級聯刪除。
+		edge.To("tokens", WorkflowToken.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}).
 			StorageKey(edge.Column("instance_id")),
-
-		// 正向：实例→子流程挂起记录。外鍵列 parent_instance_id 在此側宣告，級聯刪除。
-		edge.To("parent_links", WorkflowInstanceParentLink.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
-			}).
-			StorageKey(edge.Column("parent_instance_id")),
 	}
 }
 

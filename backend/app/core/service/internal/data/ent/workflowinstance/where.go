@@ -105,6 +105,31 @@ func BusinessID(v uint32) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldEQ(FieldBusinessID, v))
 }
 
+// DefinitionKey applies equality check predicate on the "definition_key" field. It's identical to DefinitionKeyEQ.
+func DefinitionKey(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldDefinitionKey, v))
+}
+
+// DefinitionVersion applies equality check predicate on the "definition_version" field. It's identical to DefinitionVersionEQ.
+func DefinitionVersion(v int) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldDefinitionVersion, v))
+}
+
+// ParentInstanceID applies equality check predicate on the "parent_instance_id" field. It's identical to ParentInstanceIDEQ.
+func ParentInstanceID(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldParentInstanceID, v))
+}
+
+// ParentTokenID applies equality check predicate on the "parent_token_id" field. It's identical to ParentTokenIDEQ.
+func ParentTokenID(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldParentTokenID, v))
+}
+
+// EndedAt applies equality check predicate on the "ended_at" field. It's identical to EndedAtEQ.
+func EndedAt(v time.Time) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldEndedAt, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldEQ(FieldCreatedAt, v))
@@ -685,6 +710,281 @@ func BusinessIDNotNil() predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(sql.FieldNotNull(FieldBusinessID))
 }
 
+// DefinitionKeyEQ applies the EQ predicate on the "definition_key" field.
+func DefinitionKeyEQ(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldDefinitionKey, v))
+}
+
+// DefinitionKeyNEQ applies the NEQ predicate on the "definition_key" field.
+func DefinitionKeyNEQ(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNEQ(FieldDefinitionKey, v))
+}
+
+// DefinitionKeyIn applies the In predicate on the "definition_key" field.
+func DefinitionKeyIn(vs ...string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIn(FieldDefinitionKey, vs...))
+}
+
+// DefinitionKeyNotIn applies the NotIn predicate on the "definition_key" field.
+func DefinitionKeyNotIn(vs ...string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotIn(FieldDefinitionKey, vs...))
+}
+
+// DefinitionKeyGT applies the GT predicate on the "definition_key" field.
+func DefinitionKeyGT(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGT(FieldDefinitionKey, v))
+}
+
+// DefinitionKeyGTE applies the GTE predicate on the "definition_key" field.
+func DefinitionKeyGTE(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGTE(FieldDefinitionKey, v))
+}
+
+// DefinitionKeyLT applies the LT predicate on the "definition_key" field.
+func DefinitionKeyLT(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLT(FieldDefinitionKey, v))
+}
+
+// DefinitionKeyLTE applies the LTE predicate on the "definition_key" field.
+func DefinitionKeyLTE(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLTE(FieldDefinitionKey, v))
+}
+
+// DefinitionKeyContains applies the Contains predicate on the "definition_key" field.
+func DefinitionKeyContains(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldContains(FieldDefinitionKey, v))
+}
+
+// DefinitionKeyHasPrefix applies the HasPrefix predicate on the "definition_key" field.
+func DefinitionKeyHasPrefix(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldHasPrefix(FieldDefinitionKey, v))
+}
+
+// DefinitionKeyHasSuffix applies the HasSuffix predicate on the "definition_key" field.
+func DefinitionKeyHasSuffix(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldHasSuffix(FieldDefinitionKey, v))
+}
+
+// DefinitionKeyIsNil applies the IsNil predicate on the "definition_key" field.
+func DefinitionKeyIsNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIsNull(FieldDefinitionKey))
+}
+
+// DefinitionKeyNotNil applies the NotNil predicate on the "definition_key" field.
+func DefinitionKeyNotNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotNull(FieldDefinitionKey))
+}
+
+// DefinitionKeyEqualFold applies the EqualFold predicate on the "definition_key" field.
+func DefinitionKeyEqualFold(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEqualFold(FieldDefinitionKey, v))
+}
+
+// DefinitionKeyContainsFold applies the ContainsFold predicate on the "definition_key" field.
+func DefinitionKeyContainsFold(v string) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldContainsFold(FieldDefinitionKey, v))
+}
+
+// DefinitionVersionEQ applies the EQ predicate on the "definition_version" field.
+func DefinitionVersionEQ(v int) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldDefinitionVersion, v))
+}
+
+// DefinitionVersionNEQ applies the NEQ predicate on the "definition_version" field.
+func DefinitionVersionNEQ(v int) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNEQ(FieldDefinitionVersion, v))
+}
+
+// DefinitionVersionIn applies the In predicate on the "definition_version" field.
+func DefinitionVersionIn(vs ...int) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIn(FieldDefinitionVersion, vs...))
+}
+
+// DefinitionVersionNotIn applies the NotIn predicate on the "definition_version" field.
+func DefinitionVersionNotIn(vs ...int) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotIn(FieldDefinitionVersion, vs...))
+}
+
+// DefinitionVersionGT applies the GT predicate on the "definition_version" field.
+func DefinitionVersionGT(v int) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGT(FieldDefinitionVersion, v))
+}
+
+// DefinitionVersionGTE applies the GTE predicate on the "definition_version" field.
+func DefinitionVersionGTE(v int) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGTE(FieldDefinitionVersion, v))
+}
+
+// DefinitionVersionLT applies the LT predicate on the "definition_version" field.
+func DefinitionVersionLT(v int) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLT(FieldDefinitionVersion, v))
+}
+
+// DefinitionVersionLTE applies the LTE predicate on the "definition_version" field.
+func DefinitionVersionLTE(v int) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLTE(FieldDefinitionVersion, v))
+}
+
+// DefinitionVersionIsNil applies the IsNil predicate on the "definition_version" field.
+func DefinitionVersionIsNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIsNull(FieldDefinitionVersion))
+}
+
+// DefinitionVersionNotNil applies the NotNil predicate on the "definition_version" field.
+func DefinitionVersionNotNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotNull(FieldDefinitionVersion))
+}
+
+// ParentInstanceIDEQ applies the EQ predicate on the "parent_instance_id" field.
+func ParentInstanceIDEQ(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldParentInstanceID, v))
+}
+
+// ParentInstanceIDNEQ applies the NEQ predicate on the "parent_instance_id" field.
+func ParentInstanceIDNEQ(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNEQ(FieldParentInstanceID, v))
+}
+
+// ParentInstanceIDIn applies the In predicate on the "parent_instance_id" field.
+func ParentInstanceIDIn(vs ...uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIn(FieldParentInstanceID, vs...))
+}
+
+// ParentInstanceIDNotIn applies the NotIn predicate on the "parent_instance_id" field.
+func ParentInstanceIDNotIn(vs ...uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotIn(FieldParentInstanceID, vs...))
+}
+
+// ParentInstanceIDGT applies the GT predicate on the "parent_instance_id" field.
+func ParentInstanceIDGT(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGT(FieldParentInstanceID, v))
+}
+
+// ParentInstanceIDGTE applies the GTE predicate on the "parent_instance_id" field.
+func ParentInstanceIDGTE(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGTE(FieldParentInstanceID, v))
+}
+
+// ParentInstanceIDLT applies the LT predicate on the "parent_instance_id" field.
+func ParentInstanceIDLT(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLT(FieldParentInstanceID, v))
+}
+
+// ParentInstanceIDLTE applies the LTE predicate on the "parent_instance_id" field.
+func ParentInstanceIDLTE(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLTE(FieldParentInstanceID, v))
+}
+
+// ParentInstanceIDIsNil applies the IsNil predicate on the "parent_instance_id" field.
+func ParentInstanceIDIsNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIsNull(FieldParentInstanceID))
+}
+
+// ParentInstanceIDNotNil applies the NotNil predicate on the "parent_instance_id" field.
+func ParentInstanceIDNotNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotNull(FieldParentInstanceID))
+}
+
+// ParentTokenIDEQ applies the EQ predicate on the "parent_token_id" field.
+func ParentTokenIDEQ(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldParentTokenID, v))
+}
+
+// ParentTokenIDNEQ applies the NEQ predicate on the "parent_token_id" field.
+func ParentTokenIDNEQ(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNEQ(FieldParentTokenID, v))
+}
+
+// ParentTokenIDIn applies the In predicate on the "parent_token_id" field.
+func ParentTokenIDIn(vs ...uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIn(FieldParentTokenID, vs...))
+}
+
+// ParentTokenIDNotIn applies the NotIn predicate on the "parent_token_id" field.
+func ParentTokenIDNotIn(vs ...uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotIn(FieldParentTokenID, vs...))
+}
+
+// ParentTokenIDGT applies the GT predicate on the "parent_token_id" field.
+func ParentTokenIDGT(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGT(FieldParentTokenID, v))
+}
+
+// ParentTokenIDGTE applies the GTE predicate on the "parent_token_id" field.
+func ParentTokenIDGTE(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGTE(FieldParentTokenID, v))
+}
+
+// ParentTokenIDLT applies the LT predicate on the "parent_token_id" field.
+func ParentTokenIDLT(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLT(FieldParentTokenID, v))
+}
+
+// ParentTokenIDLTE applies the LTE predicate on the "parent_token_id" field.
+func ParentTokenIDLTE(v uint32) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLTE(FieldParentTokenID, v))
+}
+
+// ParentTokenIDIsNil applies the IsNil predicate on the "parent_token_id" field.
+func ParentTokenIDIsNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIsNull(FieldParentTokenID))
+}
+
+// ParentTokenIDNotNil applies the NotNil predicate on the "parent_token_id" field.
+func ParentTokenIDNotNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotNull(FieldParentTokenID))
+}
+
+// EndedAtEQ applies the EQ predicate on the "ended_at" field.
+func EndedAtEQ(v time.Time) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldEQ(FieldEndedAt, v))
+}
+
+// EndedAtNEQ applies the NEQ predicate on the "ended_at" field.
+func EndedAtNEQ(v time.Time) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNEQ(FieldEndedAt, v))
+}
+
+// EndedAtIn applies the In predicate on the "ended_at" field.
+func EndedAtIn(vs ...time.Time) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIn(FieldEndedAt, vs...))
+}
+
+// EndedAtNotIn applies the NotIn predicate on the "ended_at" field.
+func EndedAtNotIn(vs ...time.Time) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotIn(FieldEndedAt, vs...))
+}
+
+// EndedAtGT applies the GT predicate on the "ended_at" field.
+func EndedAtGT(v time.Time) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGT(FieldEndedAt, v))
+}
+
+// EndedAtGTE applies the GTE predicate on the "ended_at" field.
+func EndedAtGTE(v time.Time) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldGTE(FieldEndedAt, v))
+}
+
+// EndedAtLT applies the LT predicate on the "ended_at" field.
+func EndedAtLT(v time.Time) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLT(FieldEndedAt, v))
+}
+
+// EndedAtLTE applies the LTE predicate on the "ended_at" field.
+func EndedAtLTE(v time.Time) predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldLTE(FieldEndedAt, v))
+}
+
+// EndedAtIsNil applies the IsNil predicate on the "ended_at" field.
+func EndedAtIsNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldIsNull(FieldEndedAt))
+}
+
+// EndedAtNotNil applies the NotNil predicate on the "ended_at" field.
+func EndedAtNotNil() predicate.WorkflowInstance {
+	return predicate.WorkflowInstance(sql.FieldNotNull(FieldEndedAt))
+}
+
 // HasDefinition applies the HasEdge predicate on the "definition" edge.
 func HasDefinition() predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(func(s *sql.Selector) {
@@ -754,44 +1054,21 @@ func HasLogsWith(preds ...predicate.WorkflowLog) predicate.WorkflowInstance {
 	})
 }
 
-// HasInstanceJoins applies the HasEdge predicate on the "instance_joins" edge.
-func HasInstanceJoins() predicate.WorkflowInstance {
+// HasTokens applies the HasEdge predicate on the "tokens" edge.
+func HasTokens() predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, InstanceJoinsTable, InstanceJoinsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, TokensTable, TokensColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasInstanceJoinsWith applies the HasEdge predicate on the "instance_joins" edge with a given conditions (other predicates).
-func HasInstanceJoinsWith(preds ...predicate.WorkflowInstanceJoin) predicate.WorkflowInstance {
+// HasTokensWith applies the HasEdge predicate on the "tokens" edge with a given conditions (other predicates).
+func HasTokensWith(preds ...predicate.WorkflowToken) predicate.WorkflowInstance {
 	return predicate.WorkflowInstance(func(s *sql.Selector) {
-		step := newInstanceJoinsStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasParentLinks applies the HasEdge predicate on the "parent_links" edge.
-func HasParentLinks() predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ParentLinksTable, ParentLinksColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasParentLinksWith applies the HasEdge predicate on the "parent_links" edge with a given conditions (other predicates).
-func HasParentLinksWith(preds ...predicate.WorkflowInstanceParentLink) predicate.WorkflowInstance {
-	return predicate.WorkflowInstance(func(s *sql.Selector) {
-		step := newParentLinksStep()
+		step := newTokensStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
