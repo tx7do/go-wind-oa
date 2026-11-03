@@ -2,7 +2,7 @@
   <ProModal
     v-model:visible="visible"
     :title="title"
-    :config="{ component: 'drawer', drawer: { size: DRAWER_WIDTH, closeOnClickModal: false } }"
+    :config="{ component: 'drawer', drawer: { size: '100%', closeOnClickModal: false } }"
   >
     <ElForm ref="formRef" :model="formData" :rules="formRules" label-width="120px">
       <ElFormItem :label="$t('pages.oa.definition.fieldCode')" prop="code">
@@ -337,7 +337,6 @@ import type {
   identityservicev1_Position,
 } from "@/api/generated/admin/service/v1";
 import { $t } from "@/core/i18n";
-import { DRAWER_WIDTH } from "@/constants";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 
 import GraphCanvas from "./graph-canvas.vue";
@@ -661,8 +660,23 @@ function resetForm() {
   formData.form_schema = "";
   nodeMode.value = "visual";
   formMode.value = "visual";
-  graphNodes.value = [];
-  graphEdges.value = [];
+  // 新建默认给一条可用的线性图（开始 → 主管审批 → 结束），画布不再空白。
+  graphNodes.value = [
+    { id: "start", type: "START", x: 20, y: 110 },
+    {
+      id: "node_0",
+      type: "TASK",
+      strategy: "ALL",
+      approvers: [{ type: "LEADER" }],
+      x: 280,
+      y: 90,
+    },
+    { id: "end", type: "END", x: 600, y: 110 },
+  ];
+  graphEdges.value = [
+    { from: "start", to: "node_0" },
+    { from: "node_0", to: "end" },
+  ];
   formFieldDrafts.value = [];
   formRef.value?.clearValidate();
 }
