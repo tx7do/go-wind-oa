@@ -45,6 +45,7 @@
           <FlowDesigner
             ref="designerRef"
             height="52vh"
+            :theme="designerTheme"
             :document="designerDocument"
             @ready="onDesignerReady"
             @error="onDesignerError"
@@ -148,6 +149,8 @@ import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { ElButton, ElInput, ElInputNumber, ElRadioButton, ElRadioGroup } from "element-plus";
 import { nextTick, ref, computed, watch } from "vue";
 
+import { usePreferences } from "@/core/preferences";
+
 import type { ApproverSpec } from "@go-wind/flow-designer-core";
 
 import { useCreateWorkflowDefinition } from "@/api/composables";
@@ -173,6 +176,8 @@ import type { DesignerDocument, DesignerHandle } from "@go-wind/flow-designer-co
 const emit = defineEmits(["success"]);
 
 const { mutateAsync: createDefinition } = useCreateWorkflowDefinition();
+// 设计器主题跟随应用暗色模式（FlowDesigner 默认 auto 跟随系统，与应用主题脱节）。
+const { theme: designerTheme } = usePreferences();
 
 const visible = ref(false);
 const loading = ref(false);
@@ -522,6 +527,8 @@ defineExpose({ open });
 }
 
 .designer-host {
+  width: 100%; // .el-form-item__content 是 flex 容器，不加会收缩到内容宽
+
   // go-wind-flow 组件的边框/滚动条 token 在宿主侧未定义时回退成白色，这里给默认值
   --gwf-border: var(--el-border-color);
 
