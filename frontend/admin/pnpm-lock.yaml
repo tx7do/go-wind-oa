@@ -21,11 +21,11 @@ importers:
         specifier: 0.2.4
         version: 0.2.4(@element-plus/icons-vue@2.3.2(vue@3.5.34(typescript@5.9.3)))(@floating-ui/dom@1.7.6)(@tiptap/extension-code-block@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))(@tiptap/extension-list@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))(@tiptap/extensions@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)(@typescript-eslint/types@8.59.3)(element-plus@2.14.0(vue@3.5.34(typescript@5.9.3)))(vue@3.5.34(typescript@5.9.3))
       '@go-wind/flow-designer-core':
-        specifier: 0.2.0
-        version: 0.2.0(camunda-bpmn-js-behaviors@1.18.0(bpmn-js@17.11.1)(camunda-bpmn-moddle@8.0.2)(zeebe-bpmn-moddle@2.0.0(moddle@8.2.1)))(diagram-js@14.11.3)
+        specifier: 0.2.1
+        version: 0.2.1(camunda-bpmn-js-behaviors@1.18.0(bpmn-js@17.11.1)(camunda-bpmn-moddle@8.0.2)(zeebe-bpmn-moddle@2.0.0(moddle@8.2.1)))(diagram-js@14.11.3)
       '@go-wind/flow-designer-vue':
-        specifier: 0.2.0
-        version: 0.2.0(camunda-bpmn-js-behaviors@1.18.0(bpmn-js@17.11.1)(camunda-bpmn-moddle@8.0.2)(zeebe-bpmn-moddle@2.0.0(moddle@8.2.1)))(diagram-js@14.11.3)(vue@3.5.34(typescript@5.9.3))
+        specifier: 0.2.1
+        version: 0.2.1(camunda-bpmn-js-behaviors@1.18.0(bpmn-js@17.11.1)(camunda-bpmn-moddle@8.0.2)(zeebe-bpmn-moddle@2.0.0(moddle@8.2.1)))(diagram-js@14.11.3)(vue@3.5.34(typescript@5.9.3))
       '@iconify/vue':
         specifier: ^5.0.1
         version: 5.0.1(vue@3.5.34(typescript@5.9.3))
@@ -973,12 +973,12 @@ packages:
       element-plus: '>=2.13.0'
       vue: '>=3.5.0'
 
-  '@go-wind/flow-designer-core@0.2.0':
-    resolution: {integrity: sha512-QlAPCJiNDrJ5Zi2lDDVyfYfTD3DOjOql/xH4fj/hm1b9aPriC0Bhe5V/La7T4Sc7MhtUAS5n4cqOJGse6njlyw==}
+  '@go-wind/flow-designer-core@0.2.1':
+    resolution: {integrity: sha512-aEX4AKc4iKOi5mEAl7rAPMqoRDRVI74kp98+yeQRS6Ma71PmP58cJZ+KrGkfpZd///+b3FHaJRE4ywm9h7zeFA==}
     engines: {node: '>=18'}
 
-  '@go-wind/flow-designer-vue@0.2.0':
-    resolution: {integrity: sha512-ECMTX34T2JWk87DOiz7h5dGreWkdnPzmurYJ0nHS3/J4T7Ay3IvDIkKTU94MDAgxhpJpJL+hZNdFKEwm+RUOYg==}
+  '@go-wind/flow-designer-vue@0.2.1':
+    resolution: {integrity: sha512-4XpK0L+XOO8PUlA4aXU0h484QPt6LACWmPEdBgxMTfSGQH5DznmMUXF7KmZtJNbhmL470UK25BvBz3u47A73+Q==}
     engines: {node: '>=18'}
     peerDependencies:
       vue: ^3.4.0
@@ -5541,7 +5541,7 @@ snapshots:
       - '@typescript-eslint/types'
       - '@vue/composition-api'
 
-  '@go-wind/flow-designer-core@0.2.0(camunda-bpmn-js-behaviors@1.18.0(bpmn-js@17.11.1)(camunda-bpmn-moddle@8.0.2)(zeebe-bpmn-moddle@2.0.0(moddle@8.2.1)))(diagram-js@14.11.3)':
+  '@go-wind/flow-designer-core@0.2.1(camunda-bpmn-js-behaviors@1.18.0(bpmn-js@17.11.1)(camunda-bpmn-moddle@8.0.2)(zeebe-bpmn-moddle@2.0.0(moddle@8.2.1)))(diagram-js@14.11.3)':
     dependencies:
       '@bpmn-io/properties-panel': 3.58.1
       bpmn-js: 17.11.1
@@ -5552,9 +5552,11 @@ snapshots:
       - diagram-js
       - preact-render-to-string
 
-  '@go-wind/flow-designer-vue@0.2.0(camunda-bpmn-js-behaviors@1.18.0(bpmn-js@17.11.1)(camunda-bpmn-moddle@8.0.2)(zeebe-bpmn-moddle@2.0.0(moddle@8.2.1)))(diagram-js@14.11.3)(vue@3.5.34(typescript@5.9.3))':
+  '@go-wind/flow-designer-vue@0.2.1(camunda-bpmn-js-behaviors@1.18.0(bpmn-js@17.11.1)(camunda-bpmn-moddle@8.0.2)(zeebe-bpmn-moddle@2.0.0(moddle@8.2.1)))(diagram-js@14.11.3)(vue@3.5.34(typescript@5.9.3))':
     dependencies:
-      '@go-wind/flow-designer-core': 0.2.0(camunda-bpmn-js-behaviors@1.18.0(bpmn-js@17.11.1)(camunda-bpmn-moddle@8.0.2)(zeebe-bpmn-moddle@2.0.0(moddle@8.2.1)))(diagram-js@14.11.3)
+      '@bpmn-io/properties-panel': 3.58.1
+      '@go-wind/flow-designer-core': 0.2.1(camunda-bpmn-js-behaviors@1.18.0(bpmn-js@17.11.1)(camunda-bpmn-moddle@8.0.2)(zeebe-bpmn-moddle@2.0.0(moddle@8.2.1)))(diagram-js@14.11.3)
+      bpmn-js: 17.11.1
       vue: 3.5.34(typescript@5.9.3)
     transitivePeerDependencies:
       - camunda-bpmn-js-behaviors

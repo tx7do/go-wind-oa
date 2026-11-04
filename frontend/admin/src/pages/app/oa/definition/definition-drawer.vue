@@ -51,51 +51,6 @@
             @error="onDesignerError"
           />
 
-          <!--
-            OA 节点配置条：go-wind-flow 0.2.0 的属性面板审批组在 bpmn-js 17 下
-            静默失效（依赖私有 _modeling），审批人/子流程配置在此补充编辑，
-            提交时合并进设计器文档再转换。
-          -->
-          <div v-if="taskNodeConfigs.length || subprocessNodeConfigs.length" class="oa-node-strip">
-            <div class="oa-strip-title">{{ $t("pages.oa.definition.nodesTitle") }}</div>
-            <div
-              v-for="cfg in taskNodeConfigs"
-              :key="'t' + cfg.id"
-              class="oa-node-row"
-            >
-              <span class="oa-node-label">审批 · {{ cfg.id }}</span>
-              <ElInput
-                v-model="cfg.rulesJson"
-                placeholder='[{"kind":"LEADER"}]'
-                style="flex: 1"
-              />
-              <span class="hint">kind：USER/STARTER/LEADER/POSITION（USER/POSITION 需 value 填数字 ID）</span>
-              <ElRadioGroup v-model="cfg.strategy" size="small">
-                <ElRadioButton value="ALL">会签</ElRadioButton>
-                <ElRadioButton value="ANY">或签</ElRadioButton>
-              </ElRadioGroup>
-            </div>
-            <div
-              v-for="cfg in subprocessNodeConfigs"
-              :key="'s' + cfg.id"
-              class="oa-node-row"
-            >
-              <span class="oa-node-label">子流程 · {{ cfg.id }}</span>
-              <ElInput
-                v-model="cfg.subprocessKey"
-                placeholder="子流程编码，如 LEAVE"
-                style="width: 240px"
-              />
-              <ElInputNumber
-                v-model="cfg.subprocessVersion"
-                :min="1"
-                :max="9999"
-                :controls="false"
-                placeholder="版本"
-                style="width: 120px"
-              />
-            </div>
-          </div>
         </div>
 
         <ElInput
@@ -146,12 +101,11 @@
 
 <script lang="ts" setup>
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
-import { ElButton, ElInput, ElInputNumber, ElRadioButton, ElRadioGroup } from "element-plus";
+import { ElButton, ElInput, ElRadioButton, ElRadioGroup } from "element-plus";
 import { nextTick, ref, computed, watch } from "vue";
 
 import { usePreferences } from "@/core/preferences";
 
-import type { ApproverSpec } from "@go-wind/flow-designer-core";
 
 import { useCreateWorkflowDefinition } from "@/api/composables";
 import { $t } from "@/core/i18n";
@@ -192,87 +146,6 @@ const formFieldDrafts = ref<FieldDraft[]>([]);
 const designerRef = ref();
 const designerHandle = ref<DesignerHandle | null>(null);
 const designerDocument = ref<DesignerDocument>(defaultDesignerDocument());
-
-// OA 节点配置条（审批人/子流程参数，见模板内注释）。
-interface TaskNodeConfig {
-  id: string;
-  rulesJson: string;
-  strategy: "ALL" | "ANY";
-}
-interface SubprocessNodeConfig {
-  id: string;
-  subprocessKey: string;
-  subprocessVersion: number;
-}
-const taskNodeConfigs = ref<TaskNodeConfig[]>([]);
-const subprocessNodeConfigs = ref<SubprocessNodeConfig[]>([]);
-
-/** 从设计器文档同步 OA 配置条（保留已编辑值，仅增删节点行）。 */
-function syncNodeConfigs(doc: DesignerDocument) {
-  const tasks = doc.nodes.filter((n) => n.type === "userTask");
-  const subs = doc.nodes.filter((n) => n.type === "callActivity");
-
-  const nextTasks: TaskNodeConfig[] = [];
-  for (const n of tasks) {
-    const existing = taskNodeConfigs.value.find((c) => c.id === n.id);
-    if (existing) {
-      nextTasks.push(existing);
-      continue;
-    }
-    const spec: ApproverSpec = n.approver ?? {};
-    nextTasks.push({
-      id: n.id,
-      rulesJson: JSON.stringify(spec.rules ?? [{ kind: "LEADER" }]),
-      strategy: spec.strategy === "ANY" ? "ANY" : "ALL",
-    });
-  }
-  taskNodeConfigs.value = nextTasks;
-
-  const nextSubs: SubprocessNodeConfig[] = [];
-  for (const n of subs) {
-    const existing = subprocessNodeConfigs.value.find((c) => c.id === n.id);
-    if (existing) {
-      nextSubs.push(existing);
-      continue;
-    }
-    nextSubs.push({
-      id: n.id,
-      subprocessKey: n.subprocessKey ?? "",
-      subprocessVersion: n.subprocessVersion && n.subprocessVersion > 0 ? n.subprocessVersion : 1,
-    });
-  }
-  subprocessNodeConfigs.value = nextSubs;
-}
-
-/** 配置条合并进设计器文档（画布只管结构，审批人/子流程参数以此为准）。 */
-function applyNodeConfigs(doc: DesignerDocument): DesignerDocument {
-  for (const n of doc.nodes) {
-    if (n.type === "userTask") {
-      const cfg = taskNodeConfigs.value.find((c) => c.id === n.id);
-      if (!cfg) continue;
-      let rules: unknown;
-      try {
-        rules = JSON.parse(cfg.rulesJson || "[]");
-      } catch {
-        throw new Error(`审批节点「${n.name || n.id}」的办理人规则不是合法 JSON`);
-      }
-      if (!Array.isArray(rules) || rules.length === 0) {
-        throw new Error(`审批节点「${n.name || n.id}」未配置办理人规则`);
-      }
-      n.approver = { rules: rules as ApproverSpec["rules"], strategy: cfg.strategy };
-    }
-    if (n.type === "callActivity") {
-      const cfg = subprocessNodeConfigs.value.find((c) => c.id === n.id);
-      if (!cfg) continue;
-      if (!cfg.subprocessKey) {
-        throw new Error(`子流程节点「${n.name || n.id}」未配置子流程编码`);
-      }
-      n.subprocessKey = cfg.subprocessKey;
-      n.subprocessVersion = cfg.subprocessVersion;
-    }
-  }
-  return doc;
-}
 
 const formData = reactive({
   code: "",
@@ -357,7 +230,6 @@ function defaultDesignerDocument(): DesignerDocument {
 function onDesignerReady(handle: DesignerHandle) {
   designerHandle.value = handle;
   refreshDesignerCanvas();
-  syncNodeConfigs(designerDocument.value);
 }
 
 function onDesignerError(_err: unknown) {
@@ -377,12 +249,12 @@ function refreshDesignerCanvas() {
     });
 }
 
-/** 可视化画布 → node_config 文本（合并 OA 配置条 + 子集转换校验）。 */
+/** 可视化画布 → node_config 文本（含 OA 子集转换校验）。 */
 async function serializeDesigner(): Promise<string> {
   const rawDoc = designerHandle.value
     ? await designerHandle.value.getDocument(formData.code || "new_process")
     : designerDocument.value;
-  return designerToNodeConfig(applyNodeConfigs(rawDoc));
+  return designerToNodeConfig(rawDoc);
 }
 
 function onAddField() {
@@ -425,7 +297,6 @@ function onNodeModeChange(mode: string | number | boolean | undefined) {
     nodeMode.value = "json";
     return;
   }
-  syncNodeConfigs(designerDocument.value);
   void nextTick(() => refreshDesignerCanvas());
 }
 
@@ -449,7 +320,6 @@ function resetForm() {
   nodeMode.value = "visual";
   formMode.value = "visual";
   designerDocument.value = defaultDesignerDocument();
-  syncNodeConfigs(designerDocument.value);
   formFieldDrafts.value = [];
   formRef.value?.clearValidate();
   void nextTick(() => refreshDesignerCanvas());
@@ -556,32 +426,7 @@ defineExpose({ open });
   }
 }
 
-.oa-node-strip {
-  width: 100%;
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 6px;
-  padding: 12px;
-  margin-top: 12px;
-}
 
-.oa-strip-title {
-  font-weight: 600;
-  font-size: 13px;
-  margin-bottom: 10px;
-  color: var(--el-text-color-primary);
-}
 
-.oa-node-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
 
-.oa-node-label {
-  width: 130px;
-  flex-shrink: 0;
-  font-size: 13px;
-  color: var(--el-text-color-regular);
-}
 </style>
