@@ -13,6 +13,7 @@ import (
 	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
 	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
 
+	"go-wind-oa/pkg/constants"
 	"go-wind-oa/pkg/middleware/auth"
 	"go-wind-oa/pkg/utils"
 )
@@ -77,6 +78,13 @@ func (s *RoleService) Create(ctx context.Context, req *permissionV1.CreateRoleRe
 		req.Data.Type = trans.Ptr(permissionV1.Role_TENANT)
 	}
 
+	// 角色码保留字校验：内置身份码（platform:* / template:* / tenant:manager）在
+	// 登录链路与鉴权引擎里按码值承载身份判定语义，用户自建角色不得占用，
+	// 否则自建 platform:admin 再登录即可拿到平台管理员标志（越权）。
+	if constants.IsReservedRoleCode(req.Data.GetCode()) {
+		return nil, adminV1.ErrorBadRequest("role code is reserved")
+	}
+
 	_, err = s.roleServiceClient.Create(ctx, req)
 
 	return &emptypb.Empty{}, err
@@ -101,6 +109,12 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 
 	if operator.GetTenantId() > 0 && req.Data.GetType() != permissionV1.Role_TENANT {
 		req.Data.Type = trans.Ptr(permissionV1.Role_TENANT)
+	}
+
+	// 角色码保留字校验：与 Create 同口径——受保护角色的 code 会被下方黑名单剥离，
+	// 但普通角色的 code 可改，必须拦住改成内置身份码的路径。
+	if req.Data.Code != nil && constants.IsReservedRoleCode(req.Data.GetCode()) {
+		return nil, adminV1.ErrorBadRequest("role code is reserved")
 	}
 
 	r, err := s.roleServiceClient.Get(ctx, &permissionV1.GetRoleRequest{
