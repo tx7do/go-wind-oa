@@ -63,6 +63,11 @@ func (s *MenuService) Create(ctx context.Context, req *permissionV1.CreateMenuRe
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
+	// 菜单是全局定义（影响全平台前端展示），租户操作者不可增删改。
+	if err = requirePlatformAdmin(ctx, s.log, "menu management"); err != nil {
+		return nil, err
+	}
+
 	return s.menuServiceClient.Create(ctx, req)
 }
 
@@ -84,6 +89,11 @@ func (s *MenuService) Update(ctx context.Context, req *permissionV1.UpdateMenuRe
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
+	// 与 Create 同口径：全局菜单仅平台管理员可改。
+	if err = requirePlatformAdmin(ctx, s.log, "menu management"); err != nil {
+		return nil, err
+	}
+
 	return s.menuServiceClient.Update(ctx, req)
 }
 
@@ -96,10 +106,19 @@ func (s *MenuService) Delete(ctx context.Context, req *permissionV1.DeleteMenuRe
 
 	req.OperatorId = trans.Ptr(operator.UserId)
 
+	if err := requirePlatformAdmin(ctx, s.log, "menu management"); err != nil {
+		return nil, err
+	}
+
 	return s.menuServiceClient.Delete(ctx, req)
 }
 
 // SyncMenus 同步菜单（转发 core MenuService）。
 func (s *MenuService) SyncMenus(ctx context.Context, req *permissionV1.SyncMenusRequest) (*emptypb.Empty, error) {
+	// 菜单同步是平台级运维操作（REPLACE 会清空重建全平台菜单），仅平台管理员。
+	if err := requirePlatformAdmin(ctx, s.log, "menu management"); err != nil {
+		return nil, err
+	}
+
 	return s.menuServiceClient.SyncMenus(ctx, req)
 }

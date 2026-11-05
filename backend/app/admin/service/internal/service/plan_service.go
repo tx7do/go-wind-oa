@@ -40,6 +40,13 @@ func (s *PlanService) Create(ctx context.Context, req *identityV1.CreatePlanRequ
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
+
+	// 套餐/配额/白名单定义是计费与租户闸门的源头数据，与租户管理同登记在
+	// MODULE_TENANT（租户自助用量使其常态在白名单内），仅平台管理员可改。
+	if err := requirePlatformAdmin(ctx, s.log, "plan management"); err != nil {
+		return nil, err
+	}
+
 	return s.planServiceClient.Create(ctx, req)
 }
 
@@ -47,11 +54,21 @@ func (s *PlanService) Update(ctx context.Context, req *identityV1.UpdatePlanRequ
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
+	// 套餐/配额/白名单定义是计费与租户闸门的源头数据，与租户管理同登记在
+	// MODULE_TENANT（租户自助用量使其常态在白名单内），仅平台管理员可改。
+	if err := requirePlatformAdmin(ctx, s.log, "plan management"); err != nil {
+		return nil, err
+	}
+
 	id := req.GetId()
 	req.Data.Id = &id
 	return s.planServiceClient.Update(ctx, req)
 }
 
 func (s *PlanService) Delete(ctx context.Context, req *identityV1.DeletePlanRequest) (*emptypb.Empty, error) {
+	if err := requirePlatformAdmin(ctx, s.log, "plan management"); err != nil {
+		return nil, err
+	}
+
 	return s.planServiceClient.Delete(ctx, req)
 }

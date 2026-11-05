@@ -88,6 +88,12 @@ func (s *TenantService) Create(ctx context.Context, req *identityV1.CreateTenant
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
+	// 租户管理是平台专用功能：租户与套餐同登记在 MODULE_TENANT（租户自助用量
+	// 使其常态在白名单内），闸门缺失时租户操作者可改任意租户的套餐/到期/状态。
+	if err = requirePlatformAdmin(ctx, s.log, "tenant management"); err != nil {
+		return nil, err
+	}
+
 	if _, err = s.tenantServiceClient.Create(ctx, req); err != nil {
 		return nil, err
 	}
@@ -113,10 +119,19 @@ func (s *TenantService) Update(ctx context.Context, req *identityV1.UpdateTenant
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
+	// 租户表没有 tenant_id 列、无法靠数据层隔离挡跨租户篡改，仅平台管理员可改。
+	if err = requirePlatformAdmin(ctx, s.log, "tenant management"); err != nil {
+		return nil, err
+	}
+
 	return s.tenantServiceClient.Update(ctx, req)
 }
 
 func (s *TenantService) Delete(ctx context.Context, req *identityV1.DeleteTenantRequest) (*emptypb.Empty, error) {
+	if err := requirePlatformAdmin(ctx, s.log, "tenant management"); err != nil {
+		return nil, err
+	}
+
 	return s.tenantServiceClient.Delete(ctx, req)
 }
 
@@ -125,6 +140,10 @@ func (s *TenantService) TenantExists(ctx context.Context, req *identityV1.Tenant
 }
 
 func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *identityV1.CreateTenantWithAdminUserRequest) (*emptypb.Empty, error) {
+	if err := requirePlatformAdmin(ctx, s.log, "tenant management"); err != nil {
+		return nil, err
+	}
+
 	if req == nil || req.Tenant == nil || req.User == nil {
 		s.log.Error("invalid parameter: tenant or user is nil", req)
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
@@ -145,11 +164,29 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 }
 
 // GetUsage 查询租户用量与配额（转发 core TenantService）。
+// 平台管理员可查任意租户；租户操作者只能查自己租户。
 func (s *TenantService) GetUsage(ctx context.Context, req *identityV1.GetTenantUsageRequest) (*identityV1.TenantUsage, error) {
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if !operator.GetIsPlatformAdmin() && operator.GetTenantId() != req.GetId() {
+		return nil, adminV1.ErrorForbidden("no permission to view other tenant usage")
+	}
+
 	return s.tenantServiceClient.GetUsage(ctx, req)
 }
 
 // CleanupData 清理租户数据（转发 core TenantService）。
 func (s *TenantService) CleanupData(ctx context.Context, req *identityV1.CleanupTenantDataRequest) (*emptypb.Empty, error) {
+	if req == nil || req.GetId() == 0 {
+		return nil, adminV1.ErrorBadRequest("invalid parameter")
+	}
+
+	// 清理租户数据会把租户置 OFF，是平台级处置动作，仅平台管理员。
+	if err := requirePlatformAdmin(ctx, s.log, "tenant management"); err != nil {
+		return nil, err
+	}
+
 	return s.tenantServiceClient.CleanupData(ctx, req)
 }

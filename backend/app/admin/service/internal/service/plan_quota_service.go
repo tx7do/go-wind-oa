@@ -40,6 +40,13 @@ func (s *PlanQuotaService) Create(ctx context.Context, req *identityV1.CreatePla
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
+
+	// 套餐/配额/白名单定义是计费与租户闸门的源头数据，与租户管理同登记在
+	// MODULE_TENANT（租户自助用量使其常态在白名单内），仅平台管理员可改。
+	if err := requirePlatformAdmin(ctx, s.log, "plan management"); err != nil {
+		return nil, err
+	}
+
 	return s.planQuotaServiceClient.Create(ctx, req)
 }
 
@@ -47,11 +54,21 @@ func (s *PlanQuotaService) Update(ctx context.Context, req *identityV1.UpdatePla
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
+	// 套餐/配额/白名单定义是计费与租户闸门的源头数据，与租户管理同登记在
+	// MODULE_TENANT（租户自助用量使其常态在白名单内），仅平台管理员可改。
+	if err := requirePlatformAdmin(ctx, s.log, "plan management"); err != nil {
+		return nil, err
+	}
+
 	id := req.GetId()
 	req.Data.Id = &id
 	return s.planQuotaServiceClient.Update(ctx, req)
 }
 
 func (s *PlanQuotaService) Delete(ctx context.Context, req *identityV1.DeletePlanQuotaRequest) (*emptypb.Empty, error) {
+	if err := requirePlatformAdmin(ctx, s.log, "plan management"); err != nil {
+		return nil, err
+	}
+
 	return s.planQuotaServiceClient.Delete(ctx, req)
 }
