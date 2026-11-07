@@ -14,7 +14,7 @@
 <tr><th>层级</th><th>技术</th></tr>
 <tr><td><strong>后端框架</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code>（含隐私层与多租户隔离） · <code>PostgreSQL</code></td></tr>
-<tr><td><strong>中间件</strong></td><td><code>Redis</code> · <code>MinIO</code>（S3 兼容对象存储） · <code>Etcd</code>（服务注册发现） · <code>Jaeger</code>（链路追踪）</td></tr>
+<tr><td><strong>中间件</strong></td><td><code>Redis</code> · <code>SeaweedFS</code>（S3 兼容对象存储，MinIO 社区版停维护后的替代，容器服务名沿用 minio） · <code>Etcd</code>（服务注册发现） · <code>Jaeger</code>（链路追踪）</td></tr>
 <tr><td><strong>认证授权</strong></td><td><code>JWT</code> · <code>RBAC</code> · <code>验证码</code> · 多租户数据隔离</td></tr>
 <tr><td><strong>代码生成</strong></td><td><code>Ent Schema → ORM</code> · <code>Protobuf → Go API / TypeScript / Dart 客户端 / OpenAPI</code></td></tr>
 </table>
@@ -39,7 +39,7 @@
 |--------|------|----------|
 | [PostgreSQL](https://www.postgresql.org/) | 业务数据持久化 | 5432 |
 | [Redis](https://redis.io/) | 缓存与会话存储 | 6379 |
-| [MinIO](https://min.io/) | S3 兼容对象存储（发票凭证等文件） | 9000 / 9001 |
+| [SeaweedFS](https://github.com/seaweedfs/seaweedfs) | S3 兼容对象存储（MinIO 社区版停维护后的替代，容器服务名沿用 minio；发票凭证等文件） | 9000 / 9333 |
 | [Etcd](https://etcd.io/) | 服务注册与发现 | 2379 |
 | [Jaeger](https://www.jaegertracing.io/) | 分布式链路追踪 | 14268 / 16686 |
 

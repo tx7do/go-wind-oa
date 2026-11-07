@@ -39,8 +39,8 @@ HOSTS_SERVICES="postgres redis" ./scripts/env/install_unix_dev.sh
 
 | 脚本 | Compose 文件 | 启动内容 |
 |------|--------------|----------|
-| `full_deploy.sh` / `full_deploy.ps1` | `docker-compose.yaml` | PostgreSQL、Redis、MinIO、Etcd、Jaeger + admin/app/core 三个应用服务容器 |
-| `libs_only.sh` / `libs_only.ps1` | `docker-compose.libs.yaml`（默认，可经 `COMPOSE_FILE` 覆盖） | 仅 PostgreSQL、Redis、MinIO、Etcd、Jaeger |
+| `full_deploy.sh` / `full_deploy.ps1` | `docker-compose.yaml` | PostgreSQL、Redis、SeaweedFS、Etcd、Jaeger + admin/app/core 三个应用服务容器 |
+| `libs_only.sh` / `libs_only.ps1` | `docker-compose.libs.yaml`（默认，可经 `COMPOSE_FILE` 覆盖） | 仅 PostgreSQL、Redis、SeaweedFS、Etcd、Jaeger |
 
 **full_deploy 前置条件**：compose 中的应用服务引用 `go-wind-oa/{admin,app,core}-service` 镜像，需先在 `backend/` 执行 `make docker`（逐服务构建镜像）再运行。
 

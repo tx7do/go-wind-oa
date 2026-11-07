@@ -55,7 +55,7 @@ The backend is built on the [go-kratos](https://go-kratos.dev/) microservice fra
 <tr><th>Layer</th><th>Technology</th></tr>
 <tr><td><strong>Backend Framework</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code> (with privacy layer and multi-tenant isolation) · <code>PostgreSQL</code></td></tr>
-<tr><td><strong>Middleware</strong></td><td><code>Redis</code> · <code>MinIO</code> (S3-compatible object storage) · <code>Etcd</code> (service registry/discovery) · <code>Jaeger</code> (tracing)</td></tr>
+<tr><td><strong>Middleware</strong></td><td><code>Redis</code> · <code>SeaweedFS</code> (S3-compatible object storage — the replacement after MinIO Community went unmaintained; the container service name stays minio) · <code>Etcd</code> (service registry/discovery) · <code>Jaeger</code> (tracing)</td></tr>
 <tr><td><strong>Auth</strong></td><td><code>JWT</code> · <code>RBAC</code> · <code>CAPTCHA</code> · multi-tenant data isolation</td></tr>
 <tr><td><strong>Admin Frontend</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Element Plus</code> · <code>Pinia</code> · <code>TanStack Query</code></td></tr>
 <tr><td><strong>Mobile Client</strong></td><td><code>Flutter</code> · <code>Dart</code> · <code>Dio</code> · <code>GetIt</code></td></tr>

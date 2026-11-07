@@ -6,14 +6,14 @@
 
 | 组件 | 说明 | 地址 |
 |------|------|------|
-| 中间件容器 | PostgreSQL / Redis / MinIO / etcd / Jaeger，一条命令全部启动 | 见下文端口表 |
+| 中间件容器 | PostgreSQL / Redis / SeaweedFS / etcd / Jaeger，一条命令全部启动 | 见下文端口表 |
 | core-service | 纯 gRPC 后端，全部业务逻辑在这里（端口随机，其他服务通过 etcd 自动发现它） | — |
 | admin-service | 管理后台的 HTTP 后端 | <http://localhost:6680>（API）/ <http://localhost:6680/docs/>（Swagger） |
 | app-service | 移动端的 HTTP 后端 | <http://localhost:6780>（API）/ <http://localhost:6780/docs/>（Swagger） |
 | 管理后台前端 | Vue3 网页 | <http://localhost:15787> |
 | 移动端 App | Flutter | 连接 `localhost:6780` |
 
-其他端口：admin gRPC 与 SSE 事件流 `6681`（SSE 路径 `/events`），app gRPC 与 SSE `6781`，PostgreSQL `5432`，Redis `6379`，MinIO `9000`（API）/ `9001`（控制台），etcd `2379`（服务发现），Jaeger UI `16686`。
+其他端口：admin gRPC 与 SSE 事件流 `6681`（SSE 路径 `/events`），app gRPC 与 SSE `6781`，PostgreSQL `5432`，Redis `6379`，SeaweedFS `9000`（S3 API）/ `9333`（Web UI），etcd `2379`（服务发现），Jaeger UI `16686`。
 
 ## 演示账号
 
@@ -49,7 +49,7 @@ docker compose -f docker-compose.libs.yaml up -d
 docker compose -f docker-compose.libs.yaml ps   # 确认 5 个容器都是 running
 ```
 
-这一步会启动：PostgreSQL（数据库 `go_wind_oa`，账号 `postgres`，密码 `*Abcd123456`）、Redis、MinIO（发票等文件存储，控制台 <http://localhost:9001>，账号 `root`）、etcd（服务发现，三个后端服务靠它互相找到对方）、Jaeger（链路追踪，UI <http://localhost:16686>）。
+这一步会启动：PostgreSQL（数据库 `go_wind_oa`，账号 `postgres`，密码 `*Abcd123456`）、Redis、SeaweedFS（发票等文件存储，Web UI <http://localhost:9333>，账号 `root`）、etcd（服务发现，三个后端服务靠它互相找到对方）、Jaeger（链路追踪，UI <http://localhost:16686>）。
 
 ## 3. 启动三个后端服务
 
@@ -76,7 +76,7 @@ cp -r configs configs.local
 sed -i 's/"redis:6379"/"localhost:6379"/' configs.local/data.yaml
 ```
 
-MinIO 和 etcd 的地址配置本来就是 `127.0.0.1`，不用改。`configs.local/` 已加入 `.gitignore`，不会被误提交。
+对象存储（SeaweedFS）和 etcd 的地址配置本来就是 `127.0.0.1`，不用改。`configs.local/` 已加入 `.gitignore`，不会被误提交。
 
 ### 按顺序启动
 

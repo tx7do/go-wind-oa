@@ -55,7 +55,7 @@ GoWind OA は、承認フロー、人事勤怠、休暇、経費精算といっ�
 <tr><th>レイヤー</th><th>技術</th></tr>
 <tr><td><strong>バックエンド フレームワーク</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code>（プライバシー層とマルチテナント分離を含む） · <code>PostgreSQL</code></td></tr>
-<tr><td><strong>ミドルウェア</strong></td><td><code>Redis</code> · <code>MinIO</code>（S3 互換オブジェクトストレージ） · <code>Etcd</code>（サービスレジストリ/検出） · <code>Jaeger</code>（分散トレーシング）</td></tr>
+<tr><td><strong>ミドルウェア</strong></td><td><code>Redis</code> · <code>SeaweedFS</code>（S3 互換オブジェクトストレージ。MinIO コミュニティ版の保守終了後の代替で、コンテナサービス名は minio を継続使用） · <code>Etcd</code>（サービスレジストリ/検出） · <code>Jaeger</code>（分散トレーシング）</td></tr>
 <tr><td><strong>認証・認可</strong></td><td><code>JWT</code> · <code>RBAC</code> · <code>CAPTCHA</code> · マルチテナント データ分離</td></tr>
 <tr><td><strong>管理コンソール</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Element Plus</code> · <code>Pinia</code> · <code>TanStack Query</code></td></tr>
 <tr><td><strong>モバイルクライアント</strong></td><td><code>Flutter</code> · <code>Dart</code> · <code>Dio</code> · <code>GetIt</code></td></tr>
