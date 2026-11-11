@@ -18,7 +18,7 @@ type WorkflowToken struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint32 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -30,9 +30,9 @@ type WorkflowToken struct {
 	// 令牌状态
 	TokenStatus *workflowtoken.TokenStatus `json:"token_status,omitempty"`
 	// fork 产生的子令牌指向分叉源令牌
-	ParentID *uint32 `json:"parent_id,omitempty"`
+	ParentID *int64 `json:"parent_id,omitempty"`
 	// 阻塞于子流程节点时记录的子流程实例ID
-	ChildInstanceID *uint32 `json:"child_instance_id,omitempty"`
+	ChildInstanceID *int64 `json:"child_instance_id,omitempty"`
 	// 阻塞于定时器节点时的到期时刻
 	DueAt *time.Time `json:"due_at,omitempty"`
 	// 令牌级局部变量（JSON 文本，并行分支隔离）
@@ -40,7 +40,7 @@ type WorkflowToken struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WorkflowTokenQuery when eager-loading is set.
 	Edges        WorkflowTokenEdges `json:"edges"`
-	instance_id  *uint32
+	instance_id  *int64
 	selectValues sql.SelectValues
 }
 
@@ -97,7 +97,7 @@ func (_m *WorkflowToken) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint32(value.Int64)
+			_m.ID = int64(value.Int64)
 		case workflowtoken.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -137,15 +137,15 @@ func (_m *WorkflowToken) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
 			} else if value.Valid {
-				_m.ParentID = new(uint32)
-				*_m.ParentID = uint32(value.Int64)
+				_m.ParentID = new(int64)
+				*_m.ParentID = value.Int64
 			}
 		case workflowtoken.FieldChildInstanceID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field child_instance_id", values[i])
 			} else if value.Valid {
-				_m.ChildInstanceID = new(uint32)
-				*_m.ChildInstanceID = uint32(value.Int64)
+				_m.ChildInstanceID = new(int64)
+				*_m.ChildInstanceID = value.Int64
 			}
 		case workflowtoken.FieldDueAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -165,8 +165,8 @@ func (_m *WorkflowToken) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field instance_id", value)
 			} else if value.Valid {
-				_m.instance_id = new(uint32)
-				*_m.instance_id = uint32(value.Int64)
+				_m.instance_id = new(int64)
+				*_m.instance_id = int64(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

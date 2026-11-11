@@ -55,8 +55,8 @@ func NewExpenseService(
 }
 
 // fillApplicantNames 批量回填申请人姓名（失败仅缺姓名，不影响列表）。
-func (s *ExpenseService) fillApplicantNames(ctx context.Context, tid uint32, items []*oaV1.ExpenseApplication) {
-	ids := make([]uint32, 0, len(items))
+func (s *ExpenseService) fillApplicantNames(ctx context.Context, tid int64, items []*oaV1.ExpenseApplication) {
+	ids := make([]int64, 0, len(items))
 	for _, it := range items {
 		if it.GetCreatedBy() != 0 {
 			ids = append(ids, it.GetCreatedBy())
@@ -75,7 +75,7 @@ func (s *ExpenseService) fillApplicantNames(ctx context.Context, tid uint32, ite
 
 // ensureWorkflowDefinition EXPENSE 流程定义兜底：租户内不存在时按默认模板创建并启用
 // （提交给申请人主管 LEADER，会签）。并发首提撞唯一索引时忽略，回读校验。
-func (s *ExpenseService) ensureWorkflowDefinition(ctx context.Context, tid, uid uint32) {
+func (s *ExpenseService) ensureWorkflowDefinition(ctx context.Context, tid, uid int64) {
 	if _, err := s.definitionRepo.GetByCodeVersion(ctx, expenseDefinitionCode, expenseDefinitionVersion); err == nil {
 		return
 	}
@@ -150,7 +150,7 @@ func (s *ExpenseService) ListExpenseApplications(ctx context.Context, req *oaV1.
 		return nil, err
 	}
 	s.fillApplicantNames(ctx, tid, items)
-	return &oaV1.ListExpenseApplicationsResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.ListExpenseApplicationsResponse{Items: items, Total: int64(total)}, nil
 }
 
 func (s *ExpenseService) GetExpenseApplication(ctx context.Context, req *oaV1.GetExpenseApplicationRequest) (*oaV1.ExpenseApplication, error) {
@@ -171,7 +171,7 @@ func (s *ExpenseService) GetExpenseApplication(ctx context.Context, req *oaV1.Ge
 
 // onInstanceTerminal 工作流终结回调。校验关联+幂等；ERP 应付款联动是未来扩展点，
 // 当前仅同步申请单状态。
-func (s *ExpenseService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID uint32, status oaV1.WorkflowInstance_InstanceStatus) {
+func (s *ExpenseService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID int64, status oaV1.WorkflowInstance_InstanceStatus) {
 	entity, err := s.appRepo.GetEntity(ctx, tenantID, businessID)
 	if err != nil || entity == nil {
 		s.log.Errorf("expense hook load application %d failed: %v", businessID, err)

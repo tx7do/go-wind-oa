@@ -43,8 +43,8 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/userposition"
 	"go-wind-oa/app/core/service/internal/data/ent/userrole"
 
-	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
 	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
+	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
 
 	appViewer "go-wind-oa/pkg/entgo/viewer"
 )
@@ -70,7 +70,7 @@ func NewTenantUsageRepo(
 
 // GetUsage 聚合查询指定租户的当前用量与套餐配额上限。
 // 使用 SystemViewerContext 绕过租户隔离以跨表聚合。
-func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId uint32) (*identityV1.TenantUsage, error) {
+func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId int64) (*identityV1.TenantUsage, error) {
 	sysCtx := appViewer.NewSystemViewerContext(ctx)
 
 	// 1. 查租户记录，WithPlan(WithQuotas) 预载套餐及其配额。
@@ -112,12 +112,12 @@ func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId uint32) (*ident
 		r.log.Errorf("get usage: count users failed: %v", uerr)
 		userCount = 0
 	}
-	usage.UserCount = uint64(userCount)
+	usage.UserCount = int64(userCount)
 
 	// 4. 存储占用统计（SUM size，用 Scan 聚合）
-	storageSum := uint64(0)
+	storageSum := int64(0)
 	var storageRows []struct {
-		Total uint64 `sql:"total"`
+		Total int64 `sql:"total"`
 	}
 	if serr := r.entClient.Client().File.Query().
 		Where(file.TenantIDEQ(tenantId)).
@@ -137,7 +137,7 @@ func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId uint32) (*ident
 		r.log.Errorf("get usage: count api audit logs failed: %v", aerr)
 		apiCount = 0
 	}
-	usage.ApiCallCount = uint64(apiCount)
+	usage.ApiCallCount = int64(apiCount)
 
 	return usage, nil
 }
@@ -161,7 +161,7 @@ func mapEntQuotaTypeToProto(qt planquota.QuotaType) identityV1.PlanQuota_QuotaTy
 // 在一个事务中硬删所有带 tenant_id 的业务表数据，保留 sys_tenants 记录（status 改为 OFF），
 // 事务提交后吊销该租户全部用户的在线令牌（admin+app 双 ClientType）。
 // 使用 SystemViewerContext 绕过租户隔离以删除跨表数据。
-func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32) error {
+func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId int64) error {
 	sysCtx := appViewer.NewSystemViewerContext(ctx)
 
 	tx, err := r.entClient.Client().Tx(sysCtx)
@@ -185,34 +185,97 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 	// 列表对齐 ent.Client/Tx 中所有拥有 TenantIDEQ 谓词的包（共 29 张表）。
 	// 注意：Tx 层的 Delete.Exec 返回 (int, error)，需丢弃 int 仅返回 error。
 	deleteFns := []func() error{
-		func() error { _, e := tx.ApiAuditLog.Delete().Where(apiauditlog.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.DataAccessAuditLog.Delete().Where(dataaccessauditlog.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.DictEntry.Delete().Where(dictentry.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.DictEntryI18n.Delete().Where(dictentryi18n.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error {
+			_, e := tx.ApiAuditLog.Delete().Where(apiauditlog.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.DataAccessAuditLog.Delete().Where(dataaccessauditlog.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.DictEntry.Delete().Where(dictentry.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.DictEntryI18n.Delete().Where(dictentryi18n.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
 		func() error { _, e := tx.DictType.Delete().Where(dicttype.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
 		func() error { _, e := tx.File.Delete().Where(file.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.InternalMessage.Delete().Where(internalmessage.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.InternalMessageCategory.Delete().Where(internalmessagecategory.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.InternalMessageRecipient.Delete().Where(internalmessagerecipient.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.LoginAuditLog.Delete().Where(loginauditlog.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.LoginPolicy.Delete().Where(loginpolicy.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.Membership.Delete().Where(membership.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.MembershipOrgUnit.Delete().Where(membershiporgunit.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.MembershipPosition.Delete().Where(membershipposition.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.MembershipRole.Delete().Where(membershiprole.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.OperationAuditLog.Delete().Where(operationauditlog.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error {
+			_, e := tx.InternalMessage.Delete().Where(internalmessage.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.InternalMessageCategory.Delete().Where(internalmessagecategory.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.InternalMessageRecipient.Delete().Where(internalmessagerecipient.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.LoginAuditLog.Delete().Where(loginauditlog.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.LoginPolicy.Delete().Where(loginpolicy.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.Membership.Delete().Where(membership.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.MembershipOrgUnit.Delete().Where(membershiporgunit.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.MembershipPosition.Delete().Where(membershipposition.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.MembershipRole.Delete().Where(membershiprole.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.OperationAuditLog.Delete().Where(operationauditlog.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
 		func() error { _, e := tx.OrgUnit.Delete().Where(orgunit.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.PermissionAuditLog.Delete().Where(permissionauditlog.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.PolicyEvaluationLog.Delete().Where(policyevaluationlog.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error {
+			_, e := tx.PermissionAuditLog.Delete().Where(permissionauditlog.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.PolicyEvaluationLog.Delete().Where(policyevaluationlog.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
 		func() error { _, e := tx.Position.Delete().Where(position.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
 		func() error { _, e := tx.Role.Delete().Where(role.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.RoleMetadata.Delete().Where(rolemetadata.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.RolePermission.Delete().Where(rolepermission.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error {
+			_, e := tx.RoleMetadata.Delete().Where(rolemetadata.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.RolePermission.Delete().Where(rolepermission.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
 		func() error { _, e := tx.Task.Delete().Where(task.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
 		func() error { _, e := tx.User.Delete().Where(user.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.UserCredential.Delete().Where(usercredential.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.UserOrgUnit.Delete().Where(userorgunit.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
-		func() error { _, e := tx.UserPosition.Delete().Where(userposition.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error {
+			_, e := tx.UserCredential.Delete().Where(usercredential.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.UserOrgUnit.Delete().Where(userorgunit.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.UserPosition.Delete().Where(userposition.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
 		func() error { _, e := tx.UserRole.Delete().Where(userrole.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
 	}
 

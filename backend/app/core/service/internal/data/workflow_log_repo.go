@@ -52,13 +52,13 @@ func (r *WorkflowLogRepo) init() {
 
 func (r *WorkflowLogRepo) Create(
 	ctx context.Context,
-	tenantID uint32,
-	creatorUserID uint32,
-	instanceID uint32,
+	tenantID int64,
+	creatorUserID int64,
+	instanceID int64,
 	nodeID string,
 	action *oaV1.WorkflowLog_LogAction,
 	comment string,
-) (uint32, error) {
+) (int64, error) {
 	builder := r.entClient.Client().WorkflowLog.Create().
 		SetInstanceID(instanceID).
 		SetNodeID(nodeID).
@@ -79,9 +79,9 @@ func (r *WorkflowLogRepo) Create(
 // CreateWithTx 事务内写日志。builder 源自 tx。
 func (r *WorkflowLogRepo) CreateWithTx(
 	ctx context.Context, tx *ent.Tx,
-	tenantID uint32, creatorUserID uint32, instanceID uint32, nodeID string,
-		action *oaV1.WorkflowLog_LogAction, comment string,
-) (uint32, error) {
+	tenantID int64, creatorUserID int64, instanceID int64, nodeID string,
+	action *oaV1.WorkflowLog_LogAction, comment string,
+) (int64, error) {
 	builder := tx.WorkflowLog.Create().
 		SetInstanceID(instanceID).
 		SetNodeID(nodeID).
@@ -101,7 +101,7 @@ func (r *WorkflowLogRepo) CreateWithTx(
 
 // ListByActor “已办”列表。按操作者+租户查询日志，WithInstance 取实例 ID。
 // pageSize>0 时分页并返回真实总数。
-func (r *WorkflowLogRepo) ListByActor(ctx context.Context, tenantID uint32, actorUserID uint32, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {
+func (r *WorkflowLogRepo) ListByActor(ctx context.Context, tenantID int64, actorUserID int64, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {
 	query := r.entClient.Client().WorkflowLog.Query().
 		Where(
 			workflowlog.CreatedByEQ(actorUserID),
@@ -147,7 +147,7 @@ func (r *WorkflowLogRepo) ListByActor(ctx context.Context, tenantID uint32, acto
 }
 
 // ListByInstance 审批历史。经 instance→logs 边遍历（WithLogs）取该实例的全部日志。
-func (r *WorkflowLogRepo) ListByInstance(ctx context.Context, tenantID uint32, instanceID uint32) ([]*oaV1.WorkflowLog, error) {
+func (r *WorkflowLogRepo) ListByInstance(ctx context.Context, tenantID int64, instanceID int64) ([]*oaV1.WorkflowLog, error) {
 	instance, err := r.entClient.Client().WorkflowInstance.Query().
 		Where(
 			workflowinstance.IDEQ(instanceID),

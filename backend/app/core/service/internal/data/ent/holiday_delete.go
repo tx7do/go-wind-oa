@@ -40,7 +40,7 @@ func (_d *HolidayDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *HolidayDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(holiday.Table, sqlgraph.NewFieldSpec(holiday.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(holiday.Table, sqlgraph.NewFieldSpec(holiday.FieldID, field.TypeInt64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

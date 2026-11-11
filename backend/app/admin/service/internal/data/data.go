@@ -18,14 +18,14 @@ import (
 	"github.com/tx7do/go-utils/captcha"
 
 	auditV1 "go-wind-oa/api/gen/go/audit/service/v1"
-	dashboardV1 "go-wind-oa/api/gen/go/dashboard/service/v1"
-	redisCacheV1 "go-wind-oa/api/gen/go/redis_cache/service/v1"
 	authenticationV1 "go-wind-oa/api/gen/go/authentication/service/v1"
+	dashboardV1 "go-wind-oa/api/gen/go/dashboard/service/v1"
 	dictV1 "go-wind-oa/api/gen/go/dict/service/v1"
 	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
 	internalMessageV1 "go-wind-oa/api/gen/go/internal_message/service/v1"
 	oaV1 "go-wind-oa/api/gen/go/oa/service/v1"
 	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
+	redisCacheV1 "go-wind-oa/api/gen/go/redis_cache/service/v1"
 	storageV1 "go-wind-oa/api/gen/go/storage/service/v1"
 	taskV1 "go-wind-oa/api/gen/go/task/service/v1"
 

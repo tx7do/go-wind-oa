@@ -65,13 +65,13 @@ func (_c *GeofenceCreate) SetNillableDeletedAt(v *time.Time) *GeofenceCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *GeofenceCreate) SetCreatedBy(v uint32) *GeofenceCreate {
+func (_c *GeofenceCreate) SetCreatedBy(v int64) *GeofenceCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *GeofenceCreate) SetNillableCreatedBy(v *uint32) *GeofenceCreate {
+func (_c *GeofenceCreate) SetNillableCreatedBy(v *int64) *GeofenceCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *GeofenceCreate) SetNillableCreatedBy(v *uint32) *GeofenceCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *GeofenceCreate) SetUpdatedBy(v uint32) *GeofenceCreate {
+func (_c *GeofenceCreate) SetUpdatedBy(v int64) *GeofenceCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *GeofenceCreate) SetNillableUpdatedBy(v *uint32) *GeofenceCreate {
+func (_c *GeofenceCreate) SetNillableUpdatedBy(v *int64) *GeofenceCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *GeofenceCreate) SetNillableUpdatedBy(v *uint32) *GeofenceCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *GeofenceCreate) SetDeletedBy(v uint32) *GeofenceCreate {
+func (_c *GeofenceCreate) SetDeletedBy(v int64) *GeofenceCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *GeofenceCreate) SetNillableDeletedBy(v *uint32) *GeofenceCreate {
+func (_c *GeofenceCreate) SetNillableDeletedBy(v *int64) *GeofenceCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *GeofenceCreate) SetNillableDeletedBy(v *uint32) *GeofenceCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *GeofenceCreate) SetTenantID(v uint32) *GeofenceCreate {
+func (_c *GeofenceCreate) SetTenantID(v int64) *GeofenceCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *GeofenceCreate) SetNillableTenantID(v *uint32) *GeofenceCreate {
+func (_c *GeofenceCreate) SetNillableTenantID(v *int64) *GeofenceCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -153,7 +153,7 @@ func (_c *GeofenceCreate) SetRadiusMeters(v float64) *GeofenceCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *GeofenceCreate) SetID(v uint32) *GeofenceCreate {
+func (_c *GeofenceCreate) SetID(v int64) *GeofenceCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -246,7 +246,7 @@ func (_c *GeofenceCreate) sqlSave(ctx context.Context) (*Geofence, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -256,7 +256,7 @@ func (_c *GeofenceCreate) sqlSave(ctx context.Context) (*Geofence, error) {
 func (_c *GeofenceCreate) createSpec() (*Geofence, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Geofence{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(geofence.Table, sqlgraph.NewFieldSpec(geofence.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(geofence.Table, sqlgraph.NewFieldSpec(geofence.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -276,19 +276,19 @@ func (_c *GeofenceCreate) createSpec() (*Geofence, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(geofence.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(geofence.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(geofence.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(geofence.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(geofence.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(geofence.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(geofence.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(geofence.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Name(); ok {
@@ -396,7 +396,7 @@ func (u *GeofenceUpsert) ClearDeletedAt() *GeofenceUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *GeofenceUpsert) SetCreatedBy(v uint32) *GeofenceUpsert {
+func (u *GeofenceUpsert) SetCreatedBy(v int64) *GeofenceUpsert {
 	u.Set(geofence.FieldCreatedBy, v)
 	return u
 }
@@ -408,7 +408,7 @@ func (u *GeofenceUpsert) UpdateCreatedBy() *GeofenceUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *GeofenceUpsert) AddCreatedBy(v uint32) *GeofenceUpsert {
+func (u *GeofenceUpsert) AddCreatedBy(v int64) *GeofenceUpsert {
 	u.Add(geofence.FieldCreatedBy, v)
 	return u
 }
@@ -420,7 +420,7 @@ func (u *GeofenceUpsert) ClearCreatedBy() *GeofenceUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *GeofenceUpsert) SetUpdatedBy(v uint32) *GeofenceUpsert {
+func (u *GeofenceUpsert) SetUpdatedBy(v int64) *GeofenceUpsert {
 	u.Set(geofence.FieldUpdatedBy, v)
 	return u
 }
@@ -432,7 +432,7 @@ func (u *GeofenceUpsert) UpdateUpdatedBy() *GeofenceUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *GeofenceUpsert) AddUpdatedBy(v uint32) *GeofenceUpsert {
+func (u *GeofenceUpsert) AddUpdatedBy(v int64) *GeofenceUpsert {
 	u.Add(geofence.FieldUpdatedBy, v)
 	return u
 }
@@ -444,7 +444,7 @@ func (u *GeofenceUpsert) ClearUpdatedBy() *GeofenceUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *GeofenceUpsert) SetDeletedBy(v uint32) *GeofenceUpsert {
+func (u *GeofenceUpsert) SetDeletedBy(v int64) *GeofenceUpsert {
 	u.Set(geofence.FieldDeletedBy, v)
 	return u
 }
@@ -456,7 +456,7 @@ func (u *GeofenceUpsert) UpdateDeletedBy() *GeofenceUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *GeofenceUpsert) AddDeletedBy(v uint32) *GeofenceUpsert {
+func (u *GeofenceUpsert) AddDeletedBy(v int64) *GeofenceUpsert {
 	u.Add(geofence.FieldDeletedBy, v)
 	return u
 }
@@ -630,14 +630,14 @@ func (u *GeofenceUpsertOne) ClearDeletedAt() *GeofenceUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *GeofenceUpsertOne) SetCreatedBy(v uint32) *GeofenceUpsertOne {
+func (u *GeofenceUpsertOne) SetCreatedBy(v int64) *GeofenceUpsertOne {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *GeofenceUpsertOne) AddCreatedBy(v uint32) *GeofenceUpsertOne {
+func (u *GeofenceUpsertOne) AddCreatedBy(v int64) *GeofenceUpsertOne {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -658,14 +658,14 @@ func (u *GeofenceUpsertOne) ClearCreatedBy() *GeofenceUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *GeofenceUpsertOne) SetUpdatedBy(v uint32) *GeofenceUpsertOne {
+func (u *GeofenceUpsertOne) SetUpdatedBy(v int64) *GeofenceUpsertOne {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *GeofenceUpsertOne) AddUpdatedBy(v uint32) *GeofenceUpsertOne {
+func (u *GeofenceUpsertOne) AddUpdatedBy(v int64) *GeofenceUpsertOne {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -686,14 +686,14 @@ func (u *GeofenceUpsertOne) ClearUpdatedBy() *GeofenceUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *GeofenceUpsertOne) SetDeletedBy(v uint32) *GeofenceUpsertOne {
+func (u *GeofenceUpsertOne) SetDeletedBy(v int64) *GeofenceUpsertOne {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *GeofenceUpsertOne) AddDeletedBy(v uint32) *GeofenceUpsertOne {
+func (u *GeofenceUpsertOne) AddDeletedBy(v int64) *GeofenceUpsertOne {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -806,7 +806,7 @@ func (u *GeofenceUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *GeofenceUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *GeofenceUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -815,7 +815,7 @@ func (u *GeofenceUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *GeofenceUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *GeofenceUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -872,7 +872,7 @@ func (_c *GeofenceCreateBulk) Save(ctx context.Context) ([]*Geofence, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1053,14 +1053,14 @@ func (u *GeofenceUpsertBulk) ClearDeletedAt() *GeofenceUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *GeofenceUpsertBulk) SetCreatedBy(v uint32) *GeofenceUpsertBulk {
+func (u *GeofenceUpsertBulk) SetCreatedBy(v int64) *GeofenceUpsertBulk {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *GeofenceUpsertBulk) AddCreatedBy(v uint32) *GeofenceUpsertBulk {
+func (u *GeofenceUpsertBulk) AddCreatedBy(v int64) *GeofenceUpsertBulk {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1081,14 +1081,14 @@ func (u *GeofenceUpsertBulk) ClearCreatedBy() *GeofenceUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *GeofenceUpsertBulk) SetUpdatedBy(v uint32) *GeofenceUpsertBulk {
+func (u *GeofenceUpsertBulk) SetUpdatedBy(v int64) *GeofenceUpsertBulk {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *GeofenceUpsertBulk) AddUpdatedBy(v uint32) *GeofenceUpsertBulk {
+func (u *GeofenceUpsertBulk) AddUpdatedBy(v int64) *GeofenceUpsertBulk {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1109,14 +1109,14 @@ func (u *GeofenceUpsertBulk) ClearUpdatedBy() *GeofenceUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *GeofenceUpsertBulk) SetDeletedBy(v uint32) *GeofenceUpsertBulk {
+func (u *GeofenceUpsertBulk) SetDeletedBy(v int64) *GeofenceUpsertBulk {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *GeofenceUpsertBulk) AddDeletedBy(v uint32) *GeofenceUpsertBulk {
+func (u *GeofenceUpsertBulk) AddDeletedBy(v int64) *GeofenceUpsertBulk {
 	return u.Update(func(s *GeofenceUpsert) {
 		s.AddDeletedBy(v)
 	})

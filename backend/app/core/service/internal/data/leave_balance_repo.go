@@ -49,7 +49,7 @@ func leaveBalanceToDTO(e *ent.LeaveBalance) *oaV1.LeaveBalance {
 }
 
 // Get 读取指定用户/类型/年度的额度，不存在返回 nil（无错误）。
-func (r *LeaveBalanceRepo) Get(ctx context.Context, tid, userID, typeID uint32, year int) (*oaV1.LeaveBalance, error) {
+func (r *LeaveBalanceRepo) Get(ctx context.Context, tid, userID, typeID int64, year int) (*oaV1.LeaveBalance, error) {
 	entity, err := r.entClient.Client().LeaveBalance.Query().
 		Where(
 			leavebalance.TenantIDEQ(tid),
@@ -69,7 +69,7 @@ func (r *LeaveBalanceRepo) Get(ctx context.Context, tid, userID, typeID uint32, 
 }
 
 // Grant 授予/调整额度：存在则覆盖 total_days，不存在则创建。
-func (r *LeaveBalanceRepo) Grant(ctx context.Context, tid, operatorID, userID, typeID uint32, year int, totalDays float64) error {
+func (r *LeaveBalanceRepo) Grant(ctx context.Context, tid, operatorID, userID, typeID int64, year int, totalDays float64) error {
 	_, err := r.entClient.Client().LeaveBalance.Query().
 		Where(
 			leavebalance.TenantIDEQ(tid),
@@ -117,7 +117,7 @@ func (r *LeaveBalanceRepo) Grant(ctx context.Context, tid, operatorID, userID, t
 }
 
 // AddUsedDays 审批通过后扣减额度。额度不足时不做钳制（提交时已校验，此处容忍并发窗口）。
-func (r *LeaveBalanceRepo) AddUsedDays(ctx context.Context, tid, userID, typeID uint32, year int, days float64) error {
+func (r *LeaveBalanceRepo) AddUsedDays(ctx context.Context, tid, userID, typeID int64, year int, days float64) error {
 	if _, err := r.entClient.Client().LeaveBalance.Update().
 		Where(
 			leavebalance.TenantIDEQ(tid),
@@ -135,7 +135,7 @@ func (r *LeaveBalanceRepo) AddUsedDays(ctx context.Context, tid, userID, typeID 
 }
 
 // List 查询额度。userID==0 时查全部（admin）。
-func (r *LeaveBalanceRepo) List(ctx context.Context, tid, userID uint32, year int, page, pageSize int32) ([]*oaV1.LeaveBalance, int, error) {
+func (r *LeaveBalanceRepo) List(ctx context.Context, tid, userID int64, year int, page, pageSize int32) ([]*oaV1.LeaveBalance, int, error) {
 	query := r.entClient.Client().LeaveBalance.Query().
 		Where(
 			leavebalance.TenantIDEQ(tid),

@@ -100,7 +100,7 @@ func AttendanceRecordToDTO(e *ent.AttendanceRecord) *oaV1.AttendanceRecord {
 }
 
 // GetByUserDate 读取用户当日记录，不存在返回 nil。
-func (r *AttendanceRepo) GetByUserDate(ctx context.Context, tid, userID uint32, workDate time.Time) (*ent.AttendanceRecord, error) {
+func (r *AttendanceRepo) GetByUserDate(ctx context.Context, tid, userID int64, workDate time.Time) (*ent.AttendanceRecord, error) {
 	entity, err := r.entClient.Client().AttendanceRecord.Query().
 		Where(
 			attendancerecord.TenantIDEQ(tid),
@@ -120,7 +120,7 @@ func (r *AttendanceRepo) GetByUserDate(ctx context.Context, tid, userID uint32, 
 
 // CreateCheckIn 创建当日首条签到记录（含 GPS/BSSID）。
 func (r *AttendanceRepo) CreateCheckIn(
-	ctx context.Context, tid, uid uint32,
+	ctx context.Context, tid, uid int64,
 	workDate, checkInAt time.Time,
 	latitude, longitude float64, wifiBSSID string,
 ) (*ent.AttendanceRecord, error) {
@@ -144,7 +144,7 @@ func (r *AttendanceRepo) CreateCheckIn(
 
 // SetCheckOut 写入签退并结算结果。返回后由调用方经 GetByUserDate 重读最新记录。
 func (r *AttendanceRepo) SetCheckOut(
-	ctx context.Context, tid, recordID uint32,
+	ctx context.Context, tid, recordID int64,
 	checkOutAt time.Time,
 	latitude, longitude float64, wifiBSSID string,
 	result oaV1.AttendanceRecord_DayResult,
@@ -169,8 +169,8 @@ func (r *AttendanceRepo) SetCheckOut(
 
 // SettleMaterialize 结算物化：为无记录用户创建 ABSENT/ON_LEAVE 记录。
 func (r *AttendanceRepo) SettleMaterialize(
-	ctx context.Context, tid, userID uint32, workDate time.Time,
-	result oaV1.AttendanceRecord_DayResult, operatorID uint32,
+	ctx context.Context, tid, userID int64, workDate time.Time,
+	result oaV1.AttendanceRecord_DayResult, operatorID int64,
 ) error {
 	if _, err := r.entClient.Client().AttendanceRecord.Create().
 		SetUserID(userID).
@@ -188,8 +188,8 @@ func (r *AttendanceRepo) SettleMaterialize(
 
 // SettlePending 为已签退但仍 PENDING 的记录补结算。
 func (r *AttendanceRepo) SettlePending(
-	ctx context.Context, tid, recordID uint32,
-	result oaV1.AttendanceRecord_DayResult, operatorID uint32,
+	ctx context.Context, tid, recordID int64,
+	result oaV1.AttendanceRecord_DayResult, operatorID int64,
 ) error {
 	if _, err := r.entClient.Client().AttendanceRecord.Update().
 		Where(
@@ -207,7 +207,7 @@ func (r *AttendanceRepo) SettlePending(
 }
 
 // ListByUserRange 用户打卡记录（按日期范围，含端点）。
-func (r *AttendanceRepo) ListByUserRange(ctx context.Context, tid, userID uint32, start, end time.Time) ([]*oaV1.AttendanceRecord, error) {
+func (r *AttendanceRepo) ListByUserRange(ctx context.Context, tid, userID int64, start, end time.Time) ([]*oaV1.AttendanceRecord, error) {
 	entities, err := r.entClient.Client().AttendanceRecord.Query().
 		Where(
 			attendancerecord.TenantIDEQ(tid),
@@ -228,7 +228,7 @@ func (r *AttendanceRepo) ListByUserRange(ctx context.Context, tid, userID uint32
 }
 
 // ListByDate 按工作日查全部（admin，可选用户过滤）。pageSize>0 时分页并返回真实总数。
-func (r *AttendanceRepo) ListByDate(ctx context.Context, tid, userID uint32, workDate time.Time, page, pageSize int32) ([]*oaV1.AttendanceRecord, int, error) {
+func (r *AttendanceRepo) ListByDate(ctx context.Context, tid, userID int64, workDate time.Time, page, pageSize int32) ([]*oaV1.AttendanceRecord, int, error) {
 	query := r.entClient.Client().AttendanceRecord.Query().
 		Where(
 			attendancerecord.TenantIDEQ(tid),
@@ -261,7 +261,7 @@ func (r *AttendanceRepo) ListByDate(ctx context.Context, tid, userID uint32, wor
 }
 
 // ListUserIDs 结算用：租户内全部用户 ID。
-func (r *AttendanceRepo) ListUserIDs(ctx context.Context, tid uint32) ([]uint32, error) {
+func (r *AttendanceRepo) ListUserIDs(ctx context.Context, tid int64) ([]int64, error) {
 	ids, err := r.entClient.Client().User.Query().
 		Where(user.TenantIDEQ(tid)).
 		IDs(ctx)
@@ -273,7 +273,7 @@ func (r *AttendanceRepo) ListUserIDs(ctx context.Context, tid uint32) ([]uint32,
 }
 
 // ListTenantIDs 定时结算用：全部租户 ID。
-func (r *AttendanceRepo) ListTenantIDs(ctx context.Context) ([]uint32, error) {
+func (r *AttendanceRepo) ListTenantIDs(ctx context.Context) ([]int64, error) {
 	ids, err := r.entClient.Client().Tenant.Query().
 		IDs(ctx)
 	if err != nil {
@@ -284,7 +284,7 @@ func (r *AttendanceRepo) ListTenantIDs(ctx context.Context) ([]uint32, error) {
 }
 
 // GetSetting 读取租户考勤设置（不存在时按默认值创建）。
-func (r *AttendanceRepo) GetSetting(ctx context.Context, tid uint32) (*oaV1.AttendanceSetting, error) {
+func (r *AttendanceRepo) GetSetting(ctx context.Context, tid int64) (*oaV1.AttendanceSetting, error) {
 	entity, err := r.entClient.Client().AttendanceSetting.Query().
 		Where(attendancesetting.TenantIDEQ(tid)).
 		Only(ctx)
@@ -309,7 +309,7 @@ func (r *AttendanceRepo) GetSetting(ctx context.Context, tid uint32) (*oaV1.Atte
 }
 
 // UpdateSetting 更新租户考勤设置。
-func (r *AttendanceRepo) UpdateSetting(ctx context.Context, tid, uid uint32, workStart, workEnd string) error {
+func (r *AttendanceRepo) UpdateSetting(ctx context.Context, tid, uid int64, workStart, workEnd string) error {
 	if _, err := r.GetSetting(ctx, tid); err != nil {
 		return err
 	}
@@ -327,7 +327,7 @@ func (r *AttendanceRepo) UpdateSetting(ctx context.Context, tid, uid uint32, wor
 }
 
 // GetHolidayByDate 读取某日节假日设置，不存在返回 nil。
-func (r *AttendanceRepo) GetHolidayByDate(ctx context.Context, tid uint32, date time.Time) (*ent.Holiday, error) {
+func (r *AttendanceRepo) GetHolidayByDate(ctx context.Context, tid int64, date time.Time) (*ent.Holiday, error) {
 	entity, err := r.entClient.Client().Holiday.Query().
 		Where(
 			holiday.TenantIDEQ(tid),
@@ -345,7 +345,7 @@ func (r *AttendanceRepo) GetHolidayByDate(ctx context.Context, tid uint32, date 
 }
 
 // ListHolidays 年度节假日列表（升序）。
-func (r *AttendanceRepo) ListHolidays(ctx context.Context, tid uint32, year int) ([]*oaV1.Holiday, error) {
+func (r *AttendanceRepo) ListHolidays(ctx context.Context, tid int64, year int) ([]*oaV1.Holiday, error) {
 	entities, err := r.entClient.Client().Holiday.Query().
 		Where(
 			holiday.TenantIDEQ(tid),
@@ -366,7 +366,7 @@ func (r *AttendanceRepo) ListHolidays(ctx context.Context, tid uint32, year int)
 }
 
 // UpsertHoliday 按日期存在则覆盖（类型+名称），否则创建。
-func (r *AttendanceRepo) UpsertHoliday(ctx context.Context, tid, uid uint32, date time.Time, holidayType oaV1.Holiday_HolidayType, name string) error {
+func (r *AttendanceRepo) UpsertHoliday(ctx context.Context, tid, uid int64, date time.Time, holidayType oaV1.Holiday_HolidayType, name string) error {
 	entity, err := r.GetHolidayByDate(ctx, tid, date)
 	if err != nil {
 		return err
@@ -399,7 +399,7 @@ func (r *AttendanceRepo) UpsertHoliday(ctx context.Context, tid, uid uint32, dat
 }
 
 // DeleteHolidayHoliday 删除节假日设置。
-func (r *AttendanceRepo) DeleteHoliday(ctx context.Context, tid, id uint32) error {
+func (r *AttendanceRepo) DeleteHoliday(ctx context.Context, tid, id int64) error {
 	if _, err := r.entClient.Client().Holiday.Delete().
 		Where(
 			holiday.IDEQ(id),

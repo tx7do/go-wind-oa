@@ -111,14 +111,14 @@ func (_u *WorkflowTokenUpdate) ClearTokenStatus() *WorkflowTokenUpdate {
 }
 
 // SetParentID sets the "parent_id" field.
-func (_u *WorkflowTokenUpdate) SetParentID(v uint32) *WorkflowTokenUpdate {
+func (_u *WorkflowTokenUpdate) SetParentID(v int64) *WorkflowTokenUpdate {
 	_u.mutation.ResetParentID()
 	_u.mutation.SetParentID(v)
 	return _u
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *WorkflowTokenUpdate) SetNillableParentID(v *uint32) *WorkflowTokenUpdate {
+func (_u *WorkflowTokenUpdate) SetNillableParentID(v *int64) *WorkflowTokenUpdate {
 	if v != nil {
 		_u.SetParentID(*v)
 	}
@@ -126,7 +126,7 @@ func (_u *WorkflowTokenUpdate) SetNillableParentID(v *uint32) *WorkflowTokenUpda
 }
 
 // AddParentID adds value to the "parent_id" field.
-func (_u *WorkflowTokenUpdate) AddParentID(v int32) *WorkflowTokenUpdate {
+func (_u *WorkflowTokenUpdate) AddParentID(v int64) *WorkflowTokenUpdate {
 	_u.mutation.AddParentID(v)
 	return _u
 }
@@ -138,14 +138,14 @@ func (_u *WorkflowTokenUpdate) ClearParentID() *WorkflowTokenUpdate {
 }
 
 // SetChildInstanceID sets the "child_instance_id" field.
-func (_u *WorkflowTokenUpdate) SetChildInstanceID(v uint32) *WorkflowTokenUpdate {
+func (_u *WorkflowTokenUpdate) SetChildInstanceID(v int64) *WorkflowTokenUpdate {
 	_u.mutation.ResetChildInstanceID()
 	_u.mutation.SetChildInstanceID(v)
 	return _u
 }
 
 // SetNillableChildInstanceID sets the "child_instance_id" field if the given value is not nil.
-func (_u *WorkflowTokenUpdate) SetNillableChildInstanceID(v *uint32) *WorkflowTokenUpdate {
+func (_u *WorkflowTokenUpdate) SetNillableChildInstanceID(v *int64) *WorkflowTokenUpdate {
 	if v != nil {
 		_u.SetChildInstanceID(*v)
 	}
@@ -153,7 +153,7 @@ func (_u *WorkflowTokenUpdate) SetNillableChildInstanceID(v *uint32) *WorkflowTo
 }
 
 // AddChildInstanceID adds value to the "child_instance_id" field.
-func (_u *WorkflowTokenUpdate) AddChildInstanceID(v int32) *WorkflowTokenUpdate {
+func (_u *WorkflowTokenUpdate) AddChildInstanceID(v int64) *WorkflowTokenUpdate {
 	_u.mutation.AddChildInstanceID(v)
 	return _u
 }
@@ -205,13 +205,13 @@ func (_u *WorkflowTokenUpdate) ClearLocals() *WorkflowTokenUpdate {
 }
 
 // SetInstanceID sets the "instance" edge to the WorkflowInstance entity by ID.
-func (_u *WorkflowTokenUpdate) SetInstanceID(id uint32) *WorkflowTokenUpdate {
+func (_u *WorkflowTokenUpdate) SetInstanceID(id int64) *WorkflowTokenUpdate {
 	_u.mutation.SetInstanceID(id)
 	return _u
 }
 
 // SetNillableInstanceID sets the "instance" edge to the WorkflowInstance entity by ID if the given value is not nil.
-func (_u *WorkflowTokenUpdate) SetNillableInstanceID(id *uint32) *WorkflowTokenUpdate {
+func (_u *WorkflowTokenUpdate) SetNillableInstanceID(id *int64) *WorkflowTokenUpdate {
 	if id != nil {
 		_u = _u.SetInstanceID(*id)
 	}
@@ -281,7 +281,7 @@ func (_u *WorkflowTokenUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(workflowtoken.Table, workflowtoken.Columns, sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(workflowtoken.Table, workflowtoken.Columns, sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -317,22 +317,22 @@ func (_u *WorkflowTokenUpdate) sqlSave(ctx context.Context) (_node int, err erro
 		_spec.ClearField(workflowtoken.FieldTokenStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.ParentID(); ok {
-		_spec.SetField(workflowtoken.FieldParentID, field.TypeUint32, value)
+		_spec.SetField(workflowtoken.FieldParentID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedParentID(); ok {
-		_spec.AddField(workflowtoken.FieldParentID, field.TypeUint32, value)
+		_spec.AddField(workflowtoken.FieldParentID, field.TypeInt64, value)
 	}
 	if _u.mutation.ParentIDCleared() {
-		_spec.ClearField(workflowtoken.FieldParentID, field.TypeUint32)
+		_spec.ClearField(workflowtoken.FieldParentID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.ChildInstanceID(); ok {
-		_spec.SetField(workflowtoken.FieldChildInstanceID, field.TypeUint32, value)
+		_spec.SetField(workflowtoken.FieldChildInstanceID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedChildInstanceID(); ok {
-		_spec.AddField(workflowtoken.FieldChildInstanceID, field.TypeUint32, value)
+		_spec.AddField(workflowtoken.FieldChildInstanceID, field.TypeInt64, value)
 	}
 	if _u.mutation.ChildInstanceIDCleared() {
-		_spec.ClearField(workflowtoken.FieldChildInstanceID, field.TypeUint32)
+		_spec.ClearField(workflowtoken.FieldChildInstanceID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DueAt(); ok {
 		_spec.SetField(workflowtoken.FieldDueAt, field.TypeTime, value)
@@ -354,7 +354,7 @@ func (_u *WorkflowTokenUpdate) sqlSave(ctx context.Context) (_node int, err erro
 			Columns: []string{workflowtoken.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -367,7 +367,7 @@ func (_u *WorkflowTokenUpdate) sqlSave(ctx context.Context) (_node int, err erro
 			Columns: []string{workflowtoken.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -478,14 +478,14 @@ func (_u *WorkflowTokenUpdateOne) ClearTokenStatus() *WorkflowTokenUpdateOne {
 }
 
 // SetParentID sets the "parent_id" field.
-func (_u *WorkflowTokenUpdateOne) SetParentID(v uint32) *WorkflowTokenUpdateOne {
+func (_u *WorkflowTokenUpdateOne) SetParentID(v int64) *WorkflowTokenUpdateOne {
 	_u.mutation.ResetParentID()
 	_u.mutation.SetParentID(v)
 	return _u
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *WorkflowTokenUpdateOne) SetNillableParentID(v *uint32) *WorkflowTokenUpdateOne {
+func (_u *WorkflowTokenUpdateOne) SetNillableParentID(v *int64) *WorkflowTokenUpdateOne {
 	if v != nil {
 		_u.SetParentID(*v)
 	}
@@ -493,7 +493,7 @@ func (_u *WorkflowTokenUpdateOne) SetNillableParentID(v *uint32) *WorkflowTokenU
 }
 
 // AddParentID adds value to the "parent_id" field.
-func (_u *WorkflowTokenUpdateOne) AddParentID(v int32) *WorkflowTokenUpdateOne {
+func (_u *WorkflowTokenUpdateOne) AddParentID(v int64) *WorkflowTokenUpdateOne {
 	_u.mutation.AddParentID(v)
 	return _u
 }
@@ -505,14 +505,14 @@ func (_u *WorkflowTokenUpdateOne) ClearParentID() *WorkflowTokenUpdateOne {
 }
 
 // SetChildInstanceID sets the "child_instance_id" field.
-func (_u *WorkflowTokenUpdateOne) SetChildInstanceID(v uint32) *WorkflowTokenUpdateOne {
+func (_u *WorkflowTokenUpdateOne) SetChildInstanceID(v int64) *WorkflowTokenUpdateOne {
 	_u.mutation.ResetChildInstanceID()
 	_u.mutation.SetChildInstanceID(v)
 	return _u
 }
 
 // SetNillableChildInstanceID sets the "child_instance_id" field if the given value is not nil.
-func (_u *WorkflowTokenUpdateOne) SetNillableChildInstanceID(v *uint32) *WorkflowTokenUpdateOne {
+func (_u *WorkflowTokenUpdateOne) SetNillableChildInstanceID(v *int64) *WorkflowTokenUpdateOne {
 	if v != nil {
 		_u.SetChildInstanceID(*v)
 	}
@@ -520,7 +520,7 @@ func (_u *WorkflowTokenUpdateOne) SetNillableChildInstanceID(v *uint32) *Workflo
 }
 
 // AddChildInstanceID adds value to the "child_instance_id" field.
-func (_u *WorkflowTokenUpdateOne) AddChildInstanceID(v int32) *WorkflowTokenUpdateOne {
+func (_u *WorkflowTokenUpdateOne) AddChildInstanceID(v int64) *WorkflowTokenUpdateOne {
 	_u.mutation.AddChildInstanceID(v)
 	return _u
 }
@@ -572,13 +572,13 @@ func (_u *WorkflowTokenUpdateOne) ClearLocals() *WorkflowTokenUpdateOne {
 }
 
 // SetInstanceID sets the "instance" edge to the WorkflowInstance entity by ID.
-func (_u *WorkflowTokenUpdateOne) SetInstanceID(id uint32) *WorkflowTokenUpdateOne {
+func (_u *WorkflowTokenUpdateOne) SetInstanceID(id int64) *WorkflowTokenUpdateOne {
 	_u.mutation.SetInstanceID(id)
 	return _u
 }
 
 // SetNillableInstanceID sets the "instance" edge to the WorkflowInstance entity by ID if the given value is not nil.
-func (_u *WorkflowTokenUpdateOne) SetNillableInstanceID(id *uint32) *WorkflowTokenUpdateOne {
+func (_u *WorkflowTokenUpdateOne) SetNillableInstanceID(id *int64) *WorkflowTokenUpdateOne {
 	if id != nil {
 		_u = _u.SetInstanceID(*id)
 	}
@@ -661,7 +661,7 @@ func (_u *WorkflowTokenUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowT
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(workflowtoken.Table, workflowtoken.Columns, sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(workflowtoken.Table, workflowtoken.Columns, sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "WorkflowToken.id" for update`)}
@@ -714,22 +714,22 @@ func (_u *WorkflowTokenUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowT
 		_spec.ClearField(workflowtoken.FieldTokenStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.ParentID(); ok {
-		_spec.SetField(workflowtoken.FieldParentID, field.TypeUint32, value)
+		_spec.SetField(workflowtoken.FieldParentID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedParentID(); ok {
-		_spec.AddField(workflowtoken.FieldParentID, field.TypeUint32, value)
+		_spec.AddField(workflowtoken.FieldParentID, field.TypeInt64, value)
 	}
 	if _u.mutation.ParentIDCleared() {
-		_spec.ClearField(workflowtoken.FieldParentID, field.TypeUint32)
+		_spec.ClearField(workflowtoken.FieldParentID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.ChildInstanceID(); ok {
-		_spec.SetField(workflowtoken.FieldChildInstanceID, field.TypeUint32, value)
+		_spec.SetField(workflowtoken.FieldChildInstanceID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedChildInstanceID(); ok {
-		_spec.AddField(workflowtoken.FieldChildInstanceID, field.TypeUint32, value)
+		_spec.AddField(workflowtoken.FieldChildInstanceID, field.TypeInt64, value)
 	}
 	if _u.mutation.ChildInstanceIDCleared() {
-		_spec.ClearField(workflowtoken.FieldChildInstanceID, field.TypeUint32)
+		_spec.ClearField(workflowtoken.FieldChildInstanceID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DueAt(); ok {
 		_spec.SetField(workflowtoken.FieldDueAt, field.TypeTime, value)
@@ -751,7 +751,7 @@ func (_u *WorkflowTokenUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowT
 			Columns: []string{workflowtoken.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -764,7 +764,7 @@ func (_u *WorkflowTokenUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowT
 			Columns: []string{workflowtoken.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

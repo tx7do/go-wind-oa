@@ -96,13 +96,13 @@ func sealApplicationToDTO(e *ent.SealApplication) *oaV1.SealApplication {
 		sealType = sealTypeToProto(*e.SealType)
 	}
 	dto := &oaV1.SealApplication{
-		Id:          trans.Ptr(e.ID),
-		Purpose:     trans.Ptr(e.Purpose),
-		SealType:    sealType.Enum(),
-		FileCount:   trans.Ptr(e.FileCount),
-		Recipient:   trans.Ptr(e.Recipient),
-		SealStatus:  status.Enum(),
-		TenantId:    e.TenantID,
+		Id:         trans.Ptr(e.ID),
+		Purpose:    trans.Ptr(e.Purpose),
+		SealType:   sealType.Enum(),
+		FileCount:  trans.Ptr(e.FileCount),
+		Recipient:  trans.Ptr(e.Recipient),
+		SealStatus: status.Enum(),
+		TenantId:   e.TenantID,
 	}
 	if e.InstanceID != nil {
 		dto.InstanceId = trans.Ptr(*e.InstanceID)
@@ -116,12 +116,12 @@ func sealApplicationToDTO(e *ent.SealApplication) *oaV1.SealApplication {
 
 func (r *SealApplicationRepo) Create(
 	ctx context.Context,
-	tid, uid uint32,
+	tid, uid int64,
 	purpose string,
 	sealType oaV1.SealApplication_SealType,
 	fileCount int32,
 	recipient string,
-) (uint32, error) {
+) (int64, error) {
 	entity, err := r.entClient.Client().SealApplication.Create().
 		SetPurpose(purpose).
 		SetSealType(sealTypeToEntity(sealType)).
@@ -139,7 +139,7 @@ func (r *SealApplicationRepo) Create(
 	return entity.ID, nil
 }
 
-func (r *SealApplicationRepo) Get(ctx context.Context, tid, id uint32) (*oaV1.SealApplication, error) {
+func (r *SealApplicationRepo) Get(ctx context.Context, tid, id int64) (*oaV1.SealApplication, error) {
 	entity, err := r.entClient.Client().SealApplication.Query().
 		Where(
 			sealapplication.IDEQ(id),
@@ -156,7 +156,7 @@ func (r *SealApplicationRepo) Get(ctx context.Context, tid, id uint32) (*oaV1.Se
 	return sealApplicationToDTO(entity), nil
 }
 
-func (r *SealApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint32, status oaV1.SealApplication_SealStatus) error {
+func (r *SealApplicationRepo) UpdateStatus(ctx context.Context, tid, id int64, status oaV1.SealApplication_SealStatus) error {
 	if _, err := r.entClient.Client().SealApplication.Update().
 		Where(
 			sealapplication.IDEQ(id),
@@ -171,7 +171,7 @@ func (r *SealApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint32, 
 	return nil
 }
 
-func (r *SealApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID uint32) error {
+func (r *SealApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID int64) error {
 	if _, err := r.entClient.Client().SealApplication.Update().
 		Where(
 			sealapplication.IDEQ(id),
@@ -188,7 +188,7 @@ func (r *SealApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instan
 
 func (r *SealApplicationRepo) List(
 	ctx context.Context,
-	tid, userID uint32,
+	tid, userID int64,
 	status *oaV1.SealApplication_SealStatus,
 	page, pageSize int32,
 ) ([]*oaV1.SealApplication, int, error) {
@@ -224,7 +224,7 @@ func (r *SealApplicationRepo) List(
 	return items, total, nil
 }
 
-func (r *SealApplicationRepo) GetEntity(ctx context.Context, tid, id uint32) (*ent.SealApplication, error) {
+func (r *SealApplicationRepo) GetEntity(ctx context.Context, tid, id int64) (*ent.SealApplication, error) {
 	entity, err := r.entClient.Client().SealApplication.Query().
 		Where(
 			sealapplication.IDEQ(id),

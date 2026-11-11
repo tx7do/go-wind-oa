@@ -56,9 +56,9 @@ func (s *DashboardService) GetOverview(ctx context.Context, _ *emptypb.Empty) (*
 	todayNewInstanceCountVal := uint32(todayNewInstanceCount)
 	todayWorkflowActionCountVal := uint32(todayWorkflowActionCount)
 	return &dashboardV1.OaDashboardOverviewResponse{
-		WorkflowInstanceCount:     &instanceCountVal,
-		PendingTaskCount:          &pendingTaskCountVal,
-		TodayNewInstanceCount:     &todayNewInstanceCountVal,
+		WorkflowInstanceCount:    &instanceCountVal,
+		PendingTaskCount:         &pendingTaskCountVal,
+		TodayNewInstanceCount:    &todayNewInstanceCountVal,
 		TodayWorkflowActionCount: &todayWorkflowActionCountVal,
 	}, nil
 }

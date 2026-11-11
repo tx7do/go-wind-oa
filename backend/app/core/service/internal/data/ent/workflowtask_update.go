@@ -71,14 +71,14 @@ func (_u *WorkflowTaskUpdate) ClearDeletedAt() *WorkflowTaskUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *WorkflowTaskUpdate) SetCreatedBy(v uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetCreatedBy(v int64) *WorkflowTaskUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *WorkflowTaskUpdate) SetNillableCreatedBy(v *uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetNillableCreatedBy(v *int64) *WorkflowTaskUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -86,7 +86,7 @@ func (_u *WorkflowTaskUpdate) SetNillableCreatedBy(v *uint32) *WorkflowTaskUpdat
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *WorkflowTaskUpdate) AddCreatedBy(v int32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) AddCreatedBy(v int64) *WorkflowTaskUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -98,14 +98,14 @@ func (_u *WorkflowTaskUpdate) ClearCreatedBy() *WorkflowTaskUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *WorkflowTaskUpdate) SetUpdatedBy(v uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetUpdatedBy(v int64) *WorkflowTaskUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *WorkflowTaskUpdate) SetNillableUpdatedBy(v *uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetNillableUpdatedBy(v *int64) *WorkflowTaskUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -113,7 +113,7 @@ func (_u *WorkflowTaskUpdate) SetNillableUpdatedBy(v *uint32) *WorkflowTaskUpdat
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *WorkflowTaskUpdate) AddUpdatedBy(v int32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) AddUpdatedBy(v int64) *WorkflowTaskUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -125,14 +125,14 @@ func (_u *WorkflowTaskUpdate) ClearUpdatedBy() *WorkflowTaskUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *WorkflowTaskUpdate) SetDeletedBy(v uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetDeletedBy(v int64) *WorkflowTaskUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *WorkflowTaskUpdate) SetNillableDeletedBy(v *uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetNillableDeletedBy(v *int64) *WorkflowTaskUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -140,7 +140,7 @@ func (_u *WorkflowTaskUpdate) SetNillableDeletedBy(v *uint32) *WorkflowTaskUpdat
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *WorkflowTaskUpdate) AddDeletedBy(v int32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) AddDeletedBy(v int64) *WorkflowTaskUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -172,14 +172,14 @@ func (_u *WorkflowTaskUpdate) ClearNodeID() *WorkflowTaskUpdate {
 }
 
 // SetAssigneeUserID sets the "assignee_user_id" field.
-func (_u *WorkflowTaskUpdate) SetAssigneeUserID(v uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetAssigneeUserID(v int64) *WorkflowTaskUpdate {
 	_u.mutation.ResetAssigneeUserID()
 	_u.mutation.SetAssigneeUserID(v)
 	return _u
 }
 
 // SetNillableAssigneeUserID sets the "assignee_user_id" field if the given value is not nil.
-func (_u *WorkflowTaskUpdate) SetNillableAssigneeUserID(v *uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetNillableAssigneeUserID(v *int64) *WorkflowTaskUpdate {
 	if v != nil {
 		_u.SetAssigneeUserID(*v)
 	}
@@ -187,7 +187,7 @@ func (_u *WorkflowTaskUpdate) SetNillableAssigneeUserID(v *uint32) *WorkflowTask
 }
 
 // AddAssigneeUserID adds value to the "assignee_user_id" field.
-func (_u *WorkflowTaskUpdate) AddAssigneeUserID(v int32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) AddAssigneeUserID(v int64) *WorkflowTaskUpdate {
 	_u.mutation.AddAssigneeUserID(v)
 	return _u
 }
@@ -259,14 +259,14 @@ func (_u *WorkflowTaskUpdate) ClearTaskStatus() *WorkflowTaskUpdate {
 }
 
 // SetTokenID sets the "token_id" field.
-func (_u *WorkflowTaskUpdate) SetTokenID(v uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetTokenID(v int64) *WorkflowTaskUpdate {
 	_u.mutation.ResetTokenID()
 	_u.mutation.SetTokenID(v)
 	return _u
 }
 
 // SetNillableTokenID sets the "token_id" field if the given value is not nil.
-func (_u *WorkflowTaskUpdate) SetNillableTokenID(v *uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetNillableTokenID(v *int64) *WorkflowTaskUpdate {
 	if v != nil {
 		_u.SetTokenID(*v)
 	}
@@ -274,7 +274,7 @@ func (_u *WorkflowTaskUpdate) SetNillableTokenID(v *uint32) *WorkflowTaskUpdate 
 }
 
 // AddTokenID adds value to the "token_id" field.
-func (_u *WorkflowTaskUpdate) AddTokenID(v int32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) AddTokenID(v int64) *WorkflowTaskUpdate {
 	_u.mutation.AddTokenID(v)
 	return _u
 }
@@ -406,13 +406,13 @@ func (_u *WorkflowTaskUpdate) ClearCandidateGroups() *WorkflowTaskUpdate {
 }
 
 // SetInstanceID sets the "instance" edge to the WorkflowInstance entity by ID.
-func (_u *WorkflowTaskUpdate) SetInstanceID(id uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetInstanceID(id int64) *WorkflowTaskUpdate {
 	_u.mutation.SetInstanceID(id)
 	return _u
 }
 
 // SetNillableInstanceID sets the "instance" edge to the WorkflowInstance entity by ID if the given value is not nil.
-func (_u *WorkflowTaskUpdate) SetNillableInstanceID(id *uint32) *WorkflowTaskUpdate {
+func (_u *WorkflowTaskUpdate) SetNillableInstanceID(id *int64) *WorkflowTaskUpdate {
 	if id != nil {
 		_u = _u.SetInstanceID(*id)
 	}
@@ -482,7 +482,7 @@ func (_u *WorkflowTaskUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(workflowtask.Table, workflowtask.Columns, sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(workflowtask.Table, workflowtask.Columns, sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -506,34 +506,34 @@ func (_u *WorkflowTaskUpdate) sqlSave(ctx context.Context) (_node int, err error
 		_spec.ClearField(workflowtask.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(workflowtask.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(workflowtask.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowtask.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(workflowtask.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(workflowtask.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(workflowtask.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowtask.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(workflowtask.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(workflowtask.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(workflowtask.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(workflowtask.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(workflowtask.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(workflowtask.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.NodeID(); ok {
 		_spec.SetField(workflowtask.FieldNodeID, field.TypeString, value)
@@ -542,13 +542,13 @@ func (_u *WorkflowTaskUpdate) sqlSave(ctx context.Context) (_node int, err error
 		_spec.ClearField(workflowtask.FieldNodeID, field.TypeString)
 	}
 	if value, ok := _u.mutation.AssigneeUserID(); ok {
-		_spec.SetField(workflowtask.FieldAssigneeUserID, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldAssigneeUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedAssigneeUserID(); ok {
-		_spec.AddField(workflowtask.FieldAssigneeUserID, field.TypeUint32, value)
+		_spec.AddField(workflowtask.FieldAssigneeUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.AssigneeUserIDCleared() {
-		_spec.ClearField(workflowtask.FieldAssigneeUserID, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldAssigneeUserID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.RemindedAt(); ok {
 		_spec.SetField(workflowtask.FieldRemindedAt, field.TypeTime, value)
@@ -569,13 +569,13 @@ func (_u *WorkflowTaskUpdate) sqlSave(ctx context.Context) (_node int, err error
 		_spec.ClearField(workflowtask.FieldTaskStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.TokenID(); ok {
-		_spec.SetField(workflowtask.FieldTokenID, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldTokenID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedTokenID(); ok {
-		_spec.AddField(workflowtask.FieldTokenID, field.TypeUint32, value)
+		_spec.AddField(workflowtask.FieldTokenID, field.TypeInt64, value)
 	}
 	if _u.mutation.TokenIDCleared() {
-		_spec.ClearField(workflowtask.FieldTokenID, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldTokenID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.TaskName(); ok {
 		_spec.SetField(workflowtask.FieldTaskName, field.TypeString, value)
@@ -621,7 +621,7 @@ func (_u *WorkflowTaskUpdate) sqlSave(ctx context.Context) (_node int, err error
 			Columns: []string{workflowtask.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -634,7 +634,7 @@ func (_u *WorkflowTaskUpdate) sqlSave(ctx context.Context) (_node int, err error
 			Columns: []string{workflowtask.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -705,14 +705,14 @@ func (_u *WorkflowTaskUpdateOne) ClearDeletedAt() *WorkflowTaskUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *WorkflowTaskUpdateOne) SetCreatedBy(v uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetCreatedBy(v int64) *WorkflowTaskUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *WorkflowTaskUpdateOne) SetNillableCreatedBy(v *uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetNillableCreatedBy(v *int64) *WorkflowTaskUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -720,7 +720,7 @@ func (_u *WorkflowTaskUpdateOne) SetNillableCreatedBy(v *uint32) *WorkflowTaskUp
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *WorkflowTaskUpdateOne) AddCreatedBy(v int32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) AddCreatedBy(v int64) *WorkflowTaskUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -732,14 +732,14 @@ func (_u *WorkflowTaskUpdateOne) ClearCreatedBy() *WorkflowTaskUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *WorkflowTaskUpdateOne) SetUpdatedBy(v uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetUpdatedBy(v int64) *WorkflowTaskUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *WorkflowTaskUpdateOne) SetNillableUpdatedBy(v *uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetNillableUpdatedBy(v *int64) *WorkflowTaskUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -747,7 +747,7 @@ func (_u *WorkflowTaskUpdateOne) SetNillableUpdatedBy(v *uint32) *WorkflowTaskUp
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *WorkflowTaskUpdateOne) AddUpdatedBy(v int32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) AddUpdatedBy(v int64) *WorkflowTaskUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -759,14 +759,14 @@ func (_u *WorkflowTaskUpdateOne) ClearUpdatedBy() *WorkflowTaskUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *WorkflowTaskUpdateOne) SetDeletedBy(v uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetDeletedBy(v int64) *WorkflowTaskUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *WorkflowTaskUpdateOne) SetNillableDeletedBy(v *uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetNillableDeletedBy(v *int64) *WorkflowTaskUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -774,7 +774,7 @@ func (_u *WorkflowTaskUpdateOne) SetNillableDeletedBy(v *uint32) *WorkflowTaskUp
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *WorkflowTaskUpdateOne) AddDeletedBy(v int32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) AddDeletedBy(v int64) *WorkflowTaskUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -806,14 +806,14 @@ func (_u *WorkflowTaskUpdateOne) ClearNodeID() *WorkflowTaskUpdateOne {
 }
 
 // SetAssigneeUserID sets the "assignee_user_id" field.
-func (_u *WorkflowTaskUpdateOne) SetAssigneeUserID(v uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetAssigneeUserID(v int64) *WorkflowTaskUpdateOne {
 	_u.mutation.ResetAssigneeUserID()
 	_u.mutation.SetAssigneeUserID(v)
 	return _u
 }
 
 // SetNillableAssigneeUserID sets the "assignee_user_id" field if the given value is not nil.
-func (_u *WorkflowTaskUpdateOne) SetNillableAssigneeUserID(v *uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetNillableAssigneeUserID(v *int64) *WorkflowTaskUpdateOne {
 	if v != nil {
 		_u.SetAssigneeUserID(*v)
 	}
@@ -821,7 +821,7 @@ func (_u *WorkflowTaskUpdateOne) SetNillableAssigneeUserID(v *uint32) *WorkflowT
 }
 
 // AddAssigneeUserID adds value to the "assignee_user_id" field.
-func (_u *WorkflowTaskUpdateOne) AddAssigneeUserID(v int32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) AddAssigneeUserID(v int64) *WorkflowTaskUpdateOne {
 	_u.mutation.AddAssigneeUserID(v)
 	return _u
 }
@@ -893,14 +893,14 @@ func (_u *WorkflowTaskUpdateOne) ClearTaskStatus() *WorkflowTaskUpdateOne {
 }
 
 // SetTokenID sets the "token_id" field.
-func (_u *WorkflowTaskUpdateOne) SetTokenID(v uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetTokenID(v int64) *WorkflowTaskUpdateOne {
 	_u.mutation.ResetTokenID()
 	_u.mutation.SetTokenID(v)
 	return _u
 }
 
 // SetNillableTokenID sets the "token_id" field if the given value is not nil.
-func (_u *WorkflowTaskUpdateOne) SetNillableTokenID(v *uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetNillableTokenID(v *int64) *WorkflowTaskUpdateOne {
 	if v != nil {
 		_u.SetTokenID(*v)
 	}
@@ -908,7 +908,7 @@ func (_u *WorkflowTaskUpdateOne) SetNillableTokenID(v *uint32) *WorkflowTaskUpda
 }
 
 // AddTokenID adds value to the "token_id" field.
-func (_u *WorkflowTaskUpdateOne) AddTokenID(v int32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) AddTokenID(v int64) *WorkflowTaskUpdateOne {
 	_u.mutation.AddTokenID(v)
 	return _u
 }
@@ -1040,13 +1040,13 @@ func (_u *WorkflowTaskUpdateOne) ClearCandidateGroups() *WorkflowTaskUpdateOne {
 }
 
 // SetInstanceID sets the "instance" edge to the WorkflowInstance entity by ID.
-func (_u *WorkflowTaskUpdateOne) SetInstanceID(id uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetInstanceID(id int64) *WorkflowTaskUpdateOne {
 	_u.mutation.SetInstanceID(id)
 	return _u
 }
 
 // SetNillableInstanceID sets the "instance" edge to the WorkflowInstance entity by ID if the given value is not nil.
-func (_u *WorkflowTaskUpdateOne) SetNillableInstanceID(id *uint32) *WorkflowTaskUpdateOne {
+func (_u *WorkflowTaskUpdateOne) SetNillableInstanceID(id *int64) *WorkflowTaskUpdateOne {
 	if id != nil {
 		_u = _u.SetInstanceID(*id)
 	}
@@ -1129,7 +1129,7 @@ func (_u *WorkflowTaskUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowTa
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(workflowtask.Table, workflowtask.Columns, sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(workflowtask.Table, workflowtask.Columns, sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "WorkflowTask.id" for update`)}
@@ -1170,34 +1170,34 @@ func (_u *WorkflowTaskUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowTa
 		_spec.ClearField(workflowtask.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(workflowtask.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(workflowtask.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowtask.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(workflowtask.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(workflowtask.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(workflowtask.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowtask.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(workflowtask.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(workflowtask.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(workflowtask.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(workflowtask.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(workflowtask.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(workflowtask.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.NodeID(); ok {
 		_spec.SetField(workflowtask.FieldNodeID, field.TypeString, value)
@@ -1206,13 +1206,13 @@ func (_u *WorkflowTaskUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowTa
 		_spec.ClearField(workflowtask.FieldNodeID, field.TypeString)
 	}
 	if value, ok := _u.mutation.AssigneeUserID(); ok {
-		_spec.SetField(workflowtask.FieldAssigneeUserID, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldAssigneeUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedAssigneeUserID(); ok {
-		_spec.AddField(workflowtask.FieldAssigneeUserID, field.TypeUint32, value)
+		_spec.AddField(workflowtask.FieldAssigneeUserID, field.TypeInt64, value)
 	}
 	if _u.mutation.AssigneeUserIDCleared() {
-		_spec.ClearField(workflowtask.FieldAssigneeUserID, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldAssigneeUserID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.RemindedAt(); ok {
 		_spec.SetField(workflowtask.FieldRemindedAt, field.TypeTime, value)
@@ -1233,13 +1233,13 @@ func (_u *WorkflowTaskUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowTa
 		_spec.ClearField(workflowtask.FieldTaskStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.TokenID(); ok {
-		_spec.SetField(workflowtask.FieldTokenID, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldTokenID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedTokenID(); ok {
-		_spec.AddField(workflowtask.FieldTokenID, field.TypeUint32, value)
+		_spec.AddField(workflowtask.FieldTokenID, field.TypeInt64, value)
 	}
 	if _u.mutation.TokenIDCleared() {
-		_spec.ClearField(workflowtask.FieldTokenID, field.TypeUint32)
+		_spec.ClearField(workflowtask.FieldTokenID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.TaskName(); ok {
 		_spec.SetField(workflowtask.FieldTaskName, field.TypeString, value)
@@ -1285,7 +1285,7 @@ func (_u *WorkflowTaskUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowTa
 			Columns: []string{workflowtask.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1298,7 +1298,7 @@ func (_u *WorkflowTaskUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowTa
 			Columns: []string{workflowtask.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.OvertimeApplication {
+func ID(id int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.OvertimeApplication {
+func IDEQ(id int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.OvertimeApplication {
+func IDNEQ(id int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.OvertimeApplication {
+func IDIn(ids ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.OvertimeApplication {
+func IDNotIn(ids ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.OvertimeApplication {
+func IDGT(id int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.OvertimeApplication {
+func IDGTE(id int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.OvertimeApplication {
+func IDLT(id int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.OvertimeApplication {
+func IDLTE(id int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,22 +70,22 @@ func DeletedAt(v time.Time) predicate.OvertimeApplication {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint32) predicate.OvertimeApplication {
+func CreatedBy(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint32) predicate.OvertimeApplication {
+func UpdatedBy(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint32) predicate.OvertimeApplication {
+func DeletedBy(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.OvertimeApplication {
+func TenantID(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldTenantID, v))
 }
 
@@ -105,7 +105,7 @@ func EndTime(v time.Time) predicate.OvertimeApplication {
 }
 
 // InstanceID applies equality check predicate on the "instance_id" field. It's identical to InstanceIDEQ.
-func InstanceID(v uint32) predicate.OvertimeApplication {
+func InstanceID(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldInstanceID, v))
 }
 
@@ -260,42 +260,42 @@ func DeletedAtNotNil() predicate.OvertimeApplication {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint32) predicate.OvertimeApplication {
+func CreatedByEQ(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint32) predicate.OvertimeApplication {
+func CreatedByNEQ(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint32) predicate.OvertimeApplication {
+func CreatedByIn(vs ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint32) predicate.OvertimeApplication {
+func CreatedByNotIn(vs ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint32) predicate.OvertimeApplication {
+func CreatedByGT(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint32) predicate.OvertimeApplication {
+func CreatedByGTE(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint32) predicate.OvertimeApplication {
+func CreatedByLT(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint32) predicate.OvertimeApplication {
+func CreatedByLTE(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -310,42 +310,42 @@ func CreatedByNotNil() predicate.OvertimeApplication {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint32) predicate.OvertimeApplication {
+func UpdatedByEQ(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint32) predicate.OvertimeApplication {
+func UpdatedByNEQ(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint32) predicate.OvertimeApplication {
+func UpdatedByIn(vs ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint32) predicate.OvertimeApplication {
+func UpdatedByNotIn(vs ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint32) predicate.OvertimeApplication {
+func UpdatedByGT(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint32) predicate.OvertimeApplication {
+func UpdatedByGTE(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint32) predicate.OvertimeApplication {
+func UpdatedByLT(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint32) predicate.OvertimeApplication {
+func UpdatedByLTE(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -360,42 +360,42 @@ func UpdatedByNotNil() predicate.OvertimeApplication {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint32) predicate.OvertimeApplication {
+func DeletedByEQ(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint32) predicate.OvertimeApplication {
+func DeletedByNEQ(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint32) predicate.OvertimeApplication {
+func DeletedByIn(vs ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint32) predicate.OvertimeApplication {
+func DeletedByNotIn(vs ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint32) predicate.OvertimeApplication {
+func DeletedByGT(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint32) predicate.OvertimeApplication {
+func DeletedByGTE(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint32) predicate.OvertimeApplication {
+func DeletedByLT(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint32) predicate.OvertimeApplication {
+func DeletedByLTE(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -410,42 +410,42 @@ func DeletedByNotNil() predicate.OvertimeApplication {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.OvertimeApplication {
+func TenantIDEQ(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.OvertimeApplication {
+func TenantIDNEQ(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.OvertimeApplication {
+func TenantIDIn(vs ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.OvertimeApplication {
+func TenantIDNotIn(vs ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.OvertimeApplication {
+func TenantIDGT(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.OvertimeApplication {
+func TenantIDGTE(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.OvertimeApplication {
+func TenantIDLT(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.OvertimeApplication {
+func TenantIDLTE(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -665,42 +665,42 @@ func OvertimeStatusNotNil() predicate.OvertimeApplication {
 }
 
 // InstanceIDEQ applies the EQ predicate on the "instance_id" field.
-func InstanceIDEQ(v uint32) predicate.OvertimeApplication {
+func InstanceIDEQ(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldEQ(FieldInstanceID, v))
 }
 
 // InstanceIDNEQ applies the NEQ predicate on the "instance_id" field.
-func InstanceIDNEQ(v uint32) predicate.OvertimeApplication {
+func InstanceIDNEQ(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNEQ(FieldInstanceID, v))
 }
 
 // InstanceIDIn applies the In predicate on the "instance_id" field.
-func InstanceIDIn(vs ...uint32) predicate.OvertimeApplication {
+func InstanceIDIn(vs ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldIn(FieldInstanceID, vs...))
 }
 
 // InstanceIDNotIn applies the NotIn predicate on the "instance_id" field.
-func InstanceIDNotIn(vs ...uint32) predicate.OvertimeApplication {
+func InstanceIDNotIn(vs ...int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldNotIn(FieldInstanceID, vs...))
 }
 
 // InstanceIDGT applies the GT predicate on the "instance_id" field.
-func InstanceIDGT(v uint32) predicate.OvertimeApplication {
+func InstanceIDGT(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGT(FieldInstanceID, v))
 }
 
 // InstanceIDGTE applies the GTE predicate on the "instance_id" field.
-func InstanceIDGTE(v uint32) predicate.OvertimeApplication {
+func InstanceIDGTE(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldGTE(FieldInstanceID, v))
 }
 
 // InstanceIDLT applies the LT predicate on the "instance_id" field.
-func InstanceIDLT(v uint32) predicate.OvertimeApplication {
+func InstanceIDLT(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLT(FieldInstanceID, v))
 }
 
 // InstanceIDLTE applies the LTE predicate on the "instance_id" field.
-func InstanceIDLTE(v uint32) predicate.OvertimeApplication {
+func InstanceIDLTE(v int64) predicate.OvertimeApplication {
 	return predicate.OvertimeApplication(sql.FieldLTE(FieldInstanceID, v))
 }
 

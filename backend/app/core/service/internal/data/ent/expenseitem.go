@@ -18,7 +18,7 @@ type ExpenseItem struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint32 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -26,13 +26,13 @@ type ExpenseItem struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint32 `json:"created_by,omitempty"`
+	CreatedBy *int64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint32 `json:"updated_by,omitempty"`
+	UpdatedBy *int64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint32 `json:"deleted_by,omitempty"`
+	DeletedBy *int64 `json:"deleted_by,omitempty"`
 	// 租户ID
-	TenantID *uint32 `json:"tenant_id,omitempty"`
+	TenantID *int64 `json:"tenant_id,omitempty"`
 	// 费用类别（交通/餐饮/办公等）
 	Category string `json:"category,omitempty"`
 	// 金额
@@ -42,11 +42,11 @@ type ExpenseItem struct {
 	// 费用说明
 	Description string `json:"description,omitempty"`
 	// 发票凭证文件ID（storage 域文件，OSS 存储）
-	InvoiceFileID *uint32 `json:"invoice_file_id,omitempty"`
+	InvoiceFileID *int64 `json:"invoice_file_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ExpenseItemQuery when eager-loading is set.
 	Edges                  ExpenseItemEdges `json:"edges"`
-	expense_application_id *uint32
+	expense_application_id *int64
 	selectValues           sql.SelectValues
 }
 
@@ -105,7 +105,7 @@ func (_m *ExpenseItem) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint32(value.Int64)
+			_m.ID = int64(value.Int64)
 		case expenseitem.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -131,29 +131,29 @@ func (_m *ExpenseItem) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint32)
-				*_m.CreatedBy = uint32(value.Int64)
+				_m.CreatedBy = new(int64)
+				*_m.CreatedBy = value.Int64
 			}
 		case expenseitem.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint32)
-				*_m.UpdatedBy = uint32(value.Int64)
+				_m.UpdatedBy = new(int64)
+				*_m.UpdatedBy = value.Int64
 			}
 		case expenseitem.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint32)
-				*_m.DeletedBy = uint32(value.Int64)
+				_m.DeletedBy = new(int64)
+				*_m.DeletedBy = value.Int64
 			}
 		case expenseitem.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint32)
-				*_m.TenantID = uint32(value.Int64)
+				_m.TenantID = new(int64)
+				*_m.TenantID = value.Int64
 			}
 		case expenseitem.FieldCategory:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -184,15 +184,15 @@ func (_m *ExpenseItem) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field invoice_file_id", values[i])
 			} else if value.Valid {
-				_m.InvoiceFileID = new(uint32)
-				*_m.InvoiceFileID = uint32(value.Int64)
+				_m.InvoiceFileID = new(int64)
+				*_m.InvoiceFileID = value.Int64
 			}
 		case expenseitem.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field expense_application_id", value)
 			} else if value.Valid {
-				_m.expense_application_id = new(uint32)
-				*_m.expense_application_id = uint32(value.Int64)
+				_m.expense_application_id = new(int64)
+				*_m.expense_application_id = int64(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

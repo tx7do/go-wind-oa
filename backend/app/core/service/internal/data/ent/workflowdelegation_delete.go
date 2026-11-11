@@ -40,7 +40,7 @@ func (_d *WorkflowDelegationDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *WorkflowDelegationDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(workflowdelegation.Table, sqlgraph.NewFieldSpec(workflowdelegation.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(workflowdelegation.Table, sqlgraph.NewFieldSpec(workflowdelegation.FieldID, field.TypeInt64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

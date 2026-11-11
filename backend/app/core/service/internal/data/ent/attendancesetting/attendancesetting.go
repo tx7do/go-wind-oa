@@ -67,7 +67,7 @@ var (
 	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint32
+	DefaultTenantID int64
 	// DefaultWorkStartTime holds the default value on creation for the "work_start_time" field.
 	DefaultWorkStartTime string
 	// WorkStartTimeValidator is a validator for the "work_start_time" field. It is called by the builders before save.
@@ -77,7 +77,7 @@ var (
 	// WorkEndTimeValidator is a validator for the "work_end_time" field. It is called by the builders before save.
 	WorkEndTimeValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(int64) error
 )
 
 // OrderOption defines the ordering options for the AttendanceSetting queries.

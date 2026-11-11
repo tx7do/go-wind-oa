@@ -65,13 +65,13 @@ func (_c *OutingApplicationCreate) SetNillableDeletedAt(v *time.Time) *OutingApp
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *OutingApplicationCreate) SetCreatedBy(v uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetCreatedBy(v int64) *OutingApplicationCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *OutingApplicationCreate) SetNillableCreatedBy(v *uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetNillableCreatedBy(v *int64) *OutingApplicationCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *OutingApplicationCreate) SetNillableCreatedBy(v *uint32) *OutingApplic
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *OutingApplicationCreate) SetUpdatedBy(v uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetUpdatedBy(v int64) *OutingApplicationCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *OutingApplicationCreate) SetNillableUpdatedBy(v *uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetNillableUpdatedBy(v *int64) *OutingApplicationCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *OutingApplicationCreate) SetNillableUpdatedBy(v *uint32) *OutingApplic
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *OutingApplicationCreate) SetDeletedBy(v uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetDeletedBy(v int64) *OutingApplicationCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *OutingApplicationCreate) SetNillableDeletedBy(v *uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetNillableDeletedBy(v *int64) *OutingApplicationCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *OutingApplicationCreate) SetNillableDeletedBy(v *uint32) *OutingApplic
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *OutingApplicationCreate) SetTenantID(v uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetTenantID(v int64) *OutingApplicationCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *OutingApplicationCreate) SetNillableTenantID(v *uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetNillableTenantID(v *int64) *OutingApplicationCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -175,13 +175,13 @@ func (_c *OutingApplicationCreate) SetNillableOutingStatus(v *outingapplication.
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (_c *OutingApplicationCreate) SetInstanceID(v uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetInstanceID(v int64) *OutingApplicationCreate {
 	_c.mutation.SetInstanceID(v)
 	return _c
 }
 
 // SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
-func (_c *OutingApplicationCreate) SetNillableInstanceID(v *uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetNillableInstanceID(v *int64) *OutingApplicationCreate {
 	if v != nil {
 		_c.SetInstanceID(*v)
 	}
@@ -189,7 +189,7 @@ func (_c *OutingApplicationCreate) SetNillableInstanceID(v *uint32) *OutingAppli
 }
 
 // SetID sets the "id" field.
-func (_c *OutingApplicationCreate) SetID(v uint32) *OutingApplicationCreate {
+func (_c *OutingApplicationCreate) SetID(v int64) *OutingApplicationCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -300,7 +300,7 @@ func (_c *OutingApplicationCreate) sqlSave(ctx context.Context) (*OutingApplicat
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -310,7 +310,7 @@ func (_c *OutingApplicationCreate) sqlSave(ctx context.Context) (*OutingApplicat
 func (_c *OutingApplicationCreate) createSpec() (*OutingApplication, *sqlgraph.CreateSpec) {
 	var (
 		_node = &OutingApplication{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(outingapplication.Table, sqlgraph.NewFieldSpec(outingapplication.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(outingapplication.Table, sqlgraph.NewFieldSpec(outingapplication.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -330,19 +330,19 @@ func (_c *OutingApplicationCreate) createSpec() (*OutingApplication, *sqlgraph.C
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(outingapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(outingapplication.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(outingapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(outingapplication.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(outingapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(outingapplication.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(outingapplication.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(outingapplication.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Reason(); ok {
@@ -366,7 +366,7 @@ func (_c *OutingApplicationCreate) createSpec() (*OutingApplication, *sqlgraph.C
 		_node.OutingStatus = &value
 	}
 	if value, ok := _c.mutation.InstanceID(); ok {
-		_spec.SetField(outingapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.SetField(outingapplication.FieldInstanceID, field.TypeInt64, value)
 		_node.InstanceID = &value
 	}
 	return _node, _spec
@@ -458,7 +458,7 @@ func (u *OutingApplicationUpsert) ClearDeletedAt() *OutingApplicationUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *OutingApplicationUpsert) SetCreatedBy(v uint32) *OutingApplicationUpsert {
+func (u *OutingApplicationUpsert) SetCreatedBy(v int64) *OutingApplicationUpsert {
 	u.Set(outingapplication.FieldCreatedBy, v)
 	return u
 }
@@ -470,7 +470,7 @@ func (u *OutingApplicationUpsert) UpdateCreatedBy() *OutingApplicationUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *OutingApplicationUpsert) AddCreatedBy(v uint32) *OutingApplicationUpsert {
+func (u *OutingApplicationUpsert) AddCreatedBy(v int64) *OutingApplicationUpsert {
 	u.Add(outingapplication.FieldCreatedBy, v)
 	return u
 }
@@ -482,7 +482,7 @@ func (u *OutingApplicationUpsert) ClearCreatedBy() *OutingApplicationUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *OutingApplicationUpsert) SetUpdatedBy(v uint32) *OutingApplicationUpsert {
+func (u *OutingApplicationUpsert) SetUpdatedBy(v int64) *OutingApplicationUpsert {
 	u.Set(outingapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -494,7 +494,7 @@ func (u *OutingApplicationUpsert) UpdateUpdatedBy() *OutingApplicationUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *OutingApplicationUpsert) AddUpdatedBy(v uint32) *OutingApplicationUpsert {
+func (u *OutingApplicationUpsert) AddUpdatedBy(v int64) *OutingApplicationUpsert {
 	u.Add(outingapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -506,7 +506,7 @@ func (u *OutingApplicationUpsert) ClearUpdatedBy() *OutingApplicationUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *OutingApplicationUpsert) SetDeletedBy(v uint32) *OutingApplicationUpsert {
+func (u *OutingApplicationUpsert) SetDeletedBy(v int64) *OutingApplicationUpsert {
 	u.Set(outingapplication.FieldDeletedBy, v)
 	return u
 }
@@ -518,7 +518,7 @@ func (u *OutingApplicationUpsert) UpdateDeletedBy() *OutingApplicationUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *OutingApplicationUpsert) AddDeletedBy(v uint32) *OutingApplicationUpsert {
+func (u *OutingApplicationUpsert) AddDeletedBy(v int64) *OutingApplicationUpsert {
 	u.Add(outingapplication.FieldDeletedBy, v)
 	return u
 }
@@ -596,7 +596,7 @@ func (u *OutingApplicationUpsert) ClearOutingStatus() *OutingApplicationUpsert {
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *OutingApplicationUpsert) SetInstanceID(v uint32) *OutingApplicationUpsert {
+func (u *OutingApplicationUpsert) SetInstanceID(v int64) *OutingApplicationUpsert {
 	u.Set(outingapplication.FieldInstanceID, v)
 	return u
 }
@@ -608,7 +608,7 @@ func (u *OutingApplicationUpsert) UpdateInstanceID() *OutingApplicationUpsert {
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *OutingApplicationUpsert) AddInstanceID(v uint32) *OutingApplicationUpsert {
+func (u *OutingApplicationUpsert) AddInstanceID(v int64) *OutingApplicationUpsert {
 	u.Add(outingapplication.FieldInstanceID, v)
 	return u
 }
@@ -716,14 +716,14 @@ func (u *OutingApplicationUpsertOne) ClearDeletedAt() *OutingApplicationUpsertOn
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *OutingApplicationUpsertOne) SetCreatedBy(v uint32) *OutingApplicationUpsertOne {
+func (u *OutingApplicationUpsertOne) SetCreatedBy(v int64) *OutingApplicationUpsertOne {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *OutingApplicationUpsertOne) AddCreatedBy(v uint32) *OutingApplicationUpsertOne {
+func (u *OutingApplicationUpsertOne) AddCreatedBy(v int64) *OutingApplicationUpsertOne {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -744,14 +744,14 @@ func (u *OutingApplicationUpsertOne) ClearCreatedBy() *OutingApplicationUpsertOn
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *OutingApplicationUpsertOne) SetUpdatedBy(v uint32) *OutingApplicationUpsertOne {
+func (u *OutingApplicationUpsertOne) SetUpdatedBy(v int64) *OutingApplicationUpsertOne {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *OutingApplicationUpsertOne) AddUpdatedBy(v uint32) *OutingApplicationUpsertOne {
+func (u *OutingApplicationUpsertOne) AddUpdatedBy(v int64) *OutingApplicationUpsertOne {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -772,14 +772,14 @@ func (u *OutingApplicationUpsertOne) ClearUpdatedBy() *OutingApplicationUpsertOn
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *OutingApplicationUpsertOne) SetDeletedBy(v uint32) *OutingApplicationUpsertOne {
+func (u *OutingApplicationUpsertOne) SetDeletedBy(v int64) *OutingApplicationUpsertOne {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *OutingApplicationUpsertOne) AddDeletedBy(v uint32) *OutingApplicationUpsertOne {
+func (u *OutingApplicationUpsertOne) AddDeletedBy(v int64) *OutingApplicationUpsertOne {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -877,14 +877,14 @@ func (u *OutingApplicationUpsertOne) ClearOutingStatus() *OutingApplicationUpser
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *OutingApplicationUpsertOne) SetInstanceID(v uint32) *OutingApplicationUpsertOne {
+func (u *OutingApplicationUpsertOne) SetInstanceID(v int64) *OutingApplicationUpsertOne {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *OutingApplicationUpsertOne) AddInstanceID(v uint32) *OutingApplicationUpsertOne {
+func (u *OutingApplicationUpsertOne) AddInstanceID(v int64) *OutingApplicationUpsertOne {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.AddInstanceID(v)
 	})
@@ -920,7 +920,7 @@ func (u *OutingApplicationUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *OutingApplicationUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *OutingApplicationUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -929,7 +929,7 @@ func (u *OutingApplicationUpsertOne) ID(ctx context.Context) (id uint32, err err
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *OutingApplicationUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *OutingApplicationUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -986,7 +986,7 @@ func (_c *OutingApplicationCreateBulk) Save(ctx context.Context) ([]*OutingAppli
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1167,14 +1167,14 @@ func (u *OutingApplicationUpsertBulk) ClearDeletedAt() *OutingApplicationUpsertB
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *OutingApplicationUpsertBulk) SetCreatedBy(v uint32) *OutingApplicationUpsertBulk {
+func (u *OutingApplicationUpsertBulk) SetCreatedBy(v int64) *OutingApplicationUpsertBulk {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *OutingApplicationUpsertBulk) AddCreatedBy(v uint32) *OutingApplicationUpsertBulk {
+func (u *OutingApplicationUpsertBulk) AddCreatedBy(v int64) *OutingApplicationUpsertBulk {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1195,14 +1195,14 @@ func (u *OutingApplicationUpsertBulk) ClearCreatedBy() *OutingApplicationUpsertB
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *OutingApplicationUpsertBulk) SetUpdatedBy(v uint32) *OutingApplicationUpsertBulk {
+func (u *OutingApplicationUpsertBulk) SetUpdatedBy(v int64) *OutingApplicationUpsertBulk {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *OutingApplicationUpsertBulk) AddUpdatedBy(v uint32) *OutingApplicationUpsertBulk {
+func (u *OutingApplicationUpsertBulk) AddUpdatedBy(v int64) *OutingApplicationUpsertBulk {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1223,14 +1223,14 @@ func (u *OutingApplicationUpsertBulk) ClearUpdatedBy() *OutingApplicationUpsertB
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *OutingApplicationUpsertBulk) SetDeletedBy(v uint32) *OutingApplicationUpsertBulk {
+func (u *OutingApplicationUpsertBulk) SetDeletedBy(v int64) *OutingApplicationUpsertBulk {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *OutingApplicationUpsertBulk) AddDeletedBy(v uint32) *OutingApplicationUpsertBulk {
+func (u *OutingApplicationUpsertBulk) AddDeletedBy(v int64) *OutingApplicationUpsertBulk {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1328,14 +1328,14 @@ func (u *OutingApplicationUpsertBulk) ClearOutingStatus() *OutingApplicationUpse
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *OutingApplicationUpsertBulk) SetInstanceID(v uint32) *OutingApplicationUpsertBulk {
+func (u *OutingApplicationUpsertBulk) SetInstanceID(v int64) *OutingApplicationUpsertBulk {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *OutingApplicationUpsertBulk) AddInstanceID(v uint32) *OutingApplicationUpsertBulk {
+func (u *OutingApplicationUpsertBulk) AddInstanceID(v int64) *OutingApplicationUpsertBulk {
 	return u.Update(func(s *OutingApplicationUpsert) {
 		s.AddInstanceID(v)
 	})

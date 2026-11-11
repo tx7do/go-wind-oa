@@ -43,7 +43,7 @@ type AuthenticationService struct {
 
 	userCredentialRepo *data.UserCredentialRepo
 
-	authenticator *data.Authenticator
+	authenticator     *data.Authenticator
 	mfaFactorRepo     *data.UserMfaFactorRepo
 	mfaChallengeCache *data.MfaChallengeCache
 
@@ -71,7 +71,7 @@ func NewAuthenticationService(
 		permissionRepo:     permissionRepo,
 		authenticator:      authenticator,
 		mfaFactorRepo:      mfaFactorRepo,
-		mfaChallengeCache:      mfaChallengeCache,
+		mfaChallengeCache:  mfaChallengeCache,
 	}
 }
 
@@ -109,7 +109,7 @@ func containsPermission(perms []string, target string) bool {
 }
 
 // authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne 一对一用户-租户关系的授权与丰富
-func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne(ctx context.Context, userID, tenantID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
+func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne(ctx context.Context, userID, tenantID int64, tokenPayload *authenticationV1.UserTokenPayload) error {
 	hasBackendAccess := false
 
 	if tenantID > 0 {
@@ -166,7 +166,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 }
 
 // authorizeAndEnrichUserTokenPayload 授权并丰富用户令牌载荷
-func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.Context, userID, tenantID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
+func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.Context, userID, tenantID int64, tokenPayload *authenticationV1.UserTokenPayload) error {
 	switch constants.DefaultUserTenantRelationType {
 	case constants.UserTenantRelationOneToOne:
 		return s.authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne(ctx, userID, tenantID, tokenPayload)
@@ -202,7 +202,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	}
 	// ===== 租户解析：tenant_code 留空视为平台（tenant 0），非空则按编号定位租户 =====
 	// 解析后的 tenantID 限定后续凭证查询范围，消除同名 identifier 跨租户歧义。
-	var tenantID uint32 = 0
+	var tenantID int64 = 0
 	if code := req.GetTenantCode(); strings.TrimSpace(code) != "" {
 		tenant, _ := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
 			QueryBy: &identityV1.GetTenantRequest_Code{Code: code},
@@ -215,7 +215,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	}
 
 	// ===== 凭证校验：在解析出的 tenant 范围内查单条凭证并校验密码 =====
-	var matchedUserID uint32
+	var matchedUserID int64
 	var err error
 	matchedUserID, err = s.userCredentialRepo.FindUserCredential(ctx, tenantID, authenticationV1.UserCredential_USERNAME, req.GetUsername(), req.GetPassword(), true)
 	if err != nil {
@@ -400,7 +400,7 @@ func (s *AuthenticationService) RegisterUser(ctx context.Context, req *authentic
 		return nil, authenticationV1.ErrorBadRequest("invalid request")
 	}
 
-	var tenantId *uint32
+	var tenantId *int64
 	if constants.IsTenantModeEnabled {
 		var tenant *identityV1.Tenant
 		tenant, err = s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
@@ -424,7 +424,7 @@ func (s *AuthenticationService) RegisterUser(ctx context.Context, req *authentic
 	defer func() { s.userRepo.FinishTx(tx, err) }()
 
 	// 查找租户的管理员角色，分配给新注册用户（否则用户无角色将无法登录）
-	var roleID *uint32
+	var roleID *int64
 	if tenantId != nil {
 		tenantRole, roleErr := s.roleRepo.GetTenantRoleByCode(ctx, *tenantId, constants.TenantAdminRoleCode)
 		if roleErr != nil {

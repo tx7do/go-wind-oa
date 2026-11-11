@@ -29,12 +29,12 @@ func (WorkflowDelegation) Annotations() []schema.Annotation {
 
 func (WorkflowDelegation) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("delegator_user_id").
+		field.Int64("delegator_user_id").
 			Comment("委托人用户ID（原审批人）").
 			Optional().
 			Nillable(),
 
-		field.Uint32("delegate_user_id").
+		field.Int64("delegate_user_id").
 			Comment("被委托人用户ID（代理人）").
 			Optional().
 			Nillable(),
@@ -43,10 +43,10 @@ func (WorkflowDelegation) Fields() []ent.Field {
 
 func (WorkflowDelegation) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[int64]{},
 	}
 }
 

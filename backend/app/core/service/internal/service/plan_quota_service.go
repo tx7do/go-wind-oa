@@ -19,7 +19,7 @@ import (
 type PlanQuotaService struct {
 	identityV1.UnimplementedPlanQuotaServiceServer
 
-	log          *log.Helper
+	log           *log.Helper
 	planQuotaRepo *data.PlanQuotaRepo
 }
 
@@ -52,7 +52,7 @@ func (s *PlanQuotaService) Create(ctx context.Context, req *identityV1.CreatePla
 		return nil, identityV1.ErrorUnauthorized("operator context missing")
 	}
 
-	req.Data.CreatedBy = trans.Ptr(uint32(operator.GetUserId()))
+	req.Data.CreatedBy = trans.Ptr(int64(operator.GetUserId()))
 
 	if err = s.planQuotaRepo.Create(ctx, req); err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func (s *PlanQuotaService) Update(ctx context.Context, req *identityV1.UpdatePla
 
 	req.Data.Id = trans.Ptr(req.GetId())
 
-	req.Data.UpdatedBy = trans.Ptr(uint32(operator.GetUserId()))
+	req.Data.UpdatedBy = trans.Ptr(int64(operator.GetUserId()))
 	if req.UpdateMask != nil {
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}

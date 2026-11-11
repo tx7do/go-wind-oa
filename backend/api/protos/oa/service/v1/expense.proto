@@ -25,7 +25,7 @@ service ExpenseService {
 
 // 报销明细行
 message ExpenseItem {
-  optional uint32 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,
     (gnostic.openapi.v3.property) = { description: "明细ID" }
@@ -51,12 +51,12 @@ message ExpenseItem {
     (gnostic.openapi.v3.property) = { description: "费用说明" }
   ]; // 费用说明
 
-  optional uint32 invoice_file_id = 6 [
+  optional int64 invoice_file_id = 6 [
     json_name = "invoiceFileId",
     (gnostic.openapi.v3.property) = { description: "发票凭证文件ID（storage 域文件，OSS 存储）" }
   ]; // 发票凭证文件ID
 
-  optional uint32 tenant_id = 40 [
+  optional int64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
@@ -74,7 +74,7 @@ message ExpenseApplication {
     WITHDRAWN = 3;  // 已撤回
   }
 
-  optional uint32 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,
     (gnostic.openapi.v3.property) = { description: "申请单ID" }
@@ -95,7 +95,7 @@ message ExpenseApplication {
     (gnostic.openapi.v3.property) = { description: "申请单状态" }
   ]; // 申请单状态
 
-  optional uint32 instance_id = 5 [
+  optional int64 instance_id = 5 [
     json_name = "instanceId",
     (gnostic.openapi.v3.property) = { description: "关联工作流实例ID" }
   ]; // 关联工作流实例ID
@@ -110,14 +110,14 @@ message ExpenseApplication {
     (gnostic.openapi.v3.property) = { description: "申请人姓名（服务端回填）" }
   ]; // 申请人姓名
 
-  optional uint32 tenant_id = 40 [
+  optional int64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
 
-  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "申请人用户ID"}];
-  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}];
-  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}];
+  optional int64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "申请人用户ID"}];
+  optional int64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}];
+  optional int64 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}];
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];
@@ -139,12 +139,12 @@ message SubmitExpenseApplicationRequest {
 
 // 提交报销申请 - 回应
 message SubmitExpenseApplicationResponse {
-  uint32 id = 1 [
+  int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "申请单ID" }
   ]; // 申请单ID
 
-  uint32 instance_id = 2 [
+  int64 instance_id = 2 [
     json_name = "instanceId",
     (gnostic.openapi.v3.property) = { description: "工作流实例ID" }
   ]; // 工作流实例ID
@@ -152,7 +152,7 @@ message SubmitExpenseApplicationResponse {
 
 // 查询报销申请 - 请求
 message ListExpenseApplicationsRequest {
-  uint32 user_id = 1 [
+  int64 user_id = 1 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = { description: "申请人用户ID，0=全部（app 端忽略此字段按本人查）" }
   ]; // 申请人用户ID
@@ -176,12 +176,12 @@ message ListExpenseApplicationsRequest {
 // 查询报销申请 - 回应
 message ListExpenseApplicationsResponse {
   repeated ExpenseApplication items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 查询报销申请详情 - 请求
 message GetExpenseApplicationRequest {
-  uint32 id = 1 [
+  int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "申请单ID" }
   ]; // 申请单ID

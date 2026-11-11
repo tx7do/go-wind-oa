@@ -71,14 +71,14 @@ func (_u *WorkflowLogUpdate) ClearDeletedAt() *WorkflowLogUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *WorkflowLogUpdate) SetCreatedBy(v uint32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) SetCreatedBy(v int64) *WorkflowLogUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *WorkflowLogUpdate) SetNillableCreatedBy(v *uint32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) SetNillableCreatedBy(v *int64) *WorkflowLogUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -86,7 +86,7 @@ func (_u *WorkflowLogUpdate) SetNillableCreatedBy(v *uint32) *WorkflowLogUpdate 
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *WorkflowLogUpdate) AddCreatedBy(v int32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) AddCreatedBy(v int64) *WorkflowLogUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -98,14 +98,14 @@ func (_u *WorkflowLogUpdate) ClearCreatedBy() *WorkflowLogUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *WorkflowLogUpdate) SetUpdatedBy(v uint32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) SetUpdatedBy(v int64) *WorkflowLogUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *WorkflowLogUpdate) SetNillableUpdatedBy(v *uint32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) SetNillableUpdatedBy(v *int64) *WorkflowLogUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -113,7 +113,7 @@ func (_u *WorkflowLogUpdate) SetNillableUpdatedBy(v *uint32) *WorkflowLogUpdate 
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *WorkflowLogUpdate) AddUpdatedBy(v int32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) AddUpdatedBy(v int64) *WorkflowLogUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -125,14 +125,14 @@ func (_u *WorkflowLogUpdate) ClearUpdatedBy() *WorkflowLogUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *WorkflowLogUpdate) SetDeletedBy(v uint32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) SetDeletedBy(v int64) *WorkflowLogUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *WorkflowLogUpdate) SetNillableDeletedBy(v *uint32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) SetNillableDeletedBy(v *int64) *WorkflowLogUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -140,7 +140,7 @@ func (_u *WorkflowLogUpdate) SetNillableDeletedBy(v *uint32) *WorkflowLogUpdate 
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *WorkflowLogUpdate) AddDeletedBy(v int32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) AddDeletedBy(v int64) *WorkflowLogUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -212,13 +212,13 @@ func (_u *WorkflowLogUpdate) ClearComment() *WorkflowLogUpdate {
 }
 
 // SetInstanceID sets the "instance" edge to the WorkflowInstance entity by ID.
-func (_u *WorkflowLogUpdate) SetInstanceID(id uint32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) SetInstanceID(id int64) *WorkflowLogUpdate {
 	_u.mutation.SetInstanceID(id)
 	return _u
 }
 
 // SetNillableInstanceID sets the "instance" edge to the WorkflowInstance entity by ID if the given value is not nil.
-func (_u *WorkflowLogUpdate) SetNillableInstanceID(id *uint32) *WorkflowLogUpdate {
+func (_u *WorkflowLogUpdate) SetNillableInstanceID(id *int64) *WorkflowLogUpdate {
 	if id != nil {
 		_u = _u.SetInstanceID(*id)
 	}
@@ -288,7 +288,7 @@ func (_u *WorkflowLogUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(workflowlog.Table, workflowlog.Columns, sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(workflowlog.Table, workflowlog.Columns, sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -312,34 +312,34 @@ func (_u *WorkflowLogUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		_spec.ClearField(workflowlog.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(workflowlog.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowlog.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(workflowlog.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowlog.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(workflowlog.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(workflowlog.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(workflowlog.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowlog.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(workflowlog.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowlog.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(workflowlog.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(workflowlog.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(workflowlog.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(workflowlog.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(workflowlog.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(workflowlog.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(workflowlog.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(workflowlog.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(workflowlog.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(workflowlog.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.NodeID(); ok {
 		_spec.SetField(workflowlog.FieldNodeID, field.TypeString, value)
@@ -367,7 +367,7 @@ func (_u *WorkflowLogUpdate) sqlSave(ctx context.Context) (_node int, err error)
 			Columns: []string{workflowlog.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -380,7 +380,7 @@ func (_u *WorkflowLogUpdate) sqlSave(ctx context.Context) (_node int, err error)
 			Columns: []string{workflowlog.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -451,14 +451,14 @@ func (_u *WorkflowLogUpdateOne) ClearDeletedAt() *WorkflowLogUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *WorkflowLogUpdateOne) SetCreatedBy(v uint32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) SetCreatedBy(v int64) *WorkflowLogUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *WorkflowLogUpdateOne) SetNillableCreatedBy(v *uint32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) SetNillableCreatedBy(v *int64) *WorkflowLogUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -466,7 +466,7 @@ func (_u *WorkflowLogUpdateOne) SetNillableCreatedBy(v *uint32) *WorkflowLogUpda
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *WorkflowLogUpdateOne) AddCreatedBy(v int32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) AddCreatedBy(v int64) *WorkflowLogUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -478,14 +478,14 @@ func (_u *WorkflowLogUpdateOne) ClearCreatedBy() *WorkflowLogUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *WorkflowLogUpdateOne) SetUpdatedBy(v uint32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) SetUpdatedBy(v int64) *WorkflowLogUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *WorkflowLogUpdateOne) SetNillableUpdatedBy(v *uint32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) SetNillableUpdatedBy(v *int64) *WorkflowLogUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -493,7 +493,7 @@ func (_u *WorkflowLogUpdateOne) SetNillableUpdatedBy(v *uint32) *WorkflowLogUpda
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *WorkflowLogUpdateOne) AddUpdatedBy(v int32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) AddUpdatedBy(v int64) *WorkflowLogUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -505,14 +505,14 @@ func (_u *WorkflowLogUpdateOne) ClearUpdatedBy() *WorkflowLogUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *WorkflowLogUpdateOne) SetDeletedBy(v uint32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) SetDeletedBy(v int64) *WorkflowLogUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *WorkflowLogUpdateOne) SetNillableDeletedBy(v *uint32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) SetNillableDeletedBy(v *int64) *WorkflowLogUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -520,7 +520,7 @@ func (_u *WorkflowLogUpdateOne) SetNillableDeletedBy(v *uint32) *WorkflowLogUpda
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *WorkflowLogUpdateOne) AddDeletedBy(v int32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) AddDeletedBy(v int64) *WorkflowLogUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -592,13 +592,13 @@ func (_u *WorkflowLogUpdateOne) ClearComment() *WorkflowLogUpdateOne {
 }
 
 // SetInstanceID sets the "instance" edge to the WorkflowInstance entity by ID.
-func (_u *WorkflowLogUpdateOne) SetInstanceID(id uint32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) SetInstanceID(id int64) *WorkflowLogUpdateOne {
 	_u.mutation.SetInstanceID(id)
 	return _u
 }
 
 // SetNillableInstanceID sets the "instance" edge to the WorkflowInstance entity by ID if the given value is not nil.
-func (_u *WorkflowLogUpdateOne) SetNillableInstanceID(id *uint32) *WorkflowLogUpdateOne {
+func (_u *WorkflowLogUpdateOne) SetNillableInstanceID(id *int64) *WorkflowLogUpdateOne {
 	if id != nil {
 		_u = _u.SetInstanceID(*id)
 	}
@@ -681,7 +681,7 @@ func (_u *WorkflowLogUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowLog
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(workflowlog.Table, workflowlog.Columns, sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(workflowlog.Table, workflowlog.Columns, sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "WorkflowLog.id" for update`)}
@@ -722,34 +722,34 @@ func (_u *WorkflowLogUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowLog
 		_spec.ClearField(workflowlog.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(workflowlog.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowlog.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(workflowlog.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowlog.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(workflowlog.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(workflowlog.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(workflowlog.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowlog.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(workflowlog.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowlog.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(workflowlog.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(workflowlog.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(workflowlog.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(workflowlog.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(workflowlog.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(workflowlog.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(workflowlog.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(workflowlog.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(workflowlog.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(workflowlog.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.NodeID(); ok {
 		_spec.SetField(workflowlog.FieldNodeID, field.TypeString, value)
@@ -777,7 +777,7 @@ func (_u *WorkflowLogUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowLog
 			Columns: []string{workflowlog.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -790,7 +790,7 @@ func (_u *WorkflowLogUpdateOne) sqlSave(ctx context.Context) (_node *WorkflowLog
 			Columns: []string{workflowlog.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

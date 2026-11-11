@@ -25,7 +25,7 @@ func NewUserService(
 	userServiceClient identityV1.UserServiceClient,
 ) *UserService {
 	return &UserService{
-		log:              ctx.NewLoggerHelper("user/service/app-service"),
+		log:               ctx.NewLoggerHelper("user/service/app-service"),
 		userServiceClient: userServiceClient,
 	}
 }

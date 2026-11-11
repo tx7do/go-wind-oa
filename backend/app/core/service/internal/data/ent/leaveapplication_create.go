@@ -65,13 +65,13 @@ func (_c *LeaveApplicationCreate) SetNillableDeletedAt(v *time.Time) *LeaveAppli
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *LeaveApplicationCreate) SetCreatedBy(v uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetCreatedBy(v int64) *LeaveApplicationCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *LeaveApplicationCreate) SetNillableCreatedBy(v *uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetNillableCreatedBy(v *int64) *LeaveApplicationCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *LeaveApplicationCreate) SetNillableCreatedBy(v *uint32) *LeaveApplicat
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *LeaveApplicationCreate) SetUpdatedBy(v uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetUpdatedBy(v int64) *LeaveApplicationCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *LeaveApplicationCreate) SetNillableUpdatedBy(v *uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetNillableUpdatedBy(v *int64) *LeaveApplicationCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *LeaveApplicationCreate) SetNillableUpdatedBy(v *uint32) *LeaveApplicat
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *LeaveApplicationCreate) SetDeletedBy(v uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetDeletedBy(v int64) *LeaveApplicationCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *LeaveApplicationCreate) SetNillableDeletedBy(v *uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetNillableDeletedBy(v *int64) *LeaveApplicationCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *LeaveApplicationCreate) SetNillableDeletedBy(v *uint32) *LeaveApplicat
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *LeaveApplicationCreate) SetTenantID(v uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetTenantID(v int64) *LeaveApplicationCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *LeaveApplicationCreate) SetNillableTenantID(v *uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetNillableTenantID(v *int64) *LeaveApplicationCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -121,7 +121,7 @@ func (_c *LeaveApplicationCreate) SetNillableTenantID(v *uint32) *LeaveApplicati
 }
 
 // SetLeaveTypeID sets the "leave_type_id" field.
-func (_c *LeaveApplicationCreate) SetLeaveTypeID(v uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetLeaveTypeID(v int64) *LeaveApplicationCreate {
 	_c.mutation.SetLeaveTypeID(v)
 	return _c
 }
@@ -209,13 +209,13 @@ func (_c *LeaveApplicationCreate) SetNillableLeaveStatus(v *leaveapplication.Lea
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (_c *LeaveApplicationCreate) SetInstanceID(v uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetInstanceID(v int64) *LeaveApplicationCreate {
 	_c.mutation.SetInstanceID(v)
 	return _c
 }
 
 // SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
-func (_c *LeaveApplicationCreate) SetNillableInstanceID(v *uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetNillableInstanceID(v *int64) *LeaveApplicationCreate {
 	if v != nil {
 		_c.SetInstanceID(*v)
 	}
@@ -223,7 +223,7 @@ func (_c *LeaveApplicationCreate) SetNillableInstanceID(v *uint32) *LeaveApplica
 }
 
 // SetID sets the "id" field.
-func (_c *LeaveApplicationCreate) SetID(v uint32) *LeaveApplicationCreate {
+func (_c *LeaveApplicationCreate) SetID(v int64) *LeaveApplicationCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -346,7 +346,7 @@ func (_c *LeaveApplicationCreate) sqlSave(ctx context.Context) (*LeaveApplicatio
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -356,7 +356,7 @@ func (_c *LeaveApplicationCreate) sqlSave(ctx context.Context) (*LeaveApplicatio
 func (_c *LeaveApplicationCreate) createSpec() (*LeaveApplication, *sqlgraph.CreateSpec) {
 	var (
 		_node = &LeaveApplication{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(leaveapplication.Table, sqlgraph.NewFieldSpec(leaveapplication.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(leaveapplication.Table, sqlgraph.NewFieldSpec(leaveapplication.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -376,23 +376,23 @@ func (_c *LeaveApplicationCreate) createSpec() (*LeaveApplication, *sqlgraph.Cre
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(leaveapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(leaveapplication.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(leaveapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(leaveapplication.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(leaveapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(leaveapplication.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(leaveapplication.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(leaveapplication.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.LeaveTypeID(); ok {
-		_spec.SetField(leaveapplication.FieldLeaveTypeID, field.TypeUint32, value)
+		_spec.SetField(leaveapplication.FieldLeaveTypeID, field.TypeInt64, value)
 		_node.LeaveTypeID = value
 	}
 	if value, ok := _c.mutation.StartDate(); ok {
@@ -424,7 +424,7 @@ func (_c *LeaveApplicationCreate) createSpec() (*LeaveApplication, *sqlgraph.Cre
 		_node.LeaveStatus = &value
 	}
 	if value, ok := _c.mutation.InstanceID(); ok {
-		_spec.SetField(leaveapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.SetField(leaveapplication.FieldInstanceID, field.TypeInt64, value)
 		_node.InstanceID = &value
 	}
 	return _node, _spec
@@ -516,7 +516,7 @@ func (u *LeaveApplicationUpsert) ClearDeletedAt() *LeaveApplicationUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LeaveApplicationUpsert) SetCreatedBy(v uint32) *LeaveApplicationUpsert {
+func (u *LeaveApplicationUpsert) SetCreatedBy(v int64) *LeaveApplicationUpsert {
 	u.Set(leaveapplication.FieldCreatedBy, v)
 	return u
 }
@@ -528,7 +528,7 @@ func (u *LeaveApplicationUpsert) UpdateCreatedBy() *LeaveApplicationUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LeaveApplicationUpsert) AddCreatedBy(v uint32) *LeaveApplicationUpsert {
+func (u *LeaveApplicationUpsert) AddCreatedBy(v int64) *LeaveApplicationUpsert {
 	u.Add(leaveapplication.FieldCreatedBy, v)
 	return u
 }
@@ -540,7 +540,7 @@ func (u *LeaveApplicationUpsert) ClearCreatedBy() *LeaveApplicationUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LeaveApplicationUpsert) SetUpdatedBy(v uint32) *LeaveApplicationUpsert {
+func (u *LeaveApplicationUpsert) SetUpdatedBy(v int64) *LeaveApplicationUpsert {
 	u.Set(leaveapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -552,7 +552,7 @@ func (u *LeaveApplicationUpsert) UpdateUpdatedBy() *LeaveApplicationUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LeaveApplicationUpsert) AddUpdatedBy(v uint32) *LeaveApplicationUpsert {
+func (u *LeaveApplicationUpsert) AddUpdatedBy(v int64) *LeaveApplicationUpsert {
 	u.Add(leaveapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -564,7 +564,7 @@ func (u *LeaveApplicationUpsert) ClearUpdatedBy() *LeaveApplicationUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LeaveApplicationUpsert) SetDeletedBy(v uint32) *LeaveApplicationUpsert {
+func (u *LeaveApplicationUpsert) SetDeletedBy(v int64) *LeaveApplicationUpsert {
 	u.Set(leaveapplication.FieldDeletedBy, v)
 	return u
 }
@@ -576,7 +576,7 @@ func (u *LeaveApplicationUpsert) UpdateDeletedBy() *LeaveApplicationUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LeaveApplicationUpsert) AddDeletedBy(v uint32) *LeaveApplicationUpsert {
+func (u *LeaveApplicationUpsert) AddDeletedBy(v int64) *LeaveApplicationUpsert {
 	u.Add(leaveapplication.FieldDeletedBy, v)
 	return u
 }
@@ -588,7 +588,7 @@ func (u *LeaveApplicationUpsert) ClearDeletedBy() *LeaveApplicationUpsert {
 }
 
 // SetLeaveTypeID sets the "leave_type_id" field.
-func (u *LeaveApplicationUpsert) SetLeaveTypeID(v uint32) *LeaveApplicationUpsert {
+func (u *LeaveApplicationUpsert) SetLeaveTypeID(v int64) *LeaveApplicationUpsert {
 	u.Set(leaveapplication.FieldLeaveTypeID, v)
 	return u
 }
@@ -600,7 +600,7 @@ func (u *LeaveApplicationUpsert) UpdateLeaveTypeID() *LeaveApplicationUpsert {
 }
 
 // AddLeaveTypeID adds v to the "leave_type_id" field.
-func (u *LeaveApplicationUpsert) AddLeaveTypeID(v uint32) *LeaveApplicationUpsert {
+func (u *LeaveApplicationUpsert) AddLeaveTypeID(v int64) *LeaveApplicationUpsert {
 	u.Add(leaveapplication.FieldLeaveTypeID, v)
 	return u
 }
@@ -714,7 +714,7 @@ func (u *LeaveApplicationUpsert) ClearLeaveStatus() *LeaveApplicationUpsert {
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *LeaveApplicationUpsert) SetInstanceID(v uint32) *LeaveApplicationUpsert {
+func (u *LeaveApplicationUpsert) SetInstanceID(v int64) *LeaveApplicationUpsert {
 	u.Set(leaveapplication.FieldInstanceID, v)
 	return u
 }
@@ -726,7 +726,7 @@ func (u *LeaveApplicationUpsert) UpdateInstanceID() *LeaveApplicationUpsert {
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *LeaveApplicationUpsert) AddInstanceID(v uint32) *LeaveApplicationUpsert {
+func (u *LeaveApplicationUpsert) AddInstanceID(v int64) *LeaveApplicationUpsert {
 	u.Add(leaveapplication.FieldInstanceID, v)
 	return u
 }
@@ -834,14 +834,14 @@ func (u *LeaveApplicationUpsertOne) ClearDeletedAt() *LeaveApplicationUpsertOne 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LeaveApplicationUpsertOne) SetCreatedBy(v uint32) *LeaveApplicationUpsertOne {
+func (u *LeaveApplicationUpsertOne) SetCreatedBy(v int64) *LeaveApplicationUpsertOne {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LeaveApplicationUpsertOne) AddCreatedBy(v uint32) *LeaveApplicationUpsertOne {
+func (u *LeaveApplicationUpsertOne) AddCreatedBy(v int64) *LeaveApplicationUpsertOne {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -862,14 +862,14 @@ func (u *LeaveApplicationUpsertOne) ClearCreatedBy() *LeaveApplicationUpsertOne 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LeaveApplicationUpsertOne) SetUpdatedBy(v uint32) *LeaveApplicationUpsertOne {
+func (u *LeaveApplicationUpsertOne) SetUpdatedBy(v int64) *LeaveApplicationUpsertOne {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LeaveApplicationUpsertOne) AddUpdatedBy(v uint32) *LeaveApplicationUpsertOne {
+func (u *LeaveApplicationUpsertOne) AddUpdatedBy(v int64) *LeaveApplicationUpsertOne {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -890,14 +890,14 @@ func (u *LeaveApplicationUpsertOne) ClearUpdatedBy() *LeaveApplicationUpsertOne 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LeaveApplicationUpsertOne) SetDeletedBy(v uint32) *LeaveApplicationUpsertOne {
+func (u *LeaveApplicationUpsertOne) SetDeletedBy(v int64) *LeaveApplicationUpsertOne {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LeaveApplicationUpsertOne) AddDeletedBy(v uint32) *LeaveApplicationUpsertOne {
+func (u *LeaveApplicationUpsertOne) AddDeletedBy(v int64) *LeaveApplicationUpsertOne {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -918,14 +918,14 @@ func (u *LeaveApplicationUpsertOne) ClearDeletedBy() *LeaveApplicationUpsertOne 
 }
 
 // SetLeaveTypeID sets the "leave_type_id" field.
-func (u *LeaveApplicationUpsertOne) SetLeaveTypeID(v uint32) *LeaveApplicationUpsertOne {
+func (u *LeaveApplicationUpsertOne) SetLeaveTypeID(v int64) *LeaveApplicationUpsertOne {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.SetLeaveTypeID(v)
 	})
 }
 
 // AddLeaveTypeID adds v to the "leave_type_id" field.
-func (u *LeaveApplicationUpsertOne) AddLeaveTypeID(v uint32) *LeaveApplicationUpsertOne {
+func (u *LeaveApplicationUpsertOne) AddLeaveTypeID(v int64) *LeaveApplicationUpsertOne {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.AddLeaveTypeID(v)
 	})
@@ -1065,14 +1065,14 @@ func (u *LeaveApplicationUpsertOne) ClearLeaveStatus() *LeaveApplicationUpsertOn
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *LeaveApplicationUpsertOne) SetInstanceID(v uint32) *LeaveApplicationUpsertOne {
+func (u *LeaveApplicationUpsertOne) SetInstanceID(v int64) *LeaveApplicationUpsertOne {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *LeaveApplicationUpsertOne) AddInstanceID(v uint32) *LeaveApplicationUpsertOne {
+func (u *LeaveApplicationUpsertOne) AddInstanceID(v int64) *LeaveApplicationUpsertOne {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.AddInstanceID(v)
 	})
@@ -1108,7 +1108,7 @@ func (u *LeaveApplicationUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *LeaveApplicationUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *LeaveApplicationUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1117,7 +1117,7 @@ func (u *LeaveApplicationUpsertOne) ID(ctx context.Context) (id uint32, err erro
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *LeaveApplicationUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *LeaveApplicationUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1174,7 +1174,7 @@ func (_c *LeaveApplicationCreateBulk) Save(ctx context.Context) ([]*LeaveApplica
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1355,14 +1355,14 @@ func (u *LeaveApplicationUpsertBulk) ClearDeletedAt() *LeaveApplicationUpsertBul
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LeaveApplicationUpsertBulk) SetCreatedBy(v uint32) *LeaveApplicationUpsertBulk {
+func (u *LeaveApplicationUpsertBulk) SetCreatedBy(v int64) *LeaveApplicationUpsertBulk {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LeaveApplicationUpsertBulk) AddCreatedBy(v uint32) *LeaveApplicationUpsertBulk {
+func (u *LeaveApplicationUpsertBulk) AddCreatedBy(v int64) *LeaveApplicationUpsertBulk {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1383,14 +1383,14 @@ func (u *LeaveApplicationUpsertBulk) ClearCreatedBy() *LeaveApplicationUpsertBul
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LeaveApplicationUpsertBulk) SetUpdatedBy(v uint32) *LeaveApplicationUpsertBulk {
+func (u *LeaveApplicationUpsertBulk) SetUpdatedBy(v int64) *LeaveApplicationUpsertBulk {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LeaveApplicationUpsertBulk) AddUpdatedBy(v uint32) *LeaveApplicationUpsertBulk {
+func (u *LeaveApplicationUpsertBulk) AddUpdatedBy(v int64) *LeaveApplicationUpsertBulk {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1411,14 +1411,14 @@ func (u *LeaveApplicationUpsertBulk) ClearUpdatedBy() *LeaveApplicationUpsertBul
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LeaveApplicationUpsertBulk) SetDeletedBy(v uint32) *LeaveApplicationUpsertBulk {
+func (u *LeaveApplicationUpsertBulk) SetDeletedBy(v int64) *LeaveApplicationUpsertBulk {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LeaveApplicationUpsertBulk) AddDeletedBy(v uint32) *LeaveApplicationUpsertBulk {
+func (u *LeaveApplicationUpsertBulk) AddDeletedBy(v int64) *LeaveApplicationUpsertBulk {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1439,14 +1439,14 @@ func (u *LeaveApplicationUpsertBulk) ClearDeletedBy() *LeaveApplicationUpsertBul
 }
 
 // SetLeaveTypeID sets the "leave_type_id" field.
-func (u *LeaveApplicationUpsertBulk) SetLeaveTypeID(v uint32) *LeaveApplicationUpsertBulk {
+func (u *LeaveApplicationUpsertBulk) SetLeaveTypeID(v int64) *LeaveApplicationUpsertBulk {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.SetLeaveTypeID(v)
 	})
 }
 
 // AddLeaveTypeID adds v to the "leave_type_id" field.
-func (u *LeaveApplicationUpsertBulk) AddLeaveTypeID(v uint32) *LeaveApplicationUpsertBulk {
+func (u *LeaveApplicationUpsertBulk) AddLeaveTypeID(v int64) *LeaveApplicationUpsertBulk {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.AddLeaveTypeID(v)
 	})
@@ -1586,14 +1586,14 @@ func (u *LeaveApplicationUpsertBulk) ClearLeaveStatus() *LeaveApplicationUpsertB
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *LeaveApplicationUpsertBulk) SetInstanceID(v uint32) *LeaveApplicationUpsertBulk {
+func (u *LeaveApplicationUpsertBulk) SetInstanceID(v int64) *LeaveApplicationUpsertBulk {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *LeaveApplicationUpsertBulk) AddInstanceID(v uint32) *LeaveApplicationUpsertBulk {
+func (u *LeaveApplicationUpsertBulk) AddInstanceID(v int64) *LeaveApplicationUpsertBulk {
 	return u.Update(func(s *LeaveApplicationUpsert) {
 		s.AddInstanceID(v)
 	})

@@ -98,13 +98,13 @@ func leaveApplicationToDTO(e *ent.LeaveApplication, typeName string) *oaV1.Leave
 
 func (r *LeaveApplicationRepo) Create(
 	ctx context.Context,
-	tid, uid uint32,
-	typeID uint32,
+	tid, uid int64,
+	typeID int64,
 	startDate, endDate time.Time,
 	days float64,
 	reason string,
 	startHalf, endHalf uint8,
-) (uint32, error) {
+) (int64, error) {
 	entity, err := r.entClient.Client().LeaveApplication.Create().
 		SetLeaveTypeID(typeID).
 		SetStartDate(startDate).
@@ -126,7 +126,7 @@ func (r *LeaveApplicationRepo) Create(
 }
 
 // Get 按主键读取（含类型名称回填）。
-func (r *LeaveApplicationRepo) Get(ctx context.Context, tid, id uint32, leaveTypeRepo *LeaveTypeRepo) (*oaV1.LeaveApplication, error) {
+func (r *LeaveApplicationRepo) Get(ctx context.Context, tid, id int64, leaveTypeRepo *LeaveTypeRepo) (*oaV1.LeaveApplication, error) {
 	entity, err := r.entClient.Client().LeaveApplication.Query().
 		Where(
 			leaveapplication.IDEQ(id),
@@ -147,7 +147,7 @@ func (r *LeaveApplicationRepo) Get(ctx context.Context, tid, id uint32, leaveTyp
 	return leaveApplicationToDTO(entity, typeName), nil
 }
 
-func (r *LeaveApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint32, status oaV1.LeaveApplication_LeaveStatus) error {
+func (r *LeaveApplicationRepo) UpdateStatus(ctx context.Context, tid, id int64, status oaV1.LeaveApplication_LeaveStatus) error {
 	if _, err := r.entClient.Client().LeaveApplication.Update().
 		Where(
 			leaveapplication.IDEQ(id),
@@ -162,7 +162,7 @@ func (r *LeaveApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint32,
 	return nil
 }
 
-func (r *LeaveApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID uint32) error {
+func (r *LeaveApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID int64) error {
 	if _, err := r.entClient.Client().LeaveApplication.Update().
 		Where(
 			leaveapplication.IDEQ(id),
@@ -181,7 +181,7 @@ func (r *LeaveApplicationRepo) SetInstanceID(ctx context.Context, tid, id, insta
 // pageSize>0 时分页（page 从 1 起）并返回真实总数，否则全量（total=条数）。
 func (r *LeaveApplicationRepo) List(
 	ctx context.Context,
-	tid, userID uint32,
+	tid, userID int64,
 	status *oaV1.LeaveApplication_LeaveStatus,
 	leaveTypeRepo *LeaveTypeRepo,
 	page, pageSize int32,
@@ -211,7 +211,7 @@ func (r *LeaveApplicationRepo) List(
 		return nil, 0, oaV1.ErrorInternalServerError("list leave applications failed")
 	}
 
-	typeNames := make(map[uint32]string)
+	typeNames := make(map[int64]string)
 	items := make([]*oaV1.LeaveApplication, 0, len(entities))
 	for _, e := range entities {
 		name, ok := typeNames[e.LeaveTypeID]
@@ -228,7 +228,7 @@ func (r *LeaveApplicationRepo) List(
 }
 
 // GetEntity 供工作流终结回调读取原始实体（校验关联与状态同步）。不存在返回 nil。
-func (r *LeaveApplicationRepo) GetEntity(ctx context.Context, tid, id uint32) (*ent.LeaveApplication, error) {
+func (r *LeaveApplicationRepo) GetEntity(ctx context.Context, tid, id int64) (*ent.LeaveApplication, error) {
 	entity, err := r.entClient.Client().LeaveApplication.Query().
 		Where(
 			leaveapplication.IDEQ(id),
@@ -246,7 +246,7 @@ func (r *LeaveApplicationRepo) GetEntity(ctx context.Context, tid, id uint32) (*
 }
 
 // HasApprovedLeaveCovering 判断用户在指定日期是否被已通过的请假单覆盖（考勤结算用）。
-func (r *LeaveApplicationRepo) HasApprovedLeaveCovering(ctx context.Context, tid, userID uint32, date time.Time) (bool, error) {
+func (r *LeaveApplicationRepo) HasApprovedLeaveCovering(ctx context.Context, tid, userID int64, date time.Time) (bool, error) {
 	count, err := r.entClient.Client().LeaveApplication.Query().
 		Where(
 			leaveapplication.TenantIDEQ(tid),

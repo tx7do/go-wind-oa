@@ -40,7 +40,7 @@ func (_d *WorkflowTokenDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *WorkflowTokenDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(workflowtoken.Table, sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(workflowtoken.Table, sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeInt64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

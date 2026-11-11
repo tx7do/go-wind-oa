@@ -90,7 +90,7 @@ var (
 	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint32
+	DefaultTenantID int64
 	// DefaultDays holds the default value on creation for the "days" field.
 	DefaultDays float64
 	// DefaultReason holds the default value on creation for the "reason" field.
@@ -102,7 +102,7 @@ var (
 	// DefaultEndHalf holds the default value on creation for the "end_half" field.
 	DefaultEndHalf uint8
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(int64) error
 )
 
 // LeaveStatus defines the type for the "leave_status" enum field.

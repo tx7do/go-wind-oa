@@ -16,9 +16,9 @@ import (
 )
 
 const (
-	businessTypeOuting       = "OUTING"
-	outingDefinitionCode     = "OUTING"
-	outingDefinitionVersion  = int32(1)
+	businessTypeOuting      = "OUTING"
+	outingDefinitionCode    = "OUTING"
+	outingDefinitionVersion = int32(1)
 )
 
 type OutingService struct {
@@ -52,8 +52,8 @@ func NewOutingService(
 	return svc
 }
 
-func (s *OutingService) fillApplicantNames(ctx context.Context, tid uint32, items []*oaV1.OutingApplication) {
-	ids := make([]uint32, 0, len(items))
+func (s *OutingService) fillApplicantNames(ctx context.Context, tid int64, items []*oaV1.OutingApplication) {
+	ids := make([]int64, 0, len(items))
 	for _, it := range items {
 		if it.GetCreatedBy() != 0 {
 			ids = append(ids, it.GetCreatedBy())
@@ -115,7 +115,7 @@ func (s *OutingService) SubmitOutingApplication(ctx context.Context, req *oaV1.S
 	return &oaV1.SubmitOutingApplicationResponse{Id: appID, InstanceId: resp.GetInstanceId()}, nil
 }
 
-func (s *OutingService) ensureWorkflowDefinition(ctx context.Context, tid, uid uint32) {
+func (s *OutingService) ensureWorkflowDefinition(ctx context.Context, tid, uid int64) {
 	if _, err := s.definitionRepo.GetByCodeVersion(ctx, outingDefinitionCode, outingDefinitionVersion); err == nil {
 		return
 	}
@@ -145,7 +145,7 @@ func (s *OutingService) ListOutingApplications(ctx context.Context, req *oaV1.Li
 		return nil, err
 	}
 	s.fillApplicantNames(ctx, tid, items)
-	return &oaV1.ListOutingApplicationsResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.ListOutingApplicationsResponse{Items: items, Total: int64(total)}, nil
 }
 
 func (s *OutingService) GetOutingApplication(ctx context.Context, req *oaV1.GetOutingApplicationRequest) (*oaV1.OutingApplication, error) {
@@ -164,7 +164,7 @@ func (s *OutingService) GetOutingApplication(ctx context.Context, req *oaV1.GetO
 	return item, nil
 }
 
-func (s *OutingService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID uint32, status oaV1.WorkflowInstance_InstanceStatus) {
+func (s *OutingService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID int64, status oaV1.WorkflowInstance_InstanceStatus) {
 	entity, err := s.appRepo.GetEntity(ctx, tenantID, businessID)
 	if err != nil || entity == nil {
 		s.log.Errorf("outing hook load application %d failed: %v", businessID, err)

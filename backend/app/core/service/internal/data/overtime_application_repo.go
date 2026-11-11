@@ -88,13 +88,13 @@ func overtimeApplicationToDTO(e *ent.OvertimeApplication) *oaV1.OvertimeApplicat
 		comp = compensationTypeToProto(*e.CompensationType)
 	}
 	dto := &oaV1.OvertimeApplication{
-		Id:                trans.Ptr(e.ID),
-		Reason:            trans.Ptr(e.Reason),
-		StartTime:         timeutil.TimeToTimestamppb(&e.StartTime),
-		EndTime:           timeutil.TimeToTimestamppb(&e.EndTime),
-		CompensationType:  comp.Enum(),
-		OvertimeStatus:    status.Enum(),
-		TenantId:          e.TenantID,
+		Id:               trans.Ptr(e.ID),
+		Reason:           trans.Ptr(e.Reason),
+		StartTime:        timeutil.TimeToTimestamppb(&e.StartTime),
+		EndTime:          timeutil.TimeToTimestamppb(&e.EndTime),
+		CompensationType: comp.Enum(),
+		OvertimeStatus:   status.Enum(),
+		TenantId:         e.TenantID,
 	}
 	if e.InstanceID != nil {
 		dto.InstanceId = trans.Ptr(*e.InstanceID)
@@ -108,11 +108,11 @@ func overtimeApplicationToDTO(e *ent.OvertimeApplication) *oaV1.OvertimeApplicat
 
 func (r *OvertimeApplicationRepo) Create(
 	ctx context.Context,
-	tid, uid uint32,
+	tid, uid int64,
 	reason string,
 	startTime, endTime time.Time,
 	compensationType oaV1.OvertimeApplication_CompensationType,
-) (uint32, error) {
+) (int64, error) {
 	entity, err := r.entClient.Client().OvertimeApplication.Create().
 		SetReason(reason).
 		SetStartTime(startTime).
@@ -130,7 +130,7 @@ func (r *OvertimeApplicationRepo) Create(
 	return entity.ID, nil
 }
 
-func (r *OvertimeApplicationRepo) Get(ctx context.Context, tid, id uint32) (*oaV1.OvertimeApplication, error) {
+func (r *OvertimeApplicationRepo) Get(ctx context.Context, tid, id int64) (*oaV1.OvertimeApplication, error) {
 	entity, err := r.entClient.Client().OvertimeApplication.Query().
 		Where(
 			overtimeapplication.IDEQ(id),
@@ -147,7 +147,7 @@ func (r *OvertimeApplicationRepo) Get(ctx context.Context, tid, id uint32) (*oaV
 	return overtimeApplicationToDTO(entity), nil
 }
 
-func (r *OvertimeApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint32, status oaV1.OvertimeApplication_OvertimeStatus) error {
+func (r *OvertimeApplicationRepo) UpdateStatus(ctx context.Context, tid, id int64, status oaV1.OvertimeApplication_OvertimeStatus) error {
 	if _, err := r.entClient.Client().OvertimeApplication.Update().
 		Where(
 			overtimeapplication.IDEQ(id),
@@ -162,7 +162,7 @@ func (r *OvertimeApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint
 	return nil
 }
 
-func (r *OvertimeApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID uint32) error {
+func (r *OvertimeApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID int64) error {
 	if _, err := r.entClient.Client().OvertimeApplication.Update().
 		Where(
 			overtimeapplication.IDEQ(id),
@@ -179,7 +179,7 @@ func (r *OvertimeApplicationRepo) SetInstanceID(ctx context.Context, tid, id, in
 
 func (r *OvertimeApplicationRepo) List(
 	ctx context.Context,
-	tid, userID uint32,
+	tid, userID int64,
 	status *oaV1.OvertimeApplication_OvertimeStatus,
 	page, pageSize int32,
 ) ([]*oaV1.OvertimeApplication, int, error) {
@@ -215,7 +215,7 @@ func (r *OvertimeApplicationRepo) List(
 	return items, total, nil
 }
 
-func (r *OvertimeApplicationRepo) GetEntity(ctx context.Context, tid, id uint32) (*ent.OvertimeApplication, error) {
+func (r *OvertimeApplicationRepo) GetEntity(ctx context.Context, tid, id int64) (*ent.OvertimeApplication, error) {
 	entity, err := r.entClient.Client().OvertimeApplication.Query().
 		Where(
 			overtimeapplication.IDEQ(id),

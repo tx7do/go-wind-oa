@@ -65,8 +65,8 @@ func (s *RoleService) init() {
 
 func (s *RoleService) extractRelationIDs(
 	roles []*permissionV1.Role,
-	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
-	roleSet aggregator.ResourceMap[uint32, *permissionV1.Role],
+	tenantSet aggregator.ResourceMap[int64, *identityV1.Tenant],
+	roleSet aggregator.ResourceMap[int64, *permissionV1.Role],
 ) {
 	for _, p := range roles {
 		if p.GetTenantId() > 0 {
@@ -80,11 +80,11 @@ func (s *RoleService) extractRelationIDs(
 
 func (s *RoleService) fetchRelationInfo(
 	ctx context.Context,
-	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
-	roleSet aggregator.ResourceMap[uint32, *permissionV1.Role],
+	tenantSet aggregator.ResourceMap[int64, *identityV1.Tenant],
+	roleSet aggregator.ResourceMap[int64, *permissionV1.Role],
 ) error {
 	if len(tenantSet) > 0 {
-		tenantIds := make([]uint32, 0, len(tenantSet))
+		tenantIds := make([]int64, 0, len(tenantSet))
 		for id := range tenantSet {
 			tenantIds = append(tenantIds, id)
 		}
@@ -101,7 +101,7 @@ func (s *RoleService) fetchRelationInfo(
 	}
 
 	if len(roleSet) > 0 {
-		roleIds := make([]uint32, 0, len(roleSet))
+		roleIds := make([]int64, 0, len(roleSet))
 		for id := range roleSet {
 			roleIds = append(roleIds, id)
 		}
@@ -122,13 +122,13 @@ func (s *RoleService) fetchRelationInfo(
 
 func (s *RoleService) bindRelations(
 	roles []*permissionV1.Role,
-	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
-	roleSet aggregator.ResourceMap[uint32, *permissionV1.Role],
+	tenantSet aggregator.ResourceMap[int64, *identityV1.Tenant],
+	roleSet aggregator.ResourceMap[int64, *permissionV1.Role],
 ) {
 	aggregator.Populate(
 		roles,
 		tenantSet,
-		func(ou *permissionV1.Role) uint32 { return ou.GetTenantId() },
+		func(ou *permissionV1.Role) int64 { return ou.GetTenantId() },
 		func(ou *permissionV1.Role, r *identityV1.Tenant) {
 			ou.TenantName = r.Name
 		},
@@ -136,7 +136,7 @@ func (s *RoleService) bindRelations(
 	aggregator.Populate(
 		roles,
 		roleSet,
-		func(ou *permissionV1.Role) uint32 { return ou.GetParentId() },
+		func(ou *permissionV1.Role) int64 { return ou.GetParentId() },
 		func(ou *permissionV1.Role, r *permissionV1.Role) {
 			ou.ParentName = trans.Ptr(r.GetName())
 		},
@@ -144,8 +144,8 @@ func (s *RoleService) bindRelations(
 }
 
 func (s *RoleService) enrichRelations(ctx context.Context, roles []*permissionV1.Role) error {
-	var tenantSet = make(aggregator.ResourceMap[uint32, *identityV1.Tenant])
-	var roleSet = make(aggregator.ResourceMap[uint32, *permissionV1.Role])
+	var tenantSet = make(aggregator.ResourceMap[int64, *identityV1.Tenant])
+	var roleSet = make(aggregator.ResourceMap[int64, *permissionV1.Role])
 	s.extractRelationIDs(roles, tenantSet, roleSet)
 	if err := s.fetchRelationInfo(ctx, tenantSet, roleSet); err != nil {
 		return err
@@ -172,7 +172,7 @@ func hasMaskPath(mask *fieldmaskpb.FieldMask, names ...string) bool {
 
 // validateParentBinding 校验父子角色绑定的合法性（权限继承核心约束，编辑时校验语义）。
 // parentID 为 0 表示根角色，直接放行。
-func (s *RoleService) validateParentBinding(ctx context.Context, roleID, parentID, tenantID uint32, wantPerms []uint32) error {
+func (s *RoleService) validateParentBinding(ctx context.Context, roleID, parentID, tenantID int64, wantPerms []int64) error {
 	if parentID == 0 {
 		return nil
 	}
@@ -193,7 +193,7 @@ func (s *RoleService) validateParentBinding(ctx context.Context, roleID, parentI
 		return nil
 	}
 
-	capSet := make(map[uint32]struct{}, len(parent.GetPermissions()))
+	capSet := make(map[int64]struct{}, len(parent.GetPermissions()))
 	for _, id := range parent.GetPermissions() {
 		capSet[id] = struct{}{}
 	}
@@ -212,7 +212,7 @@ func (s *RoleService) validateParentBinding(ctx context.Context, roleID, parentI
 }
 
 // ensureNoRoleCycle 沿候选父角色上溯检测层级环（Update 改父时调用）。
-func (s *RoleService) ensureNoRoleCycle(ctx context.Context, roleID, parentID uint32) error {
+func (s *RoleService) ensureNoRoleCycle(ctx context.Context, roleID, parentID int64) error {
 	const maxDepth = 32
 
 	current := parentID
@@ -249,7 +249,7 @@ func (s *RoleService) Count(ctx context.Context, req *paginationV1.PagingRequest
 	}
 
 	return &permissionV1.CountRoleResponse{
-		Count: uint64(count),
+		Count: int64(count),
 	}, nil
 }
 
@@ -320,8 +320,8 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 	// 父角色绑定校验（权限继承，编辑时校验语义）：生效父/权限集按 mask 声明取舍。
 	parentIDChanged := hasMaskPath(req.UpdateMask, "parent_id", "parentId")
 	permsChanged := hasMaskPath(req.UpdateMask, "permissions")
-	var effectiveParentID uint32
-	var effectivePerms []uint32
+	var effectiveParentID int64
+	var effectivePerms []int64
 	if parentIDChanged {
 		effectiveParentID = req.Data.GetParentId()
 	} else {
@@ -387,12 +387,12 @@ func (s *RoleService) ListPermissionIds(ctx context.Context, req *permissionV1.L
 	if req == nil {
 		return nil, permissionV1.ErrorBadRequest("invalid request")
 	}
-	var permissionIDs []uint32
+	var permissionIDs []int64
 	var err error
 
 	switch req.QueryBy.(type) {
 	case *permissionV1.ListPermissionIdsRequest_RoleId:
-		permissionIDs, err = s.roleRepo.ListPermissionIDsByRoleIDs(ctx, []uint32{req.GetRoleId()})
+		permissionIDs, err = s.roleRepo.ListPermissionIDsByRoleIDs(ctx, []int64{req.GetRoleId()})
 		if err != nil {
 			return nil, err
 		}
@@ -461,10 +461,10 @@ func (s *RoleService) AssignRolesToUser(ctx context.Context, req *permissionV1.A
 	if !hasUser {
 		return nil, permissionV1.ErrorBadRequest("operator identity is required")
 	}
-	var callerTenantID uint32
+	var callerTenantID int64
 	isPlatform := false
 	if vc, exist := viewer.FromContext(ctx); exist && vc != nil {
-		callerTenantID = uint32(vc.TenantID())
+		callerTenantID = int64(vc.TenantID())
 		isPlatform = vc.IsPlatformContext() || vc.IsSystemContext()
 	}
 
@@ -557,11 +557,11 @@ func (s *RoleService) UnassignRolesFromUser(ctx context.Context, req *permission
 // 平台/系统上下文放行；租户用户仅可查询本租户用户的数据。
 // userRepo.Get 经 EvalQuery 注入 tenant 谓词，租户用户取不到他租户用户即自动拒绝。
 // 返回 nil 表示放行，非 nil 表示拒绝（调用方应直接返回该错误）。
-func (s *RoleService) validateTargetUserTenant(ctx context.Context, targetUserID uint32) error {
-	var callerTenantID uint32
+func (s *RoleService) validateTargetUserTenant(ctx context.Context, targetUserID int64) error {
+	var callerTenantID int64
 	isPlatform := false
 	if vc, exist := viewer.FromContext(ctx); exist && vc != nil {
-		callerTenantID = uint32(vc.TenantID())
+		callerTenantID = int64(vc.TenantID())
 		isPlatform = vc.IsPlatformContext() || vc.IsSystemContext()
 	}
 	targetUser, err := s.userRepo.Get(ctx, &identityV1.GetUserRequest{
@@ -613,7 +613,7 @@ func (s *RoleService) GetRolesByRoleCodes(ctx context.Context, req *permissionV1
 
 	return &permissionV1.ListRoleResponse{
 		Items: roles,
-		Total: uint64(len(roles)),
+		Total: int64(len(roles)),
 	}, nil
 }
 
@@ -626,6 +626,6 @@ func (s *RoleService) GetRolesByRoleIds(ctx context.Context, req *permissionV1.G
 
 	return &permissionV1.ListRoleResponse{
 		Items: roles,
-		Total: uint64(len(roles)),
+		Total: int64(len(roles)),
 	}, nil
 }

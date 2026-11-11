@@ -38,7 +38,7 @@ import (
 // ID 约定：引擎全链使用字符串 ID。本实现不接管 ID 生成——引擎在 Save 前
 // 由 idgen 预置的字符串 ID 落库时被丢弃，改为数据库自增分配，再把真实 ID
 // 以十进制字符串回写到 flow 结构体（引擎在 Save 之后才引用各实体 ID，指针
-// 传递语义下回写安全）。字符串 ID ↔ uint32 列换算见 FlowIDOf/FromFlowID。
+// 传递语义下回写安全）。字符串 ID ↔ int64 列换算见 FlowIDOf/FromFlowID。
 //
 // 状态映射：flow 无 SUSPENDED（父实例保持 RUNNING，令牌停在 callActivity），
 // 旧表 SUSPENDED 行读取时按 RUNNING 处理，展示层经 SuspendedInstanceIDs
@@ -101,37 +101,37 @@ func (s *FlowStore) clientOf(ctx context.Context) *ent.Client {
 
 // ===================== ID / 值换算 =====================
 
-// FlowIDOf uint32 主键 → 引擎字符串 ID（十进制）。
-func FlowIDOf(id uint32) string { return strconv.FormatUint(uint64(id), 10) }
+// FlowIDOf int64 主键 → 引擎字符串 ID（十进制）。
+func FlowIDOf(id int64) string { return strconv.FormatInt(int64(id), 10) }
 
-// FlowIDPtrOf 可空 uint32 → 引擎字符串 ID；nil 返回空串。
-func FlowIDPtrOf(id *uint32) string {
+// FlowIDPtrOf 可空 int64 → 引擎字符串 ID；nil 返回空串。
+func FlowIDPtrOf(id *int64) string {
 	if id == nil {
 		return ""
 	}
 	return FlowIDOf(*id)
 }
 
-// FromFlowID 引擎字符串 ID → uint32 主键。非法/空 ID 按 ErrNotFound 处理。
-func FromFlowID(id string) (uint32, error) {
+// FromFlowID 引擎字符串 ID → int64 主键。非法/空 ID 按 ErrNotFound 处理。
+func FromFlowID(id string) (int64, error) {
 	if id == "" {
 		return 0, fmt.Errorf("%w: empty id", flow.ErrNotFound)
 	}
-	v, err := strconv.ParseUint(id, 10, 32)
+	v, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return 0, fmt.Errorf("%w: invalid numeric id %q", flow.ErrNotFound, id)
 	}
-	return uint32(v), nil
+	return int64(v), nil
 }
 
 // FromFlowIDOrZero 非严格换算：非法/空返回 0（用于可空外键列）。
-func FromFlowIDOrZero(id string) uint32 {
-	v, _ := strconv.ParseUint(id, 10, 32)
-	return uint32(v)
+func FromFlowIDOrZero(id string) int64 {
+	v, _ := strconv.ParseInt(id, 10, 64)
+	return int64(v)
 }
 
-// nillableID 引擎字符串 ID → 可空 uint32；空串/非法返回 nil。
-func nillableID(id string) *uint32 {
+// nillableID 引擎字符串 ID → 可空 int64；空串/非法返回 nil。
+func nillableID(id string) *int64 {
 	if id == "" {
 		return nil
 	}
@@ -226,7 +226,7 @@ func (s *FlowStore) definitionToFlow(row *ent.WorkflowDefinition) (*flow.Definit
 // srcApprover node_config 里的审批人 JSON 形状（OA 设计器契约）。
 type srcApprover struct {
 	Type string `json:"type"`
-	ID   uint32 `json:"id,omitempty"`
+	ID   int64  `json:"id,omitempty"`
 }
 
 type srcNode struct {
@@ -270,7 +270,7 @@ func patchNodePositions(node *flow.Node, approvers []srcApprover) {
 	var positions []string
 	for _, a := range approvers {
 		if strings.EqualFold(a.Type, "POSITION") {
-			positions = append(positions, strconv.FormatUint(uint64(a.ID), 10))
+			positions = append(positions, strconv.FormatInt(int64(a.ID), 10))
 		}
 	}
 	if len(positions) == 0 {
@@ -1046,7 +1046,7 @@ func (s *FlowStore) History() flow.HistoryStore { return flowHistoryStore{s} }
 
 // appendAuditLog 落一条审批日志。actorID 无法解析时不署名（如系统自动动作）。
 func (h flowHistoryStore) appendAuditLog(
-	ctx context.Context, instanceID uint32, tenantID uint32,
+	ctx context.Context, instanceID int64, tenantID int64,
 	nodeID string, action workflowlog.LogAction, comment string, actorID string, at time.Time,
 ) error {
 	builder := h.s.clientOf(ctx).WorkflowLog.Create().
@@ -1075,7 +1075,7 @@ func (h flowHistoryStore) Append(ctx context.Context, ev *flow.HistoryEvent) err
 	if err != nil {
 		return fmt.Errorf("flow store: append history for instance %s: %w", ev.InstanceID, err)
 	}
-	tenantID := uint32(0)
+	tenantID := int64(0)
 	if instRow.TenantID != nil {
 		tenantID = *instRow.TenantID
 	}
@@ -1164,7 +1164,7 @@ func (h flowHistoryStore) ListByInstance(ctx context.Context, instanceID string)
 // WITHDRAW——这三类语境在引擎流转事件中不可还原或 History 适配层刻意跳过）。
 // tx-aware：ctx 携带事务时写入事务。
 func (s *FlowStore) AppendAuditLog(
-	ctx context.Context, tenantID, actorUserID, instanceID uint32,
+	ctx context.Context, tenantID, actorUserID, instanceID int64,
 	nodeID string, action workflowlog.LogAction, comment string,
 ) error {
 	now := time.Now()
@@ -1188,8 +1188,8 @@ func (s *FlowStore) AppendAuditLog(
 // SuspendedInstanceIDs 返回挂有子流程（存在 child_instance_id 非空令牌）的实例
 // ID 集合——go-wind-flow 中父实例保持 RUNNING，展示层据此推断旧语义的
 // SUSPENDED 状态。
-func (s *FlowStore) SuspendedInstanceIDs(ctx context.Context, instanceIDs []uint32) (map[uint32]bool, error) {
-	out := make(map[uint32]bool, len(instanceIDs))
+func (s *FlowStore) SuspendedInstanceIDs(ctx context.Context, instanceIDs []int64) (map[int64]bool, error) {
+	out := make(map[int64]bool, len(instanceIDs))
 	if len(instanceIDs) == 0 {
 		return out, nil
 	}

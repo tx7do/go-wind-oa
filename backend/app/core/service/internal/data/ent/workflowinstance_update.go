@@ -74,14 +74,14 @@ func (_u *WorkflowInstanceUpdate) ClearDeletedAt() *WorkflowInstanceUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *WorkflowInstanceUpdate) SetCreatedBy(v uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetCreatedBy(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdate) SetNillableCreatedBy(v *uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetNillableCreatedBy(v *int64) *WorkflowInstanceUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -89,7 +89,7 @@ func (_u *WorkflowInstanceUpdate) SetNillableCreatedBy(v *uint32) *WorkflowInsta
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *WorkflowInstanceUpdate) AddCreatedBy(v int32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) AddCreatedBy(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -101,14 +101,14 @@ func (_u *WorkflowInstanceUpdate) ClearCreatedBy() *WorkflowInstanceUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *WorkflowInstanceUpdate) SetUpdatedBy(v uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetUpdatedBy(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdate) SetNillableUpdatedBy(v *uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetNillableUpdatedBy(v *int64) *WorkflowInstanceUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -116,7 +116,7 @@ func (_u *WorkflowInstanceUpdate) SetNillableUpdatedBy(v *uint32) *WorkflowInsta
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *WorkflowInstanceUpdate) AddUpdatedBy(v int32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) AddUpdatedBy(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -128,14 +128,14 @@ func (_u *WorkflowInstanceUpdate) ClearUpdatedBy() *WorkflowInstanceUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *WorkflowInstanceUpdate) SetDeletedBy(v uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetDeletedBy(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdate) SetNillableDeletedBy(v *uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetNillableDeletedBy(v *int64) *WorkflowInstanceUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -143,7 +143,7 @@ func (_u *WorkflowInstanceUpdate) SetNillableDeletedBy(v *uint32) *WorkflowInsta
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *WorkflowInstanceUpdate) AddDeletedBy(v int32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) AddDeletedBy(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -215,14 +215,14 @@ func (_u *WorkflowInstanceUpdate) ClearBusinessType() *WorkflowInstanceUpdate {
 }
 
 // SetBusinessID sets the "business_id" field.
-func (_u *WorkflowInstanceUpdate) SetBusinessID(v uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetBusinessID(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.ResetBusinessID()
 	_u.mutation.SetBusinessID(v)
 	return _u
 }
 
 // SetNillableBusinessID sets the "business_id" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdate) SetNillableBusinessID(v *uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetNillableBusinessID(v *int64) *WorkflowInstanceUpdate {
 	if v != nil {
 		_u.SetBusinessID(*v)
 	}
@@ -230,7 +230,7 @@ func (_u *WorkflowInstanceUpdate) SetNillableBusinessID(v *uint32) *WorkflowInst
 }
 
 // AddBusinessID adds value to the "business_id" field.
-func (_u *WorkflowInstanceUpdate) AddBusinessID(v int32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) AddBusinessID(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.AddBusinessID(v)
 	return _u
 }
@@ -289,14 +289,14 @@ func (_u *WorkflowInstanceUpdate) ClearDefinitionVersion() *WorkflowInstanceUpda
 }
 
 // SetParentInstanceID sets the "parent_instance_id" field.
-func (_u *WorkflowInstanceUpdate) SetParentInstanceID(v uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetParentInstanceID(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.ResetParentInstanceID()
 	_u.mutation.SetParentInstanceID(v)
 	return _u
 }
 
 // SetNillableParentInstanceID sets the "parent_instance_id" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdate) SetNillableParentInstanceID(v *uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetNillableParentInstanceID(v *int64) *WorkflowInstanceUpdate {
 	if v != nil {
 		_u.SetParentInstanceID(*v)
 	}
@@ -304,7 +304,7 @@ func (_u *WorkflowInstanceUpdate) SetNillableParentInstanceID(v *uint32) *Workfl
 }
 
 // AddParentInstanceID adds value to the "parent_instance_id" field.
-func (_u *WorkflowInstanceUpdate) AddParentInstanceID(v int32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) AddParentInstanceID(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.AddParentInstanceID(v)
 	return _u
 }
@@ -316,14 +316,14 @@ func (_u *WorkflowInstanceUpdate) ClearParentInstanceID() *WorkflowInstanceUpdat
 }
 
 // SetParentTokenID sets the "parent_token_id" field.
-func (_u *WorkflowInstanceUpdate) SetParentTokenID(v uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetParentTokenID(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.ResetParentTokenID()
 	_u.mutation.SetParentTokenID(v)
 	return _u
 }
 
 // SetNillableParentTokenID sets the "parent_token_id" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdate) SetNillableParentTokenID(v *uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetNillableParentTokenID(v *int64) *WorkflowInstanceUpdate {
 	if v != nil {
 		_u.SetParentTokenID(*v)
 	}
@@ -331,7 +331,7 @@ func (_u *WorkflowInstanceUpdate) SetNillableParentTokenID(v *uint32) *WorkflowI
 }
 
 // AddParentTokenID adds value to the "parent_token_id" field.
-func (_u *WorkflowInstanceUpdate) AddParentTokenID(v int32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) AddParentTokenID(v int64) *WorkflowInstanceUpdate {
 	_u.mutation.AddParentTokenID(v)
 	return _u
 }
@@ -363,13 +363,13 @@ func (_u *WorkflowInstanceUpdate) ClearEndedAt() *WorkflowInstanceUpdate {
 }
 
 // SetDefinitionID sets the "definition" edge to the WorkflowDefinition entity by ID.
-func (_u *WorkflowInstanceUpdate) SetDefinitionID(id uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetDefinitionID(id int64) *WorkflowInstanceUpdate {
 	_u.mutation.SetDefinitionID(id)
 	return _u
 }
 
 // SetNillableDefinitionID sets the "definition" edge to the WorkflowDefinition entity by ID if the given value is not nil.
-func (_u *WorkflowInstanceUpdate) SetNillableDefinitionID(id *uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) SetNillableDefinitionID(id *int64) *WorkflowInstanceUpdate {
 	if id != nil {
 		_u = _u.SetDefinitionID(*id)
 	}
@@ -382,14 +382,14 @@ func (_u *WorkflowInstanceUpdate) SetDefinition(v *WorkflowDefinition) *Workflow
 }
 
 // AddTaskIDs adds the "tasks" edge to the WorkflowTask entity by IDs.
-func (_u *WorkflowInstanceUpdate) AddTaskIDs(ids ...uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) AddTaskIDs(ids ...int64) *WorkflowInstanceUpdate {
 	_u.mutation.AddTaskIDs(ids...)
 	return _u
 }
 
 // AddTasks adds the "tasks" edges to the WorkflowTask entity.
 func (_u *WorkflowInstanceUpdate) AddTasks(v ...*WorkflowTask) *WorkflowInstanceUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -397,14 +397,14 @@ func (_u *WorkflowInstanceUpdate) AddTasks(v ...*WorkflowTask) *WorkflowInstance
 }
 
 // AddLogIDs adds the "logs" edge to the WorkflowLog entity by IDs.
-func (_u *WorkflowInstanceUpdate) AddLogIDs(ids ...uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) AddLogIDs(ids ...int64) *WorkflowInstanceUpdate {
 	_u.mutation.AddLogIDs(ids...)
 	return _u
 }
 
 // AddLogs adds the "logs" edges to the WorkflowLog entity.
 func (_u *WorkflowInstanceUpdate) AddLogs(v ...*WorkflowLog) *WorkflowInstanceUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -412,14 +412,14 @@ func (_u *WorkflowInstanceUpdate) AddLogs(v ...*WorkflowLog) *WorkflowInstanceUp
 }
 
 // AddTokenIDs adds the "tokens" edge to the WorkflowToken entity by IDs.
-func (_u *WorkflowInstanceUpdate) AddTokenIDs(ids ...uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) AddTokenIDs(ids ...int64) *WorkflowInstanceUpdate {
 	_u.mutation.AddTokenIDs(ids...)
 	return _u
 }
 
 // AddTokens adds the "tokens" edges to the WorkflowToken entity.
 func (_u *WorkflowInstanceUpdate) AddTokens(v ...*WorkflowToken) *WorkflowInstanceUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -444,14 +444,14 @@ func (_u *WorkflowInstanceUpdate) ClearTasks() *WorkflowInstanceUpdate {
 }
 
 // RemoveTaskIDs removes the "tasks" edge to WorkflowTask entities by IDs.
-func (_u *WorkflowInstanceUpdate) RemoveTaskIDs(ids ...uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) RemoveTaskIDs(ids ...int64) *WorkflowInstanceUpdate {
 	_u.mutation.RemoveTaskIDs(ids...)
 	return _u
 }
 
 // RemoveTasks removes "tasks" edges to WorkflowTask entities.
 func (_u *WorkflowInstanceUpdate) RemoveTasks(v ...*WorkflowTask) *WorkflowInstanceUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -465,14 +465,14 @@ func (_u *WorkflowInstanceUpdate) ClearLogs() *WorkflowInstanceUpdate {
 }
 
 // RemoveLogIDs removes the "logs" edge to WorkflowLog entities by IDs.
-func (_u *WorkflowInstanceUpdate) RemoveLogIDs(ids ...uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) RemoveLogIDs(ids ...int64) *WorkflowInstanceUpdate {
 	_u.mutation.RemoveLogIDs(ids...)
 	return _u
 }
 
 // RemoveLogs removes "logs" edges to WorkflowLog entities.
 func (_u *WorkflowInstanceUpdate) RemoveLogs(v ...*WorkflowLog) *WorkflowInstanceUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -486,14 +486,14 @@ func (_u *WorkflowInstanceUpdate) ClearTokens() *WorkflowInstanceUpdate {
 }
 
 // RemoveTokenIDs removes the "tokens" edge to WorkflowToken entities by IDs.
-func (_u *WorkflowInstanceUpdate) RemoveTokenIDs(ids ...uint32) *WorkflowInstanceUpdate {
+func (_u *WorkflowInstanceUpdate) RemoveTokenIDs(ids ...int64) *WorkflowInstanceUpdate {
 	_u.mutation.RemoveTokenIDs(ids...)
 	return _u
 }
 
 // RemoveTokens removes "tokens" edges to WorkflowToken entities.
 func (_u *WorkflowInstanceUpdate) RemoveTokens(v ...*WorkflowToken) *WorkflowInstanceUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -547,7 +547,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(workflowinstance.Table, workflowinstance.Columns, sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(workflowinstance.Table, workflowinstance.Columns, sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -571,34 +571,34 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 		_spec.ClearField(workflowinstance.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(workflowinstance.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(workflowinstance.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(workflowinstance.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(workflowinstance.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(workflowinstance.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(workflowinstance.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(workflowinstance.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(workflowinstance.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(workflowinstance.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(workflowinstance.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.InstanceStatus(); ok {
 		_spec.SetField(workflowinstance.FieldInstanceStatus, field.TypeEnum, value)
@@ -619,13 +619,13 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 		_spec.ClearField(workflowinstance.FieldBusinessType, field.TypeString)
 	}
 	if value, ok := _u.mutation.BusinessID(); ok {
-		_spec.SetField(workflowinstance.FieldBusinessID, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldBusinessID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedBusinessID(); ok {
-		_spec.AddField(workflowinstance.FieldBusinessID, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldBusinessID, field.TypeInt64, value)
 	}
 	if _u.mutation.BusinessIDCleared() {
-		_spec.ClearField(workflowinstance.FieldBusinessID, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldBusinessID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DefinitionKey(); ok {
 		_spec.SetField(workflowinstance.FieldDefinitionKey, field.TypeString, value)
@@ -643,22 +643,22 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 		_spec.ClearField(workflowinstance.FieldDefinitionVersion, field.TypeInt)
 	}
 	if value, ok := _u.mutation.ParentInstanceID(); ok {
-		_spec.SetField(workflowinstance.FieldParentInstanceID, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldParentInstanceID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedParentInstanceID(); ok {
-		_spec.AddField(workflowinstance.FieldParentInstanceID, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldParentInstanceID, field.TypeInt64, value)
 	}
 	if _u.mutation.ParentInstanceIDCleared() {
-		_spec.ClearField(workflowinstance.FieldParentInstanceID, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldParentInstanceID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.ParentTokenID(); ok {
-		_spec.SetField(workflowinstance.FieldParentTokenID, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldParentTokenID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedParentTokenID(); ok {
-		_spec.AddField(workflowinstance.FieldParentTokenID, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldParentTokenID, field.TypeInt64, value)
 	}
 	if _u.mutation.ParentTokenIDCleared() {
-		_spec.ClearField(workflowinstance.FieldParentTokenID, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldParentTokenID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.EndedAt(); ok {
 		_spec.SetField(workflowinstance.FieldEndedAt, field.TypeTime, value)
@@ -674,7 +674,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.DefinitionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -687,7 +687,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.DefinitionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -703,7 +703,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.TasksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -716,7 +716,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.TasksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -732,7 +732,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.TasksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -748,7 +748,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.LogsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -761,7 +761,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.LogsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -777,7 +777,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.LogsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -793,7 +793,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.TokensColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -806,7 +806,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.TokensColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -822,7 +822,7 @@ func (_u *WorkflowInstanceUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Columns: []string{workflowinstance.TokensColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -893,14 +893,14 @@ func (_u *WorkflowInstanceUpdateOne) ClearDeletedAt() *WorkflowInstanceUpdateOne
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *WorkflowInstanceUpdateOne) SetCreatedBy(v uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetCreatedBy(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdateOne) SetNillableCreatedBy(v *uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetNillableCreatedBy(v *int64) *WorkflowInstanceUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -908,7 +908,7 @@ func (_u *WorkflowInstanceUpdateOne) SetNillableCreatedBy(v *uint32) *WorkflowIn
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *WorkflowInstanceUpdateOne) AddCreatedBy(v int32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) AddCreatedBy(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -920,14 +920,14 @@ func (_u *WorkflowInstanceUpdateOne) ClearCreatedBy() *WorkflowInstanceUpdateOne
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *WorkflowInstanceUpdateOne) SetUpdatedBy(v uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetUpdatedBy(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdateOne) SetNillableUpdatedBy(v *uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetNillableUpdatedBy(v *int64) *WorkflowInstanceUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -935,7 +935,7 @@ func (_u *WorkflowInstanceUpdateOne) SetNillableUpdatedBy(v *uint32) *WorkflowIn
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *WorkflowInstanceUpdateOne) AddUpdatedBy(v int32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) AddUpdatedBy(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -947,14 +947,14 @@ func (_u *WorkflowInstanceUpdateOne) ClearUpdatedBy() *WorkflowInstanceUpdateOne
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *WorkflowInstanceUpdateOne) SetDeletedBy(v uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetDeletedBy(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdateOne) SetNillableDeletedBy(v *uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetNillableDeletedBy(v *int64) *WorkflowInstanceUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -962,7 +962,7 @@ func (_u *WorkflowInstanceUpdateOne) SetNillableDeletedBy(v *uint32) *WorkflowIn
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *WorkflowInstanceUpdateOne) AddDeletedBy(v int32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) AddDeletedBy(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -1034,14 +1034,14 @@ func (_u *WorkflowInstanceUpdateOne) ClearBusinessType() *WorkflowInstanceUpdate
 }
 
 // SetBusinessID sets the "business_id" field.
-func (_u *WorkflowInstanceUpdateOne) SetBusinessID(v uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetBusinessID(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.ResetBusinessID()
 	_u.mutation.SetBusinessID(v)
 	return _u
 }
 
 // SetNillableBusinessID sets the "business_id" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdateOne) SetNillableBusinessID(v *uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetNillableBusinessID(v *int64) *WorkflowInstanceUpdateOne {
 	if v != nil {
 		_u.SetBusinessID(*v)
 	}
@@ -1049,7 +1049,7 @@ func (_u *WorkflowInstanceUpdateOne) SetNillableBusinessID(v *uint32) *WorkflowI
 }
 
 // AddBusinessID adds value to the "business_id" field.
-func (_u *WorkflowInstanceUpdateOne) AddBusinessID(v int32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) AddBusinessID(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.AddBusinessID(v)
 	return _u
 }
@@ -1108,14 +1108,14 @@ func (_u *WorkflowInstanceUpdateOne) ClearDefinitionVersion() *WorkflowInstanceU
 }
 
 // SetParentInstanceID sets the "parent_instance_id" field.
-func (_u *WorkflowInstanceUpdateOne) SetParentInstanceID(v uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetParentInstanceID(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.ResetParentInstanceID()
 	_u.mutation.SetParentInstanceID(v)
 	return _u
 }
 
 // SetNillableParentInstanceID sets the "parent_instance_id" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdateOne) SetNillableParentInstanceID(v *uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetNillableParentInstanceID(v *int64) *WorkflowInstanceUpdateOne {
 	if v != nil {
 		_u.SetParentInstanceID(*v)
 	}
@@ -1123,7 +1123,7 @@ func (_u *WorkflowInstanceUpdateOne) SetNillableParentInstanceID(v *uint32) *Wor
 }
 
 // AddParentInstanceID adds value to the "parent_instance_id" field.
-func (_u *WorkflowInstanceUpdateOne) AddParentInstanceID(v int32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) AddParentInstanceID(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.AddParentInstanceID(v)
 	return _u
 }
@@ -1135,14 +1135,14 @@ func (_u *WorkflowInstanceUpdateOne) ClearParentInstanceID() *WorkflowInstanceUp
 }
 
 // SetParentTokenID sets the "parent_token_id" field.
-func (_u *WorkflowInstanceUpdateOne) SetParentTokenID(v uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetParentTokenID(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.ResetParentTokenID()
 	_u.mutation.SetParentTokenID(v)
 	return _u
 }
 
 // SetNillableParentTokenID sets the "parent_token_id" field if the given value is not nil.
-func (_u *WorkflowInstanceUpdateOne) SetNillableParentTokenID(v *uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetNillableParentTokenID(v *int64) *WorkflowInstanceUpdateOne {
 	if v != nil {
 		_u.SetParentTokenID(*v)
 	}
@@ -1150,7 +1150,7 @@ func (_u *WorkflowInstanceUpdateOne) SetNillableParentTokenID(v *uint32) *Workfl
 }
 
 // AddParentTokenID adds value to the "parent_token_id" field.
-func (_u *WorkflowInstanceUpdateOne) AddParentTokenID(v int32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) AddParentTokenID(v int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.AddParentTokenID(v)
 	return _u
 }
@@ -1182,13 +1182,13 @@ func (_u *WorkflowInstanceUpdateOne) ClearEndedAt() *WorkflowInstanceUpdateOne {
 }
 
 // SetDefinitionID sets the "definition" edge to the WorkflowDefinition entity by ID.
-func (_u *WorkflowInstanceUpdateOne) SetDefinitionID(id uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetDefinitionID(id int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.SetDefinitionID(id)
 	return _u
 }
 
 // SetNillableDefinitionID sets the "definition" edge to the WorkflowDefinition entity by ID if the given value is not nil.
-func (_u *WorkflowInstanceUpdateOne) SetNillableDefinitionID(id *uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) SetNillableDefinitionID(id *int64) *WorkflowInstanceUpdateOne {
 	if id != nil {
 		_u = _u.SetDefinitionID(*id)
 	}
@@ -1201,14 +1201,14 @@ func (_u *WorkflowInstanceUpdateOne) SetDefinition(v *WorkflowDefinition) *Workf
 }
 
 // AddTaskIDs adds the "tasks" edge to the WorkflowTask entity by IDs.
-func (_u *WorkflowInstanceUpdateOne) AddTaskIDs(ids ...uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) AddTaskIDs(ids ...int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.AddTaskIDs(ids...)
 	return _u
 }
 
 // AddTasks adds the "tasks" edges to the WorkflowTask entity.
 func (_u *WorkflowInstanceUpdateOne) AddTasks(v ...*WorkflowTask) *WorkflowInstanceUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1216,14 +1216,14 @@ func (_u *WorkflowInstanceUpdateOne) AddTasks(v ...*WorkflowTask) *WorkflowInsta
 }
 
 // AddLogIDs adds the "logs" edge to the WorkflowLog entity by IDs.
-func (_u *WorkflowInstanceUpdateOne) AddLogIDs(ids ...uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) AddLogIDs(ids ...int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.AddLogIDs(ids...)
 	return _u
 }
 
 // AddLogs adds the "logs" edges to the WorkflowLog entity.
 func (_u *WorkflowInstanceUpdateOne) AddLogs(v ...*WorkflowLog) *WorkflowInstanceUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1231,14 +1231,14 @@ func (_u *WorkflowInstanceUpdateOne) AddLogs(v ...*WorkflowLog) *WorkflowInstanc
 }
 
 // AddTokenIDs adds the "tokens" edge to the WorkflowToken entity by IDs.
-func (_u *WorkflowInstanceUpdateOne) AddTokenIDs(ids ...uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) AddTokenIDs(ids ...int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.AddTokenIDs(ids...)
 	return _u
 }
 
 // AddTokens adds the "tokens" edges to the WorkflowToken entity.
 func (_u *WorkflowInstanceUpdateOne) AddTokens(v ...*WorkflowToken) *WorkflowInstanceUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1263,14 +1263,14 @@ func (_u *WorkflowInstanceUpdateOne) ClearTasks() *WorkflowInstanceUpdateOne {
 }
 
 // RemoveTaskIDs removes the "tasks" edge to WorkflowTask entities by IDs.
-func (_u *WorkflowInstanceUpdateOne) RemoveTaskIDs(ids ...uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) RemoveTaskIDs(ids ...int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.RemoveTaskIDs(ids...)
 	return _u
 }
 
 // RemoveTasks removes "tasks" edges to WorkflowTask entities.
 func (_u *WorkflowInstanceUpdateOne) RemoveTasks(v ...*WorkflowTask) *WorkflowInstanceUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1284,14 +1284,14 @@ func (_u *WorkflowInstanceUpdateOne) ClearLogs() *WorkflowInstanceUpdateOne {
 }
 
 // RemoveLogIDs removes the "logs" edge to WorkflowLog entities by IDs.
-func (_u *WorkflowInstanceUpdateOne) RemoveLogIDs(ids ...uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) RemoveLogIDs(ids ...int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.RemoveLogIDs(ids...)
 	return _u
 }
 
 // RemoveLogs removes "logs" edges to WorkflowLog entities.
 func (_u *WorkflowInstanceUpdateOne) RemoveLogs(v ...*WorkflowLog) *WorkflowInstanceUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1305,14 +1305,14 @@ func (_u *WorkflowInstanceUpdateOne) ClearTokens() *WorkflowInstanceUpdateOne {
 }
 
 // RemoveTokenIDs removes the "tokens" edge to WorkflowToken entities by IDs.
-func (_u *WorkflowInstanceUpdateOne) RemoveTokenIDs(ids ...uint32) *WorkflowInstanceUpdateOne {
+func (_u *WorkflowInstanceUpdateOne) RemoveTokenIDs(ids ...int64) *WorkflowInstanceUpdateOne {
 	_u.mutation.RemoveTokenIDs(ids...)
 	return _u
 }
 
 // RemoveTokens removes "tokens" edges to WorkflowToken entities.
 func (_u *WorkflowInstanceUpdateOne) RemoveTokens(v ...*WorkflowToken) *WorkflowInstanceUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -1379,7 +1379,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(workflowinstance.Table, workflowinstance.Columns, sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(workflowinstance.Table, workflowinstance.Columns, sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "WorkflowInstance.id" for update`)}
@@ -1420,34 +1420,34 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 		_spec.ClearField(workflowinstance.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(workflowinstance.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(workflowinstance.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(workflowinstance.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(workflowinstance.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(workflowinstance.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(workflowinstance.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(workflowinstance.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(workflowinstance.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(workflowinstance.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(workflowinstance.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.InstanceStatus(); ok {
 		_spec.SetField(workflowinstance.FieldInstanceStatus, field.TypeEnum, value)
@@ -1468,13 +1468,13 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 		_spec.ClearField(workflowinstance.FieldBusinessType, field.TypeString)
 	}
 	if value, ok := _u.mutation.BusinessID(); ok {
-		_spec.SetField(workflowinstance.FieldBusinessID, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldBusinessID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedBusinessID(); ok {
-		_spec.AddField(workflowinstance.FieldBusinessID, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldBusinessID, field.TypeInt64, value)
 	}
 	if _u.mutation.BusinessIDCleared() {
-		_spec.ClearField(workflowinstance.FieldBusinessID, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldBusinessID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DefinitionKey(); ok {
 		_spec.SetField(workflowinstance.FieldDefinitionKey, field.TypeString, value)
@@ -1492,22 +1492,22 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 		_spec.ClearField(workflowinstance.FieldDefinitionVersion, field.TypeInt)
 	}
 	if value, ok := _u.mutation.ParentInstanceID(); ok {
-		_spec.SetField(workflowinstance.FieldParentInstanceID, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldParentInstanceID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedParentInstanceID(); ok {
-		_spec.AddField(workflowinstance.FieldParentInstanceID, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldParentInstanceID, field.TypeInt64, value)
 	}
 	if _u.mutation.ParentInstanceIDCleared() {
-		_spec.ClearField(workflowinstance.FieldParentInstanceID, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldParentInstanceID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.ParentTokenID(); ok {
-		_spec.SetField(workflowinstance.FieldParentTokenID, field.TypeUint32, value)
+		_spec.SetField(workflowinstance.FieldParentTokenID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedParentTokenID(); ok {
-		_spec.AddField(workflowinstance.FieldParentTokenID, field.TypeUint32, value)
+		_spec.AddField(workflowinstance.FieldParentTokenID, field.TypeInt64, value)
 	}
 	if _u.mutation.ParentTokenIDCleared() {
-		_spec.ClearField(workflowinstance.FieldParentTokenID, field.TypeUint32)
+		_spec.ClearField(workflowinstance.FieldParentTokenID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.EndedAt(); ok {
 		_spec.SetField(workflowinstance.FieldEndedAt, field.TypeTime, value)
@@ -1523,7 +1523,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.DefinitionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1536,7 +1536,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.DefinitionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1552,7 +1552,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.TasksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1565,7 +1565,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.TasksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1581,7 +1581,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.TasksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1597,7 +1597,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.LogsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1610,7 +1610,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.LogsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1626,7 +1626,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.LogsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowlog.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1642,7 +1642,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.TokensColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1655,7 +1655,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.TokensColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -1671,7 +1671,7 @@ func (_u *WorkflowInstanceUpdateOne) sqlSave(ctx context.Context) (_node *Workfl
 			Columns: []string{workflowinstance.TokensColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

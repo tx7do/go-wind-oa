@@ -84,7 +84,7 @@ var (
 	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint32
+	DefaultTenantID int64
 	// DefaultTitle holds the default value on creation for the "title" field.
 	DefaultTitle string
 	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
@@ -98,7 +98,7 @@ var (
 	// ItineraryValidator is a validator for the "itinerary" field. It is called by the builders before save.
 	ItineraryValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(int64) error
 )
 
 // TripStatus defines the type for the "trip_status" enum field.

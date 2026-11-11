@@ -117,7 +117,7 @@ func (r *InternalMessageRepo) List(ctx context.Context, req *paginationV1.Paging
 	}, nil
 }
 
-func (r *InternalMessageRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *InternalMessageRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().InternalMessage.Query().
 		Where(internalmessage.IDEQ(id)).
 		Exist(ctx)
@@ -235,7 +235,7 @@ func (r *InternalMessageRepo) Update(ctx context.Context, req *internalMessageV1
 	return err
 }
 
-func (r *InternalMessageRepo) Delete(ctx context.Context, id uint32) (err error) {
+func (r *InternalMessageRepo) Delete(ctx context.Context, id int64) (err error) {
 	if id == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
@@ -285,7 +285,7 @@ func (r *InternalMessageRepo) Delete(ctx context.Context, id uint32) (err error)
 }
 
 // ListByIDs 按主键批量读取消息 DTO（收件箱组装用）。
-func (r *InternalMessageRepo) ListByIDs(ctx context.Context, ids []uint32) ([]*internalMessageV1.InternalMessage, error) {
+func (r *InternalMessageRepo) ListByIDs(ctx context.Context, ids []int64) ([]*internalMessageV1.InternalMessage, error) {
 	if len(ids) == 0 {
 		return []*internalMessageV1.InternalMessage{}, nil
 	}

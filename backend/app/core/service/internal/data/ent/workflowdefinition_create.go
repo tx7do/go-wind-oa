@@ -66,13 +66,13 @@ func (_c *WorkflowDefinitionCreate) SetNillableDeletedAt(v *time.Time) *Workflow
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *WorkflowDefinitionCreate) SetCreatedBy(v uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetCreatedBy(v int64) *WorkflowDefinitionCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *WorkflowDefinitionCreate) SetNillableCreatedBy(v *uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetNillableCreatedBy(v *int64) *WorkflowDefinitionCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -80,13 +80,13 @@ func (_c *WorkflowDefinitionCreate) SetNillableCreatedBy(v *uint32) *WorkflowDef
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *WorkflowDefinitionCreate) SetUpdatedBy(v uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetUpdatedBy(v int64) *WorkflowDefinitionCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *WorkflowDefinitionCreate) SetNillableUpdatedBy(v *uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetNillableUpdatedBy(v *int64) *WorkflowDefinitionCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -94,13 +94,13 @@ func (_c *WorkflowDefinitionCreate) SetNillableUpdatedBy(v *uint32) *WorkflowDef
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *WorkflowDefinitionCreate) SetDeletedBy(v uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetDeletedBy(v int64) *WorkflowDefinitionCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *WorkflowDefinitionCreate) SetNillableDeletedBy(v *uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetNillableDeletedBy(v *int64) *WorkflowDefinitionCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -108,13 +108,13 @@ func (_c *WorkflowDefinitionCreate) SetNillableDeletedBy(v *uint32) *WorkflowDef
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *WorkflowDefinitionCreate) SetTenantID(v uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetTenantID(v int64) *WorkflowDefinitionCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *WorkflowDefinitionCreate) SetNillableTenantID(v *uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetNillableTenantID(v *int64) *WorkflowDefinitionCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -206,20 +206,20 @@ func (_c *WorkflowDefinitionCreate) SetNillableDefinitionStatus(v *workflowdefin
 }
 
 // SetID sets the "id" field.
-func (_c *WorkflowDefinitionCreate) SetID(v uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) SetID(v int64) *WorkflowDefinitionCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // AddInstanceIDs adds the "instances" edge to the WorkflowInstance entity by IDs.
-func (_c *WorkflowDefinitionCreate) AddInstanceIDs(ids ...uint32) *WorkflowDefinitionCreate {
+func (_c *WorkflowDefinitionCreate) AddInstanceIDs(ids ...int64) *WorkflowDefinitionCreate {
 	_c.mutation.AddInstanceIDs(ids...)
 	return _c
 }
 
 // AddInstances adds the "instances" edges to the WorkflowInstance entity.
 func (_c *WorkflowDefinitionCreate) AddInstances(v ...*WorkflowInstance) *WorkflowDefinitionCreate {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -302,7 +302,7 @@ func (_c *WorkflowDefinitionCreate) sqlSave(ctx context.Context) (*WorkflowDefin
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -312,7 +312,7 @@ func (_c *WorkflowDefinitionCreate) sqlSave(ctx context.Context) (*WorkflowDefin
 func (_c *WorkflowDefinitionCreate) createSpec() (*WorkflowDefinition, *sqlgraph.CreateSpec) {
 	var (
 		_node = &WorkflowDefinition{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(workflowdefinition.Table, sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(workflowdefinition.Table, sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -332,19 +332,19 @@ func (_c *WorkflowDefinitionCreate) createSpec() (*WorkflowDefinition, *sqlgraph
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(workflowdefinition.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowdefinition.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(workflowdefinition.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowdefinition.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(workflowdefinition.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(workflowdefinition.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(workflowdefinition.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(workflowdefinition.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -379,7 +379,7 @@ func (_c *WorkflowDefinitionCreate) createSpec() (*WorkflowDefinition, *sqlgraph
 			Columns: []string{workflowdefinition.InstancesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -476,7 +476,7 @@ func (u *WorkflowDefinitionUpsert) ClearDeletedAt() *WorkflowDefinitionUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WorkflowDefinitionUpsert) SetCreatedBy(v uint32) *WorkflowDefinitionUpsert {
+func (u *WorkflowDefinitionUpsert) SetCreatedBy(v int64) *WorkflowDefinitionUpsert {
 	u.Set(workflowdefinition.FieldCreatedBy, v)
 	return u
 }
@@ -488,7 +488,7 @@ func (u *WorkflowDefinitionUpsert) UpdateCreatedBy() *WorkflowDefinitionUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WorkflowDefinitionUpsert) AddCreatedBy(v uint32) *WorkflowDefinitionUpsert {
+func (u *WorkflowDefinitionUpsert) AddCreatedBy(v int64) *WorkflowDefinitionUpsert {
 	u.Add(workflowdefinition.FieldCreatedBy, v)
 	return u
 }
@@ -500,7 +500,7 @@ func (u *WorkflowDefinitionUpsert) ClearCreatedBy() *WorkflowDefinitionUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WorkflowDefinitionUpsert) SetUpdatedBy(v uint32) *WorkflowDefinitionUpsert {
+func (u *WorkflowDefinitionUpsert) SetUpdatedBy(v int64) *WorkflowDefinitionUpsert {
 	u.Set(workflowdefinition.FieldUpdatedBy, v)
 	return u
 }
@@ -512,7 +512,7 @@ func (u *WorkflowDefinitionUpsert) UpdateUpdatedBy() *WorkflowDefinitionUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WorkflowDefinitionUpsert) AddUpdatedBy(v uint32) *WorkflowDefinitionUpsert {
+func (u *WorkflowDefinitionUpsert) AddUpdatedBy(v int64) *WorkflowDefinitionUpsert {
 	u.Add(workflowdefinition.FieldUpdatedBy, v)
 	return u
 }
@@ -524,7 +524,7 @@ func (u *WorkflowDefinitionUpsert) ClearUpdatedBy() *WorkflowDefinitionUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WorkflowDefinitionUpsert) SetDeletedBy(v uint32) *WorkflowDefinitionUpsert {
+func (u *WorkflowDefinitionUpsert) SetDeletedBy(v int64) *WorkflowDefinitionUpsert {
 	u.Set(workflowdefinition.FieldDeletedBy, v)
 	return u
 }
@@ -536,7 +536,7 @@ func (u *WorkflowDefinitionUpsert) UpdateDeletedBy() *WorkflowDefinitionUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WorkflowDefinitionUpsert) AddDeletedBy(v uint32) *WorkflowDefinitionUpsert {
+func (u *WorkflowDefinitionUpsert) AddDeletedBy(v int64) *WorkflowDefinitionUpsert {
 	u.Add(workflowdefinition.FieldDeletedBy, v)
 	return u
 }
@@ -758,14 +758,14 @@ func (u *WorkflowDefinitionUpsertOne) ClearDeletedAt() *WorkflowDefinitionUpsert
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WorkflowDefinitionUpsertOne) SetCreatedBy(v uint32) *WorkflowDefinitionUpsertOne {
+func (u *WorkflowDefinitionUpsertOne) SetCreatedBy(v int64) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WorkflowDefinitionUpsertOne) AddCreatedBy(v uint32) *WorkflowDefinitionUpsertOne {
+func (u *WorkflowDefinitionUpsertOne) AddCreatedBy(v int64) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -786,14 +786,14 @@ func (u *WorkflowDefinitionUpsertOne) ClearCreatedBy() *WorkflowDefinitionUpsert
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WorkflowDefinitionUpsertOne) SetUpdatedBy(v uint32) *WorkflowDefinitionUpsertOne {
+func (u *WorkflowDefinitionUpsertOne) SetUpdatedBy(v int64) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WorkflowDefinitionUpsertOne) AddUpdatedBy(v uint32) *WorkflowDefinitionUpsertOne {
+func (u *WorkflowDefinitionUpsertOne) AddUpdatedBy(v int64) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -814,14 +814,14 @@ func (u *WorkflowDefinitionUpsertOne) ClearUpdatedBy() *WorkflowDefinitionUpsert
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WorkflowDefinitionUpsertOne) SetDeletedBy(v uint32) *WorkflowDefinitionUpsertOne {
+func (u *WorkflowDefinitionUpsertOne) SetDeletedBy(v int64) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WorkflowDefinitionUpsertOne) AddDeletedBy(v uint32) *WorkflowDefinitionUpsertOne {
+func (u *WorkflowDefinitionUpsertOne) AddDeletedBy(v int64) *WorkflowDefinitionUpsertOne {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -990,7 +990,7 @@ func (u *WorkflowDefinitionUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *WorkflowDefinitionUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *WorkflowDefinitionUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -999,7 +999,7 @@ func (u *WorkflowDefinitionUpsertOne) ID(ctx context.Context) (id uint32, err er
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *WorkflowDefinitionUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *WorkflowDefinitionUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1056,7 +1056,7 @@ func (_c *WorkflowDefinitionCreateBulk) Save(ctx context.Context) ([]*WorkflowDe
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1237,14 +1237,14 @@ func (u *WorkflowDefinitionUpsertBulk) ClearDeletedAt() *WorkflowDefinitionUpser
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WorkflowDefinitionUpsertBulk) SetCreatedBy(v uint32) *WorkflowDefinitionUpsertBulk {
+func (u *WorkflowDefinitionUpsertBulk) SetCreatedBy(v int64) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WorkflowDefinitionUpsertBulk) AddCreatedBy(v uint32) *WorkflowDefinitionUpsertBulk {
+func (u *WorkflowDefinitionUpsertBulk) AddCreatedBy(v int64) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1265,14 +1265,14 @@ func (u *WorkflowDefinitionUpsertBulk) ClearCreatedBy() *WorkflowDefinitionUpser
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WorkflowDefinitionUpsertBulk) SetUpdatedBy(v uint32) *WorkflowDefinitionUpsertBulk {
+func (u *WorkflowDefinitionUpsertBulk) SetUpdatedBy(v int64) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WorkflowDefinitionUpsertBulk) AddUpdatedBy(v uint32) *WorkflowDefinitionUpsertBulk {
+func (u *WorkflowDefinitionUpsertBulk) AddUpdatedBy(v int64) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1293,14 +1293,14 @@ func (u *WorkflowDefinitionUpsertBulk) ClearUpdatedBy() *WorkflowDefinitionUpser
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WorkflowDefinitionUpsertBulk) SetDeletedBy(v uint32) *WorkflowDefinitionUpsertBulk {
+func (u *WorkflowDefinitionUpsertBulk) SetDeletedBy(v int64) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WorkflowDefinitionUpsertBulk) AddDeletedBy(v uint32) *WorkflowDefinitionUpsertBulk {
+func (u *WorkflowDefinitionUpsertBulk) AddDeletedBy(v int64) *WorkflowDefinitionUpsertBulk {
 	return u.Update(func(s *WorkflowDefinitionUpsert) {
 		s.AddDeletedBy(v)
 	})

@@ -21,8 +21,8 @@ import (
 	"go-wind-oa/app/core/service/internal/data/ent/menu"
 	"go-wind-oa/app/core/service/internal/data/ent/predicate"
 
-	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
 	identityV1 "go-wind-oa/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-oa/api/gen/go/permission/service/v1"
 )
 
 type MenuRepo struct {
@@ -109,7 +109,7 @@ func (r *MenuRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (
 	return count, nil
 }
 
-func (r *MenuRepo) buildMenuTree(items []*permissionV1.Menu, parentId uint32) []*permissionV1.Menu {
+func (r *MenuRepo) buildMenuTree(items []*permissionV1.Menu, parentId int64) []*permissionV1.Menu {
 	var tree []*permissionV1.Menu
 	for _, item := range items {
 		if item.GetParentId() == parentId {
@@ -152,8 +152,8 @@ func (r *MenuRepo) List(ctx context.Context, req *paginationV1.PagingRequest, tr
 	if treeTravel {
 		dtos = pagination.BuildTree(
 			dtos,
-			func(node *permissionV1.Menu) *uint32 { return node.Id },
-			func(node *permissionV1.Menu) *uint32 { return node.ParentId },
+			func(node *permissionV1.Menu) *int64 { return node.Id },
+			func(node *permissionV1.Menu) *int64 { return node.ParentId },
 			func(node *permissionV1.Menu) *[]*permissionV1.Menu { return &node.Children },
 		)
 	}
@@ -164,12 +164,12 @@ func (r *MenuRepo) List(ctx context.Context, req *paginationV1.PagingRequest, tr
 	}
 
 	return &permissionV1.ListMenuResponse{
-		Total: uint64(count),
+		Total: int64(count),
 		Items: dtos,
 	}, nil
 }
 
-func (r *MenuRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *MenuRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().Menu.Query().
 		Where(menu.IDEQ(id)).
 		Exist(ctx)
@@ -319,7 +319,7 @@ func (r *MenuRepo) Delete(ctx context.Context, req *permissionV1.DeleteMenuReque
 		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
-	childrenIds, err := entCrud.QueryAllChildrenIds(ctx, r.entClient, "sys_menus", req.GetId())
+	childrenIds, err := entCrud.QueryAllChildrenIds64(ctx, r.entClient, "sys_menus", req.GetId())
 	if err != nil {
 		r.log.Errorf("query child menus failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("query child menus failed")

@@ -65,13 +65,13 @@ func (_c *WorkflowDelegationCreate) SetNillableDeletedAt(v *time.Time) *Workflow
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *WorkflowDelegationCreate) SetCreatedBy(v uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetCreatedBy(v int64) *WorkflowDelegationCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *WorkflowDelegationCreate) SetNillableCreatedBy(v *uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetNillableCreatedBy(v *int64) *WorkflowDelegationCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *WorkflowDelegationCreate) SetNillableCreatedBy(v *uint32) *WorkflowDel
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *WorkflowDelegationCreate) SetUpdatedBy(v uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetUpdatedBy(v int64) *WorkflowDelegationCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *WorkflowDelegationCreate) SetNillableUpdatedBy(v *uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetNillableUpdatedBy(v *int64) *WorkflowDelegationCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *WorkflowDelegationCreate) SetNillableUpdatedBy(v *uint32) *WorkflowDel
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *WorkflowDelegationCreate) SetDeletedBy(v uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetDeletedBy(v int64) *WorkflowDelegationCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *WorkflowDelegationCreate) SetNillableDeletedBy(v *uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetNillableDeletedBy(v *int64) *WorkflowDelegationCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *WorkflowDelegationCreate) SetNillableDeletedBy(v *uint32) *WorkflowDel
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *WorkflowDelegationCreate) SetTenantID(v uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetTenantID(v int64) *WorkflowDelegationCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *WorkflowDelegationCreate) SetNillableTenantID(v *uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetNillableTenantID(v *int64) *WorkflowDelegationCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -121,13 +121,13 @@ func (_c *WorkflowDelegationCreate) SetNillableTenantID(v *uint32) *WorkflowDele
 }
 
 // SetDelegatorUserID sets the "delegator_user_id" field.
-func (_c *WorkflowDelegationCreate) SetDelegatorUserID(v uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetDelegatorUserID(v int64) *WorkflowDelegationCreate {
 	_c.mutation.SetDelegatorUserID(v)
 	return _c
 }
 
 // SetNillableDelegatorUserID sets the "delegator_user_id" field if the given value is not nil.
-func (_c *WorkflowDelegationCreate) SetNillableDelegatorUserID(v *uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetNillableDelegatorUserID(v *int64) *WorkflowDelegationCreate {
 	if v != nil {
 		_c.SetDelegatorUserID(*v)
 	}
@@ -135,13 +135,13 @@ func (_c *WorkflowDelegationCreate) SetNillableDelegatorUserID(v *uint32) *Workf
 }
 
 // SetDelegateUserID sets the "delegate_user_id" field.
-func (_c *WorkflowDelegationCreate) SetDelegateUserID(v uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetDelegateUserID(v int64) *WorkflowDelegationCreate {
 	_c.mutation.SetDelegateUserID(v)
 	return _c
 }
 
 // SetNillableDelegateUserID sets the "delegate_user_id" field if the given value is not nil.
-func (_c *WorkflowDelegationCreate) SetNillableDelegateUserID(v *uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetNillableDelegateUserID(v *int64) *WorkflowDelegationCreate {
 	if v != nil {
 		_c.SetDelegateUserID(*v)
 	}
@@ -149,7 +149,7 @@ func (_c *WorkflowDelegationCreate) SetNillableDelegateUserID(v *uint32) *Workfl
 }
 
 // SetID sets the "id" field.
-func (_c *WorkflowDelegationCreate) SetID(v uint32) *WorkflowDelegationCreate {
+func (_c *WorkflowDelegationCreate) SetID(v int64) *WorkflowDelegationCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -221,7 +221,7 @@ func (_c *WorkflowDelegationCreate) sqlSave(ctx context.Context) (*WorkflowDeleg
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -231,7 +231,7 @@ func (_c *WorkflowDelegationCreate) sqlSave(ctx context.Context) (*WorkflowDeleg
 func (_c *WorkflowDelegationCreate) createSpec() (*WorkflowDelegation, *sqlgraph.CreateSpec) {
 	var (
 		_node = &WorkflowDelegation{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(workflowdelegation.Table, sqlgraph.NewFieldSpec(workflowdelegation.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(workflowdelegation.Table, sqlgraph.NewFieldSpec(workflowdelegation.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -251,27 +251,27 @@ func (_c *WorkflowDelegationCreate) createSpec() (*WorkflowDelegation, *sqlgraph
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(workflowdelegation.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowdelegation.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(workflowdelegation.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowdelegation.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(workflowdelegation.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(workflowdelegation.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(workflowdelegation.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(workflowdelegation.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.DelegatorUserID(); ok {
-		_spec.SetField(workflowdelegation.FieldDelegatorUserID, field.TypeUint32, value)
+		_spec.SetField(workflowdelegation.FieldDelegatorUserID, field.TypeInt64, value)
 		_node.DelegatorUserID = &value
 	}
 	if value, ok := _c.mutation.DelegateUserID(); ok {
-		_spec.SetField(workflowdelegation.FieldDelegateUserID, field.TypeUint32, value)
+		_spec.SetField(workflowdelegation.FieldDelegateUserID, field.TypeInt64, value)
 		_node.DelegateUserID = &value
 	}
 	return _node, _spec
@@ -363,7 +363,7 @@ func (u *WorkflowDelegationUpsert) ClearDeletedAt() *WorkflowDelegationUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WorkflowDelegationUpsert) SetCreatedBy(v uint32) *WorkflowDelegationUpsert {
+func (u *WorkflowDelegationUpsert) SetCreatedBy(v int64) *WorkflowDelegationUpsert {
 	u.Set(workflowdelegation.FieldCreatedBy, v)
 	return u
 }
@@ -375,7 +375,7 @@ func (u *WorkflowDelegationUpsert) UpdateCreatedBy() *WorkflowDelegationUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WorkflowDelegationUpsert) AddCreatedBy(v uint32) *WorkflowDelegationUpsert {
+func (u *WorkflowDelegationUpsert) AddCreatedBy(v int64) *WorkflowDelegationUpsert {
 	u.Add(workflowdelegation.FieldCreatedBy, v)
 	return u
 }
@@ -387,7 +387,7 @@ func (u *WorkflowDelegationUpsert) ClearCreatedBy() *WorkflowDelegationUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WorkflowDelegationUpsert) SetUpdatedBy(v uint32) *WorkflowDelegationUpsert {
+func (u *WorkflowDelegationUpsert) SetUpdatedBy(v int64) *WorkflowDelegationUpsert {
 	u.Set(workflowdelegation.FieldUpdatedBy, v)
 	return u
 }
@@ -399,7 +399,7 @@ func (u *WorkflowDelegationUpsert) UpdateUpdatedBy() *WorkflowDelegationUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WorkflowDelegationUpsert) AddUpdatedBy(v uint32) *WorkflowDelegationUpsert {
+func (u *WorkflowDelegationUpsert) AddUpdatedBy(v int64) *WorkflowDelegationUpsert {
 	u.Add(workflowdelegation.FieldUpdatedBy, v)
 	return u
 }
@@ -411,7 +411,7 @@ func (u *WorkflowDelegationUpsert) ClearUpdatedBy() *WorkflowDelegationUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WorkflowDelegationUpsert) SetDeletedBy(v uint32) *WorkflowDelegationUpsert {
+func (u *WorkflowDelegationUpsert) SetDeletedBy(v int64) *WorkflowDelegationUpsert {
 	u.Set(workflowdelegation.FieldDeletedBy, v)
 	return u
 }
@@ -423,7 +423,7 @@ func (u *WorkflowDelegationUpsert) UpdateDeletedBy() *WorkflowDelegationUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WorkflowDelegationUpsert) AddDeletedBy(v uint32) *WorkflowDelegationUpsert {
+func (u *WorkflowDelegationUpsert) AddDeletedBy(v int64) *WorkflowDelegationUpsert {
 	u.Add(workflowdelegation.FieldDeletedBy, v)
 	return u
 }
@@ -435,7 +435,7 @@ func (u *WorkflowDelegationUpsert) ClearDeletedBy() *WorkflowDelegationUpsert {
 }
 
 // SetDelegatorUserID sets the "delegator_user_id" field.
-func (u *WorkflowDelegationUpsert) SetDelegatorUserID(v uint32) *WorkflowDelegationUpsert {
+func (u *WorkflowDelegationUpsert) SetDelegatorUserID(v int64) *WorkflowDelegationUpsert {
 	u.Set(workflowdelegation.FieldDelegatorUserID, v)
 	return u
 }
@@ -447,7 +447,7 @@ func (u *WorkflowDelegationUpsert) UpdateDelegatorUserID() *WorkflowDelegationUp
 }
 
 // AddDelegatorUserID adds v to the "delegator_user_id" field.
-func (u *WorkflowDelegationUpsert) AddDelegatorUserID(v uint32) *WorkflowDelegationUpsert {
+func (u *WorkflowDelegationUpsert) AddDelegatorUserID(v int64) *WorkflowDelegationUpsert {
 	u.Add(workflowdelegation.FieldDelegatorUserID, v)
 	return u
 }
@@ -459,7 +459,7 @@ func (u *WorkflowDelegationUpsert) ClearDelegatorUserID() *WorkflowDelegationUps
 }
 
 // SetDelegateUserID sets the "delegate_user_id" field.
-func (u *WorkflowDelegationUpsert) SetDelegateUserID(v uint32) *WorkflowDelegationUpsert {
+func (u *WorkflowDelegationUpsert) SetDelegateUserID(v int64) *WorkflowDelegationUpsert {
 	u.Set(workflowdelegation.FieldDelegateUserID, v)
 	return u
 }
@@ -471,7 +471,7 @@ func (u *WorkflowDelegationUpsert) UpdateDelegateUserID() *WorkflowDelegationUps
 }
 
 // AddDelegateUserID adds v to the "delegate_user_id" field.
-func (u *WorkflowDelegationUpsert) AddDelegateUserID(v uint32) *WorkflowDelegationUpsert {
+func (u *WorkflowDelegationUpsert) AddDelegateUserID(v int64) *WorkflowDelegationUpsert {
 	u.Add(workflowdelegation.FieldDelegateUserID, v)
 	return u
 }
@@ -579,14 +579,14 @@ func (u *WorkflowDelegationUpsertOne) ClearDeletedAt() *WorkflowDelegationUpsert
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WorkflowDelegationUpsertOne) SetCreatedBy(v uint32) *WorkflowDelegationUpsertOne {
+func (u *WorkflowDelegationUpsertOne) SetCreatedBy(v int64) *WorkflowDelegationUpsertOne {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WorkflowDelegationUpsertOne) AddCreatedBy(v uint32) *WorkflowDelegationUpsertOne {
+func (u *WorkflowDelegationUpsertOne) AddCreatedBy(v int64) *WorkflowDelegationUpsertOne {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -607,14 +607,14 @@ func (u *WorkflowDelegationUpsertOne) ClearCreatedBy() *WorkflowDelegationUpsert
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WorkflowDelegationUpsertOne) SetUpdatedBy(v uint32) *WorkflowDelegationUpsertOne {
+func (u *WorkflowDelegationUpsertOne) SetUpdatedBy(v int64) *WorkflowDelegationUpsertOne {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WorkflowDelegationUpsertOne) AddUpdatedBy(v uint32) *WorkflowDelegationUpsertOne {
+func (u *WorkflowDelegationUpsertOne) AddUpdatedBy(v int64) *WorkflowDelegationUpsertOne {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -635,14 +635,14 @@ func (u *WorkflowDelegationUpsertOne) ClearUpdatedBy() *WorkflowDelegationUpsert
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WorkflowDelegationUpsertOne) SetDeletedBy(v uint32) *WorkflowDelegationUpsertOne {
+func (u *WorkflowDelegationUpsertOne) SetDeletedBy(v int64) *WorkflowDelegationUpsertOne {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WorkflowDelegationUpsertOne) AddDeletedBy(v uint32) *WorkflowDelegationUpsertOne {
+func (u *WorkflowDelegationUpsertOne) AddDeletedBy(v int64) *WorkflowDelegationUpsertOne {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -663,14 +663,14 @@ func (u *WorkflowDelegationUpsertOne) ClearDeletedBy() *WorkflowDelegationUpsert
 }
 
 // SetDelegatorUserID sets the "delegator_user_id" field.
-func (u *WorkflowDelegationUpsertOne) SetDelegatorUserID(v uint32) *WorkflowDelegationUpsertOne {
+func (u *WorkflowDelegationUpsertOne) SetDelegatorUserID(v int64) *WorkflowDelegationUpsertOne {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.SetDelegatorUserID(v)
 	})
 }
 
 // AddDelegatorUserID adds v to the "delegator_user_id" field.
-func (u *WorkflowDelegationUpsertOne) AddDelegatorUserID(v uint32) *WorkflowDelegationUpsertOne {
+func (u *WorkflowDelegationUpsertOne) AddDelegatorUserID(v int64) *WorkflowDelegationUpsertOne {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.AddDelegatorUserID(v)
 	})
@@ -691,14 +691,14 @@ func (u *WorkflowDelegationUpsertOne) ClearDelegatorUserID() *WorkflowDelegation
 }
 
 // SetDelegateUserID sets the "delegate_user_id" field.
-func (u *WorkflowDelegationUpsertOne) SetDelegateUserID(v uint32) *WorkflowDelegationUpsertOne {
+func (u *WorkflowDelegationUpsertOne) SetDelegateUserID(v int64) *WorkflowDelegationUpsertOne {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.SetDelegateUserID(v)
 	})
 }
 
 // AddDelegateUserID adds v to the "delegate_user_id" field.
-func (u *WorkflowDelegationUpsertOne) AddDelegateUserID(v uint32) *WorkflowDelegationUpsertOne {
+func (u *WorkflowDelegationUpsertOne) AddDelegateUserID(v int64) *WorkflowDelegationUpsertOne {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.AddDelegateUserID(v)
 	})
@@ -734,7 +734,7 @@ func (u *WorkflowDelegationUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *WorkflowDelegationUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *WorkflowDelegationUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -743,7 +743,7 @@ func (u *WorkflowDelegationUpsertOne) ID(ctx context.Context) (id uint32, err er
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *WorkflowDelegationUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *WorkflowDelegationUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -800,7 +800,7 @@ func (_c *WorkflowDelegationCreateBulk) Save(ctx context.Context) ([]*WorkflowDe
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -981,14 +981,14 @@ func (u *WorkflowDelegationUpsertBulk) ClearDeletedAt() *WorkflowDelegationUpser
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WorkflowDelegationUpsertBulk) SetCreatedBy(v uint32) *WorkflowDelegationUpsertBulk {
+func (u *WorkflowDelegationUpsertBulk) SetCreatedBy(v int64) *WorkflowDelegationUpsertBulk {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WorkflowDelegationUpsertBulk) AddCreatedBy(v uint32) *WorkflowDelegationUpsertBulk {
+func (u *WorkflowDelegationUpsertBulk) AddCreatedBy(v int64) *WorkflowDelegationUpsertBulk {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1009,14 +1009,14 @@ func (u *WorkflowDelegationUpsertBulk) ClearCreatedBy() *WorkflowDelegationUpser
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WorkflowDelegationUpsertBulk) SetUpdatedBy(v uint32) *WorkflowDelegationUpsertBulk {
+func (u *WorkflowDelegationUpsertBulk) SetUpdatedBy(v int64) *WorkflowDelegationUpsertBulk {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WorkflowDelegationUpsertBulk) AddUpdatedBy(v uint32) *WorkflowDelegationUpsertBulk {
+func (u *WorkflowDelegationUpsertBulk) AddUpdatedBy(v int64) *WorkflowDelegationUpsertBulk {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1037,14 +1037,14 @@ func (u *WorkflowDelegationUpsertBulk) ClearUpdatedBy() *WorkflowDelegationUpser
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WorkflowDelegationUpsertBulk) SetDeletedBy(v uint32) *WorkflowDelegationUpsertBulk {
+func (u *WorkflowDelegationUpsertBulk) SetDeletedBy(v int64) *WorkflowDelegationUpsertBulk {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WorkflowDelegationUpsertBulk) AddDeletedBy(v uint32) *WorkflowDelegationUpsertBulk {
+func (u *WorkflowDelegationUpsertBulk) AddDeletedBy(v int64) *WorkflowDelegationUpsertBulk {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1065,14 +1065,14 @@ func (u *WorkflowDelegationUpsertBulk) ClearDeletedBy() *WorkflowDelegationUpser
 }
 
 // SetDelegatorUserID sets the "delegator_user_id" field.
-func (u *WorkflowDelegationUpsertBulk) SetDelegatorUserID(v uint32) *WorkflowDelegationUpsertBulk {
+func (u *WorkflowDelegationUpsertBulk) SetDelegatorUserID(v int64) *WorkflowDelegationUpsertBulk {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.SetDelegatorUserID(v)
 	})
 }
 
 // AddDelegatorUserID adds v to the "delegator_user_id" field.
-func (u *WorkflowDelegationUpsertBulk) AddDelegatorUserID(v uint32) *WorkflowDelegationUpsertBulk {
+func (u *WorkflowDelegationUpsertBulk) AddDelegatorUserID(v int64) *WorkflowDelegationUpsertBulk {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.AddDelegatorUserID(v)
 	})
@@ -1093,14 +1093,14 @@ func (u *WorkflowDelegationUpsertBulk) ClearDelegatorUserID() *WorkflowDelegatio
 }
 
 // SetDelegateUserID sets the "delegate_user_id" field.
-func (u *WorkflowDelegationUpsertBulk) SetDelegateUserID(v uint32) *WorkflowDelegationUpsertBulk {
+func (u *WorkflowDelegationUpsertBulk) SetDelegateUserID(v int64) *WorkflowDelegationUpsertBulk {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.SetDelegateUserID(v)
 	})
 }
 
 // AddDelegateUserID adds v to the "delegate_user_id" field.
-func (u *WorkflowDelegationUpsertBulk) AddDelegateUserID(v uint32) *WorkflowDelegationUpsertBulk {
+func (u *WorkflowDelegationUpsertBulk) AddDelegateUserID(v int64) *WorkflowDelegationUpsertBulk {
 	return u.Update(func(s *WorkflowDelegationUpsert) {
 		s.AddDelegateUserID(v)
 	})

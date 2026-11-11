@@ -50,8 +50,8 @@ func outingStatusToEntity(s oaV1.OutingApplication_OutingStatus) outingapplicati
 		return outingapplication.OutingStatusApproved
 	case oaV1.OutingApplication_REJECTED:
 		return outingapplication.OutingStatusRejected
-		case oaV1.OutingApplication_WITHDRAWN:
-			return outingapplication.OutingStatusWithdrawn
+	case oaV1.OutingApplication_WITHDRAWN:
+		return outingapplication.OutingStatusWithdrawn
 	default:
 		return outingapplication.OutingStatusPending
 	}
@@ -66,13 +66,13 @@ func outingApplicationToDTO(e *ent.OutingApplication) *oaV1.OutingApplication {
 		status = outingStatusToProto(*e.OutingStatus)
 	}
 	dto := &oaV1.OutingApplication{
-		Id:          trans.Ptr(e.ID),
-		Reason:      trans.Ptr(e.Reason),
-		Destination: trans.Ptr(e.Destination),
-		StartTime:   timeutil.TimeToTimestamppb(&e.StartTime),
-		EndTime:     timeutil.TimeToTimestamppb(&e.EndTime),
+		Id:           trans.Ptr(e.ID),
+		Reason:       trans.Ptr(e.Reason),
+		Destination:  trans.Ptr(e.Destination),
+		StartTime:    timeutil.TimeToTimestamppb(&e.StartTime),
+		EndTime:      timeutil.TimeToTimestamppb(&e.EndTime),
 		OutingStatus: status.Enum(),
-		TenantId:    e.TenantID,
+		TenantId:     e.TenantID,
 	}
 	if e.InstanceID != nil {
 		dto.InstanceId = trans.Ptr(*e.InstanceID)
@@ -86,10 +86,10 @@ func outingApplicationToDTO(e *ent.OutingApplication) *oaV1.OutingApplication {
 
 func (r *OutingApplicationRepo) Create(
 	ctx context.Context,
-	tid, uid uint32,
+	tid, uid int64,
 	reason, destination string,
 	startTime, endTime time.Time,
-) (uint32, error) {
+) (int64, error) {
 	entity, err := r.entClient.Client().OutingApplication.Create().
 		SetReason(reason).
 		SetDestination(destination).
@@ -107,7 +107,7 @@ func (r *OutingApplicationRepo) Create(
 	return entity.ID, nil
 }
 
-func (r *OutingApplicationRepo) Get(ctx context.Context, tid, id uint32) (*oaV1.OutingApplication, error) {
+func (r *OutingApplicationRepo) Get(ctx context.Context, tid, id int64) (*oaV1.OutingApplication, error) {
 	entity, err := r.entClient.Client().OutingApplication.Query().
 		Where(
 			outingapplication.IDEQ(id),
@@ -124,7 +124,7 @@ func (r *OutingApplicationRepo) Get(ctx context.Context, tid, id uint32) (*oaV1.
 	return outingApplicationToDTO(entity), nil
 }
 
-func (r *OutingApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint32, status oaV1.OutingApplication_OutingStatus) error {
+func (r *OutingApplicationRepo) UpdateStatus(ctx context.Context, tid, id int64, status oaV1.OutingApplication_OutingStatus) error {
 	if _, err := r.entClient.Client().OutingApplication.Update().
 		Where(
 			outingapplication.IDEQ(id),
@@ -139,7 +139,7 @@ func (r *OutingApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint32
 	return nil
 }
 
-func (r *OutingApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID uint32) error {
+func (r *OutingApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID int64) error {
 	if _, err := r.entClient.Client().OutingApplication.Update().
 		Where(
 			outingapplication.IDEQ(id),
@@ -156,7 +156,7 @@ func (r *OutingApplicationRepo) SetInstanceID(ctx context.Context, tid, id, inst
 
 func (r *OutingApplicationRepo) List(
 	ctx context.Context,
-	tid, userID uint32,
+	tid, userID int64,
 	status *oaV1.OutingApplication_OutingStatus,
 	page, pageSize int32,
 ) ([]*oaV1.OutingApplication, int, error) {
@@ -192,7 +192,7 @@ func (r *OutingApplicationRepo) List(
 	return items, total, nil
 }
 
-func (r *OutingApplicationRepo) GetEntity(ctx context.Context, tid, id uint32) (*ent.OutingApplication, error) {
+func (r *OutingApplicationRepo) GetEntity(ctx context.Context, tid, id int64) (*ent.OutingApplication, error) {
 	entity, err := r.entClient.Client().OutingApplication.Query().
 		Where(
 			outingapplication.IDEQ(id),

@@ -189,17 +189,17 @@ class OaServiceV1CheckInRequest {
     // field 1: latitude
     final f1 = latitude;
     if (f1 != null) {
-      w.writeDouble(1, f1!);
+      w.writeDouble(1, f1);
     }
     // field 2: longitude
     final f2 = longitude;
     if (f2 != null) {
-      w.writeDouble(2, f2!);
+      w.writeDouble(2, f2);
     }
     // field 3: wifiBssid
     final f3 = wifiBssid;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
   }
 
@@ -291,13 +291,13 @@ class OaServiceV1AttendanceRecord {
       checkOutLongitude: (json['checkOutLongitude'] as num?)?.toDouble(),
       checkOutWifiBssid: json['checkOutWifiBssid'] as String?,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       dayResult: json['dayResult'] != null ? OaServiceV1AttendanceRecord$DayResult.fromString(json['dayResult'] as String) : null,
-      id: json['id'] as int?,
-      tenantId: json['tenantId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
-      userId: json['userId'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
+      userId: json['userId'] != null ? int.parse(json['userId'].toString()) : null,
       userName: json['userName'] as String?,
       workDate: json['workDate'] as String?,
     );
@@ -314,13 +314,13 @@ class OaServiceV1AttendanceRecord {
     if (checkOutLongitude != null) json['checkOutLongitude'] = checkOutLongitude;
     if (checkOutWifiBssid != null) json['checkOutWifiBssid'] = checkOutWifiBssid;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (dayResult != null) json['dayResult'] = dayResult!.value;
-    if (id != null) json['id'] = id;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (id != null) json['id'] = id.toString();
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
-    if (userId != null) json['userId'] = userId;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
+    if (userId != null) json['userId'] = userId.toString();
     if (userName != null) json['userName'] = userName;
     if (workDate != null) json['workDate'] = workDate;
     return json;
@@ -431,92 +431,92 @@ class OaServiceV1AttendanceRecord {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: userId
     final f2 = userId;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeInt64(2, f2);
     }
     // field 3: workDate
     final f3 = workDate;
     if (f3 != null) {
-      w.writeTimestamp(3, f3!);
+      w.writeTimestamp(3, f3);
     }
     // field 4: checkInAt
     final f4 = checkInAt;
     if (f4 != null) {
-      w.writeTimestamp(4, f4!);
+      w.writeTimestamp(4, f4);
     }
     // field 5: checkInLatitude
     final f5 = checkInLatitude;
     if (f5 != null) {
-      w.writeDouble(5, f5!);
+      w.writeDouble(5, f5);
     }
     // field 6: checkInLongitude
     final f6 = checkInLongitude;
     if (f6 != null) {
-      w.writeDouble(6, f6!);
+      w.writeDouble(6, f6);
     }
     // field 7: checkInWifiBssid
     final f7 = checkInWifiBssid;
     if (f7 != null) {
-      w.writeString(7, f7!);
+      w.writeString(7, f7);
     }
     // field 8: checkOutAt
     final f8 = checkOutAt;
     if (f8 != null) {
-      w.writeTimestamp(8, f8!);
+      w.writeTimestamp(8, f8);
     }
     // field 9: checkOutLatitude
     final f9 = checkOutLatitude;
     if (f9 != null) {
-      w.writeDouble(9, f9!);
+      w.writeDouble(9, f9);
     }
     // field 10: checkOutLongitude
     final f10 = checkOutLongitude;
     if (f10 != null) {
-      w.writeDouble(10, f10!);
+      w.writeDouble(10, f10);
     }
     // field 11: checkOutWifiBssid
     final f11 = checkOutWifiBssid;
     if (f11 != null) {
-      w.writeString(11, f11!);
+      w.writeString(11, f11);
     }
     // field 12: dayResult
     final f12 = dayResult;
     if (f12 != null) {
-      w.writeEnum(12, f12!.wire); // OaServiceV1AttendanceRecord$DayResult
+      w.writeEnum(12, f12.wire); // OaServiceV1AttendanceRecord$DayResult
     }
     // field 13: userName
     final f13 = userName;
     if (f13 != null) {
-      w.writeString(13, f13!);
+      w.writeString(13, f13);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
   }
 
@@ -530,12 +530,12 @@ class OaServiceV1AttendanceRecord {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: userId
         case 2: {
-          m.userId = r.readUint32();
+          m.userId = r.readInt64();
           break;
         }
         // field 3: workDate
@@ -595,17 +595,17 @@ class OaServiceV1AttendanceRecord {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -719,12 +719,12 @@ class OaServiceV1GetMyAttendanceRecordsRequest {
     // field 1: startDate
     final f1 = startDate;
     if (f1 != null) {
-      w.writeTimestamp(1, f1!);
+      w.writeTimestamp(1, f1);
     }
     // field 2: endDate
     final f2 = endDate;
     if (f2 != null) {
-      w.writeTimestamp(2, f2!);
+      w.writeTimestamp(2, f2);
     }
   }
 
@@ -821,12 +821,12 @@ class OaServiceV1ListAttendanceRecordsResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -845,7 +845,7 @@ class OaServiceV1ListAttendanceRecordsResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -954,7 +954,7 @@ class AuthenticationServiceV1LoginRequest {
       refresh_token: json['refresh_token'] as String?,
       scope: json['scope'] as String?,
       tenant_code: json['tenant_code'] as String?,
-      user_id: json['user_id'] as int?,
+      user_id: json['user_id'] != null ? int.parse(json['user_id'].toString()) : null,
       username: json['username'] as String?,
     );
   }
@@ -975,7 +975,7 @@ class AuthenticationServiceV1LoginRequest {
     if (refresh_token != null) json['refresh_token'] = refresh_token;
     if (scope != null) json['scope'] = scope;
     if (tenant_code != null) json['tenant_code'] = tenant_code;
-    if (user_id != null) json['user_id'] = user_id;
+    if (user_id != null) json['user_id'] = user_id.toString();
     if (username != null) json['username'] = username;
     return json;
   }
@@ -1077,82 +1077,82 @@ class AuthenticationServiceV1LoginRequest {
     // field 1: grant_type
     final f1 = grant_type;
     if (f1 != null) {
-      w.writeEnum(1, f1!.wire); // AuthenticationServiceV1GrantType
+      w.writeEnum(1, f1.wire); // AuthenticationServiceV1GrantType
     }
     // field 2: client_id
     final f2 = client_id;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: client_secret
     final f3 = client_secret;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: scope
     final f4 = scope;
     if (f4 != null) {
-      w.writeString(4, f4!);
+      w.writeString(4, f4);
     }
     // field 5: redirect_uri
     final f5 = redirect_uri;
     if (f5 != null) {
-      w.writeString(5, f5!);
+      w.writeString(5, f5);
     }
     // field 6: user_id
     final f6 = user_id;
     if (f6 != null) {
-      w.writeUint32(6, f6!);
+      w.writeInt64(6, f6);
     }
     // field 10: username
     final f10 = username;
     if (f10 != null) {
-      w.writeString(10, f10!);
+      w.writeString(10, f10);
     }
     // field 11: email
     final f11 = email;
     if (f11 != null) {
-      w.writeString(11, f11!);
+      w.writeString(11, f11);
     }
     // field 12: mobile
     final f12 = mobile;
     if (f12 != null) {
-      w.writeString(12, f12!);
+      w.writeString(12, f12);
     }
     // field 19: password
     final f19 = password;
     if (f19 != null) {
-      w.writeString(19, f19!);
+      w.writeString(19, f19);
     }
     // field 20: refresh_token
     final f20 = refresh_token;
     if (f20 != null) {
-      w.writeString(20, f20!);
+      w.writeString(20, f20);
     }
     // field 30: code
     final f30 = code;
     if (f30 != null) {
-      w.writeString(30, f30!);
+      w.writeString(30, f30);
     }
     // field 40: client_type
     final f40 = client_type;
     if (f40 != null) {
-      w.writeEnum(40, f40!.wire); // AuthenticationServiceV1ClientType
+      w.writeEnum(40, f40.wire); // AuthenticationServiceV1ClientType
     }
     // field 50: device_id
     final f50 = device_id;
     if (f50 != null) {
-      w.writeString(50, f50!);
+      w.writeString(50, f50);
     }
     // field 60: jti
     final f60 = jti;
     if (f60 != null) {
-      w.writeString(60, f60!);
+      w.writeString(60, f60);
     }
     // field 70: tenant_code
     final f70 = tenant_code;
     if (f70 != null) {
-      w.writeString(70, f70!);
+      w.writeString(70, f70);
     }
   }
 
@@ -1191,7 +1191,7 @@ class AuthenticationServiceV1LoginRequest {
         }
         // field 6: user_id
         case 6: {
-          m.user_id = r.readUint32();
+          m.user_id = r.readInt64();
           break;
         }
         // field 10: username
@@ -1409,42 +1409,42 @@ class AuthenticationServiceV1LoginResponse {
     // field 1: token_type
     final f1 = token_type;
     if (f1 != null) {
-      w.writeEnum(1, f1!.wire); // AuthenticationServiceV1TokenType
+      w.writeEnum(1, f1.wire); // AuthenticationServiceV1TokenType
     }
     // field 2: access_token
     final f2 = access_token;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: expires_in
     final f3 = expires_in;
     if (f3 != null) {
-      w.writeInt64(3, f3!);
+      w.writeInt64(3, f3);
     }
     // field 4: refresh_token
     final f4 = refresh_token;
     if (f4 != null) {
-      w.writeString(4, f4!);
+      w.writeString(4, f4);
     }
     // field 5: scope
     final f5 = scope;
     if (f5 != null) {
-      w.writeString(5, f5!);
+      w.writeString(5, f5);
     }
     // field 6: refresh_expires_in
     final f6 = refresh_expires_in;
     if (f6 != null) {
-      w.writeInt64(6, f6!);
+      w.writeInt64(6, f6);
     }
     // field 7: id_token
     final f7 = id_token;
     if (f7 != null) {
-      w.writeString(7, f7!);
+      w.writeString(7, f7);
     }
     // field 8: mfa_operation_id
     final f8 = mfa_operation_id;
     if (f8 != null) {
-      w.writeString(8, f8!);
+      w.writeString(8, f8);
     }
   }
 
@@ -1675,27 +1675,27 @@ class OaServiceV1SubmitBusinessTripApplicationRequest {
     // field 1: title
     final f1 = title;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: destination
     final f2 = destination;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: startDate
     final f3 = startDate;
     if (f3 != null) {
-      w.writeTimestamp(3, f3!);
+      w.writeTimestamp(3, f3);
     }
     // field 4: endDate
     final f4 = endDate;
     if (f4 != null) {
-      w.writeTimestamp(4, f4!);
+      w.writeTimestamp(4, f4);
     }
     // field 5: itinerary
     final f5 = itinerary;
     if (f5 != null) {
-      w.writeString(5, f5!);
+      w.writeString(5, f5);
     }
   }
 
@@ -1754,15 +1754,15 @@ class OaServiceV1SubmitBusinessTripApplicationResponse {
 
   factory OaServiceV1SubmitBusinessTripApplicationResponse.fromJson(Map<String, dynamic> json) {
     return OaServiceV1SubmitBusinessTripApplicationResponse(
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     return json;
   }
 
@@ -1807,12 +1807,12 @@ class OaServiceV1SubmitBusinessTripApplicationResponse {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: instanceId
     final f2 = instanceId;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -1826,12 +1826,12 @@ class OaServiceV1SubmitBusinessTripApplicationResponse {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: instanceId
         case 2: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         default: {
@@ -1863,7 +1863,7 @@ class OaServiceV1ListBusinessTripApplicationsRequest {
       page: json['page'] as int?,
       pageSize: json['pageSize'] as int?,
       status: json['status'] != null ? OaServiceV1BusinessTripApplication$BusinessTripStatus.fromString(json['status'] as String) : null,
-      userId: json['userId'] as int?,
+      userId: json['userId'] != null ? int.parse(json['userId'].toString()) : null,
     );
   }
 
@@ -1872,7 +1872,7 @@ class OaServiceV1ListBusinessTripApplicationsRequest {
     if (page != null) json['page'] = page;
     if (pageSize != null) json['pageSize'] = pageSize;
     if (status != null) json['status'] = status!.value;
-    if (userId != null) json['userId'] = userId;
+    if (userId != null) json['userId'] = userId.toString();
     return json;
   }
 
@@ -1925,22 +1925,22 @@ class OaServiceV1ListBusinessTripApplicationsRequest {
     // field 1: userId
     final f1 = userId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: status
     final f2 = status;
     if (f2 != null) {
-      w.writeEnum(2, f2!.wire); // OaServiceV1BusinessTripApplication$BusinessTripStatus
+      w.writeEnum(2, f2.wire); // OaServiceV1BusinessTripApplication$BusinessTripStatus
     }
     // field 3: page
     final f3 = page;
     if (f3 != null) {
-      w.writeInt32(3, f3!);
+      w.writeInt32(3, f3);
     }
     // field 4: pageSize
     final f4 = pageSize;
     if (f4 != null) {
-      w.writeInt32(4, f4!);
+      w.writeInt32(4, f4);
     }
   }
 
@@ -1954,7 +1954,7 @@ class OaServiceV1ListBusinessTripApplicationsRequest {
       switch (r.fieldNumber) {
         // field 1: userId
         case 1: {
-          m.userId = r.readUint32();
+          m.userId = r.readInt64();
           break;
         }
         // field 2: status
@@ -2067,12 +2067,12 @@ class OaServiceV1ListBusinessTripApplicationsResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -2091,7 +2091,7 @@ class OaServiceV1ListBusinessTripApplicationsResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -2148,20 +2148,20 @@ class OaServiceV1BusinessTripApplication {
     return OaServiceV1BusinessTripApplication(
       applicantName: json['applicantName'] as String?,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
       destination: json['destination'] as String?,
       endDate: json['endDate'] as String?,
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
       itinerary: json['itinerary'] as String?,
       startDate: json['startDate'] as String?,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       title: json['title'] as String?,
       tripStatus: json['tripStatus'] != null ? OaServiceV1BusinessTripApplication$BusinessTripStatus.fromString(json['tripStatus'] as String) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
@@ -2169,20 +2169,20 @@ class OaServiceV1BusinessTripApplication {
     final json = <String, dynamic>{};
     if (applicantName != null) json['applicantName'] = applicantName;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
     if (destination != null) json['destination'] = destination;
     if (endDate != null) json['endDate'] = endDate;
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     if (itinerary != null) json['itinerary'] = itinerary;
     if (startDate != null) json['startDate'] = startDate;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (title != null) json['title'] = title;
     if (tripStatus != null) json['tripStatus'] = tripStatus!.value;
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -2283,82 +2283,82 @@ class OaServiceV1BusinessTripApplication {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: title
     final f2 = title;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: destination
     final f3 = destination;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: startDate
     final f4 = startDate;
     if (f4 != null) {
-      w.writeTimestamp(4, f4!);
+      w.writeTimestamp(4, f4);
     }
     // field 5: endDate
     final f5 = endDate;
     if (f5 != null) {
-      w.writeTimestamp(5, f5!);
+      w.writeTimestamp(5, f5);
     }
     // field 6: itinerary
     final f6 = itinerary;
     if (f6 != null) {
-      w.writeString(6, f6!);
+      w.writeString(6, f6);
     }
     // field 7: tripStatus
     final f7 = tripStatus;
     if (f7 != null) {
-      w.writeEnum(7, f7!.wire); // OaServiceV1BusinessTripApplication$BusinessTripStatus
+      w.writeEnum(7, f7.wire); // OaServiceV1BusinessTripApplication$BusinessTripStatus
     }
     // field 8: instanceId
     final f8 = instanceId;
     if (f8 != null) {
-      w.writeUint32(8, f8!);
+      w.writeInt64(8, f8);
     }
     // field 10: applicantName
     final f10 = applicantName;
     if (f10 != null) {
-      w.writeString(10, f10!);
+      w.writeString(10, f10);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -2372,7 +2372,7 @@ class OaServiceV1BusinessTripApplication {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: title
@@ -2407,7 +2407,7 @@ class OaServiceV1BusinessTripApplication {
         }
         // field 8: instanceId
         case 8: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         // field 10: applicantName
@@ -2417,22 +2417,22 @@ class OaServiceV1BusinessTripApplication {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -2470,13 +2470,13 @@ class OaServiceV1GetBusinessTripApplicationRequest {
 
   factory OaServiceV1GetBusinessTripApplicationRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetBusinessTripApplicationRequest(
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     return json;
   }
 
@@ -2517,7 +2517,7 @@ class OaServiceV1GetBusinessTripApplicationRequest {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
   }
 
@@ -2531,7 +2531,7 @@ class OaServiceV1GetBusinessTripApplicationRequest {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         default: {
@@ -2667,12 +2667,12 @@ class OaServiceV1SubmitExpenseApplicationRequest {
     // field 1: title
     final f1 = title;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: items
     final f2 = items;
     if (f2 != null) {
-      for (final e in f2!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(2, cw.toBuffer()); }
+      for (final e in f2) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(2, cw.toBuffer()); }
     }
   }
 
@@ -2735,9 +2735,9 @@ class OaServiceV1ExpenseItem {
       createdAt: json['createdAt'] as String?,
       description: json['description'] as String?,
       expenseDate: json['expenseDate'] as String?,
-      id: json['id'] as int?,
-      invoiceFileId: json['invoiceFileId'] as int?,
-      tenantId: json['tenantId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      invoiceFileId: json['invoiceFileId'] != null ? int.parse(json['invoiceFileId'].toString()) : null,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
     );
   }
 
@@ -2748,9 +2748,9 @@ class OaServiceV1ExpenseItem {
     if (createdAt != null) json['createdAt'] = createdAt;
     if (description != null) json['description'] = description;
     if (expenseDate != null) json['expenseDate'] = expenseDate;
-    if (id != null) json['id'] = id;
-    if (invoiceFileId != null) json['invoiceFileId'] = invoiceFileId;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (id != null) json['id'] = id.toString();
+    if (invoiceFileId != null) json['invoiceFileId'] = invoiceFileId.toString();
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     return json;
   }
 
@@ -2819,42 +2819,42 @@ class OaServiceV1ExpenseItem {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: category
     final f2 = category;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: amount
     final f3 = amount;
     if (f3 != null) {
-      w.writeDouble(3, f3!);
+      w.writeDouble(3, f3);
     }
     // field 4: expenseDate
     final f4 = expenseDate;
     if (f4 != null) {
-      w.writeTimestamp(4, f4!);
+      w.writeTimestamp(4, f4);
     }
     // field 5: description
     final f5 = description;
     if (f5 != null) {
-      w.writeString(5, f5!);
+      w.writeString(5, f5);
     }
     // field 6: invoiceFileId
     final f6 = invoiceFileId;
     if (f6 != null) {
-      w.writeUint32(6, f6!);
+      w.writeInt64(6, f6);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
   }
 
@@ -2868,7 +2868,7 @@ class OaServiceV1ExpenseItem {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: category
@@ -2893,12 +2893,12 @@ class OaServiceV1ExpenseItem {
         }
         // field 6: invoiceFileId
         case 6: {
-          m.invoiceFileId = r.readUint32();
+          m.invoiceFileId = r.readInt64();
           break;
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -2928,15 +2928,15 @@ class OaServiceV1SubmitExpenseApplicationResponse {
 
   factory OaServiceV1SubmitExpenseApplicationResponse.fromJson(Map<String, dynamic> json) {
     return OaServiceV1SubmitExpenseApplicationResponse(
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     return json;
   }
 
@@ -2981,12 +2981,12 @@ class OaServiceV1SubmitExpenseApplicationResponse {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: instanceId
     final f2 = instanceId;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -3000,12 +3000,12 @@ class OaServiceV1SubmitExpenseApplicationResponse {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: instanceId
         case 2: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         default: {
@@ -3037,7 +3037,7 @@ class OaServiceV1ListExpenseApplicationsRequest {
       page: json['page'] as int?,
       pageSize: json['pageSize'] as int?,
       status: json['status'] != null ? OaServiceV1ExpenseApplication$ExpenseStatus.fromString(json['status'] as String) : null,
-      userId: json['userId'] as int?,
+      userId: json['userId'] != null ? int.parse(json['userId'].toString()) : null,
     );
   }
 
@@ -3046,7 +3046,7 @@ class OaServiceV1ListExpenseApplicationsRequest {
     if (page != null) json['page'] = page;
     if (pageSize != null) json['pageSize'] = pageSize;
     if (status != null) json['status'] = status!.value;
-    if (userId != null) json['userId'] = userId;
+    if (userId != null) json['userId'] = userId.toString();
     return json;
   }
 
@@ -3099,22 +3099,22 @@ class OaServiceV1ListExpenseApplicationsRequest {
     // field 1: userId
     final f1 = userId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: status
     final f2 = status;
     if (f2 != null) {
-      w.writeEnum(2, f2!.wire); // OaServiceV1ExpenseApplication$ExpenseStatus
+      w.writeEnum(2, f2.wire); // OaServiceV1ExpenseApplication$ExpenseStatus
     }
     // field 3: page
     final f3 = page;
     if (f3 != null) {
-      w.writeInt32(3, f3!);
+      w.writeInt32(3, f3);
     }
     // field 4: pageSize
     final f4 = pageSize;
     if (f4 != null) {
-      w.writeInt32(4, f4!);
+      w.writeInt32(4, f4);
     }
   }
 
@@ -3128,7 +3128,7 @@ class OaServiceV1ListExpenseApplicationsRequest {
       switch (r.fieldNumber) {
         // field 1: userId
         case 1: {
-          m.userId = r.readUint32();
+          m.userId = r.readInt64();
           break;
         }
         // field 2: status
@@ -3241,12 +3241,12 @@ class OaServiceV1ListExpenseApplicationsResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -3265,7 +3265,7 @@ class OaServiceV1ListExpenseApplicationsResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -3318,18 +3318,18 @@ class OaServiceV1ExpenseApplication {
     return OaServiceV1ExpenseApplication(
       applicantName: json['applicantName'] as String?,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
       expenseStatus: json['expenseStatus'] != null ? OaServiceV1ExpenseApplication$ExpenseStatus.fromString(json['expenseStatus'] as String) : null,
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
       items: (json['items'] as List<dynamic>?)?.map((e) => OaServiceV1ExpenseItem.fromJson(e as Map<String, dynamic>)).toList(),
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       title: json['title'] as String?,
       totalAmount: (json['totalAmount'] as num?)?.toDouble(),
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
@@ -3337,18 +3337,18 @@ class OaServiceV1ExpenseApplication {
     final json = <String, dynamic>{};
     if (applicantName != null) json['applicantName'] = applicantName;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
     if (expenseStatus != null) json['expenseStatus'] = expenseStatus!.value;
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     if (items != null) json['items'] = items!.map((e) => e.toJson()).toList();
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (title != null) json['title'] = title;
     if (totalAmount != null) json['totalAmount'] = totalAmount;
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -3441,72 +3441,72 @@ class OaServiceV1ExpenseApplication {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: title
     final f2 = title;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: totalAmount
     final f3 = totalAmount;
     if (f3 != null) {
-      w.writeDouble(3, f3!);
+      w.writeDouble(3, f3);
     }
     // field 4: expenseStatus
     final f4 = expenseStatus;
     if (f4 != null) {
-      w.writeEnum(4, f4!.wire); // OaServiceV1ExpenseApplication$ExpenseStatus
+      w.writeEnum(4, f4.wire); // OaServiceV1ExpenseApplication$ExpenseStatus
     }
     // field 5: instanceId
     final f5 = instanceId;
     if (f5 != null) {
-      w.writeUint32(5, f5!);
+      w.writeInt64(5, f5);
     }
     // field 6: items
     final f6 = items;
     if (f6 != null) {
-      for (final e in f6!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(6, cw.toBuffer()); }
+      for (final e in f6) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(6, cw.toBuffer()); }
     }
     // field 7: applicantName
     final f7 = applicantName;
     if (f7 != null) {
-      w.writeString(7, f7!);
+      w.writeString(7, f7);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -3520,7 +3520,7 @@ class OaServiceV1ExpenseApplication {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: title
@@ -3540,7 +3540,7 @@ class OaServiceV1ExpenseApplication {
         }
         // field 5: instanceId
         case 5: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         // field 6: items
@@ -3555,22 +3555,22 @@ class OaServiceV1ExpenseApplication {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -3608,13 +3608,13 @@ class OaServiceV1GetExpenseApplicationRequest {
 
   factory OaServiceV1GetExpenseApplicationRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetExpenseApplicationRequest(
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     return json;
   }
 
@@ -3655,7 +3655,7 @@ class OaServiceV1GetExpenseApplicationRequest {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
   }
 
@@ -3669,7 +3669,7 @@ class OaServiceV1GetExpenseApplicationRequest {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         default: {
@@ -3789,7 +3789,7 @@ class StorageServiceV1DownloadFileRequest {
       acceptMime: json['acceptMime'] as String?,
       disposition: json['disposition'] as String?,
       downloadUrl: json['downloadUrl'] as String?,
-      fileId: json['fileId'] as int?,
+      fileId: json['fileId'] != null ? int.parse(json['fileId'].toString()) : null,
       preferPresignedUrl: json['preferPresignedUrl'] as bool?,
       presignExpireSeconds: json['presignExpireSeconds'] as int?,
       rangeEnd: json['rangeEnd'] != null ? int.parse(json['rangeEnd'].toString()) : null,
@@ -3803,7 +3803,7 @@ class StorageServiceV1DownloadFileRequest {
     if (acceptMime != null) json['acceptMime'] = acceptMime;
     if (disposition != null) json['disposition'] = disposition;
     if (downloadUrl != null) json['downloadUrl'] = downloadUrl;
-    if (fileId != null) json['fileId'] = fileId;
+    if (fileId != null) json['fileId'] = fileId.toString();
     if (preferPresignedUrl != null) json['preferPresignedUrl'] = preferPresignedUrl;
     if (presignExpireSeconds != null) json['presignExpireSeconds'] = presignExpireSeconds;
     if (rangeEnd != null) json['rangeEnd'] = rangeEnd.toString();
@@ -3881,47 +3881,47 @@ class StorageServiceV1DownloadFileRequest {
     // field 1: fileId
     final f1 = fileId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: storageObject
     final f2 = storageObject;
     if (f2 != null) {
-      final cw = ProtoWireWriter(); f2!._writeTo(cw); w.writeRaw(2, cw.toBuffer()); // StorageServiceV1StorageObject
+      final cw = ProtoWireWriter(); f2._writeTo(cw); w.writeRaw(2, cw.toBuffer()); // StorageServiceV1StorageObject
     }
     // field 3: downloadUrl
     final f3 = downloadUrl;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: rangeStart
     final f4 = rangeStart;
     if (f4 != null) {
-      w.writeInt64(4, f4!);
+      w.writeInt64(4, f4);
     }
     // field 5: rangeEnd
     final f5 = rangeEnd;
     if (f5 != null) {
-      w.writeInt64(5, f5!);
+      w.writeInt64(5, f5);
     }
     // field 6: preferPresignedUrl
     final f6 = preferPresignedUrl;
     if (f6 != null) {
-      w.writeBool(6, f6!);
+      w.writeBool(6, f6);
     }
     // field 7: presignExpireSeconds
     final f7 = presignExpireSeconds;
     if (f7 != null) {
-      w.writeInt32(7, f7!);
+      w.writeInt32(7, f7);
     }
     // field 8: disposition
     final f8 = disposition;
     if (f8 != null) {
-      w.writeString(8, f8!);
+      w.writeString(8, f8);
     }
     // field 9: acceptMime
     final f9 = acceptMime;
     if (f9 != null) {
-      w.writeString(9, f9!);
+      w.writeString(9, f9);
     }
   }
 
@@ -3935,7 +3935,7 @@ class StorageServiceV1DownloadFileRequest {
       switch (r.fieldNumber) {
         // field 1: fileId
         case 1: {
-          m.fileId = r.readUint32();
+          m.fileId = r.readInt64();
           break;
         }
         // field 2: storageObject
@@ -4061,17 +4061,17 @@ class StorageServiceV1StorageObject {
     // field 1: bucketName
     final f1 = bucketName;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: fileDirectory
     final f2 = fileDirectory;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: objectName
     final f3 = objectName;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
   }
 
@@ -4219,41 +4219,44 @@ class StorageServiceV1DownloadFileResponse {
 
   void _writeTo(ProtoWireWriter w) {
     // field 1: file
-    throw UnsupportedError('dart-http wire: field storage.service.v1.DownloadFileResponse.file');
+    final f1 = file;
+    if (f1 != null) {
+      throw UnsupportedError('dart-http wire: field storage.service.v1.DownloadFileResponse.file');
+    }
     // field 2: downloadUrl
     final f2 = downloadUrl;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: sourceFileName
     final f3 = sourceFileName;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: mime
     final f4 = mime;
     if (f4 != null) {
-      w.writeString(4, f4!);
+      w.writeString(4, f4);
     }
     // field 5: size
     final f5 = size;
     if (f5 != null) {
-      w.writeInt64(5, f5!);
+      w.writeInt64(5, f5);
     }
     // field 6: checksum
     final f6 = checksum;
     if (f6 != null) {
-      w.writeString(6, f6!);
+      w.writeString(6, f6);
     }
     // field 7: storagePath
     final f7 = storagePath;
     if (f7 != null) {
-      w.writeString(7, f7!);
+      w.writeString(7, f7);
     }
     // field 8: updatedAt
     final f8 = updatedAt;
     if (f8 != null) {
-      w.writeTimestamp(8, f8!);
+      w.writeTimestamp(8, f8);
     }
   }
 
@@ -4344,8 +4347,8 @@ class StorageServiceV1UploadFileRequest {
       size: json['size'] != null ? int.parse(json['size'].toString()) : null,
       sourceFileName: json['sourceFileName'] as String?,
       storageObject: json['storageObject'] != null ? StorageServiceV1StorageObject.fromJson(json['storageObject'] as Map<String, dynamic>) : null,
-      tenantId: json['tenantId'] as int?,
-      userId: json['userId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
+      userId: json['userId'] != null ? int.parse(json['userId'].toString()) : null,
     );
   }
 
@@ -4357,8 +4360,8 @@ class StorageServiceV1UploadFileRequest {
     if (size != null) json['size'] = size.toString();
     if (sourceFileName != null) json['sourceFileName'] = sourceFileName;
     if (storageObject != null) json['storageObject'] = storageObject!.toJson();
-    if (tenantId != null) json['tenantId'] = tenantId;
-    if (userId != null) json['userId'] = userId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
+    if (userId != null) json['userId'] = userId.toString();
     return json;
   }
 
@@ -4427,39 +4430,42 @@ class StorageServiceV1UploadFileRequest {
     // field 1: storageObject
     final f1 = storageObject;
     if (f1 != null) {
-      final cw = ProtoWireWriter(); f1!._writeTo(cw); w.writeRaw(1, cw.toBuffer()); // StorageServiceV1StorageObject
+      final cw = ProtoWireWriter(); f1._writeTo(cw); w.writeRaw(1, cw.toBuffer()); // StorageServiceV1StorageObject
     }
     // field 2: file
-    throw UnsupportedError('dart-http wire: field storage.service.v1.UploadFileRequest.file');
+    final f2 = file;
+    if (f2 != null) {
+      throw UnsupportedError('dart-http wire: field storage.service.v1.UploadFileRequest.file');
+    }
     // field 3: presign
     final f3 = presign;
     if (f3 != null) {
-      final cw = ProtoWireWriter(); f3!._writeTo(cw); w.writeRaw(3, cw.toBuffer()); // StorageServiceV1PresignOption
+      final cw = ProtoWireWriter(); f3._writeTo(cw); w.writeRaw(3, cw.toBuffer()); // StorageServiceV1PresignOption
     }
     // field 4: sourceFileName
     final f4 = sourceFileName;
     if (f4 != null) {
-      w.writeString(4, f4!);
+      w.writeString(4, f4);
     }
     // field 5: mime
     final f5 = mime;
     if (f5 != null) {
-      w.writeString(5, f5!);
+      w.writeString(5, f5);
     }
     // field 6: size
     final f6 = size;
     if (f6 != null) {
-      w.writeInt64(6, f6!);
+      w.writeInt64(6, f6);
     }
     // field 10: tenantId
     final f10 = tenantId;
     if (f10 != null) {
-      w.writeUint32(10, f10!);
+      w.writeInt64(10, f10);
     }
     // field 11: userId
     final f11 = userId;
     if (f11 != null) {
-      w.writeUint32(11, f11!);
+      w.writeInt64(11, f11);
     }
   }
 
@@ -4503,12 +4509,12 @@ class StorageServiceV1UploadFileRequest {
         }
         // field 10: tenantId
         case 10: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 11: userId
         case 11: {
-          m.userId = r.readUint32();
+          m.userId = r.readInt64();
           break;
         }
         default: {
@@ -4594,17 +4600,17 @@ class StorageServiceV1PresignOption {
     // field 1: method
     final f1 = method;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: expireSeconds
     final f2 = expireSeconds;
     if (f2 != null) {
-      w.writeInt32(2, f2!);
+      w.writeInt32(2, f2);
     }
     // field 3: contentType
     final f3 = contentType;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
   }
 
@@ -4654,7 +4660,7 @@ class StorageServiceV1UploadFileResponse {
 
   factory StorageServiceV1UploadFileResponse.fromJson(Map<String, dynamic> json) {
     return StorageServiceV1UploadFileResponse(
-      fileId: json['fileId'] as int?,
+      fileId: json['fileId'] != null ? int.parse(json['fileId'].toString()) : null,
       objectName: json['objectName'] as String?,
       presignedUrl: json['presignedUrl'] as String?,
     );
@@ -4662,7 +4668,7 @@ class StorageServiceV1UploadFileResponse {
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (fileId != null) json['fileId'] = fileId;
+    if (fileId != null) json['fileId'] = fileId.toString();
     if (objectName != null) json['objectName'] = objectName;
     if (presignedUrl != null) json['presignedUrl'] = presignedUrl;
     return json;
@@ -4713,17 +4719,17 @@ class StorageServiceV1UploadFileResponse {
     // field 1: objectName
     final f1 = objectName;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: presignedUrl
     final f2 = presignedUrl;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: fileId
     final f3 = fileId;
     if (f3 != null) {
-      w.writeUint32(3, f3!);
+      w.writeInt64(3, f3);
     }
   }
 
@@ -4747,7 +4753,7 @@ class StorageServiceV1UploadFileResponse {
         }
         // field 3: fileId
         case 3: {
-          m.fileId = r.readUint32();
+          m.fileId = r.readInt64();
           break;
         }
         default: {
@@ -4843,7 +4849,7 @@ class Internal_messageServiceV1ListMyMessagesRequest {
     // field 1: limit
     final f1 = limit;
     if (f1 != null) {
-      w.writeInt32(1, f1!);
+      w.writeInt32(1, f1);
     }
   }
 
@@ -4935,12 +4941,12 @@ class Internal_messageServiceV1ListInternalMessageResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -4959,7 +4965,7 @@ class Internal_messageServiceV1ListInternalMessageResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -5016,45 +5022,45 @@ class Internal_messageServiceV1InternalMessage {
 
   factory Internal_messageServiceV1InternalMessage.fromJson(Map<String, dynamic> json) {
     return Internal_messageServiceV1InternalMessage(
-      categoryId: json['categoryId'] as int?,
+      categoryId: json['categoryId'] != null ? int.parse(json['categoryId'].toString()) : null,
       categoryName: json['categoryName'] as String?,
       content: json['content'] as String?,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
-      id: json['id'] as int?,
-      senderId: json['senderId'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      senderId: json['senderId'] != null ? int.parse(json['senderId'].toString()) : null,
       senderName: json['senderName'] as String?,
       status: json['status'] != null ? Internal_messageServiceV1InternalMessage$Status.fromString(json['status'] as String) : null,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       tenantName: json['tenantName'] as String?,
       title: json['title'] as String?,
       type: json['type'] != null ? Internal_messageServiceV1InternalMessage$Type.fromString(json['type'] as String) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (categoryId != null) json['categoryId'] = categoryId;
+    if (categoryId != null) json['categoryId'] = categoryId.toString();
     if (categoryName != null) json['categoryName'] = categoryName;
     if (content != null) json['content'] = content;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
-    if (id != null) json['id'] = id;
-    if (senderId != null) json['senderId'] = senderId;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
+    if (id != null) json['id'] = id.toString();
+    if (senderId != null) json['senderId'] = senderId.toString();
     if (senderName != null) json['senderName'] = senderName;
     if (status != null) json['status'] = status!.value;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (tenantName != null) json['tenantName'] = tenantName;
     if (title != null) json['title'] = title;
     if (type != null) json['type'] = type!.value;
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -5159,87 +5165,87 @@ class Internal_messageServiceV1InternalMessage {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: title
     final f2 = title;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: content
     final f3 = content;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: status
     final f4 = status;
     if (f4 != null) {
-      w.writeEnum(4, f4!.wire); // Internal_messageServiceV1InternalMessage$Status
+      w.writeEnum(4, f4.wire); // Internal_messageServiceV1InternalMessage$Status
     }
     // field 5: type
     final f5 = type;
     if (f5 != null) {
-      w.writeEnum(5, f5!.wire); // Internal_messageServiceV1InternalMessage$Type
+      w.writeEnum(5, f5.wire); // Internal_messageServiceV1InternalMessage$Type
     }
     // field 6: senderId
     final f6 = senderId;
     if (f6 != null) {
-      w.writeUint32(6, f6!);
+      w.writeInt64(6, f6);
     }
     // field 7: senderName
     final f7 = senderName;
     if (f7 != null) {
-      w.writeString(7, f7!);
+      w.writeString(7, f7);
     }
     // field 8: categoryId
     final f8 = categoryId;
     if (f8 != null) {
-      w.writeUint32(8, f8!);
+      w.writeInt64(8, f8);
     }
     // field 9: categoryName
     final f9 = categoryName;
     if (f9 != null) {
-      w.writeString(9, f9!);
+      w.writeString(9, f9);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 41: tenantName
     final f41 = tenantName;
     if (f41 != null) {
-      w.writeString(41, f41!);
+      w.writeString(41, f41);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -5253,7 +5259,7 @@ class Internal_messageServiceV1InternalMessage {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: title
@@ -5278,7 +5284,7 @@ class Internal_messageServiceV1InternalMessage {
         }
         // field 6: senderId
         case 6: {
-          m.senderId = r.readUint32();
+          m.senderId = r.readInt64();
           break;
         }
         // field 7: senderName
@@ -5288,7 +5294,7 @@ class Internal_messageServiceV1InternalMessage {
         }
         // field 8: categoryId
         case 8: {
-          m.categoryId = r.readUint32();
+          m.categoryId = r.readInt64();
           break;
         }
         // field 9: categoryName
@@ -5298,7 +5304,7 @@ class Internal_messageServiceV1InternalMessage {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 41: tenantName
@@ -5308,17 +5314,17 @@ class Internal_messageServiceV1InternalMessage {
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -5542,7 +5548,7 @@ class OaServiceV1SubmitLeaveApplicationRequest {
     return OaServiceV1SubmitLeaveApplicationRequest(
       endDate: json['endDate'] as String?,
       endHalf: json['endHalf'] != null ? OaServiceV1HalfOfDay.fromString(json['endHalf'] as String) : null,
-      leaveTypeId: json['leaveTypeId'] as int?,
+      leaveTypeId: json['leaveTypeId'] != null ? int.parse(json['leaveTypeId'].toString()) : null,
       reason: json['reason'] as String?,
       startDate: json['startDate'] as String?,
       startHalf: json['startHalf'] != null ? OaServiceV1HalfOfDay.fromString(json['startHalf'] as String) : null,
@@ -5553,7 +5559,7 @@ class OaServiceV1SubmitLeaveApplicationRequest {
     final json = <String, dynamic>{};
     if (endDate != null) json['endDate'] = endDate;
     if (endHalf != null) json['endHalf'] = endHalf!.value;
-    if (leaveTypeId != null) json['leaveTypeId'] = leaveTypeId;
+    if (leaveTypeId != null) json['leaveTypeId'] = leaveTypeId.toString();
     if (reason != null) json['reason'] = reason;
     if (startDate != null) json['startDate'] = startDate;
     if (startHalf != null) json['startHalf'] = startHalf!.value;
@@ -5617,32 +5623,32 @@ class OaServiceV1SubmitLeaveApplicationRequest {
     // field 1: leaveTypeId
     final f1 = leaveTypeId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: startDate
     final f2 = startDate;
     if (f2 != null) {
-      w.writeTimestamp(2, f2!);
+      w.writeTimestamp(2, f2);
     }
     // field 3: endDate
     final f3 = endDate;
     if (f3 != null) {
-      w.writeTimestamp(3, f3!);
+      w.writeTimestamp(3, f3);
     }
     // field 4: reason
     final f4 = reason;
     if (f4 != null) {
-      w.writeString(4, f4!);
+      w.writeString(4, f4);
     }
     // field 5: startHalf
     final f5 = startHalf;
     if (f5 != null) {
-      w.writeEnum(5, f5!.wire); // OaServiceV1HalfOfDay
+      w.writeEnum(5, f5.wire); // OaServiceV1HalfOfDay
     }
     // field 6: endHalf
     final f6 = endHalf;
     if (f6 != null) {
-      w.writeEnum(6, f6!.wire); // OaServiceV1HalfOfDay
+      w.writeEnum(6, f6.wire); // OaServiceV1HalfOfDay
     }
   }
 
@@ -5656,7 +5662,7 @@ class OaServiceV1SubmitLeaveApplicationRequest {
       switch (r.fieldNumber) {
         // field 1: leaveTypeId
         case 1: {
-          m.leaveTypeId = r.readUint32();
+          m.leaveTypeId = r.readInt64();
           break;
         }
         // field 2: startDate
@@ -5724,15 +5730,15 @@ class OaServiceV1SubmitLeaveApplicationResponse {
 
   factory OaServiceV1SubmitLeaveApplicationResponse.fromJson(Map<String, dynamic> json) {
     return OaServiceV1SubmitLeaveApplicationResponse(
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     return json;
   }
 
@@ -5777,12 +5783,12 @@ class OaServiceV1SubmitLeaveApplicationResponse {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: instanceId
     final f2 = instanceId;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -5796,12 +5802,12 @@ class OaServiceV1SubmitLeaveApplicationResponse {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: instanceId
         case 2: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         default: {
@@ -5833,7 +5839,7 @@ class OaServiceV1ListLeaveApplicationsRequest {
       page: json['page'] as int?,
       pageSize: json['pageSize'] as int?,
       status: json['status'] != null ? OaServiceV1LeaveApplication$LeaveStatus.fromString(json['status'] as String) : null,
-      userId: json['userId'] as int?,
+      userId: json['userId'] != null ? int.parse(json['userId'].toString()) : null,
     );
   }
 
@@ -5842,7 +5848,7 @@ class OaServiceV1ListLeaveApplicationsRequest {
     if (page != null) json['page'] = page;
     if (pageSize != null) json['pageSize'] = pageSize;
     if (status != null) json['status'] = status!.value;
-    if (userId != null) json['userId'] = userId;
+    if (userId != null) json['userId'] = userId.toString();
     return json;
   }
 
@@ -5895,22 +5901,22 @@ class OaServiceV1ListLeaveApplicationsRequest {
     // field 1: userId
     final f1 = userId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: status
     final f2 = status;
     if (f2 != null) {
-      w.writeEnum(2, f2!.wire); // OaServiceV1LeaveApplication$LeaveStatus
+      w.writeEnum(2, f2.wire); // OaServiceV1LeaveApplication$LeaveStatus
     }
     // field 3: page
     final f3 = page;
     if (f3 != null) {
-      w.writeInt32(3, f3!);
+      w.writeInt32(3, f3);
     }
     // field 4: pageSize
     final f4 = pageSize;
     if (f4 != null) {
-      w.writeInt32(4, f4!);
+      w.writeInt32(4, f4);
     }
   }
 
@@ -5924,7 +5930,7 @@ class OaServiceV1ListLeaveApplicationsRequest {
       switch (r.fieldNumber) {
         // field 1: userId
         case 1: {
-          m.userId = r.readUint32();
+          m.userId = r.readInt64();
           break;
         }
         // field 2: status
@@ -6037,12 +6043,12 @@ class OaServiceV1ListLeaveApplicationsResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -6061,7 +6067,7 @@ class OaServiceV1ListLeaveApplicationsResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -6124,23 +6130,23 @@ class OaServiceV1LeaveApplication {
     return OaServiceV1LeaveApplication(
       applicantName: json['applicantName'] as String?,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       days: (json['days'] as num?)?.toDouble(),
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
       endDate: json['endDate'] as String?,
       endHalf: json['endHalf'] != null ? OaServiceV1HalfOfDay.fromString(json['endHalf'] as String) : null,
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
       leaveStatus: json['leaveStatus'] != null ? OaServiceV1LeaveApplication$LeaveStatus.fromString(json['leaveStatus'] as String) : null,
-      leaveTypeId: json['leaveTypeId'] as int?,
+      leaveTypeId: json['leaveTypeId'] != null ? int.parse(json['leaveTypeId'].toString()) : null,
       leaveTypeName: json['leaveTypeName'] as String?,
       reason: json['reason'] as String?,
       startDate: json['startDate'] as String?,
       startHalf: json['startHalf'] != null ? OaServiceV1HalfOfDay.fromString(json['startHalf'] as String) : null,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
@@ -6148,23 +6154,23 @@ class OaServiceV1LeaveApplication {
     final json = <String, dynamic>{};
     if (applicantName != null) json['applicantName'] = applicantName;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (days != null) json['days'] = days;
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
     if (endDate != null) json['endDate'] = endDate;
     if (endHalf != null) json['endHalf'] = endHalf!.value;
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     if (leaveStatus != null) json['leaveStatus'] = leaveStatus!.value;
-    if (leaveTypeId != null) json['leaveTypeId'] = leaveTypeId;
+    if (leaveTypeId != null) json['leaveTypeId'] = leaveTypeId.toString();
     if (leaveTypeName != null) json['leaveTypeName'] = leaveTypeName;
     if (reason != null) json['reason'] = reason;
     if (startDate != null) json['startDate'] = startDate;
     if (startHalf != null) json['startHalf'] = startHalf!.value;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -6277,97 +6283,97 @@ class OaServiceV1LeaveApplication {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: leaveTypeId
     final f2 = leaveTypeId;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeInt64(2, f2);
     }
     // field 3: leaveTypeName
     final f3 = leaveTypeName;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: startDate
     final f4 = startDate;
     if (f4 != null) {
-      w.writeTimestamp(4, f4!);
+      w.writeTimestamp(4, f4);
     }
     // field 5: endDate
     final f5 = endDate;
     if (f5 != null) {
-      w.writeTimestamp(5, f5!);
+      w.writeTimestamp(5, f5);
     }
     // field 6: days
     final f6 = days;
     if (f6 != null) {
-      w.writeDouble(6, f6!);
+      w.writeDouble(6, f6);
     }
     // field 7: reason
     final f7 = reason;
     if (f7 != null) {
-      w.writeString(7, f7!);
+      w.writeString(7, f7);
     }
     // field 8: leaveStatus
     final f8 = leaveStatus;
     if (f8 != null) {
-      w.writeEnum(8, f8!.wire); // OaServiceV1LeaveApplication$LeaveStatus
+      w.writeEnum(8, f8.wire); // OaServiceV1LeaveApplication$LeaveStatus
     }
     // field 9: instanceId
     final f9 = instanceId;
     if (f9 != null) {
-      w.writeUint32(9, f9!);
+      w.writeInt64(9, f9);
     }
     // field 10: applicantName
     final f10 = applicantName;
     if (f10 != null) {
-      w.writeString(10, f10!);
+      w.writeString(10, f10);
     }
     // field 11: startHalf
     final f11 = startHalf;
     if (f11 != null) {
-      w.writeEnum(11, f11!.wire); // OaServiceV1HalfOfDay
+      w.writeEnum(11, f11.wire); // OaServiceV1HalfOfDay
     }
     // field 12: endHalf
     final f12 = endHalf;
     if (f12 != null) {
-      w.writeEnum(12, f12!.wire); // OaServiceV1HalfOfDay
+      w.writeEnum(12, f12.wire); // OaServiceV1HalfOfDay
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -6381,12 +6387,12 @@ class OaServiceV1LeaveApplication {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: leaveTypeId
         case 2: {
-          m.leaveTypeId = r.readUint32();
+          m.leaveTypeId = r.readInt64();
           break;
         }
         // field 3: leaveTypeName
@@ -6421,7 +6427,7 @@ class OaServiceV1LeaveApplication {
         }
         // field 9: instanceId
         case 9: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         // field 10: applicantName
@@ -6441,22 +6447,22 @@ class OaServiceV1LeaveApplication {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -6494,13 +6500,13 @@ class OaServiceV1GetLeaveApplicationRequest {
 
   factory OaServiceV1GetLeaveApplicationRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetLeaveApplicationRequest(
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     return json;
   }
 
@@ -6541,7 +6547,7 @@ class OaServiceV1GetLeaveApplicationRequest {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
   }
 
@@ -6555,7 +6561,7 @@ class OaServiceV1GetLeaveApplicationRequest {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         default: {
@@ -6727,62 +6733,62 @@ class PaginationPagingRequest {
     // field 1: page
     final f1 = page;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeUint32(1, f1);
     }
     // field 2: pageSize
     final f2 = pageSize;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeUint32(2, f2);
     }
     // field 3: offset
     final f3 = offset;
     if (f3 != null) {
-      w.writeUint64(3, f3!);
+      w.writeUint64(3, f3);
     }
     // field 4: limit
     final f4 = limit;
     if (f4 != null) {
-      w.writeUint32(4, f4!);
+      w.writeUint32(4, f4);
     }
     // field 5: token
     final f5 = token;
     if (f5 != null) {
-      w.writeString(5, f5!);
+      w.writeString(5, f5);
     }
     // field 6: noPaging
     final f6 = noPaging;
     if (f6 != null) {
-      w.writeBool(6, f6!);
+      w.writeBool(6, f6);
     }
     // field 10: query
     final f10 = query;
     if (f10 != null) {
-      w.writeString(10, f10!);
+      w.writeString(10, f10);
     }
     // field 11: filter
     final f11 = filter;
     if (f11 != null) {
-      w.writeString(11, f11!);
+      w.writeString(11, f11);
     }
     // field 12: filterExpr
     final f12 = filterExpr;
     if (f12 != null) {
-      final cw = ProtoWireWriter(); f12!._writeTo(cw); w.writeRaw(12, cw.toBuffer()); // PaginationFilterExpr
+      final cw = ProtoWireWriter(); f12._writeTo(cw); w.writeRaw(12, cw.toBuffer()); // PaginationFilterExpr
     }
     // field 20: orderBy
     final f20 = orderBy;
     if (f20 != null) {
-      w.writeString(20, f20!);
+      w.writeString(20, f20);
     }
     // field 21: sorting
     final f21 = sorting;
     if (f21 != null) {
-      for (final e in f21!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(21, cw.toBuffer()); }
+      for (final e in f21) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(21, cw.toBuffer()); }
     }
     // field 30: fieldMask
     final f30 = fieldMask;
     if (f30 != null) {
-      w.writeFieldMask(30, f30!);
+      w.writeFieldMask(30, f30);
     }
   }
 
@@ -6940,17 +6946,17 @@ class PaginationFilterExpr {
     // field 1: type
     final f1 = type;
     if (f1 != null) {
-      w.writeEnum(1, f1!.wire); // PaginationExprType
+      w.writeEnum(1, f1.wire); // PaginationExprType
     }
     // field 2: conditions
     final f2 = conditions;
     if (f2 != null) {
-      for (final e in f2!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(2, cw.toBuffer()); }
+      for (final e in f2) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(2, cw.toBuffer()); }
     }
     // field 3: groups
     final f3 = groups;
     if (f3 != null) {
-      for (final e in f3!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(3, cw.toBuffer()); }
+      for (final e in f3) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(3, cw.toBuffer()); }
     }
   }
 
@@ -7120,32 +7126,32 @@ class PaginationFilterCondition {
     // field 1: field
     final f1 = field;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: op
     final f2 = op;
     if (f2 != null) {
-      w.writeEnum(2, f2!.wire); // PaginationOperator
+      w.writeEnum(2, f2.wire); // PaginationOperator
     }
     // field 3: value
     final f3 = value;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: values
     final f4 = values;
     if (f4 != null) {
-      w.writeStringList(4, f4!);
+      w.writeStringList(4, f4);
     }
     // field 5: datePart
     final f5 = datePart;
     if (f5 != null) {
-      w.writeEnum(5, f5!.wire); // PaginationDatePart
+      w.writeEnum(5, f5.wire); // PaginationDatePart
     }
     // field 6: jsonPath
     final f6 = jsonPath;
     if (f6 != null) {
-      w.writeString(6, f6!);
+      w.writeString(6, f6);
     }
     // field 7: jsonValue
     final f7 = jsonValue;
@@ -7194,8 +7200,7 @@ class PaginationFilterCondition {
         }
         // field 7: jsonValue
         case 7: {
-          m.jsonValue = (throw UnsupportedError('dart-http wire: google.protobuf.Value not supported'));
-          break;
+          throw UnsupportedError('dart-http wire: google.protobuf.Value not supported');
         }
         default: {
           r.skip();
@@ -7354,12 +7359,12 @@ class PaginationSorting {
     // field 1: field
     final f1 = field;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: direction
     final f2 = direction;
     if (f2 != null) {
-      w.writeEnum(2, f2!.wire); // PaginationSorting$Direction
+      w.writeEnum(2, f2.wire); // PaginationSorting$Direction
     }
   }
 
@@ -7478,12 +7483,12 @@ class OaServiceV1ListLeaveTypesResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -7502,7 +7507,7 @@ class OaServiceV1ListLeaveTypesResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -7547,14 +7552,14 @@ class OaServiceV1LeaveType {
     return OaServiceV1LeaveType(
       code: json['code'] as String?,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
-      id: json['id'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
       name: json['name'] as String?,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
@@ -7562,14 +7567,14 @@ class OaServiceV1LeaveType {
     final json = <String, dynamic>{};
     if (code != null) json['code'] = code;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
-    if (id != null) json['id'] = id;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
+    if (id != null) json['id'] = id.toString();
     if (name != null) json['name'] = name;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -7646,52 +7651,52 @@ class OaServiceV1LeaveType {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: code
     final f2 = code;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: name
     final f3 = name;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -7705,7 +7710,7 @@ class OaServiceV1LeaveType {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: code
@@ -7720,22 +7725,22 @@ class OaServiceV1LeaveType {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -7781,7 +7786,7 @@ class OaServiceV1ListLeaveBalancesRequest {
     return OaServiceV1ListLeaveBalancesRequest(
       page: json['page'] as int?,
       pageSize: json['pageSize'] as int?,
-      userId: json['userId'] as int?,
+      userId: json['userId'] != null ? int.parse(json['userId'].toString()) : null,
       year: json['year'] as int?,
     );
   }
@@ -7790,7 +7795,7 @@ class OaServiceV1ListLeaveBalancesRequest {
     final json = <String, dynamic>{};
     if (page != null) json['page'] = page;
     if (pageSize != null) json['pageSize'] = pageSize;
-    if (userId != null) json['userId'] = userId;
+    if (userId != null) json['userId'] = userId.toString();
     if (year != null) json['year'] = year;
     return json;
   }
@@ -7844,22 +7849,22 @@ class OaServiceV1ListLeaveBalancesRequest {
     // field 1: userId
     final f1 = userId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: year
     final f2 = year;
     if (f2 != null) {
-      w.writeInt32(2, f2!);
+      w.writeInt32(2, f2);
     }
     // field 3: page
     final f3 = page;
     if (f3 != null) {
-      w.writeInt32(3, f3!);
+      w.writeInt32(3, f3);
     }
     // field 4: pageSize
     final f4 = pageSize;
     if (f4 != null) {
-      w.writeInt32(4, f4!);
+      w.writeInt32(4, f4);
     }
   }
 
@@ -7873,7 +7878,7 @@ class OaServiceV1ListLeaveBalancesRequest {
       switch (r.fieldNumber) {
         // field 1: userId
         case 1: {
-          m.userId = r.readUint32();
+          m.userId = r.readInt64();
           break;
         }
         // field 2: year
@@ -7966,12 +7971,12 @@ class OaServiceV1ListLeaveBalancesResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -7990,7 +7995,7 @@ class OaServiceV1ListLeaveBalancesResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -8040,17 +8045,17 @@ class OaServiceV1LeaveBalance {
   factory OaServiceV1LeaveBalance.fromJson(Map<String, dynamic> json) {
     return OaServiceV1LeaveBalance(
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
-      id: json['id'] as int?,
-      leaveTypeId: json['leaveTypeId'] as int?,
-      tenantId: json['tenantId'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      leaveTypeId: json['leaveTypeId'] != null ? int.parse(json['leaveTypeId'].toString()) : null,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       totalDays: (json['totalDays'] as num?)?.toDouble(),
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
       usedDays: (json['usedDays'] as num?)?.toDouble(),
-      userId: json['userId'] as int?,
+      userId: json['userId'] != null ? int.parse(json['userId'].toString()) : null,
       year: json['year'] as int?,
     );
   }
@@ -8058,17 +8063,17 @@ class OaServiceV1LeaveBalance {
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
-    if (id != null) json['id'] = id;
-    if (leaveTypeId != null) json['leaveTypeId'] = leaveTypeId;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
+    if (id != null) json['id'] = id.toString();
+    if (leaveTypeId != null) json['leaveTypeId'] = leaveTypeId.toString();
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (totalDays != null) json['totalDays'] = totalDays;
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     if (usedDays != null) json['usedDays'] = usedDays;
-    if (userId != null) json['userId'] = userId;
+    if (userId != null) json['userId'] = userId.toString();
     if (year != null) json['year'] = year;
     return json;
   }
@@ -8158,67 +8163,67 @@ class OaServiceV1LeaveBalance {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: userId
     final f2 = userId;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeInt64(2, f2);
     }
     // field 3: leaveTypeId
     final f3 = leaveTypeId;
     if (f3 != null) {
-      w.writeUint32(3, f3!);
+      w.writeInt64(3, f3);
     }
     // field 4: year
     final f4 = year;
     if (f4 != null) {
-      w.writeInt32(4, f4!);
+      w.writeInt32(4, f4);
     }
     // field 5: totalDays
     final f5 = totalDays;
     if (f5 != null) {
-      w.writeDouble(5, f5!);
+      w.writeDouble(5, f5);
     }
     // field 6: usedDays
     final f6 = usedDays;
     if (f6 != null) {
-      w.writeDouble(6, f6!);
+      w.writeDouble(6, f6);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -8232,17 +8237,17 @@ class OaServiceV1LeaveBalance {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: userId
         case 2: {
-          m.userId = r.readUint32();
+          m.userId = r.readInt64();
           break;
         }
         // field 3: leaveTypeId
         case 3: {
-          m.leaveTypeId = r.readUint32();
+          m.leaveTypeId = r.readInt64();
           break;
         }
         // field 4: year
@@ -8262,22 +8267,22 @@ class OaServiceV1LeaveBalance {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -8446,12 +8451,12 @@ class IdentityServiceV1ListOrgUnitResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -8470,7 +8475,7 @@ class IdentityServiceV1ListOrgUnitResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -8576,26 +8581,26 @@ class IdentityServiceV1OrgUnit {
       businessScopes: (json['businessScopes'] as List<dynamic>?)?.map((e) => e as String).toList(),
       children: (json['children'] as List<dynamic>?)?.map((e) => IdentityServiceV1OrgUnit.fromJson(e as Map<String, dynamic>)).toList(),
       code: json['code'] as String?,
-      contactUserId: json['contactUserId'] as int?,
+      contactUserId: json['contactUserId'] != null ? int.parse(json['contactUserId'].toString()) : null,
       contactUserName: json['contactUserName'] as String?,
       country: json['country'] as String?,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
       description: json['description'] as String?,
       email: json['email'] as String?,
       endAt: json['endAt'] as String?,
       externalId: json['externalId'] as String?,
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
       isLegalEntity: json['isLegalEntity'] as bool?,
       latitude: (json['latitude'] as num?)?.toDouble(),
-      leaderId: json['leaderId'] as int?,
+      leaderId: json['leaderId'] != null ? int.parse(json['leaderId'].toString()) : null,
       leaderName: json['leaderName'] as String?,
-      legalEntityOrgId: json['legalEntityOrgId'] as int?,
+      legalEntityOrgId: json['legalEntityOrgId'] != null ? int.parse(json['legalEntityOrgId'].toString()) : null,
       longitude: (json['longitude'] as num?)?.toDouble(),
       name: json['name'] as String?,
-      parentId: json['parentId'] as int?,
+      parentId: json['parentId'] != null ? int.parse(json['parentId'].toString()) : null,
       path: json['path'] as String?,
       permissionTags: (json['permissionTags'] as List<dynamic>?)?.map((e) => e as String).toList(),
       phone: json['phone'] as String?,
@@ -8605,12 +8610,12 @@ class IdentityServiceV1OrgUnit {
       startAt: json['startAt'] as String?,
       status: json['status'] != null ? IdentityServiceV1OrgUnit$Status.fromString(json['status'] as String) : null,
       taxId: json['taxId'] as String?,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       tenantName: json['tenantName'] as String?,
       timezone: json['timezone'] as String?,
       type: json['type'] != null ? IdentityServiceV1OrgUnit$Type.fromString(json['type'] as String) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
@@ -8621,26 +8626,26 @@ class IdentityServiceV1OrgUnit {
     if (businessScopes != null) json['businessScopes'] = businessScopes;
     if (children != null) json['children'] = children!.map((e) => e.toJson()).toList();
     if (code != null) json['code'] = code;
-    if (contactUserId != null) json['contactUserId'] = contactUserId;
+    if (contactUserId != null) json['contactUserId'] = contactUserId.toString();
     if (contactUserName != null) json['contactUserName'] = contactUserName;
     if (country != null) json['country'] = country;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
     if (description != null) json['description'] = description;
     if (email != null) json['email'] = email;
     if (endAt != null) json['endAt'] = endAt;
     if (externalId != null) json['externalId'] = externalId;
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     if (isLegalEntity != null) json['isLegalEntity'] = isLegalEntity;
     if (latitude != null) json['latitude'] = latitude;
-    if (leaderId != null) json['leaderId'] = leaderId;
+    if (leaderId != null) json['leaderId'] = leaderId.toString();
     if (leaderName != null) json['leaderName'] = leaderName;
-    if (legalEntityOrgId != null) json['legalEntityOrgId'] = legalEntityOrgId;
+    if (legalEntityOrgId != null) json['legalEntityOrgId'] = legalEntityOrgId.toString();
     if (longitude != null) json['longitude'] = longitude;
     if (name != null) json['name'] = name;
-    if (parentId != null) json['parentId'] = parentId;
+    if (parentId != null) json['parentId'] = parentId.toString();
     if (path != null) json['path'] = path;
     if (permissionTags != null) json['permissionTags'] = permissionTags;
     if (phone != null) json['phone'] = phone;
@@ -8650,12 +8655,12 @@ class IdentityServiceV1OrgUnit {
     if (startAt != null) json['startAt'] = startAt;
     if (status != null) json['status'] = status!.value;
     if (taxId != null) json['taxId'] = taxId;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (tenantName != null) json['tenantName'] = tenantName;
     if (timezone != null) json['timezone'] = timezone;
     if (type != null) json['type'] = type!.value;
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -8852,147 +8857,147 @@ class IdentityServiceV1OrgUnit {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: name
     final f2 = name;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: code
     final f3 = code;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: type
     final f4 = type;
     if (f4 != null) {
-      w.writeEnum(4, f4!.wire); // IdentityServiceV1OrgUnit$Type
+      w.writeEnum(4, f4.wire); // IdentityServiceV1OrgUnit$Type
     }
     // field 5: path
     final f5 = path;
     if (f5 != null) {
-      w.writeString(5, f5!);
+      w.writeString(5, f5);
     }
     // field 6: status
     final f6 = status;
     if (f6 != null) {
-      w.writeEnum(6, f6!.wire); // IdentityServiceV1OrgUnit$Status
+      w.writeEnum(6, f6.wire); // IdentityServiceV1OrgUnit$Status
     }
     // field 7: sortOrder
     final f7 = sortOrder;
     if (f7 != null) {
-      w.writeUint32(7, f7!);
+      w.writeUint32(7, f7);
     }
     // field 10: leaderId
     final f10 = leaderId;
     if (f10 != null) {
-      w.writeUint32(10, f10!);
+      w.writeInt64(10, f10);
     }
     // field 11: leaderName
     final f11 = leaderName;
     if (f11 != null) {
-      w.writeString(11, f11!);
+      w.writeString(11, f11);
     }
     // field 12: tenantId
     final f12 = tenantId;
     if (f12 != null) {
-      w.writeUint32(12, f12!);
+      w.writeInt64(12, f12);
     }
     // field 13: tenantName
     final f13 = tenantName;
     if (f13 != null) {
-      w.writeString(13, f13!);
+      w.writeString(13, f13);
     }
     // field 20: remark
     final f20 = remark;
     if (f20 != null) {
-      w.writeString(20, f20!);
+      w.writeString(20, f20);
     }
     // field 21: description
     final f21 = description;
     if (f21 != null) {
-      w.writeString(21, f21!);
+      w.writeString(21, f21);
     }
     // field 22: businessScopes
     final f22 = businessScopes;
     if (f22 != null) {
-      w.writeStringList(22, f22!);
+      w.writeStringList(22, f22);
     }
     // field 100: externalId
     final f100 = externalId;
     if (f100 != null) {
-      w.writeString(100, f100!);
+      w.writeString(100, f100);
     }
     // field 101: isLegalEntity
     final f101 = isLegalEntity;
     if (f101 != null) {
-      w.writeBool(101, f101!);
+      w.writeBool(101, f101);
     }
     // field 102: registrationNumber
     final f102 = registrationNumber;
     if (f102 != null) {
-      w.writeString(102, f102!);
+      w.writeString(102, f102);
     }
     // field 103: taxId
     final f103 = taxId;
     if (f103 != null) {
-      w.writeString(103, f103!);
+      w.writeString(103, f103);
     }
     // field 104: legalEntityOrgId
     final f104 = legalEntityOrgId;
     if (f104 != null) {
-      w.writeUint32(104, f104!);
+      w.writeInt64(104, f104);
     }
     // field 105: address
     final f105 = address;
     if (f105 != null) {
-      w.writeString(105, f105!);
+      w.writeString(105, f105);
     }
     // field 106: phone
     final f106 = phone;
     if (f106 != null) {
-      w.writeString(106, f106!);
+      w.writeString(106, f106);
     }
     // field 107: email
     final f107 = email;
     if (f107 != null) {
-      w.writeString(107, f107!);
+      w.writeString(107, f107);
     }
     // field 108: timezone
     final f108 = timezone;
     if (f108 != null) {
-      w.writeString(108, f108!);
+      w.writeString(108, f108);
     }
     // field 109: country
     final f109 = country;
     if (f109 != null) {
-      w.writeString(109, f109!);
+      w.writeString(109, f109);
     }
     // field 110: latitude
     final f110 = latitude;
     if (f110 != null) {
-      w.writeDouble(110, f110!);
+      w.writeDouble(110, f110);
     }
     // field 111: longitude
     final f111 = longitude;
     if (f111 != null) {
-      w.writeDouble(111, f111!);
+      w.writeDouble(111, f111);
     }
     // field 112: startAt
     final f112 = startAt;
     if (f112 != null) {
-      w.writeTimestamp(112, f112!);
+      w.writeTimestamp(112, f112);
     }
     // field 113: endAt
     final f113 = endAt;
     if (f113 != null) {
-      w.writeTimestamp(113, f113!);
+      w.writeTimestamp(113, f113);
     }
     // field 114: attributes
     final f114 = attributes;
     if (f114 != null) {
-      f114!.forEach((k, v) {
+      f114.forEach((k, v) {
         final ew = ProtoWireWriter();
         ew.writeString(1, k);
         ew.writeString(2, v);
@@ -9002,57 +9007,57 @@ class IdentityServiceV1OrgUnit {
     // field 115: permissionTags
     final f115 = permissionTags;
     if (f115 != null) {
-      w.writeStringList(115, f115!);
+      w.writeStringList(115, f115);
     }
     // field 116: contactUserId
     final f116 = contactUserId;
     if (f116 != null) {
-      w.writeUint32(116, f116!);
+      w.writeInt64(116, f116);
     }
     // field 117: contactUserName
     final f117 = contactUserName;
     if (f117 != null) {
-      w.writeString(117, f117!);
+      w.writeString(117, f117);
     }
     // field 500: parentId
     final f500 = parentId;
     if (f500 != null) {
-      w.writeUint32(500, f500!);
+      w.writeInt64(500, f500);
     }
     // field 501: children
     final f501 = children;
     if (f501 != null) {
-      for (final e in f501!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(501, cw.toBuffer()); }
+      for (final e in f501) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(501, cw.toBuffer()); }
     }
     // field 510: createdBy
     final f510 = createdBy;
     if (f510 != null) {
-      w.writeUint32(510, f510!);
+      w.writeInt64(510, f510);
     }
     // field 511: updatedBy
     final f511 = updatedBy;
     if (f511 != null) {
-      w.writeUint32(511, f511!);
+      w.writeInt64(511, f511);
     }
     // field 512: deletedBy
     final f512 = deletedBy;
     if (f512 != null) {
-      w.writeUint32(512, f512!);
+      w.writeInt64(512, f512);
     }
     // field 520: createdAt
     final f520 = createdAt;
     if (f520 != null) {
-      w.writeTimestamp(520, f520!);
+      w.writeTimestamp(520, f520);
     }
     // field 521: updatedAt
     final f521 = updatedAt;
     if (f521 != null) {
-      w.writeTimestamp(521, f521!);
+      w.writeTimestamp(521, f521);
     }
     // field 522: deletedAt
     final f522 = deletedAt;
     if (f522 != null) {
-      w.writeTimestamp(522, f522!);
+      w.writeTimestamp(522, f522);
     }
   }
 
@@ -9066,7 +9071,7 @@ class IdentityServiceV1OrgUnit {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: name
@@ -9101,7 +9106,7 @@ class IdentityServiceV1OrgUnit {
         }
         // field 10: leaderId
         case 10: {
-          m.leaderId = r.readUint32();
+          m.leaderId = r.readInt64();
           break;
         }
         // field 11: leaderName
@@ -9111,7 +9116,7 @@ class IdentityServiceV1OrgUnit {
         }
         // field 12: tenantId
         case 12: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 13: tenantName
@@ -9156,7 +9161,7 @@ class IdentityServiceV1OrgUnit {
         }
         // field 104: legalEntityOrgId
         case 104: {
-          m.legalEntityOrgId = r.readUint32();
+          m.legalEntityOrgId = r.readInt64();
           break;
         }
         // field 105: address
@@ -9223,7 +9228,7 @@ class IdentityServiceV1OrgUnit {
             }
           }
           if (k != null && v != null) {
-            (m.attributes ??= {})[k!] = v!;
+            (m.attributes ??= {})[k] = v;
           }
           break;
         }
@@ -9234,7 +9239,7 @@ class IdentityServiceV1OrgUnit {
         }
         // field 116: contactUserId
         case 116: {
-          m.contactUserId = r.readUint32();
+          m.contactUserId = r.readInt64();
           break;
         }
         // field 117: contactUserName
@@ -9244,7 +9249,7 @@ class IdentityServiceV1OrgUnit {
         }
         // field 500: parentId
         case 500: {
-          m.parentId = r.readUint32();
+          m.parentId = r.readInt64();
           break;
         }
         // field 501: children
@@ -9254,17 +9259,17 @@ class IdentityServiceV1OrgUnit {
         }
         // field 510: createdBy
         case 510: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 511: updatedBy
         case 511: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 512: deletedBy
         case 512: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 520: createdAt
@@ -9348,14 +9353,14 @@ class IdentityServiceV1GetOrgUnitRequest {
 
   factory IdentityServiceV1GetOrgUnitRequest.fromJson(Map<String, dynamic> json) {
     return IdentityServiceV1GetOrgUnitRequest(
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
       viewMask: json['viewMask'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     if (viewMask != null) json['viewMask'] = viewMask;
     return json;
   }
@@ -9401,12 +9406,12 @@ class IdentityServiceV1GetOrgUnitRequest {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 100: viewMask
     final f100 = viewMask;
     if (f100 != null) {
-      w.writeFieldMask(100, f100!);
+      w.writeFieldMask(100, f100);
     }
   }
 
@@ -9420,7 +9425,7 @@ class IdentityServiceV1GetOrgUnitRequest {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 100: viewMask
@@ -9577,22 +9582,22 @@ class OaServiceV1SubmitOutingApplicationRequest {
     // field 1: reason
     final f1 = reason;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: destination
     final f2 = destination;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: startTime
     final f3 = startTime;
     if (f3 != null) {
-      w.writeTimestamp(3, f3!);
+      w.writeTimestamp(3, f3);
     }
     // field 4: endTime
     final f4 = endTime;
     if (f4 != null) {
-      w.writeTimestamp(4, f4!);
+      w.writeTimestamp(4, f4);
     }
   }
 
@@ -9646,15 +9651,15 @@ class OaServiceV1SubmitOutingApplicationResponse {
 
   factory OaServiceV1SubmitOutingApplicationResponse.fromJson(Map<String, dynamic> json) {
     return OaServiceV1SubmitOutingApplicationResponse(
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     return json;
   }
 
@@ -9699,12 +9704,12 @@ class OaServiceV1SubmitOutingApplicationResponse {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: instanceId
     final f2 = instanceId;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -9718,12 +9723,12 @@ class OaServiceV1SubmitOutingApplicationResponse {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: instanceId
         case 2: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         default: {
@@ -9755,7 +9760,7 @@ class OaServiceV1ListOutingApplicationsRequest {
       page: json['page'] as int?,
       pageSize: json['pageSize'] as int?,
       status: json['status'] != null ? OaServiceV1OutingApplication$OutingStatus.fromString(json['status'] as String) : null,
-      userId: json['userId'] as int?,
+      userId: json['userId'] != null ? int.parse(json['userId'].toString()) : null,
     );
   }
 
@@ -9764,7 +9769,7 @@ class OaServiceV1ListOutingApplicationsRequest {
     if (page != null) json['page'] = page;
     if (pageSize != null) json['pageSize'] = pageSize;
     if (status != null) json['status'] = status!.value;
-    if (userId != null) json['userId'] = userId;
+    if (userId != null) json['userId'] = userId.toString();
     return json;
   }
 
@@ -9817,22 +9822,22 @@ class OaServiceV1ListOutingApplicationsRequest {
     // field 1: userId
     final f1 = userId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: status
     final f2 = status;
     if (f2 != null) {
-      w.writeEnum(2, f2!.wire); // OaServiceV1OutingApplication$OutingStatus
+      w.writeEnum(2, f2.wire); // OaServiceV1OutingApplication$OutingStatus
     }
     // field 3: page
     final f3 = page;
     if (f3 != null) {
-      w.writeInt32(3, f3!);
+      w.writeInt32(3, f3);
     }
     // field 4: pageSize
     final f4 = pageSize;
     if (f4 != null) {
-      w.writeInt32(4, f4!);
+      w.writeInt32(4, f4);
     }
   }
 
@@ -9846,7 +9851,7 @@ class OaServiceV1ListOutingApplicationsRequest {
       switch (r.fieldNumber) {
         // field 1: userId
         case 1: {
-          m.userId = r.readUint32();
+          m.userId = r.readInt64();
           break;
         }
         // field 2: status
@@ -9959,12 +9964,12 @@ class OaServiceV1ListOutingApplicationsResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -9983,7 +9988,7 @@ class OaServiceV1ListOutingApplicationsResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -10038,19 +10043,19 @@ class OaServiceV1OutingApplication {
     return OaServiceV1OutingApplication(
       applicantName: json['applicantName'] as String?,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
       destination: json['destination'] as String?,
       endTime: json['endTime'] as String?,
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
       outingStatus: json['outingStatus'] != null ? OaServiceV1OutingApplication$OutingStatus.fromString(json['outingStatus'] as String) : null,
       reason: json['reason'] as String?,
       startTime: json['startTime'] as String?,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
@@ -10058,19 +10063,19 @@ class OaServiceV1OutingApplication {
     final json = <String, dynamic>{};
     if (applicantName != null) json['applicantName'] = applicantName;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
     if (destination != null) json['destination'] = destination;
     if (endTime != null) json['endTime'] = endTime;
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     if (outingStatus != null) json['outingStatus'] = outingStatus!.value;
     if (reason != null) json['reason'] = reason;
     if (startTime != null) json['startTime'] = startTime;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -10167,77 +10172,77 @@ class OaServiceV1OutingApplication {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: reason
     final f2 = reason;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: destination
     final f3 = destination;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: startTime
     final f4 = startTime;
     if (f4 != null) {
-      w.writeTimestamp(4, f4!);
+      w.writeTimestamp(4, f4);
     }
     // field 5: endTime
     final f5 = endTime;
     if (f5 != null) {
-      w.writeTimestamp(5, f5!);
+      w.writeTimestamp(5, f5);
     }
     // field 6: outingStatus
     final f6 = outingStatus;
     if (f6 != null) {
-      w.writeEnum(6, f6!.wire); // OaServiceV1OutingApplication$OutingStatus
+      w.writeEnum(6, f6.wire); // OaServiceV1OutingApplication$OutingStatus
     }
     // field 7: instanceId
     final f7 = instanceId;
     if (f7 != null) {
-      w.writeUint32(7, f7!);
+      w.writeInt64(7, f7);
     }
     // field 10: applicantName
     final f10 = applicantName;
     if (f10 != null) {
-      w.writeString(10, f10!);
+      w.writeString(10, f10);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -10251,7 +10256,7 @@ class OaServiceV1OutingApplication {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: reason
@@ -10281,7 +10286,7 @@ class OaServiceV1OutingApplication {
         }
         // field 7: instanceId
         case 7: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         // field 10: applicantName
@@ -10291,22 +10296,22 @@ class OaServiceV1OutingApplication {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -10344,13 +10349,13 @@ class OaServiceV1GetOutingApplicationRequest {
 
   factory OaServiceV1GetOutingApplicationRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetOutingApplicationRequest(
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     return json;
   }
 
@@ -10391,7 +10396,7 @@ class OaServiceV1GetOutingApplicationRequest {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
   }
 
@@ -10405,7 +10410,7 @@ class OaServiceV1GetOutingApplicationRequest {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         default: {
@@ -10557,22 +10562,22 @@ class OaServiceV1SubmitOvertimeApplicationRequest {
     // field 1: reason
     final f1 = reason;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: startTime
     final f2 = startTime;
     if (f2 != null) {
-      w.writeTimestamp(2, f2!);
+      w.writeTimestamp(2, f2);
     }
     // field 3: endTime
     final f3 = endTime;
     if (f3 != null) {
-      w.writeTimestamp(3, f3!);
+      w.writeTimestamp(3, f3);
     }
     // field 4: compensationType
     final f4 = compensationType;
     if (f4 != null) {
-      w.writeEnum(4, f4!.wire); // OaServiceV1OvertimeApplication$CompensationType
+      w.writeEnum(4, f4.wire); // OaServiceV1OvertimeApplication$CompensationType
     }
   }
 
@@ -10644,15 +10649,15 @@ class OaServiceV1SubmitOvertimeApplicationResponse {
 
   factory OaServiceV1SubmitOvertimeApplicationResponse.fromJson(Map<String, dynamic> json) {
     return OaServiceV1SubmitOvertimeApplicationResponse(
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     return json;
   }
 
@@ -10697,12 +10702,12 @@ class OaServiceV1SubmitOvertimeApplicationResponse {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: instanceId
     final f2 = instanceId;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -10716,12 +10721,12 @@ class OaServiceV1SubmitOvertimeApplicationResponse {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: instanceId
         case 2: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         default: {
@@ -10753,7 +10758,7 @@ class OaServiceV1ListOvertimeApplicationsRequest {
       page: json['page'] as int?,
       pageSize: json['pageSize'] as int?,
       status: json['status'] != null ? OaServiceV1OvertimeApplication$OvertimeStatus.fromString(json['status'] as String) : null,
-      userId: json['userId'] as int?,
+      userId: json['userId'] != null ? int.parse(json['userId'].toString()) : null,
     );
   }
 
@@ -10762,7 +10767,7 @@ class OaServiceV1ListOvertimeApplicationsRequest {
     if (page != null) json['page'] = page;
     if (pageSize != null) json['pageSize'] = pageSize;
     if (status != null) json['status'] = status!.value;
-    if (userId != null) json['userId'] = userId;
+    if (userId != null) json['userId'] = userId.toString();
     return json;
   }
 
@@ -10815,22 +10820,22 @@ class OaServiceV1ListOvertimeApplicationsRequest {
     // field 1: userId
     final f1 = userId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: status
     final f2 = status;
     if (f2 != null) {
-      w.writeEnum(2, f2!.wire); // OaServiceV1OvertimeApplication$OvertimeStatus
+      w.writeEnum(2, f2.wire); // OaServiceV1OvertimeApplication$OvertimeStatus
     }
     // field 3: page
     final f3 = page;
     if (f3 != null) {
-      w.writeInt32(3, f3!);
+      w.writeInt32(3, f3);
     }
     // field 4: pageSize
     final f4 = pageSize;
     if (f4 != null) {
-      w.writeInt32(4, f4!);
+      w.writeInt32(4, f4);
     }
   }
 
@@ -10844,7 +10849,7 @@ class OaServiceV1ListOvertimeApplicationsRequest {
       switch (r.fieldNumber) {
         // field 1: userId
         case 1: {
-          m.userId = r.readUint32();
+          m.userId = r.readInt64();
           break;
         }
         // field 2: status
@@ -10957,12 +10962,12 @@ class OaServiceV1ListOvertimeApplicationsResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -10981,7 +10986,7 @@ class OaServiceV1ListOvertimeApplicationsResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -11037,18 +11042,18 @@ class OaServiceV1OvertimeApplication {
       applicantName: json['applicantName'] as String?,
       compensationType: json['compensationType'] != null ? OaServiceV1OvertimeApplication$CompensationType.fromString(json['compensationType'] as String) : null,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
       endTime: json['endTime'] as String?,
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
       overtimeStatus: json['overtimeStatus'] != null ? OaServiceV1OvertimeApplication$OvertimeStatus.fromString(json['overtimeStatus'] as String) : null,
       reason: json['reason'] as String?,
       startTime: json['startTime'] as String?,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
@@ -11057,18 +11062,18 @@ class OaServiceV1OvertimeApplication {
     if (applicantName != null) json['applicantName'] = applicantName;
     if (compensationType != null) json['compensationType'] = compensationType!.value;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
     if (endTime != null) json['endTime'] = endTime;
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     if (overtimeStatus != null) json['overtimeStatus'] = overtimeStatus!.value;
     if (reason != null) json['reason'] = reason;
     if (startTime != null) json['startTime'] = startTime;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -11165,77 +11170,77 @@ class OaServiceV1OvertimeApplication {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: reason
     final f2 = reason;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: startTime
     final f3 = startTime;
     if (f3 != null) {
-      w.writeTimestamp(3, f3!);
+      w.writeTimestamp(3, f3);
     }
     // field 4: endTime
     final f4 = endTime;
     if (f4 != null) {
-      w.writeTimestamp(4, f4!);
+      w.writeTimestamp(4, f4);
     }
     // field 5: compensationType
     final f5 = compensationType;
     if (f5 != null) {
-      w.writeEnum(5, f5!.wire); // OaServiceV1OvertimeApplication$CompensationType
+      w.writeEnum(5, f5.wire); // OaServiceV1OvertimeApplication$CompensationType
     }
     // field 6: overtimeStatus
     final f6 = overtimeStatus;
     if (f6 != null) {
-      w.writeEnum(6, f6!.wire); // OaServiceV1OvertimeApplication$OvertimeStatus
+      w.writeEnum(6, f6.wire); // OaServiceV1OvertimeApplication$OvertimeStatus
     }
     // field 7: instanceId
     final f7 = instanceId;
     if (f7 != null) {
-      w.writeUint32(7, f7!);
+      w.writeInt64(7, f7);
     }
     // field 10: applicantName
     final f10 = applicantName;
     if (f10 != null) {
-      w.writeString(10, f10!);
+      w.writeString(10, f10);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -11249,7 +11254,7 @@ class OaServiceV1OvertimeApplication {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: reason
@@ -11279,7 +11284,7 @@ class OaServiceV1OvertimeApplication {
         }
         // field 7: instanceId
         case 7: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         // field 10: applicantName
@@ -11289,22 +11294,22 @@ class OaServiceV1OvertimeApplication {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -11342,13 +11347,13 @@ class OaServiceV1GetOvertimeApplicationRequest {
 
   factory OaServiceV1GetOvertimeApplicationRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetOvertimeApplicationRequest(
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     return json;
   }
 
@@ -11389,7 +11394,7 @@ class OaServiceV1GetOvertimeApplicationRequest {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
   }
 
@@ -11403,7 +11408,7 @@ class OaServiceV1GetOvertimeApplicationRequest {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         default: {
@@ -11555,22 +11560,22 @@ class OaServiceV1SubmitSealApplicationRequest {
     // field 1: purpose
     final f1 = purpose;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: sealType
     final f2 = sealType;
     if (f2 != null) {
-      w.writeEnum(2, f2!.wire); // OaServiceV1SealApplication$SealType
+      w.writeEnum(2, f2.wire); // OaServiceV1SealApplication$SealType
     }
     // field 3: fileCount
     final f3 = fileCount;
     if (f3 != null) {
-      w.writeInt32(3, f3!);
+      w.writeInt32(3, f3);
     }
     // field 4: recipient
     final f4 = recipient;
     if (f4 != null) {
-      w.writeString(4, f4!);
+      w.writeString(4, f4);
     }
   }
 
@@ -11644,15 +11649,15 @@ class OaServiceV1SubmitSealApplicationResponse {
 
   factory OaServiceV1SubmitSealApplicationResponse.fromJson(Map<String, dynamic> json) {
     return OaServiceV1SubmitSealApplicationResponse(
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     return json;
   }
 
@@ -11697,12 +11702,12 @@ class OaServiceV1SubmitSealApplicationResponse {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: instanceId
     final f2 = instanceId;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -11716,12 +11721,12 @@ class OaServiceV1SubmitSealApplicationResponse {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: instanceId
         case 2: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         default: {
@@ -11753,7 +11758,7 @@ class OaServiceV1ListSealApplicationsRequest {
       page: json['page'] as int?,
       pageSize: json['pageSize'] as int?,
       status: json['status'] != null ? OaServiceV1SealApplication$SealStatus.fromString(json['status'] as String) : null,
-      userId: json['userId'] as int?,
+      userId: json['userId'] != null ? int.parse(json['userId'].toString()) : null,
     );
   }
 
@@ -11762,7 +11767,7 @@ class OaServiceV1ListSealApplicationsRequest {
     if (page != null) json['page'] = page;
     if (pageSize != null) json['pageSize'] = pageSize;
     if (status != null) json['status'] = status!.value;
-    if (userId != null) json['userId'] = userId;
+    if (userId != null) json['userId'] = userId.toString();
     return json;
   }
 
@@ -11815,22 +11820,22 @@ class OaServiceV1ListSealApplicationsRequest {
     // field 1: userId
     final f1 = userId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: status
     final f2 = status;
     if (f2 != null) {
-      w.writeEnum(2, f2!.wire); // OaServiceV1SealApplication$SealStatus
+      w.writeEnum(2, f2.wire); // OaServiceV1SealApplication$SealStatus
     }
     // field 3: page
     final f3 = page;
     if (f3 != null) {
-      w.writeInt32(3, f3!);
+      w.writeInt32(3, f3);
     }
     // field 4: pageSize
     final f4 = pageSize;
     if (f4 != null) {
-      w.writeInt32(4, f4!);
+      w.writeInt32(4, f4);
     }
   }
 
@@ -11844,7 +11849,7 @@ class OaServiceV1ListSealApplicationsRequest {
       switch (r.fieldNumber) {
         // field 1: userId
         case 1: {
-          m.userId = r.readUint32();
+          m.userId = r.readInt64();
           break;
         }
         // field 2: status
@@ -11957,12 +11962,12 @@ class OaServiceV1ListSealApplicationsResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -11981,7 +11986,7 @@ class OaServiceV1ListSealApplicationsResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -12036,19 +12041,19 @@ class OaServiceV1SealApplication {
     return OaServiceV1SealApplication(
       applicantName: json['applicantName'] as String?,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
       fileCount: json['fileCount'] as int?,
-      id: json['id'] as int?,
-      instanceId: json['instanceId'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
       purpose: json['purpose'] as String?,
       recipient: json['recipient'] as String?,
       sealStatus: json['sealStatus'] != null ? OaServiceV1SealApplication$SealStatus.fromString(json['sealStatus'] as String) : null,
       sealType: json['sealType'] != null ? OaServiceV1SealApplication$SealType.fromString(json['sealType'] as String) : null,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
@@ -12056,19 +12061,19 @@ class OaServiceV1SealApplication {
     final json = <String, dynamic>{};
     if (applicantName != null) json['applicantName'] = applicantName;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
     if (fileCount != null) json['fileCount'] = fileCount;
-    if (id != null) json['id'] = id;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (id != null) json['id'] = id.toString();
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     if (purpose != null) json['purpose'] = purpose;
     if (recipient != null) json['recipient'] = recipient;
     if (sealStatus != null) json['sealStatus'] = sealStatus!.value;
     if (sealType != null) json['sealType'] = sealType!.value;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -12165,77 +12170,77 @@ class OaServiceV1SealApplication {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: purpose
     final f2 = purpose;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: sealType
     final f3 = sealType;
     if (f3 != null) {
-      w.writeEnum(3, f3!.wire); // OaServiceV1SealApplication$SealType
+      w.writeEnum(3, f3.wire); // OaServiceV1SealApplication$SealType
     }
     // field 4: fileCount
     final f4 = fileCount;
     if (f4 != null) {
-      w.writeInt32(4, f4!);
+      w.writeInt32(4, f4);
     }
     // field 5: recipient
     final f5 = recipient;
     if (f5 != null) {
-      w.writeString(5, f5!);
+      w.writeString(5, f5);
     }
     // field 6: sealStatus
     final f6 = sealStatus;
     if (f6 != null) {
-      w.writeEnum(6, f6!.wire); // OaServiceV1SealApplication$SealStatus
+      w.writeEnum(6, f6.wire); // OaServiceV1SealApplication$SealStatus
     }
     // field 7: instanceId
     final f7 = instanceId;
     if (f7 != null) {
-      w.writeUint32(7, f7!);
+      w.writeInt64(7, f7);
     }
     // field 10: applicantName
     final f10 = applicantName;
     if (f10 != null) {
-      w.writeString(10, f10!);
+      w.writeString(10, f10);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -12249,7 +12254,7 @@ class OaServiceV1SealApplication {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: purpose
@@ -12279,7 +12284,7 @@ class OaServiceV1SealApplication {
         }
         // field 7: instanceId
         case 7: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         // field 10: applicantName
@@ -12289,22 +12294,22 @@ class OaServiceV1SealApplication {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -12342,13 +12347,13 @@ class OaServiceV1GetSealApplicationRequest {
 
   factory OaServiceV1GetSealApplicationRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetSealApplicationRequest(
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     return json;
   }
 
@@ -12389,7 +12394,7 @@ class OaServiceV1GetSealApplicationRequest {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
   }
 
@@ -12403,7 +12408,7 @@ class OaServiceV1GetSealApplicationRequest {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         default: {
@@ -12536,12 +12541,12 @@ class IdentityServiceV1ListUserResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -12560,7 +12565,7 @@ class IdentityServiceV1ListUserResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -12669,43 +12674,43 @@ class IdentityServiceV1User {
       avatar: json['avatar'] as String?,
       commentCount: json['commentCount'] != null ? int.parse(json['commentCount'].toString()) : null,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
       description: json['description'] as String?,
       email: json['email'] as String?,
       followers: json['followers'] != null ? int.parse(json['followers'].toString()) : null,
       following: json['following'] != null ? int.parse(json['following'].toString()) : null,
       gender: json['gender'] != null ? IdentityServiceV1User$Gender.fromString(json['gender'] as String) : null,
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
       lastLoginAt: json['lastLoginAt'] as String?,
       lastLoginIp: json['lastLoginIp'] as String?,
       likeCount: json['likeCount'] != null ? int.parse(json['likeCount'].toString()) : null,
       lockedUntil: json['lockedUntil'] as String?,
       mobile: json['mobile'] as String?,
       nickname: json['nickname'] as String?,
-      orgUnitId: json['orgUnitId'] as int?,
-      orgUnitIds: (json['orgUnitIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      orgUnitId: json['orgUnitId'] != null ? int.parse(json['orgUnitId'].toString()) : null,
+      orgUnitIds: (json['orgUnitIds'] as List<dynamic>?)?.map((e) => int.parse(e.toString())).toList(),
       orgUnitName: json['orgUnitName'] as String?,
       orgUnitNames: (json['orgUnitNames'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      positionId: json['positionId'] as int?,
-      positionIds: (json['positionIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      positionId: json['positionId'] != null ? int.parse(json['positionId'].toString()) : null,
+      positionIds: (json['positionIds'] as List<dynamic>?)?.map((e) => int.parse(e.toString())).toList(),
       positionName: json['positionName'] as String?,
       positionNames: (json['positionNames'] as List<dynamic>?)?.map((e) => e as String).toList(),
       postCount: json['postCount'] != null ? int.parse(json['postCount'].toString()) : null,
       realname: json['realname'] as String?,
       region: json['region'] as String?,
       remark: json['remark'] as String?,
-      roleId: json['roleId'] as int?,
-      roleIds: (json['roleIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      roleId: json['roleId'] != null ? int.parse(json['roleId'].toString()) : null,
+      roleIds: (json['roleIds'] as List<dynamic>?)?.map((e) => int.parse(e.toString())).toList(),
       roleNames: (json['roleNames'] as List<dynamic>?)?.map((e) => e as String).toList(),
       roles: (json['roles'] as List<dynamic>?)?.map((e) => e as String).toList(),
       status: json['status'] != null ? IdentityServiceV1User$Status.fromString(json['status'] as String) : null,
       telephone: json['telephone'] as String?,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       tenantName: json['tenantName'] as String?,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
       username: json['username'] as String?,
     );
   }
@@ -12716,43 +12721,43 @@ class IdentityServiceV1User {
     if (avatar != null) json['avatar'] = avatar;
     if (commentCount != null) json['commentCount'] = commentCount.toString();
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
     if (description != null) json['description'] = description;
     if (email != null) json['email'] = email;
     if (followers != null) json['followers'] = followers.toString();
     if (following != null) json['following'] = following.toString();
     if (gender != null) json['gender'] = gender!.value;
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     if (lastLoginAt != null) json['lastLoginAt'] = lastLoginAt;
     if (lastLoginIp != null) json['lastLoginIp'] = lastLoginIp;
     if (likeCount != null) json['likeCount'] = likeCount.toString();
     if (lockedUntil != null) json['lockedUntil'] = lockedUntil;
     if (mobile != null) json['mobile'] = mobile;
     if (nickname != null) json['nickname'] = nickname;
-    if (orgUnitId != null) json['orgUnitId'] = orgUnitId;
-    if (orgUnitIds != null) json['orgUnitIds'] = orgUnitIds;
+    if (orgUnitId != null) json['orgUnitId'] = orgUnitId.toString();
+    if (orgUnitIds != null) json['orgUnitIds'] = orgUnitIds!.map((e) => e.toString()).toList();
     if (orgUnitName != null) json['orgUnitName'] = orgUnitName;
     if (orgUnitNames != null) json['orgUnitNames'] = orgUnitNames;
-    if (positionId != null) json['positionId'] = positionId;
-    if (positionIds != null) json['positionIds'] = positionIds;
+    if (positionId != null) json['positionId'] = positionId.toString();
+    if (positionIds != null) json['positionIds'] = positionIds!.map((e) => e.toString()).toList();
     if (positionName != null) json['positionName'] = positionName;
     if (positionNames != null) json['positionNames'] = positionNames;
     if (postCount != null) json['postCount'] = postCount.toString();
     if (realname != null) json['realname'] = realname;
     if (region != null) json['region'] = region;
     if (remark != null) json['remark'] = remark;
-    if (roleId != null) json['roleId'] = roleId;
-    if (roleIds != null) json['roleIds'] = roleIds;
+    if (roleId != null) json['roleId'] = roleId.toString();
+    if (roleIds != null) json['roleIds'] = roleIds!.map((e) => e.toString()).toList();
     if (roleNames != null) json['roleNames'] = roleNames;
     if (roles != null) json['roles'] = roles;
     if (status != null) json['status'] = status!.value;
     if (telephone != null) json['telephone'] = telephone;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (tenantName != null) json['tenantName'] = tenantName;
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     if (username != null) json['username'] = username;
     return json;
   }
@@ -12958,212 +12963,212 @@ class IdentityServiceV1User {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: tenantId
     final f2 = tenantId;
     if (f2 != null) {
-      w.writeUint32(2, f2!);
+      w.writeInt64(2, f2);
     }
     // field 3: tenantName
     final f3 = tenantName;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: orgUnitId
     final f4 = orgUnitId;
     if (f4 != null) {
-      w.writeUint32(4, f4!);
+      w.writeInt64(4, f4);
     }
     // field 5: orgUnitIds
     final f5 = orgUnitIds;
     if (f5 != null) {
-      w.writePackedVarintList(5, f5!);
+      w.writePackedVarintList(5, f5);
     }
     // field 6: orgUnitName
     final f6 = orgUnitName;
     if (f6 != null) {
-      w.writeString(6, f6!);
+      w.writeString(6, f6);
     }
     // field 7: orgUnitNames
     final f7 = orgUnitNames;
     if (f7 != null) {
-      w.writeStringList(7, f7!);
+      w.writeStringList(7, f7);
     }
     // field 8: positionId
     final f8 = positionId;
     if (f8 != null) {
-      w.writeUint32(8, f8!);
+      w.writeInt64(8, f8);
     }
     // field 9: positionIds
     final f9 = positionIds;
     if (f9 != null) {
-      w.writePackedVarintList(9, f9!);
+      w.writePackedVarintList(9, f9);
     }
     // field 10: positionName
     final f10 = positionName;
     if (f10 != null) {
-      w.writeString(10, f10!);
+      w.writeString(10, f10);
     }
     // field 11: positionNames
     final f11 = positionNames;
     if (f11 != null) {
-      w.writeStringList(11, f11!);
+      w.writeStringList(11, f11);
     }
     // field 12: roleId
     final f12 = roleId;
     if (f12 != null) {
-      w.writeUint32(12, f12!);
+      w.writeInt64(12, f12);
     }
     // field 13: roleIds
     final f13 = roleIds;
     if (f13 != null) {
-      w.writePackedVarintList(13, f13!);
+      w.writePackedVarintList(13, f13);
     }
     // field 14: roles
     final f14 = roles;
     if (f14 != null) {
-      w.writeStringList(14, f14!);
+      w.writeStringList(14, f14);
     }
     // field 15: roleNames
     final f15 = roleNames;
     if (f15 != null) {
-      w.writeStringList(15, f15!);
+      w.writeStringList(15, f15);
     }
     // field 20: username
     final f20 = username;
     if (f20 != null) {
-      w.writeString(20, f20!);
+      w.writeString(20, f20);
     }
     // field 21: nickname
     final f21 = nickname;
     if (f21 != null) {
-      w.writeString(21, f21!);
+      w.writeString(21, f21);
     }
     // field 22: realname
     final f22 = realname;
     if (f22 != null) {
-      w.writeString(22, f22!);
+      w.writeString(22, f22);
     }
     // field 23: avatar
     final f23 = avatar;
     if (f23 != null) {
-      w.writeString(23, f23!);
+      w.writeString(23, f23);
     }
     // field 24: email
     final f24 = email;
     if (f24 != null) {
-      w.writeString(24, f24!);
+      w.writeString(24, f24);
     }
     // field 25: mobile
     final f25 = mobile;
     if (f25 != null) {
-      w.writeString(25, f25!);
+      w.writeString(25, f25);
     }
     // field 26: telephone
     final f26 = telephone;
     if (f26 != null) {
-      w.writeString(26, f26!);
+      w.writeString(26, f26);
     }
     // field 27: gender
     final f27 = gender;
     if (f27 != null) {
-      w.writeEnum(27, f27!.wire); // IdentityServiceV1User$Gender
+      w.writeEnum(27, f27.wire); // IdentityServiceV1User$Gender
     }
     // field 28: address
     final f28 = address;
     if (f28 != null) {
-      w.writeString(28, f28!);
+      w.writeString(28, f28);
     }
     // field 29: region
     final f29 = region;
     if (f29 != null) {
-      w.writeString(29, f29!);
+      w.writeString(29, f29);
     }
     // field 30: description
     final f30 = description;
     if (f30 != null) {
-      w.writeString(30, f30!);
+      w.writeString(30, f30);
     }
     // field 31: remark
     final f31 = remark;
     if (f31 != null) {
-      w.writeString(31, f31!);
+      w.writeString(31, f31);
     }
     // field 50: lastLoginAt
     final f50 = lastLoginAt;
     if (f50 != null) {
-      w.writeTimestamp(50, f50!);
+      w.writeTimestamp(50, f50);
     }
     // field 51: lastLoginIp
     final f51 = lastLoginIp;
     if (f51 != null) {
-      w.writeString(51, f51!);
+      w.writeString(51, f51);
     }
     // field 52: status
     final f52 = status;
     if (f52 != null) {
-      w.writeEnum(52, f52!.wire); // IdentityServiceV1User$Status
+      w.writeEnum(52, f52.wire); // IdentityServiceV1User$Status
     }
     // field 53: lockedUntil
     final f53 = lockedUntil;
     if (f53 != null) {
-      w.writeTimestamp(53, f53!);
+      w.writeTimestamp(53, f53);
     }
     // field 80: followers
     final f80 = followers;
     if (f80 != null) {
-      w.writeUint64(80, f80!);
+      w.writeInt64(80, f80);
     }
     // field 81: following
     final f81 = following;
     if (f81 != null) {
-      w.writeUint64(81, f81!);
+      w.writeInt64(81, f81);
     }
     // field 90: postCount
     final f90 = postCount;
     if (f90 != null) {
-      w.writeUint64(90, f90!);
+      w.writeInt64(90, f90);
     }
     // field 91: commentCount
     final f91 = commentCount;
     if (f91 != null) {
-      w.writeUint64(91, f91!);
+      w.writeInt64(91, f91);
     }
     // field 92: likeCount
     final f92 = likeCount;
     if (f92 != null) {
-      w.writeUint64(92, f92!);
+      w.writeInt64(92, f92);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -13177,12 +13182,12 @@ class IdentityServiceV1User {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: tenantId
         case 2: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 3: tenantName
@@ -13192,7 +13197,7 @@ class IdentityServiceV1User {
         }
         // field 4: orgUnitId
         case 4: {
-          m.orgUnitId = r.readUint32();
+          m.orgUnitId = r.readInt64();
           break;
         }
         // field 5: orgUnitIds
@@ -13212,7 +13217,7 @@ class IdentityServiceV1User {
         }
         // field 8: positionId
         case 8: {
-          m.positionId = r.readUint32();
+          m.positionId = r.readInt64();
           break;
         }
         // field 9: positionIds
@@ -13232,7 +13237,7 @@ class IdentityServiceV1User {
         }
         // field 12: roleId
         case 12: {
-          m.roleId = r.readUint32();
+          m.roleId = r.readInt64();
           break;
         }
         // field 13: roleIds
@@ -13332,42 +13337,42 @@ class IdentityServiceV1User {
         }
         // field 80: followers
         case 80: {
-          m.followers = r.readUint64();
+          m.followers = r.readInt64();
           break;
         }
         // field 81: following
         case 81: {
-          m.following = r.readUint64();
+          m.following = r.readInt64();
           break;
         }
         // field 90: postCount
         case 90: {
-          m.postCount = r.readUint64();
+          m.postCount = r.readInt64();
           break;
         }
         // field 91: commentCount
         case 91: {
-          m.commentCount = r.readUint64();
+          m.commentCount = r.readInt64();
           break;
         }
         // field 92: likeCount
         case 92: {
-          m.likeCount = r.readUint64();
+          m.likeCount = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -13540,7 +13545,7 @@ class IdentityServiceV1UpdateUserRequest {
     return IdentityServiceV1UpdateUserRequest(
       allowMissing: json['allowMissing'] as bool?,
       data: json['data'] != null ? IdentityServiceV1User.fromJson(json['data'] as Map<String, dynamic>) : null,
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
       password: json['password'] as String?,
       updateMask: json['updateMask'] as String?,
     );
@@ -13550,7 +13555,7 @@ class IdentityServiceV1UpdateUserRequest {
     final json = <String, dynamic>{};
     if (allowMissing != null) json['allowMissing'] = allowMissing;
     if (data != null) json['data'] = data!.toJson();
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     if (password != null) json['password'] = password;
     if (updateMask != null) json['updateMask'] = updateMask;
     return json;
@@ -13609,27 +13614,27 @@ class IdentityServiceV1UpdateUserRequest {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: data
     final f2 = data;
     if (f2 != null) {
-      final cw = ProtoWireWriter(); f2!._writeTo(cw); w.writeRaw(2, cw.toBuffer()); // IdentityServiceV1User
+      final cw = ProtoWireWriter(); f2._writeTo(cw); w.writeRaw(2, cw.toBuffer()); // IdentityServiceV1User
     }
     // field 3: password
     final f3 = password;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: updateMask
     final f4 = updateMask;
     if (f4 != null) {
-      w.writeFieldMask(4, f4!);
+      w.writeFieldMask(4, f4);
     }
     // field 5: allowMissing
     final f5 = allowMissing;
     if (f5 != null) {
-      w.writeBool(5, f5!);
+      w.writeBool(5, f5);
     }
   }
 
@@ -13643,7 +13648,7 @@ class IdentityServiceV1UpdateUserRequest {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: data
@@ -13741,12 +13746,12 @@ class IdentityServiceV1ChangePasswordRequest {
     // field 1: oldPassword
     final f1 = oldPassword;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: newPassword
     final f2 = newPassword;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
   }
 
@@ -13842,12 +13847,12 @@ class IdentityServiceV1UploadAvatarRequest {
     // field 1: imageBase64
     final f1 = imageBase64;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: imageUrl
     final f2 = imageUrl;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
   }
 
@@ -13935,7 +13940,7 @@ class IdentityServiceV1UploadAvatarResponse {
     // field 1: url
     final f1 = url;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
   }
 
@@ -14026,12 +14031,12 @@ class IdentityServiceV1BindContactRequest {
     // field 1: phone
     final f1 = phone;
     if (f1 != null) {
-      final cw = ProtoWireWriter(); f1!._writeTo(cw); w.writeRaw(1, cw.toBuffer()); // IdentityServiceV1BindPhoneRequest
+      final cw = ProtoWireWriter(); f1._writeTo(cw); w.writeRaw(1, cw.toBuffer()); // IdentityServiceV1BindPhoneRequest
     }
     // field 2: email
     final f2 = email;
     if (f2 != null) {
-      final cw = ProtoWireWriter(); f2!._writeTo(cw); w.writeRaw(2, cw.toBuffer()); // IdentityServiceV1BindEmailRequest
+      final cw = ProtoWireWriter(); f2._writeTo(cw); w.writeRaw(2, cw.toBuffer()); // IdentityServiceV1BindEmailRequest
     }
   }
 
@@ -14127,12 +14132,12 @@ class IdentityServiceV1BindPhoneRequest {
     // field 1: phone
     final f1 = phone;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: code
     final f2 = code;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
   }
 
@@ -14228,12 +14233,12 @@ class IdentityServiceV1BindEmailRequest {
     // field 1: email
     final f1 = email;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: verificationCode
     final f2 = verificationCode;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
   }
 
@@ -14338,17 +14343,17 @@ class IdentityServiceV1VerifyContactRequest {
     // field 1: phone
     final f1 = phone;
     if (f1 != null) {
-      final cw = ProtoWireWriter(); f1!._writeTo(cw); w.writeRaw(1, cw.toBuffer()); // IdentityServiceV1PhoneVerification
+      final cw = ProtoWireWriter(); f1._writeTo(cw); w.writeRaw(1, cw.toBuffer()); // IdentityServiceV1PhoneVerification
     }
     // field 2: email
     final f2 = email;
     if (f2 != null) {
-      final cw = ProtoWireWriter(); f2!._writeTo(cw); w.writeRaw(2, cw.toBuffer()); // IdentityServiceV1EmailVerification
+      final cw = ProtoWireWriter(); f2._writeTo(cw); w.writeRaw(2, cw.toBuffer()); // IdentityServiceV1EmailVerification
     }
     // field 3: verificationId
     final f3 = verificationId;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
   }
 
@@ -14452,12 +14457,12 @@ class IdentityServiceV1PhoneVerification {
     // field 1: phone
     final f1 = phone;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: code
     final f2 = code;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
   }
 
@@ -14556,12 +14561,12 @@ class IdentityServiceV1EmailVerification {
     // field 1: email
     final f1 = email;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: code
     final f2 = code;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
   }
 
@@ -14709,7 +14714,7 @@ class OaServiceV1SubmitApplyRequest {
 
   factory OaServiceV1SubmitApplyRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1SubmitApplyRequest(
-      businessId: json['businessId'] as int?,
+      businessId: json['businessId'] != null ? int.parse(json['businessId'].toString()) : null,
       businessType: json['businessType'] as String?,
       code: json['code'] as String?,
       formData: json['formData'] as String?,
@@ -14719,7 +14724,7 @@ class OaServiceV1SubmitApplyRequest {
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (businessId != null) json['businessId'] = businessId;
+    if (businessId != null) json['businessId'] = businessId.toString();
     if (businessType != null) json['businessType'] = businessType;
     if (code != null) json['code'] = code;
     if (formData != null) json['formData'] = formData;
@@ -14780,27 +14785,27 @@ class OaServiceV1SubmitApplyRequest {
     // field 1: code
     final f1 = code;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: version
     final f2 = version;
     if (f2 != null) {
-      w.writeInt32(2, f2!);
+      w.writeInt32(2, f2);
     }
     // field 3: formData
     final f3 = formData;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: businessType
     final f4 = businessType;
     if (f4 != null) {
-      w.writeString(4, f4!);
+      w.writeString(4, f4);
     }
     // field 5: businessId
     final f5 = businessId;
     if (f5 != null) {
-      w.writeUint32(5, f5!);
+      w.writeInt64(5, f5);
     }
   }
 
@@ -14834,7 +14839,7 @@ class OaServiceV1SubmitApplyRequest {
         }
         // field 5: businessId
         case 5: {
-          m.businessId = r.readUint32();
+          m.businessId = r.readInt64();
           break;
         }
         default: {
@@ -14857,13 +14862,13 @@ class OaServiceV1SubmitApplyResponse {
 
   factory OaServiceV1SubmitApplyResponse.fromJson(Map<String, dynamic> json) {
     return OaServiceV1SubmitApplyResponse(
-      instanceId: json['instanceId'] as int?,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     return json;
   }
 
@@ -14904,7 +14909,7 @@ class OaServiceV1SubmitApplyResponse {
     // field 1: instanceId
     final f1 = instanceId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
   }
 
@@ -14918,7 +14923,7 @@ class OaServiceV1SubmitApplyResponse {
       switch (r.fieldNumber) {
         // field 1: instanceId
         case 1: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         default: {
@@ -14953,7 +14958,7 @@ class OaServiceV1AuditTaskRequest {
       additionalApprover: json['additionalApprover'] as int?,
       comment: json['comment'] as String?,
       forwardTo: json['forwardTo'] as int?,
-      taskId: json['taskId'] as int?,
+      taskId: json['taskId'] != null ? int.parse(json['taskId'].toString()) : null,
     );
   }
 
@@ -14963,7 +14968,7 @@ class OaServiceV1AuditTaskRequest {
     if (additionalApprover != null) json['additionalApprover'] = additionalApprover;
     if (comment != null) json['comment'] = comment;
     if (forwardTo != null) json['forwardTo'] = forwardTo;
-    if (taskId != null) json['taskId'] = taskId;
+    if (taskId != null) json['taskId'] = taskId.toString();
     return json;
   }
 
@@ -15020,27 +15025,27 @@ class OaServiceV1AuditTaskRequest {
     // field 1: taskId
     final f1 = taskId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: action
     final f2 = action;
     if (f2 != null) {
-      w.writeEnum(2, f2!.wire); // OaServiceV1AuditAction
+      w.writeEnum(2, f2.wire); // OaServiceV1AuditAction
     }
     // field 3: forwardTo
     final f3 = forwardTo;
     if (f3 != null) {
-      w.writeUint32(3, f3!);
+      w.writeUint32(3, f3);
     }
     // field 4: comment
     final f4 = comment;
     if (f4 != null) {
-      w.writeString(4, f4!);
+      w.writeString(4, f4);
     }
     // field 5: additionalApprover
     final f5 = additionalApprover;
     if (f5 != null) {
-      w.writeUint32(5, f5!);
+      w.writeUint32(5, f5);
     }
   }
 
@@ -15054,7 +15059,7 @@ class OaServiceV1AuditTaskRequest {
       switch (r.fieldNumber) {
         // field 1: taskId
         case 1: {
-          m.taskId = r.readUint32();
+          m.taskId = r.readInt64();
           break;
         }
         // field 2: action
@@ -15117,13 +15122,13 @@ class OaServiceV1WithdrawApplyRequest {
 
   factory OaServiceV1WithdrawApplyRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1WithdrawApplyRequest(
-      instanceId: json['instanceId'] as int?,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     return json;
   }
 
@@ -15164,7 +15169,7 @@ class OaServiceV1WithdrawApplyRequest {
     // field 1: instanceId
     final f1 = instanceId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
   }
 
@@ -15178,7 +15183,7 @@ class OaServiceV1WithdrawApplyRequest {
       switch (r.fieldNumber) {
         // field 1: instanceId
         case 1: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         default: {
@@ -15264,17 +15269,17 @@ class OaServiceV1GetMyTasksRequest {
     // field 1: listType
     final f1 = listType;
     if (f1 != null) {
-      w.writeEnum(1, f1!.wire); // OaServiceV1ListType
+      w.writeEnum(1, f1.wire); // OaServiceV1ListType
     }
     // field 2: page
     final f2 = page;
     if (f2 != null) {
-      w.writeInt32(2, f2!);
+      w.writeInt32(2, f2);
     }
     // field 3: pageSize
     final f3 = pageSize;
     if (f3 != null) {
-      w.writeInt32(3, f3!);
+      w.writeInt32(3, f3);
     }
   }
 
@@ -15395,12 +15400,12 @@ class OaServiceV1GetMyTasksResponse {
     // field 1: items
     final f1 = items;
     if (f1 != null) {
-      for (final e in f1!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
+      for (final e in f1) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(1, cw.toBuffer()); }
     }
     // field 2: total
     final f2 = total;
     if (f2 != null) {
-      w.writeUint64(2, f2!);
+      w.writeInt64(2, f2);
     }
   }
 
@@ -15419,7 +15424,7 @@ class OaServiceV1GetMyTasksResponse {
         }
         // field 2: total
         case 2: {
-          m.total = r.readUint64();
+          m.total = r.readInt64();
           break;
         }
         default: {
@@ -15454,10 +15459,10 @@ class OaServiceV1MyTaskItem {
     return OaServiceV1MyTaskItem(
       auditAction: json['auditAction'] != null ? OaServiceV1WorkflowLog$LogAction.fromString(json['auditAction'] as String) : null,
       createdAt: json['createdAt'] as String?,
-      instanceId: json['instanceId'] as int?,
+      instanceId: json['instanceId'] != null ? int.parse(json['instanceId'].toString()) : null,
       instanceStatus: json['instanceStatus'] != null ? OaServiceV1WorkflowInstance$InstanceStatus.fromString(json['instanceStatus'] as String) : null,
       statusLabel: json['statusLabel'] as String?,
-      taskId: json['taskId'] as int?,
+      taskId: json['taskId'] != null ? int.parse(json['taskId'].toString()) : null,
     );
   }
 
@@ -15465,10 +15470,10 @@ class OaServiceV1MyTaskItem {
     final json = <String, dynamic>{};
     if (auditAction != null) json['auditAction'] = auditAction!.value;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (instanceId != null) json['instanceId'] = instanceId;
+    if (instanceId != null) json['instanceId'] = instanceId.toString();
     if (instanceStatus != null) json['instanceStatus'] = instanceStatus!.value;
     if (statusLabel != null) json['statusLabel'] = statusLabel;
-    if (taskId != null) json['taskId'] = taskId;
+    if (taskId != null) json['taskId'] = taskId.toString();
     return json;
   }
 
@@ -15529,32 +15534,32 @@ class OaServiceV1MyTaskItem {
     // field 1: instanceId
     final f1 = instanceId;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: createdAt
     final f2 = createdAt;
     if (f2 != null) {
-      w.writeTimestamp(2, f2!);
+      w.writeTimestamp(2, f2);
     }
     // field 3: statusLabel
     final f3 = statusLabel;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
     // field 4: taskId
     final f4 = taskId;
     if (f4 != null) {
-      w.writeUint32(4, f4!);
+      w.writeInt64(4, f4);
     }
     // field 5: auditAction
     final f5 = auditAction;
     if (f5 != null) {
-      w.writeEnum(5, f5!.wire); // OaServiceV1WorkflowLog$LogAction
+      w.writeEnum(5, f5.wire); // OaServiceV1WorkflowLog$LogAction
     }
     // field 6: instanceStatus
     final f6 = instanceStatus;
     if (f6 != null) {
-      w.writeEnum(6, f6!.wire); // OaServiceV1WorkflowInstance$InstanceStatus
+      w.writeEnum(6, f6.wire); // OaServiceV1WorkflowInstance$InstanceStatus
     }
   }
 
@@ -15568,7 +15573,7 @@ class OaServiceV1MyTaskItem {
       switch (r.fieldNumber) {
         // field 1: instanceId
         case 1: {
-          m.instanceId = r.readUint32();
+          m.instanceId = r.readInt64();
           break;
         }
         // field 2: createdAt
@@ -15583,7 +15588,7 @@ class OaServiceV1MyTaskItem {
         }
         // field 4: taskId
         case 4: {
-          m.taskId = r.readUint32();
+          m.taskId = r.readInt64();
           break;
         }
         // field 5: auditAction
@@ -15658,13 +15663,13 @@ class OaServiceV1GetTaskRequest {
 
   factory OaServiceV1GetTaskRequest.fromJson(Map<String, dynamic> json) {
     return OaServiceV1GetTaskRequest(
-      id: json['id'] as int?,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (id != null) json['id'] = id;
+    if (id != null) json['id'] = id.toString();
     return json;
   }
 
@@ -15705,7 +15710,7 @@ class OaServiceV1GetTaskRequest {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
   }
 
@@ -15719,7 +15724,7 @@ class OaServiceV1GetTaskRequest {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         default: {
@@ -15805,17 +15810,17 @@ class OaServiceV1GetTaskResponse {
     // field 1: task
     final f1 = task;
     if (f1 != null) {
-      final cw = ProtoWireWriter(); f1!._writeTo(cw); w.writeRaw(1, cw.toBuffer()); // OaServiceV1WorkflowTask
+      final cw = ProtoWireWriter(); f1._writeTo(cw); w.writeRaw(1, cw.toBuffer()); // OaServiceV1WorkflowTask
     }
     // field 2: logs
     final f2 = logs;
     if (f2 != null) {
-      for (final e in f2!) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(2, cw.toBuffer()); }
+      for (final e in f2) { final cw = ProtoWireWriter(); e._writeTo(cw); w.writeRaw(2, cw.toBuffer()); }
     }
     // field 3: formData
     final f3 = formData;
     if (f3 != null) {
-      w.writeString(3, f3!);
+      w.writeString(3, f3);
     }
   }
 
@@ -15884,33 +15889,33 @@ class OaServiceV1WorkflowTask {
 
   factory OaServiceV1WorkflowTask.fromJson(Map<String, dynamic> json) {
     return OaServiceV1WorkflowTask(
-      assigneeUserId: json['assigneeUserId'] as int?,
+      assigneeUserId: json['assigneeUserId'] != null ? int.parse(json['assigneeUserId'].toString()) : null,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
-      id: json['id'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
       nodeId: json['nodeId'] as String?,
       taskStatus: json['taskStatus'] != null ? OaServiceV1WorkflowTask$TaskStatus.fromString(json['taskStatus'] as String) : null,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (assigneeUserId != null) json['assigneeUserId'] = assigneeUserId;
+    if (assigneeUserId != null) json['assigneeUserId'] = assigneeUserId.toString();
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
-    if (id != null) json['id'] = id;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
+    if (id != null) json['id'] = id.toString();
     if (nodeId != null) json['nodeId'] = nodeId;
     if (taskStatus != null) json['taskStatus'] = taskStatus!.value;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -15991,57 +15996,57 @@ class OaServiceV1WorkflowTask {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: nodeId
     final f2 = nodeId;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: assigneeUserId
     final f3 = assigneeUserId;
     if (f3 != null) {
-      w.writeUint32(3, f3!);
+      w.writeInt64(3, f3);
     }
     // field 4: taskStatus
     final f4 = taskStatus;
     if (f4 != null) {
-      w.writeEnum(4, f4!.wire); // OaServiceV1WorkflowTask$TaskStatus
+      w.writeEnum(4, f4.wire); // OaServiceV1WorkflowTask$TaskStatus
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -16055,7 +16060,7 @@ class OaServiceV1WorkflowTask {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: nodeId
@@ -16065,7 +16070,7 @@ class OaServiceV1WorkflowTask {
         }
         // field 3: assigneeUserId
         case 3: {
-          m.assigneeUserId = r.readUint32();
+          m.assigneeUserId = r.readInt64();
           break;
         }
         // field 4: taskStatus
@@ -16075,22 +16080,22 @@ class OaServiceV1WorkflowTask {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -16172,15 +16177,15 @@ class OaServiceV1WorkflowLog {
     return OaServiceV1WorkflowLog(
       comment: json['comment'] as String?,
       createdAt: json['createdAt'] as String?,
-      createdBy: json['createdBy'] as int?,
+      createdBy: json['createdBy'] != null ? int.parse(json['createdBy'].toString()) : null,
       deletedAt: json['deletedAt'] as String?,
-      deletedBy: json['deletedBy'] as int?,
-      id: json['id'] as int?,
+      deletedBy: json['deletedBy'] != null ? int.parse(json['deletedBy'].toString()) : null,
+      id: json['id'] != null ? int.parse(json['id'].toString()) : null,
       logAction: json['logAction'] != null ? OaServiceV1WorkflowLog$LogAction.fromString(json['logAction'] as String) : null,
       nodeId: json['nodeId'] as String?,
-      tenantId: json['tenantId'] as int?,
+      tenantId: json['tenantId'] != null ? int.parse(json['tenantId'].toString()) : null,
       updatedAt: json['updatedAt'] as String?,
-      updatedBy: json['updatedBy'] as int?,
+      updatedBy: json['updatedBy'] != null ? int.parse(json['updatedBy'].toString()) : null,
     );
   }
 
@@ -16188,15 +16193,15 @@ class OaServiceV1WorkflowLog {
     final json = <String, dynamic>{};
     if (comment != null) json['comment'] = comment;
     if (createdAt != null) json['createdAt'] = createdAt;
-    if (createdBy != null) json['createdBy'] = createdBy;
+    if (createdBy != null) json['createdBy'] = createdBy.toString();
     if (deletedAt != null) json['deletedAt'] = deletedAt;
-    if (deletedBy != null) json['deletedBy'] = deletedBy;
-    if (id != null) json['id'] = id;
+    if (deletedBy != null) json['deletedBy'] = deletedBy.toString();
+    if (id != null) json['id'] = id.toString();
     if (logAction != null) json['logAction'] = logAction!.value;
     if (nodeId != null) json['nodeId'] = nodeId;
-    if (tenantId != null) json['tenantId'] = tenantId;
+    if (tenantId != null) json['tenantId'] = tenantId.toString();
     if (updatedAt != null) json['updatedAt'] = updatedAt;
-    if (updatedBy != null) json['updatedBy'] = updatedBy;
+    if (updatedBy != null) json['updatedBy'] = updatedBy.toString();
     return json;
   }
 
@@ -16277,57 +16282,57 @@ class OaServiceV1WorkflowLog {
     // field 1: id
     final f1 = id;
     if (f1 != null) {
-      w.writeUint32(1, f1!);
+      w.writeInt64(1, f1);
     }
     // field 2: nodeId
     final f2 = nodeId;
     if (f2 != null) {
-      w.writeString(2, f2!);
+      w.writeString(2, f2);
     }
     // field 3: logAction
     final f3 = logAction;
     if (f3 != null) {
-      w.writeEnum(3, f3!.wire); // OaServiceV1WorkflowLog$LogAction
+      w.writeEnum(3, f3.wire); // OaServiceV1WorkflowLog$LogAction
     }
     // field 4: comment
     final f4 = comment;
     if (f4 != null) {
-      w.writeString(4, f4!);
+      w.writeString(4, f4);
     }
     // field 40: tenantId
     final f40 = tenantId;
     if (f40 != null) {
-      w.writeUint32(40, f40!);
+      w.writeInt64(40, f40);
     }
     // field 100: createdBy
     final f100 = createdBy;
     if (f100 != null) {
-      w.writeUint32(100, f100!);
+      w.writeInt64(100, f100);
     }
     // field 101: updatedBy
     final f101 = updatedBy;
     if (f101 != null) {
-      w.writeUint32(101, f101!);
+      w.writeInt64(101, f101);
     }
     // field 102: deletedBy
     final f102 = deletedBy;
     if (f102 != null) {
-      w.writeUint32(102, f102!);
+      w.writeInt64(102, f102);
     }
     // field 200: createdAt
     final f200 = createdAt;
     if (f200 != null) {
-      w.writeTimestamp(200, f200!);
+      w.writeTimestamp(200, f200);
     }
     // field 201: updatedAt
     final f201 = updatedAt;
     if (f201 != null) {
-      w.writeTimestamp(201, f201!);
+      w.writeTimestamp(201, f201);
     }
     // field 202: deletedAt
     final f202 = deletedAt;
     if (f202 != null) {
-      w.writeTimestamp(202, f202!);
+      w.writeTimestamp(202, f202);
     }
   }
 
@@ -16341,7 +16346,7 @@ class OaServiceV1WorkflowLog {
       switch (r.fieldNumber) {
         // field 1: id
         case 1: {
-          m.id = r.readUint32();
+          m.id = r.readInt64();
           break;
         }
         // field 2: nodeId
@@ -16361,22 +16366,22 @@ class OaServiceV1WorkflowLog {
         }
         // field 40: tenantId
         case 40: {
-          m.tenantId = r.readUint32();
+          m.tenantId = r.readInt64();
           break;
         }
         // field 100: createdBy
         case 100: {
-          m.createdBy = r.readUint32();
+          m.createdBy = r.readInt64();
           break;
         }
         // field 101: updatedBy
         case 101: {
-          m.updatedBy = r.readUint32();
+          m.updatedBy = r.readInt64();
           break;
         }
         // field 102: deletedBy
         case 102: {
-          m.deletedBy = r.readUint32();
+          m.deletedBy = r.readInt64();
           break;
         }
         // field 200: createdAt
@@ -16469,12 +16474,12 @@ class OaServiceV1GetApplyFormRequest {
     // field 1: code
     final f1 = code;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
     // field 2: version
     final f2 = version;
     if (f2 != null) {
-      w.writeInt32(2, f2!);
+      w.writeInt32(2, f2);
     }
   }
 
@@ -16563,7 +16568,7 @@ class OaServiceV1GetApplyFormResponse {
     // field 1: formSchema
     final f1 = formSchema;
     if (f1 != null) {
-      w.writeString(1, f1!);
+      w.writeString(1, f1);
     }
   }
 

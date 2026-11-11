@@ -66,13 +66,13 @@ func (_c *ExpenseItemCreate) SetNillableDeletedAt(v *time.Time) *ExpenseItemCrea
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *ExpenseItemCreate) SetCreatedBy(v uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetCreatedBy(v int64) *ExpenseItemCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *ExpenseItemCreate) SetNillableCreatedBy(v *uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetNillableCreatedBy(v *int64) *ExpenseItemCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -80,13 +80,13 @@ func (_c *ExpenseItemCreate) SetNillableCreatedBy(v *uint32) *ExpenseItemCreate 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *ExpenseItemCreate) SetUpdatedBy(v uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetUpdatedBy(v int64) *ExpenseItemCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *ExpenseItemCreate) SetNillableUpdatedBy(v *uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetNillableUpdatedBy(v *int64) *ExpenseItemCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -94,13 +94,13 @@ func (_c *ExpenseItemCreate) SetNillableUpdatedBy(v *uint32) *ExpenseItemCreate 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *ExpenseItemCreate) SetDeletedBy(v uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetDeletedBy(v int64) *ExpenseItemCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *ExpenseItemCreate) SetNillableDeletedBy(v *uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetNillableDeletedBy(v *int64) *ExpenseItemCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -108,13 +108,13 @@ func (_c *ExpenseItemCreate) SetNillableDeletedBy(v *uint32) *ExpenseItemCreate 
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *ExpenseItemCreate) SetTenantID(v uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetTenantID(v int64) *ExpenseItemCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *ExpenseItemCreate) SetNillableTenantID(v *uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetNillableTenantID(v *int64) *ExpenseItemCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -178,13 +178,13 @@ func (_c *ExpenseItemCreate) SetNillableDescription(v *string) *ExpenseItemCreat
 }
 
 // SetInvoiceFileID sets the "invoice_file_id" field.
-func (_c *ExpenseItemCreate) SetInvoiceFileID(v uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetInvoiceFileID(v int64) *ExpenseItemCreate {
 	_c.mutation.SetInvoiceFileID(v)
 	return _c
 }
 
 // SetNillableInvoiceFileID sets the "invoice_file_id" field if the given value is not nil.
-func (_c *ExpenseItemCreate) SetNillableInvoiceFileID(v *uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetNillableInvoiceFileID(v *int64) *ExpenseItemCreate {
 	if v != nil {
 		_c.SetInvoiceFileID(*v)
 	}
@@ -192,19 +192,19 @@ func (_c *ExpenseItemCreate) SetNillableInvoiceFileID(v *uint32) *ExpenseItemCre
 }
 
 // SetID sets the "id" field.
-func (_c *ExpenseItemCreate) SetID(v uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetID(v int64) *ExpenseItemCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // SetApplicationID sets the "application" edge to the ExpenseApplication entity by ID.
-func (_c *ExpenseItemCreate) SetApplicationID(id uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetApplicationID(id int64) *ExpenseItemCreate {
 	_c.mutation.SetApplicationID(id)
 	return _c
 }
 
 // SetNillableApplicationID sets the "application" edge to the ExpenseApplication entity by ID if the given value is not nil.
-func (_c *ExpenseItemCreate) SetNillableApplicationID(id *uint32) *ExpenseItemCreate {
+func (_c *ExpenseItemCreate) SetNillableApplicationID(id *int64) *ExpenseItemCreate {
 	if id != nil {
 		_c = _c.SetApplicationID(*id)
 	}
@@ -314,7 +314,7 @@ func (_c *ExpenseItemCreate) sqlSave(ctx context.Context) (*ExpenseItem, error) 
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -324,7 +324,7 @@ func (_c *ExpenseItemCreate) sqlSave(ctx context.Context) (*ExpenseItem, error) 
 func (_c *ExpenseItemCreate) createSpec() (*ExpenseItem, *sqlgraph.CreateSpec) {
 	var (
 		_node = &ExpenseItem{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(expenseitem.Table, sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(expenseitem.Table, sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -344,19 +344,19 @@ func (_c *ExpenseItemCreate) createSpec() (*ExpenseItem, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(expenseitem.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(expenseitem.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(expenseitem.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(expenseitem.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(expenseitem.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(expenseitem.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(expenseitem.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(expenseitem.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Category(); ok {
@@ -376,7 +376,7 @@ func (_c *ExpenseItemCreate) createSpec() (*ExpenseItem, *sqlgraph.CreateSpec) {
 		_node.Description = value
 	}
 	if value, ok := _c.mutation.InvoiceFileID(); ok {
-		_spec.SetField(expenseitem.FieldInvoiceFileID, field.TypeUint32, value)
+		_spec.SetField(expenseitem.FieldInvoiceFileID, field.TypeInt64, value)
 		_node.InvoiceFileID = &value
 	}
 	if nodes := _c.mutation.ApplicationIDs(); len(nodes) > 0 {
@@ -387,7 +387,7 @@ func (_c *ExpenseItemCreate) createSpec() (*ExpenseItem, *sqlgraph.CreateSpec) {
 			Columns: []string{expenseitem.ApplicationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(expenseapplication.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(expenseapplication.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -485,7 +485,7 @@ func (u *ExpenseItemUpsert) ClearDeletedAt() *ExpenseItemUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ExpenseItemUpsert) SetCreatedBy(v uint32) *ExpenseItemUpsert {
+func (u *ExpenseItemUpsert) SetCreatedBy(v int64) *ExpenseItemUpsert {
 	u.Set(expenseitem.FieldCreatedBy, v)
 	return u
 }
@@ -497,7 +497,7 @@ func (u *ExpenseItemUpsert) UpdateCreatedBy() *ExpenseItemUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ExpenseItemUpsert) AddCreatedBy(v uint32) *ExpenseItemUpsert {
+func (u *ExpenseItemUpsert) AddCreatedBy(v int64) *ExpenseItemUpsert {
 	u.Add(expenseitem.FieldCreatedBy, v)
 	return u
 }
@@ -509,7 +509,7 @@ func (u *ExpenseItemUpsert) ClearCreatedBy() *ExpenseItemUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ExpenseItemUpsert) SetUpdatedBy(v uint32) *ExpenseItemUpsert {
+func (u *ExpenseItemUpsert) SetUpdatedBy(v int64) *ExpenseItemUpsert {
 	u.Set(expenseitem.FieldUpdatedBy, v)
 	return u
 }
@@ -521,7 +521,7 @@ func (u *ExpenseItemUpsert) UpdateUpdatedBy() *ExpenseItemUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ExpenseItemUpsert) AddUpdatedBy(v uint32) *ExpenseItemUpsert {
+func (u *ExpenseItemUpsert) AddUpdatedBy(v int64) *ExpenseItemUpsert {
 	u.Add(expenseitem.FieldUpdatedBy, v)
 	return u
 }
@@ -533,7 +533,7 @@ func (u *ExpenseItemUpsert) ClearUpdatedBy() *ExpenseItemUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ExpenseItemUpsert) SetDeletedBy(v uint32) *ExpenseItemUpsert {
+func (u *ExpenseItemUpsert) SetDeletedBy(v int64) *ExpenseItemUpsert {
 	u.Set(expenseitem.FieldDeletedBy, v)
 	return u
 }
@@ -545,7 +545,7 @@ func (u *ExpenseItemUpsert) UpdateDeletedBy() *ExpenseItemUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ExpenseItemUpsert) AddDeletedBy(v uint32) *ExpenseItemUpsert {
+func (u *ExpenseItemUpsert) AddDeletedBy(v int64) *ExpenseItemUpsert {
 	u.Add(expenseitem.FieldDeletedBy, v)
 	return u
 }
@@ -617,7 +617,7 @@ func (u *ExpenseItemUpsert) UpdateDescription() *ExpenseItemUpsert {
 }
 
 // SetInvoiceFileID sets the "invoice_file_id" field.
-func (u *ExpenseItemUpsert) SetInvoiceFileID(v uint32) *ExpenseItemUpsert {
+func (u *ExpenseItemUpsert) SetInvoiceFileID(v int64) *ExpenseItemUpsert {
 	u.Set(expenseitem.FieldInvoiceFileID, v)
 	return u
 }
@@ -629,7 +629,7 @@ func (u *ExpenseItemUpsert) UpdateInvoiceFileID() *ExpenseItemUpsert {
 }
 
 // AddInvoiceFileID adds v to the "invoice_file_id" field.
-func (u *ExpenseItemUpsert) AddInvoiceFileID(v uint32) *ExpenseItemUpsert {
+func (u *ExpenseItemUpsert) AddInvoiceFileID(v int64) *ExpenseItemUpsert {
 	u.Add(expenseitem.FieldInvoiceFileID, v)
 	return u
 }
@@ -737,14 +737,14 @@ func (u *ExpenseItemUpsertOne) ClearDeletedAt() *ExpenseItemUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ExpenseItemUpsertOne) SetCreatedBy(v uint32) *ExpenseItemUpsertOne {
+func (u *ExpenseItemUpsertOne) SetCreatedBy(v int64) *ExpenseItemUpsertOne {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ExpenseItemUpsertOne) AddCreatedBy(v uint32) *ExpenseItemUpsertOne {
+func (u *ExpenseItemUpsertOne) AddCreatedBy(v int64) *ExpenseItemUpsertOne {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -765,14 +765,14 @@ func (u *ExpenseItemUpsertOne) ClearCreatedBy() *ExpenseItemUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ExpenseItemUpsertOne) SetUpdatedBy(v uint32) *ExpenseItemUpsertOne {
+func (u *ExpenseItemUpsertOne) SetUpdatedBy(v int64) *ExpenseItemUpsertOne {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ExpenseItemUpsertOne) AddUpdatedBy(v uint32) *ExpenseItemUpsertOne {
+func (u *ExpenseItemUpsertOne) AddUpdatedBy(v int64) *ExpenseItemUpsertOne {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -793,14 +793,14 @@ func (u *ExpenseItemUpsertOne) ClearUpdatedBy() *ExpenseItemUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ExpenseItemUpsertOne) SetDeletedBy(v uint32) *ExpenseItemUpsertOne {
+func (u *ExpenseItemUpsertOne) SetDeletedBy(v int64) *ExpenseItemUpsertOne {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ExpenseItemUpsertOne) AddDeletedBy(v uint32) *ExpenseItemUpsertOne {
+func (u *ExpenseItemUpsertOne) AddDeletedBy(v int64) *ExpenseItemUpsertOne {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -891,14 +891,14 @@ func (u *ExpenseItemUpsertOne) UpdateDescription() *ExpenseItemUpsertOne {
 }
 
 // SetInvoiceFileID sets the "invoice_file_id" field.
-func (u *ExpenseItemUpsertOne) SetInvoiceFileID(v uint32) *ExpenseItemUpsertOne {
+func (u *ExpenseItemUpsertOne) SetInvoiceFileID(v int64) *ExpenseItemUpsertOne {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.SetInvoiceFileID(v)
 	})
 }
 
 // AddInvoiceFileID adds v to the "invoice_file_id" field.
-func (u *ExpenseItemUpsertOne) AddInvoiceFileID(v uint32) *ExpenseItemUpsertOne {
+func (u *ExpenseItemUpsertOne) AddInvoiceFileID(v int64) *ExpenseItemUpsertOne {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.AddInvoiceFileID(v)
 	})
@@ -934,7 +934,7 @@ func (u *ExpenseItemUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *ExpenseItemUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *ExpenseItemUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -943,7 +943,7 @@ func (u *ExpenseItemUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *ExpenseItemUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *ExpenseItemUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1000,7 +1000,7 @@ func (_c *ExpenseItemCreateBulk) Save(ctx context.Context) ([]*ExpenseItem, erro
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1181,14 +1181,14 @@ func (u *ExpenseItemUpsertBulk) ClearDeletedAt() *ExpenseItemUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ExpenseItemUpsertBulk) SetCreatedBy(v uint32) *ExpenseItemUpsertBulk {
+func (u *ExpenseItemUpsertBulk) SetCreatedBy(v int64) *ExpenseItemUpsertBulk {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ExpenseItemUpsertBulk) AddCreatedBy(v uint32) *ExpenseItemUpsertBulk {
+func (u *ExpenseItemUpsertBulk) AddCreatedBy(v int64) *ExpenseItemUpsertBulk {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1209,14 +1209,14 @@ func (u *ExpenseItemUpsertBulk) ClearCreatedBy() *ExpenseItemUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ExpenseItemUpsertBulk) SetUpdatedBy(v uint32) *ExpenseItemUpsertBulk {
+func (u *ExpenseItemUpsertBulk) SetUpdatedBy(v int64) *ExpenseItemUpsertBulk {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ExpenseItemUpsertBulk) AddUpdatedBy(v uint32) *ExpenseItemUpsertBulk {
+func (u *ExpenseItemUpsertBulk) AddUpdatedBy(v int64) *ExpenseItemUpsertBulk {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1237,14 +1237,14 @@ func (u *ExpenseItemUpsertBulk) ClearUpdatedBy() *ExpenseItemUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ExpenseItemUpsertBulk) SetDeletedBy(v uint32) *ExpenseItemUpsertBulk {
+func (u *ExpenseItemUpsertBulk) SetDeletedBy(v int64) *ExpenseItemUpsertBulk {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ExpenseItemUpsertBulk) AddDeletedBy(v uint32) *ExpenseItemUpsertBulk {
+func (u *ExpenseItemUpsertBulk) AddDeletedBy(v int64) *ExpenseItemUpsertBulk {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1335,14 +1335,14 @@ func (u *ExpenseItemUpsertBulk) UpdateDescription() *ExpenseItemUpsertBulk {
 }
 
 // SetInvoiceFileID sets the "invoice_file_id" field.
-func (u *ExpenseItemUpsertBulk) SetInvoiceFileID(v uint32) *ExpenseItemUpsertBulk {
+func (u *ExpenseItemUpsertBulk) SetInvoiceFileID(v int64) *ExpenseItemUpsertBulk {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.SetInvoiceFileID(v)
 	})
 }
 
 // AddInvoiceFileID adds v to the "invoice_file_id" field.
-func (u *ExpenseItemUpsertBulk) AddInvoiceFileID(v uint32) *ExpenseItemUpsertBulk {
+func (u *ExpenseItemUpsertBulk) AddInvoiceFileID(v int64) *ExpenseItemUpsertBulk {
 	return u.Update(func(s *ExpenseItemUpsert) {
 		s.AddInvoiceFileID(v)
 	})

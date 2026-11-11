@@ -36,7 +36,7 @@ type LeaveService struct {
 	definitionRepo *data.WorkflowDefinitionRepo
 	resolverRepo   *data.WorkflowResolverRepo
 
-	attendance     *AttendanceService
+	attendance      *AttendanceService
 	workflowService *WorkflowService
 }
 
@@ -67,8 +67,8 @@ func NewLeaveService(
 }
 
 // fillApplicantNames 批量回填申请人姓名（失败仅缺姓名，不影响列表）。
-func (s *LeaveService) fillApplicantNames(ctx context.Context, tid uint32, items []*oaV1.LeaveApplication) {
-	ids := make([]uint32, 0, len(items))
+func (s *LeaveService) fillApplicantNames(ctx context.Context, tid int64, items []*oaV1.LeaveApplication) {
+	ids := make([]int64, 0, len(items))
 	for _, it := range items {
 		if it.GetCreatedBy() != 0 {
 			ids = append(ids, it.GetCreatedBy())
@@ -131,7 +131,7 @@ func (s *LeaveService) ListLeaveBalances(ctx context.Context, req *oaV1.ListLeav
 	if err != nil {
 		return nil, err
 	}
-	return &oaV1.ListLeaveBalancesResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.ListLeaveBalancesResponse{Items: items, Total: int64(total)}, nil
 }
 
 // SubmitLeaveApplication 提交请假申请：校验额度 → 建申请单 → 进程内提交 LEAVE 工作流。
@@ -247,7 +247,7 @@ func computeLeaveDays(start, end time.Time, startHalf, endHalf oaV1.HalfOfDay) f
 // countLeaveWorkdays 在 computeLeaveDays 的日历半日计数基础上，扣除区间内的休息日。
 // 休息日判定委托 AttendanceService.isRestDay（节假日表优先，否则按周末），与考勤
 // 结算的休息日判定保持一致。每遇休息日，该日贡献的半日数清零。
-func (s *LeaveService) countLeaveWorkdays(ctx context.Context, tid uint32, start, end time.Time, startHalf, endHalf oaV1.HalfOfDay) (float64, error) {
+func (s *LeaveService) countLeaveWorkdays(ctx context.Context, tid int64, start, end time.Time, startHalf, endHalf oaV1.HalfOfDay) (float64, error) {
 	total := 0.0
 	dayStep := 24 * time.Hour
 	for cur := start; !cur.After(end); cur = cur.Add(dayStep) {
@@ -284,7 +284,7 @@ func halfDayValues(startHalf, endHalf oaV1.HalfOfDay) (uint8, uint8) {
 
 // ensureWorkflowDefinition LEAVE 流程定义兜底：租户内不存在时按默认模板创建并启用
 // （提交给申请人主管 LEADER，会签）。并发首提撞唯一索引时忽略，回读校验。
-func (s *LeaveService) ensureWorkflowDefinition(ctx context.Context, tid, uid uint32) {
+func (s *LeaveService) ensureWorkflowDefinition(ctx context.Context, tid, uid int64) {
 	if _, err := s.definitionRepo.GetByCodeVersion(ctx, leaveDefinitionCode, leaveDefinitionVersion); err == nil {
 		return
 	}
@@ -315,7 +315,7 @@ func (s *LeaveService) ListLeaveApplications(ctx context.Context, req *oaV1.List
 		return nil, err
 	}
 	s.fillApplicantNames(ctx, tid, items)
-	return &oaV1.ListLeaveApplicationsResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.ListLeaveApplicationsResponse{Items: items, Total: int64(total)}, nil
 }
 
 func (s *LeaveService) GetLeaveApplication(ctx context.Context, req *oaV1.GetLeaveApplicationRequest) (*oaV1.LeaveApplication, error) {
@@ -336,7 +336,7 @@ func (s *LeaveService) GetLeaveApplication(ctx context.Context, req *oaV1.GetLea
 
 // onInstanceTerminal 工作流终结回调。校验单据与实例关联（防伪造 business 字段），
 // 幂等（仅 PENDING 单据处理）：APPROVED 扣额度，REJECTED/WITHDRAWN 仅同步状态。
-func (s *LeaveService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID uint32, status oaV1.WorkflowInstance_InstanceStatus) {
+func (s *LeaveService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID int64, status oaV1.WorkflowInstance_InstanceStatus) {
 	entity, err := s.appRepo.GetEntity(ctx, tenantID, businessID)
 	if err != nil || entity == nil {
 		s.log.Errorf("leave hook load application %d failed: %v", businessID, err)
@@ -355,7 +355,7 @@ func (s *LeaveService) onInstanceTerminal(ctx context.Context, tenantID, instanc
 			s.log.Errorf("leave hook approve application %d failed: %s", businessID, err.Error())
 			return
 		}
-		applicant := uint32(0)
+		applicant := int64(0)
 		if entity.CreatedBy != nil {
 			applicant = *entity.CreatedBy
 		}

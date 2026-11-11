@@ -76,12 +76,12 @@ func NewMFAService(
 }
 
 // operatorIds 从 gRPC 元数据取当前操作者（tenantId, userId）。
-func (s *MFAService) operatorIds(ctx context.Context) (uint32, uint32, error) {
+func (s *MFAService) operatorIds(ctx context.Context) (int64, int64, error) {
 	op, err := metadata.FromServerContext(ctx)
 	if err != nil {
 		return 0, 0, authenticationV1.ErrorUnauthorized("operator context missing")
 	}
-	return uint32(op.GetTenantId()), uint32(op.GetUserId()), nil
+	return int64(op.GetTenantId()), int64(op.GetUserId()), nil
 }
 
 // GetMFAStatus 查询当前登录用户 MFA 总览。
@@ -443,13 +443,13 @@ func methodToEntity(m authenticationV1.MFAMethod) (usermfafactor.Method, error) 
 	return "", fmt.Errorf("unsupported mfa method: %v", m)
 }
 
-// parseFactorId 将 proto 返回的字符串形式 credential_id 解析为 uint32 主键。
-func parseFactorId(s string) (uint32, error) {
-	v, err := strconv.ParseUint(s, 10, 32)
+// parseFactorId 将 proto 返回的字符串形式 credential_id 解析为 int64 主键。
+func parseFactorId(s string) (int64, error) {
+	v, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		return 0, err
 	}
-	return uint32(v), nil
+	return int64(v), nil
 }
 
 // totpQrDataUri 将 otp.Key 的二维码图渲染为 PNG data URI，供前端 <img> 展示。

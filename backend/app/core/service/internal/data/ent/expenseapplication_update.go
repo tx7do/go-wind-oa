@@ -71,14 +71,14 @@ func (_u *ExpenseApplicationUpdate) ClearDeletedAt() *ExpenseApplicationUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *ExpenseApplicationUpdate) SetCreatedBy(v uint32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) SetCreatedBy(v int64) *ExpenseApplicationUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *ExpenseApplicationUpdate) SetNillableCreatedBy(v *uint32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) SetNillableCreatedBy(v *int64) *ExpenseApplicationUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -86,7 +86,7 @@ func (_u *ExpenseApplicationUpdate) SetNillableCreatedBy(v *uint32) *ExpenseAppl
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *ExpenseApplicationUpdate) AddCreatedBy(v int32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) AddCreatedBy(v int64) *ExpenseApplicationUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -98,14 +98,14 @@ func (_u *ExpenseApplicationUpdate) ClearCreatedBy() *ExpenseApplicationUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *ExpenseApplicationUpdate) SetUpdatedBy(v uint32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) SetUpdatedBy(v int64) *ExpenseApplicationUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *ExpenseApplicationUpdate) SetNillableUpdatedBy(v *uint32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) SetNillableUpdatedBy(v *int64) *ExpenseApplicationUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -113,7 +113,7 @@ func (_u *ExpenseApplicationUpdate) SetNillableUpdatedBy(v *uint32) *ExpenseAppl
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *ExpenseApplicationUpdate) AddUpdatedBy(v int32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) AddUpdatedBy(v int64) *ExpenseApplicationUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -125,14 +125,14 @@ func (_u *ExpenseApplicationUpdate) ClearUpdatedBy() *ExpenseApplicationUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *ExpenseApplicationUpdate) SetDeletedBy(v uint32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) SetDeletedBy(v int64) *ExpenseApplicationUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *ExpenseApplicationUpdate) SetNillableDeletedBy(v *uint32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) SetNillableDeletedBy(v *int64) *ExpenseApplicationUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -140,7 +140,7 @@ func (_u *ExpenseApplicationUpdate) SetNillableDeletedBy(v *uint32) *ExpenseAppl
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *ExpenseApplicationUpdate) AddDeletedBy(v int32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) AddDeletedBy(v int64) *ExpenseApplicationUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -207,14 +207,14 @@ func (_u *ExpenseApplicationUpdate) ClearExpenseStatus() *ExpenseApplicationUpda
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (_u *ExpenseApplicationUpdate) SetInstanceID(v uint32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) SetInstanceID(v int64) *ExpenseApplicationUpdate {
 	_u.mutation.ResetInstanceID()
 	_u.mutation.SetInstanceID(v)
 	return _u
 }
 
 // SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
-func (_u *ExpenseApplicationUpdate) SetNillableInstanceID(v *uint32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) SetNillableInstanceID(v *int64) *ExpenseApplicationUpdate {
 	if v != nil {
 		_u.SetInstanceID(*v)
 	}
@@ -222,7 +222,7 @@ func (_u *ExpenseApplicationUpdate) SetNillableInstanceID(v *uint32) *ExpenseApp
 }
 
 // AddInstanceID adds value to the "instance_id" field.
-func (_u *ExpenseApplicationUpdate) AddInstanceID(v int32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) AddInstanceID(v int64) *ExpenseApplicationUpdate {
 	_u.mutation.AddInstanceID(v)
 	return _u
 }
@@ -234,14 +234,14 @@ func (_u *ExpenseApplicationUpdate) ClearInstanceID() *ExpenseApplicationUpdate 
 }
 
 // AddItemIDs adds the "items" edge to the ExpenseItem entity by IDs.
-func (_u *ExpenseApplicationUpdate) AddItemIDs(ids ...uint32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) AddItemIDs(ids ...int64) *ExpenseApplicationUpdate {
 	_u.mutation.AddItemIDs(ids...)
 	return _u
 }
 
 // AddItems adds the "items" edges to the ExpenseItem entity.
 func (_u *ExpenseApplicationUpdate) AddItems(v ...*ExpenseItem) *ExpenseApplicationUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -260,14 +260,14 @@ func (_u *ExpenseApplicationUpdate) ClearItems() *ExpenseApplicationUpdate {
 }
 
 // RemoveItemIDs removes the "items" edge to ExpenseItem entities by IDs.
-func (_u *ExpenseApplicationUpdate) RemoveItemIDs(ids ...uint32) *ExpenseApplicationUpdate {
+func (_u *ExpenseApplicationUpdate) RemoveItemIDs(ids ...int64) *ExpenseApplicationUpdate {
 	_u.mutation.RemoveItemIDs(ids...)
 	return _u
 }
 
 // RemoveItems removes "items" edges to ExpenseItem entities.
 func (_u *ExpenseApplicationUpdate) RemoveItems(v ...*ExpenseItem) *ExpenseApplicationUpdate {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -326,7 +326,7 @@ func (_u *ExpenseApplicationUpdate) sqlSave(ctx context.Context) (_node int, err
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(expenseapplication.Table, expenseapplication.Columns, sqlgraph.NewFieldSpec(expenseapplication.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(expenseapplication.Table, expenseapplication.Columns, sqlgraph.NewFieldSpec(expenseapplication.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -350,34 +350,34 @@ func (_u *ExpenseApplicationUpdate) sqlSave(ctx context.Context) (_node int, err
 		_spec.ClearField(expenseapplication.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(expenseapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(expenseapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(expenseapplication.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(expenseapplication.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(expenseapplication.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(expenseapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(expenseapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(expenseapplication.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(expenseapplication.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(expenseapplication.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(expenseapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(expenseapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(expenseapplication.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(expenseapplication.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(expenseapplication.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(expenseapplication.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(expenseapplication.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(expenseapplication.FieldTitle, field.TypeString, value)
@@ -395,13 +395,13 @@ func (_u *ExpenseApplicationUpdate) sqlSave(ctx context.Context) (_node int, err
 		_spec.ClearField(expenseapplication.FieldExpenseStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.InstanceID(); ok {
-		_spec.SetField(expenseapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldInstanceID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedInstanceID(); ok {
-		_spec.AddField(expenseapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.AddField(expenseapplication.FieldInstanceID, field.TypeInt64, value)
 	}
 	if _u.mutation.InstanceIDCleared() {
-		_spec.ClearField(expenseapplication.FieldInstanceID, field.TypeUint32)
+		_spec.ClearField(expenseapplication.FieldInstanceID, field.TypeInt64)
 	}
 	if _u.mutation.ItemsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -411,7 +411,7 @@ func (_u *ExpenseApplicationUpdate) sqlSave(ctx context.Context) (_node int, err
 			Columns: []string{expenseapplication.ItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -424,7 +424,7 @@ func (_u *ExpenseApplicationUpdate) sqlSave(ctx context.Context) (_node int, err
 			Columns: []string{expenseapplication.ItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -440,7 +440,7 @@ func (_u *ExpenseApplicationUpdate) sqlSave(ctx context.Context) (_node int, err
 			Columns: []string{expenseapplication.ItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -511,14 +511,14 @@ func (_u *ExpenseApplicationUpdateOne) ClearDeletedAt() *ExpenseApplicationUpdat
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *ExpenseApplicationUpdateOne) SetCreatedBy(v uint32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) SetCreatedBy(v int64) *ExpenseApplicationUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *ExpenseApplicationUpdateOne) SetNillableCreatedBy(v *uint32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) SetNillableCreatedBy(v *int64) *ExpenseApplicationUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -526,7 +526,7 @@ func (_u *ExpenseApplicationUpdateOne) SetNillableCreatedBy(v *uint32) *ExpenseA
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *ExpenseApplicationUpdateOne) AddCreatedBy(v int32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) AddCreatedBy(v int64) *ExpenseApplicationUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -538,14 +538,14 @@ func (_u *ExpenseApplicationUpdateOne) ClearCreatedBy() *ExpenseApplicationUpdat
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *ExpenseApplicationUpdateOne) SetUpdatedBy(v uint32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) SetUpdatedBy(v int64) *ExpenseApplicationUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *ExpenseApplicationUpdateOne) SetNillableUpdatedBy(v *uint32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) SetNillableUpdatedBy(v *int64) *ExpenseApplicationUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -553,7 +553,7 @@ func (_u *ExpenseApplicationUpdateOne) SetNillableUpdatedBy(v *uint32) *ExpenseA
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *ExpenseApplicationUpdateOne) AddUpdatedBy(v int32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) AddUpdatedBy(v int64) *ExpenseApplicationUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -565,14 +565,14 @@ func (_u *ExpenseApplicationUpdateOne) ClearUpdatedBy() *ExpenseApplicationUpdat
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *ExpenseApplicationUpdateOne) SetDeletedBy(v uint32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) SetDeletedBy(v int64) *ExpenseApplicationUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *ExpenseApplicationUpdateOne) SetNillableDeletedBy(v *uint32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) SetNillableDeletedBy(v *int64) *ExpenseApplicationUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -580,7 +580,7 @@ func (_u *ExpenseApplicationUpdateOne) SetNillableDeletedBy(v *uint32) *ExpenseA
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *ExpenseApplicationUpdateOne) AddDeletedBy(v int32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) AddDeletedBy(v int64) *ExpenseApplicationUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -647,14 +647,14 @@ func (_u *ExpenseApplicationUpdateOne) ClearExpenseStatus() *ExpenseApplicationU
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (_u *ExpenseApplicationUpdateOne) SetInstanceID(v uint32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) SetInstanceID(v int64) *ExpenseApplicationUpdateOne {
 	_u.mutation.ResetInstanceID()
 	_u.mutation.SetInstanceID(v)
 	return _u
 }
 
 // SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
-func (_u *ExpenseApplicationUpdateOne) SetNillableInstanceID(v *uint32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) SetNillableInstanceID(v *int64) *ExpenseApplicationUpdateOne {
 	if v != nil {
 		_u.SetInstanceID(*v)
 	}
@@ -662,7 +662,7 @@ func (_u *ExpenseApplicationUpdateOne) SetNillableInstanceID(v *uint32) *Expense
 }
 
 // AddInstanceID adds value to the "instance_id" field.
-func (_u *ExpenseApplicationUpdateOne) AddInstanceID(v int32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) AddInstanceID(v int64) *ExpenseApplicationUpdateOne {
 	_u.mutation.AddInstanceID(v)
 	return _u
 }
@@ -674,14 +674,14 @@ func (_u *ExpenseApplicationUpdateOne) ClearInstanceID() *ExpenseApplicationUpda
 }
 
 // AddItemIDs adds the "items" edge to the ExpenseItem entity by IDs.
-func (_u *ExpenseApplicationUpdateOne) AddItemIDs(ids ...uint32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) AddItemIDs(ids ...int64) *ExpenseApplicationUpdateOne {
 	_u.mutation.AddItemIDs(ids...)
 	return _u
 }
 
 // AddItems adds the "items" edges to the ExpenseItem entity.
 func (_u *ExpenseApplicationUpdateOne) AddItems(v ...*ExpenseItem) *ExpenseApplicationUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -700,14 +700,14 @@ func (_u *ExpenseApplicationUpdateOne) ClearItems() *ExpenseApplicationUpdateOne
 }
 
 // RemoveItemIDs removes the "items" edge to ExpenseItem entities by IDs.
-func (_u *ExpenseApplicationUpdateOne) RemoveItemIDs(ids ...uint32) *ExpenseApplicationUpdateOne {
+func (_u *ExpenseApplicationUpdateOne) RemoveItemIDs(ids ...int64) *ExpenseApplicationUpdateOne {
 	_u.mutation.RemoveItemIDs(ids...)
 	return _u
 }
 
 // RemoveItems removes "items" edges to ExpenseItem entities.
 func (_u *ExpenseApplicationUpdateOne) RemoveItems(v ...*ExpenseItem) *ExpenseApplicationUpdateOne {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -779,7 +779,7 @@ func (_u *ExpenseApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Expe
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(expenseapplication.Table, expenseapplication.Columns, sqlgraph.NewFieldSpec(expenseapplication.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(expenseapplication.Table, expenseapplication.Columns, sqlgraph.NewFieldSpec(expenseapplication.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ExpenseApplication.id" for update`)}
@@ -820,34 +820,34 @@ func (_u *ExpenseApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Expe
 		_spec.ClearField(expenseapplication.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(expenseapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(expenseapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(expenseapplication.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(expenseapplication.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(expenseapplication.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(expenseapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(expenseapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(expenseapplication.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(expenseapplication.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(expenseapplication.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(expenseapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(expenseapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(expenseapplication.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(expenseapplication.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(expenseapplication.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(expenseapplication.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(expenseapplication.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(expenseapplication.FieldTitle, field.TypeString, value)
@@ -865,13 +865,13 @@ func (_u *ExpenseApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Expe
 		_spec.ClearField(expenseapplication.FieldExpenseStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.InstanceID(); ok {
-		_spec.SetField(expenseapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldInstanceID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedInstanceID(); ok {
-		_spec.AddField(expenseapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.AddField(expenseapplication.FieldInstanceID, field.TypeInt64, value)
 	}
 	if _u.mutation.InstanceIDCleared() {
-		_spec.ClearField(expenseapplication.FieldInstanceID, field.TypeUint32)
+		_spec.ClearField(expenseapplication.FieldInstanceID, field.TypeInt64)
 	}
 	if _u.mutation.ItemsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -881,7 +881,7 @@ func (_u *ExpenseApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Expe
 			Columns: []string{expenseapplication.ItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -894,7 +894,7 @@ func (_u *ExpenseApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Expe
 			Columns: []string{expenseapplication.ItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -910,7 +910,7 @@ func (_u *ExpenseApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Expe
 			Columns: []string{expenseapplication.ItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

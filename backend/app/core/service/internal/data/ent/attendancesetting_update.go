@@ -70,14 +70,14 @@ func (_u *AttendanceSettingUpdate) ClearDeletedAt() *AttendanceSettingUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AttendanceSettingUpdate) SetCreatedBy(v uint32) *AttendanceSettingUpdate {
+func (_u *AttendanceSettingUpdate) SetCreatedBy(v int64) *AttendanceSettingUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AttendanceSettingUpdate) SetNillableCreatedBy(v *uint32) *AttendanceSettingUpdate {
+func (_u *AttendanceSettingUpdate) SetNillableCreatedBy(v *int64) *AttendanceSettingUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *AttendanceSettingUpdate) SetNillableCreatedBy(v *uint32) *AttendanceSe
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *AttendanceSettingUpdate) AddCreatedBy(v int32) *AttendanceSettingUpdate {
+func (_u *AttendanceSettingUpdate) AddCreatedBy(v int64) *AttendanceSettingUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *AttendanceSettingUpdate) ClearCreatedBy() *AttendanceSettingUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AttendanceSettingUpdate) SetUpdatedBy(v uint32) *AttendanceSettingUpdate {
+func (_u *AttendanceSettingUpdate) SetUpdatedBy(v int64) *AttendanceSettingUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AttendanceSettingUpdate) SetNillableUpdatedBy(v *uint32) *AttendanceSettingUpdate {
+func (_u *AttendanceSettingUpdate) SetNillableUpdatedBy(v *int64) *AttendanceSettingUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *AttendanceSettingUpdate) SetNillableUpdatedBy(v *uint32) *AttendanceSe
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *AttendanceSettingUpdate) AddUpdatedBy(v int32) *AttendanceSettingUpdate {
+func (_u *AttendanceSettingUpdate) AddUpdatedBy(v int64) *AttendanceSettingUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *AttendanceSettingUpdate) ClearUpdatedBy() *AttendanceSettingUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AttendanceSettingUpdate) SetDeletedBy(v uint32) *AttendanceSettingUpdate {
+func (_u *AttendanceSettingUpdate) SetDeletedBy(v int64) *AttendanceSettingUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AttendanceSettingUpdate) SetNillableDeletedBy(v *uint32) *AttendanceSettingUpdate {
+func (_u *AttendanceSettingUpdate) SetNillableDeletedBy(v *int64) *AttendanceSettingUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *AttendanceSettingUpdate) SetNillableDeletedBy(v *uint32) *AttendanceSe
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *AttendanceSettingUpdate) AddDeletedBy(v int32) *AttendanceSettingUpdate {
+func (_u *AttendanceSettingUpdate) AddDeletedBy(v int64) *AttendanceSettingUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -235,7 +235,7 @@ func (_u *AttendanceSettingUpdate) sqlSave(ctx context.Context) (_node int, err 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(attendancesetting.Table, attendancesetting.Columns, sqlgraph.NewFieldSpec(attendancesetting.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(attendancesetting.Table, attendancesetting.Columns, sqlgraph.NewFieldSpec(attendancesetting.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -259,34 +259,34 @@ func (_u *AttendanceSettingUpdate) sqlSave(ctx context.Context) (_node int, err 
 		_spec.ClearField(attendancesetting.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(attendancesetting.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(attendancesetting.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(attendancesetting.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(attendancesetting.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(attendancesetting.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(attendancesetting.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(attendancesetting.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(attendancesetting.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(attendancesetting.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(attendancesetting.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(attendancesetting.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(attendancesetting.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(attendancesetting.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(attendancesetting.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(attendancesetting.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(attendancesetting.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(attendancesetting.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(attendancesetting.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(attendancesetting.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(attendancesetting.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.WorkStartTime(); ok {
 		_spec.SetField(attendancesetting.FieldWorkStartTime, field.TypeString, value)
@@ -357,14 +357,14 @@ func (_u *AttendanceSettingUpdateOne) ClearDeletedAt() *AttendanceSettingUpdateO
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AttendanceSettingUpdateOne) SetCreatedBy(v uint32) *AttendanceSettingUpdateOne {
+func (_u *AttendanceSettingUpdateOne) SetCreatedBy(v int64) *AttendanceSettingUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AttendanceSettingUpdateOne) SetNillableCreatedBy(v *uint32) *AttendanceSettingUpdateOne {
+func (_u *AttendanceSettingUpdateOne) SetNillableCreatedBy(v *int64) *AttendanceSettingUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -372,7 +372,7 @@ func (_u *AttendanceSettingUpdateOne) SetNillableCreatedBy(v *uint32) *Attendanc
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *AttendanceSettingUpdateOne) AddCreatedBy(v int32) *AttendanceSettingUpdateOne {
+func (_u *AttendanceSettingUpdateOne) AddCreatedBy(v int64) *AttendanceSettingUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -384,14 +384,14 @@ func (_u *AttendanceSettingUpdateOne) ClearCreatedBy() *AttendanceSettingUpdateO
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AttendanceSettingUpdateOne) SetUpdatedBy(v uint32) *AttendanceSettingUpdateOne {
+func (_u *AttendanceSettingUpdateOne) SetUpdatedBy(v int64) *AttendanceSettingUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AttendanceSettingUpdateOne) SetNillableUpdatedBy(v *uint32) *AttendanceSettingUpdateOne {
+func (_u *AttendanceSettingUpdateOne) SetNillableUpdatedBy(v *int64) *AttendanceSettingUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -399,7 +399,7 @@ func (_u *AttendanceSettingUpdateOne) SetNillableUpdatedBy(v *uint32) *Attendanc
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *AttendanceSettingUpdateOne) AddUpdatedBy(v int32) *AttendanceSettingUpdateOne {
+func (_u *AttendanceSettingUpdateOne) AddUpdatedBy(v int64) *AttendanceSettingUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -411,14 +411,14 @@ func (_u *AttendanceSettingUpdateOne) ClearUpdatedBy() *AttendanceSettingUpdateO
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AttendanceSettingUpdateOne) SetDeletedBy(v uint32) *AttendanceSettingUpdateOne {
+func (_u *AttendanceSettingUpdateOne) SetDeletedBy(v int64) *AttendanceSettingUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AttendanceSettingUpdateOne) SetNillableDeletedBy(v *uint32) *AttendanceSettingUpdateOne {
+func (_u *AttendanceSettingUpdateOne) SetNillableDeletedBy(v *int64) *AttendanceSettingUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -426,7 +426,7 @@ func (_u *AttendanceSettingUpdateOne) SetNillableDeletedBy(v *uint32) *Attendanc
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *AttendanceSettingUpdateOne) AddDeletedBy(v int32) *AttendanceSettingUpdateOne {
+func (_u *AttendanceSettingUpdateOne) AddDeletedBy(v int64) *AttendanceSettingUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -535,7 +535,7 @@ func (_u *AttendanceSettingUpdateOne) sqlSave(ctx context.Context) (_node *Atten
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(attendancesetting.Table, attendancesetting.Columns, sqlgraph.NewFieldSpec(attendancesetting.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(attendancesetting.Table, attendancesetting.Columns, sqlgraph.NewFieldSpec(attendancesetting.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AttendanceSetting.id" for update`)}
@@ -576,34 +576,34 @@ func (_u *AttendanceSettingUpdateOne) sqlSave(ctx context.Context) (_node *Atten
 		_spec.ClearField(attendancesetting.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(attendancesetting.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(attendancesetting.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(attendancesetting.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(attendancesetting.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(attendancesetting.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(attendancesetting.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(attendancesetting.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(attendancesetting.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(attendancesetting.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(attendancesetting.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(attendancesetting.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(attendancesetting.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(attendancesetting.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(attendancesetting.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(attendancesetting.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(attendancesetting.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(attendancesetting.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(attendancesetting.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(attendancesetting.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(attendancesetting.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.WorkStartTime(); ok {
 		_spec.SetField(attendancesetting.FieldWorkStartTime, field.TypeString, value)

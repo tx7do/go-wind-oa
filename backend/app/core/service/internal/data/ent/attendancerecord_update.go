@@ -70,14 +70,14 @@ func (_u *AttendanceRecordUpdate) ClearDeletedAt() *AttendanceRecordUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AttendanceRecordUpdate) SetCreatedBy(v uint32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) SetCreatedBy(v int64) *AttendanceRecordUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AttendanceRecordUpdate) SetNillableCreatedBy(v *uint32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) SetNillableCreatedBy(v *int64) *AttendanceRecordUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *AttendanceRecordUpdate) SetNillableCreatedBy(v *uint32) *AttendanceRec
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *AttendanceRecordUpdate) AddCreatedBy(v int32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) AddCreatedBy(v int64) *AttendanceRecordUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *AttendanceRecordUpdate) ClearCreatedBy() *AttendanceRecordUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AttendanceRecordUpdate) SetUpdatedBy(v uint32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) SetUpdatedBy(v int64) *AttendanceRecordUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AttendanceRecordUpdate) SetNillableUpdatedBy(v *uint32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) SetNillableUpdatedBy(v *int64) *AttendanceRecordUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *AttendanceRecordUpdate) SetNillableUpdatedBy(v *uint32) *AttendanceRec
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *AttendanceRecordUpdate) AddUpdatedBy(v int32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) AddUpdatedBy(v int64) *AttendanceRecordUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *AttendanceRecordUpdate) ClearUpdatedBy() *AttendanceRecordUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AttendanceRecordUpdate) SetDeletedBy(v uint32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) SetDeletedBy(v int64) *AttendanceRecordUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AttendanceRecordUpdate) SetNillableDeletedBy(v *uint32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) SetNillableDeletedBy(v *int64) *AttendanceRecordUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *AttendanceRecordUpdate) SetNillableDeletedBy(v *uint32) *AttendanceRec
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *AttendanceRecordUpdate) AddDeletedBy(v int32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) AddDeletedBy(v int64) *AttendanceRecordUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -151,14 +151,14 @@ func (_u *AttendanceRecordUpdate) ClearDeletedBy() *AttendanceRecordUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *AttendanceRecordUpdate) SetUserID(v uint32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) SetUserID(v int64) *AttendanceRecordUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *AttendanceRecordUpdate) SetNillableUserID(v *uint32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) SetNillableUserID(v *int64) *AttendanceRecordUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -166,7 +166,7 @@ func (_u *AttendanceRecordUpdate) SetNillableUserID(v *uint32) *AttendanceRecord
 }
 
 // AddUserID adds value to the "user_id" field.
-func (_u *AttendanceRecordUpdate) AddUserID(v int32) *AttendanceRecordUpdate {
+func (_u *AttendanceRecordUpdate) AddUserID(v int64) *AttendanceRecordUpdate {
 	_u.mutation.AddUserID(v)
 	return _u
 }
@@ -455,7 +455,7 @@ func (_u *AttendanceRecordUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(attendancerecord.Table, attendancerecord.Columns, sqlgraph.NewFieldSpec(attendancerecord.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(attendancerecord.Table, attendancerecord.Columns, sqlgraph.NewFieldSpec(attendancerecord.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -479,40 +479,40 @@ func (_u *AttendanceRecordUpdate) sqlSave(ctx context.Context) (_node int, err e
 		_spec.ClearField(attendancerecord.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(attendancerecord.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(attendancerecord.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(attendancerecord.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(attendancerecord.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(attendancerecord.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(attendancerecord.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(attendancerecord.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(attendancerecord.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(attendancerecord.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(attendancerecord.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(attendancerecord.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(attendancerecord.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(attendancerecord.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(attendancerecord.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(attendancerecord.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(attendancerecord.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(attendancerecord.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(attendancerecord.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(attendancerecord.FieldUserID, field.TypeUint32, value)
+		_spec.AddField(attendancerecord.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.WorkDate(); ok {
 		_spec.SetField(attendancerecord.FieldWorkDate, field.TypeTime, value)
@@ -646,14 +646,14 @@ func (_u *AttendanceRecordUpdateOne) ClearDeletedAt() *AttendanceRecordUpdateOne
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *AttendanceRecordUpdateOne) SetCreatedBy(v uint32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) SetCreatedBy(v int64) *AttendanceRecordUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *AttendanceRecordUpdateOne) SetNillableCreatedBy(v *uint32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) SetNillableCreatedBy(v *int64) *AttendanceRecordUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -661,7 +661,7 @@ func (_u *AttendanceRecordUpdateOne) SetNillableCreatedBy(v *uint32) *Attendance
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *AttendanceRecordUpdateOne) AddCreatedBy(v int32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) AddCreatedBy(v int64) *AttendanceRecordUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -673,14 +673,14 @@ func (_u *AttendanceRecordUpdateOne) ClearCreatedBy() *AttendanceRecordUpdateOne
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *AttendanceRecordUpdateOne) SetUpdatedBy(v uint32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) SetUpdatedBy(v int64) *AttendanceRecordUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *AttendanceRecordUpdateOne) SetNillableUpdatedBy(v *uint32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) SetNillableUpdatedBy(v *int64) *AttendanceRecordUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -688,7 +688,7 @@ func (_u *AttendanceRecordUpdateOne) SetNillableUpdatedBy(v *uint32) *Attendance
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *AttendanceRecordUpdateOne) AddUpdatedBy(v int32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) AddUpdatedBy(v int64) *AttendanceRecordUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -700,14 +700,14 @@ func (_u *AttendanceRecordUpdateOne) ClearUpdatedBy() *AttendanceRecordUpdateOne
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *AttendanceRecordUpdateOne) SetDeletedBy(v uint32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) SetDeletedBy(v int64) *AttendanceRecordUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *AttendanceRecordUpdateOne) SetNillableDeletedBy(v *uint32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) SetNillableDeletedBy(v *int64) *AttendanceRecordUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -715,7 +715,7 @@ func (_u *AttendanceRecordUpdateOne) SetNillableDeletedBy(v *uint32) *Attendance
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *AttendanceRecordUpdateOne) AddDeletedBy(v int32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) AddDeletedBy(v int64) *AttendanceRecordUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -727,14 +727,14 @@ func (_u *AttendanceRecordUpdateOne) ClearDeletedBy() *AttendanceRecordUpdateOne
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *AttendanceRecordUpdateOne) SetUserID(v uint32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) SetUserID(v int64) *AttendanceRecordUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *AttendanceRecordUpdateOne) SetNillableUserID(v *uint32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) SetNillableUserID(v *int64) *AttendanceRecordUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -742,7 +742,7 @@ func (_u *AttendanceRecordUpdateOne) SetNillableUserID(v *uint32) *AttendanceRec
 }
 
 // AddUserID adds value to the "user_id" field.
-func (_u *AttendanceRecordUpdateOne) AddUserID(v int32) *AttendanceRecordUpdateOne {
+func (_u *AttendanceRecordUpdateOne) AddUserID(v int64) *AttendanceRecordUpdateOne {
 	_u.mutation.AddUserID(v)
 	return _u
 }
@@ -1044,7 +1044,7 @@ func (_u *AttendanceRecordUpdateOne) sqlSave(ctx context.Context) (_node *Attend
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(attendancerecord.Table, attendancerecord.Columns, sqlgraph.NewFieldSpec(attendancerecord.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(attendancerecord.Table, attendancerecord.Columns, sqlgraph.NewFieldSpec(attendancerecord.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AttendanceRecord.id" for update`)}
@@ -1085,40 +1085,40 @@ func (_u *AttendanceRecordUpdateOne) sqlSave(ctx context.Context) (_node *Attend
 		_spec.ClearField(attendancerecord.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(attendancerecord.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(attendancerecord.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(attendancerecord.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(attendancerecord.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(attendancerecord.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(attendancerecord.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(attendancerecord.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(attendancerecord.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(attendancerecord.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(attendancerecord.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(attendancerecord.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(attendancerecord.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(attendancerecord.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(attendancerecord.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(attendancerecord.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(attendancerecord.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(attendancerecord.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(attendancerecord.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(attendancerecord.FieldUserID, field.TypeUint32, value)
+		_spec.AddField(attendancerecord.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.WorkDate(); ok {
 		_spec.SetField(attendancerecord.FieldWorkDate, field.TypeTime, value)

@@ -109,13 +109,13 @@ var (
 	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint32
+	DefaultTenantID int64
 	// DefaultPath holds the default value on creation for the "path" field.
 	DefaultPath string
 	// DefaultComponent holds the default value on creation for the "component" field.
 	DefaultComponent string
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(int64) error
 )
 
 // Status defines the type for the "status" enum field.

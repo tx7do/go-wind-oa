@@ -70,14 +70,14 @@ func (_u *LeaveBalanceUpdate) ClearDeletedAt() *LeaveBalanceUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *LeaveBalanceUpdate) SetCreatedBy(v uint32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) SetCreatedBy(v int64) *LeaveBalanceUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *LeaveBalanceUpdate) SetNillableCreatedBy(v *uint32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) SetNillableCreatedBy(v *int64) *LeaveBalanceUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *LeaveBalanceUpdate) SetNillableCreatedBy(v *uint32) *LeaveBalanceUpdat
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *LeaveBalanceUpdate) AddCreatedBy(v int32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) AddCreatedBy(v int64) *LeaveBalanceUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *LeaveBalanceUpdate) ClearCreatedBy() *LeaveBalanceUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *LeaveBalanceUpdate) SetUpdatedBy(v uint32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) SetUpdatedBy(v int64) *LeaveBalanceUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *LeaveBalanceUpdate) SetNillableUpdatedBy(v *uint32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) SetNillableUpdatedBy(v *int64) *LeaveBalanceUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *LeaveBalanceUpdate) SetNillableUpdatedBy(v *uint32) *LeaveBalanceUpdat
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *LeaveBalanceUpdate) AddUpdatedBy(v int32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) AddUpdatedBy(v int64) *LeaveBalanceUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *LeaveBalanceUpdate) ClearUpdatedBy() *LeaveBalanceUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *LeaveBalanceUpdate) SetDeletedBy(v uint32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) SetDeletedBy(v int64) *LeaveBalanceUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *LeaveBalanceUpdate) SetNillableDeletedBy(v *uint32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) SetNillableDeletedBy(v *int64) *LeaveBalanceUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *LeaveBalanceUpdate) SetNillableDeletedBy(v *uint32) *LeaveBalanceUpdat
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *LeaveBalanceUpdate) AddDeletedBy(v int32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) AddDeletedBy(v int64) *LeaveBalanceUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -151,14 +151,14 @@ func (_u *LeaveBalanceUpdate) ClearDeletedBy() *LeaveBalanceUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *LeaveBalanceUpdate) SetUserID(v uint32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) SetUserID(v int64) *LeaveBalanceUpdate {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *LeaveBalanceUpdate) SetNillableUserID(v *uint32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) SetNillableUserID(v *int64) *LeaveBalanceUpdate {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -166,20 +166,20 @@ func (_u *LeaveBalanceUpdate) SetNillableUserID(v *uint32) *LeaveBalanceUpdate {
 }
 
 // AddUserID adds value to the "user_id" field.
-func (_u *LeaveBalanceUpdate) AddUserID(v int32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) AddUserID(v int64) *LeaveBalanceUpdate {
 	_u.mutation.AddUserID(v)
 	return _u
 }
 
 // SetLeaveTypeID sets the "leave_type_id" field.
-func (_u *LeaveBalanceUpdate) SetLeaveTypeID(v uint32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) SetLeaveTypeID(v int64) *LeaveBalanceUpdate {
 	_u.mutation.ResetLeaveTypeID()
 	_u.mutation.SetLeaveTypeID(v)
 	return _u
 }
 
 // SetNillableLeaveTypeID sets the "leave_type_id" field if the given value is not nil.
-func (_u *LeaveBalanceUpdate) SetNillableLeaveTypeID(v *uint32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) SetNillableLeaveTypeID(v *int64) *LeaveBalanceUpdate {
 	if v != nil {
 		_u.SetLeaveTypeID(*v)
 	}
@@ -187,7 +187,7 @@ func (_u *LeaveBalanceUpdate) SetNillableLeaveTypeID(v *uint32) *LeaveBalanceUpd
 }
 
 // AddLeaveTypeID adds value to the "leave_type_id" field.
-func (_u *LeaveBalanceUpdate) AddLeaveTypeID(v int32) *LeaveBalanceUpdate {
+func (_u *LeaveBalanceUpdate) AddLeaveTypeID(v int64) *LeaveBalanceUpdate {
 	_u.mutation.AddLeaveTypeID(v)
 	return _u
 }
@@ -294,7 +294,7 @@ func (_u *LeaveBalanceUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *L
 }
 
 func (_u *LeaveBalanceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(leavebalance.Table, leavebalance.Columns, sqlgraph.NewFieldSpec(leavebalance.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(leavebalance.Table, leavebalance.Columns, sqlgraph.NewFieldSpec(leavebalance.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -318,46 +318,46 @@ func (_u *LeaveBalanceUpdate) sqlSave(ctx context.Context) (_node int, err error
 		_spec.ClearField(leavebalance.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(leavebalance.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(leavebalance.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(leavebalance.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(leavebalance.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(leavebalance.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(leavebalance.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(leavebalance.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(leavebalance.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(leavebalance.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(leavebalance.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(leavebalance.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(leavebalance.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(leavebalance.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(leavebalance.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(leavebalance.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(leavebalance.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(leavebalance.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(leavebalance.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(leavebalance.FieldUserID, field.TypeUint32, value)
+		_spec.AddField(leavebalance.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.LeaveTypeID(); ok {
-		_spec.SetField(leavebalance.FieldLeaveTypeID, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldLeaveTypeID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedLeaveTypeID(); ok {
-		_spec.AddField(leavebalance.FieldLeaveTypeID, field.TypeUint32, value)
+		_spec.AddField(leavebalance.FieldLeaveTypeID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.Year(); ok {
 		_spec.SetField(leavebalance.FieldYear, field.TypeInt, value)
@@ -440,14 +440,14 @@ func (_u *LeaveBalanceUpdateOne) ClearDeletedAt() *LeaveBalanceUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *LeaveBalanceUpdateOne) SetCreatedBy(v uint32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) SetCreatedBy(v int64) *LeaveBalanceUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *LeaveBalanceUpdateOne) SetNillableCreatedBy(v *uint32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) SetNillableCreatedBy(v *int64) *LeaveBalanceUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -455,7 +455,7 @@ func (_u *LeaveBalanceUpdateOne) SetNillableCreatedBy(v *uint32) *LeaveBalanceUp
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *LeaveBalanceUpdateOne) AddCreatedBy(v int32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) AddCreatedBy(v int64) *LeaveBalanceUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -467,14 +467,14 @@ func (_u *LeaveBalanceUpdateOne) ClearCreatedBy() *LeaveBalanceUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *LeaveBalanceUpdateOne) SetUpdatedBy(v uint32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) SetUpdatedBy(v int64) *LeaveBalanceUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *LeaveBalanceUpdateOne) SetNillableUpdatedBy(v *uint32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) SetNillableUpdatedBy(v *int64) *LeaveBalanceUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -482,7 +482,7 @@ func (_u *LeaveBalanceUpdateOne) SetNillableUpdatedBy(v *uint32) *LeaveBalanceUp
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *LeaveBalanceUpdateOne) AddUpdatedBy(v int32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) AddUpdatedBy(v int64) *LeaveBalanceUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -494,14 +494,14 @@ func (_u *LeaveBalanceUpdateOne) ClearUpdatedBy() *LeaveBalanceUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *LeaveBalanceUpdateOne) SetDeletedBy(v uint32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) SetDeletedBy(v int64) *LeaveBalanceUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *LeaveBalanceUpdateOne) SetNillableDeletedBy(v *uint32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) SetNillableDeletedBy(v *int64) *LeaveBalanceUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -509,7 +509,7 @@ func (_u *LeaveBalanceUpdateOne) SetNillableDeletedBy(v *uint32) *LeaveBalanceUp
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *LeaveBalanceUpdateOne) AddDeletedBy(v int32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) AddDeletedBy(v int64) *LeaveBalanceUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -521,14 +521,14 @@ func (_u *LeaveBalanceUpdateOne) ClearDeletedBy() *LeaveBalanceUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *LeaveBalanceUpdateOne) SetUserID(v uint32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) SetUserID(v int64) *LeaveBalanceUpdateOne {
 	_u.mutation.ResetUserID()
 	_u.mutation.SetUserID(v)
 	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *LeaveBalanceUpdateOne) SetNillableUserID(v *uint32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) SetNillableUserID(v *int64) *LeaveBalanceUpdateOne {
 	if v != nil {
 		_u.SetUserID(*v)
 	}
@@ -536,20 +536,20 @@ func (_u *LeaveBalanceUpdateOne) SetNillableUserID(v *uint32) *LeaveBalanceUpdat
 }
 
 // AddUserID adds value to the "user_id" field.
-func (_u *LeaveBalanceUpdateOne) AddUserID(v int32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) AddUserID(v int64) *LeaveBalanceUpdateOne {
 	_u.mutation.AddUserID(v)
 	return _u
 }
 
 // SetLeaveTypeID sets the "leave_type_id" field.
-func (_u *LeaveBalanceUpdateOne) SetLeaveTypeID(v uint32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) SetLeaveTypeID(v int64) *LeaveBalanceUpdateOne {
 	_u.mutation.ResetLeaveTypeID()
 	_u.mutation.SetLeaveTypeID(v)
 	return _u
 }
 
 // SetNillableLeaveTypeID sets the "leave_type_id" field if the given value is not nil.
-func (_u *LeaveBalanceUpdateOne) SetNillableLeaveTypeID(v *uint32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) SetNillableLeaveTypeID(v *int64) *LeaveBalanceUpdateOne {
 	if v != nil {
 		_u.SetLeaveTypeID(*v)
 	}
@@ -557,7 +557,7 @@ func (_u *LeaveBalanceUpdateOne) SetNillableLeaveTypeID(v *uint32) *LeaveBalance
 }
 
 // AddLeaveTypeID adds value to the "leave_type_id" field.
-func (_u *LeaveBalanceUpdateOne) AddLeaveTypeID(v int32) *LeaveBalanceUpdateOne {
+func (_u *LeaveBalanceUpdateOne) AddLeaveTypeID(v int64) *LeaveBalanceUpdateOne {
 	_u.mutation.AddLeaveTypeID(v)
 	return _u
 }
@@ -677,7 +677,7 @@ func (_u *LeaveBalanceUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder))
 }
 
 func (_u *LeaveBalanceUpdateOne) sqlSave(ctx context.Context) (_node *LeaveBalance, err error) {
-	_spec := sqlgraph.NewUpdateSpec(leavebalance.Table, leavebalance.Columns, sqlgraph.NewFieldSpec(leavebalance.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(leavebalance.Table, leavebalance.Columns, sqlgraph.NewFieldSpec(leavebalance.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "LeaveBalance.id" for update`)}
@@ -718,46 +718,46 @@ func (_u *LeaveBalanceUpdateOne) sqlSave(ctx context.Context) (_node *LeaveBalan
 		_spec.ClearField(leavebalance.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(leavebalance.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(leavebalance.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(leavebalance.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(leavebalance.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(leavebalance.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(leavebalance.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(leavebalance.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(leavebalance.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(leavebalance.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(leavebalance.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(leavebalance.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(leavebalance.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(leavebalance.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(leavebalance.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(leavebalance.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(leavebalance.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(leavebalance.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UserID(); ok {
-		_spec.SetField(leavebalance.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUserID(); ok {
-		_spec.AddField(leavebalance.FieldUserID, field.TypeUint32, value)
+		_spec.AddField(leavebalance.FieldUserID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.LeaveTypeID(); ok {
-		_spec.SetField(leavebalance.FieldLeaveTypeID, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldLeaveTypeID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedLeaveTypeID(); ok {
-		_spec.AddField(leavebalance.FieldLeaveTypeID, field.TypeUint32, value)
+		_spec.AddField(leavebalance.FieldLeaveTypeID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.Year(); ok {
 		_spec.SetField(leavebalance.FieldYear, field.TypeInt, value)

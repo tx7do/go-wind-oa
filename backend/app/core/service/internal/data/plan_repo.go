@@ -25,9 +25,9 @@ type PlanRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper             *mapper.CopierMapper[identityV1.Plan, ent.Plan]
-	versionConverter   *mapper.EnumTypeConverter[identityV1.Plan_Version, plan.Version]
-	expiryPolicyConv   *mapper.EnumTypeConverter[identityV1.Plan_ExpiryPolicy, plan.ExpiryPolicy]
+	mapper           *mapper.CopierMapper[identityV1.Plan, ent.Plan]
+	versionConverter *mapper.EnumTypeConverter[identityV1.Plan_Version, plan.Version]
+	expiryPolicyConv *mapper.EnumTypeConverter[identityV1.Plan_ExpiryPolicy, plan.ExpiryPolicy]
 
 	repository *entCrud.Repository[
 		ent.PlanQuery, ent.PlanSelect,
@@ -119,7 +119,7 @@ func (r *PlanRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 	}, nil
 }
 
-func (r *PlanRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *PlanRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().Plan.Query().
 		Where(plan.IDEQ(id)).
 		Exist(ctx)
@@ -265,7 +265,7 @@ func (r *PlanRepo) Update(ctx context.Context, req *identityV1.UpdatePlanRequest
 	return err
 }
 
-func (r *PlanRepo) Delete(ctx context.Context, id uint32) error {
+func (r *PlanRepo) Delete(ctx context.Context, id int64) error {
 	if id == 0 {
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}

@@ -30,7 +30,7 @@ func (AttendanceRecord) Annotations() []schema.Annotation {
 // Fields of the AttendanceRecord.
 func (AttendanceRecord) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("user_id").
+		field.Int64("user_id").
 			Comment("用户ID"),
 
 		field.Time("work_date").
@@ -97,10 +97,10 @@ func (AttendanceRecord) Fields() []ent.Field {
 // Mixin of the AttendanceRecord.
 func (AttendanceRecord) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[int64]{},
 	}
 }
 

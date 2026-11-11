@@ -110,8 +110,8 @@ func (_q *WorkflowDefinitionQuery) FirstX(ctx context.Context) *WorkflowDefiniti
 
 // FirstID returns the first WorkflowDefinition ID from the query.
 // Returns a *NotFoundError when no WorkflowDefinition ID was found.
-func (_q *WorkflowDefinitionQuery) FirstID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *WorkflowDefinitionQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -123,7 +123,7 @@ func (_q *WorkflowDefinitionQuery) FirstID(ctx context.Context) (id uint32, err 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *WorkflowDefinitionQuery) FirstIDX(ctx context.Context) uint32 {
+func (_q *WorkflowDefinitionQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +161,8 @@ func (_q *WorkflowDefinitionQuery) OnlyX(ctx context.Context) *WorkflowDefinitio
 // OnlyID is like Only, but returns the only WorkflowDefinition ID in the query.
 // Returns a *NotSingularError when more than one WorkflowDefinition ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *WorkflowDefinitionQuery) OnlyID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *WorkflowDefinitionQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -178,7 +178,7 @@ func (_q *WorkflowDefinitionQuery) OnlyID(ctx context.Context) (id uint32, err e
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *WorkflowDefinitionQuery) OnlyIDX(ctx context.Context) uint32 {
+func (_q *WorkflowDefinitionQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -206,7 +206,7 @@ func (_q *WorkflowDefinitionQuery) AllX(ctx context.Context) []*WorkflowDefiniti
 }
 
 // IDs executes the query and returns a list of WorkflowDefinition IDs.
-func (_q *WorkflowDefinitionQuery) IDs(ctx context.Context) (ids []uint32, err error) {
+func (_q *WorkflowDefinitionQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -218,7 +218,7 @@ func (_q *WorkflowDefinitionQuery) IDs(ctx context.Context) (ids []uint32, err e
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *WorkflowDefinitionQuery) IDsX(ctx context.Context) []uint32 {
+func (_q *WorkflowDefinitionQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -418,7 +418,7 @@ func (_q *WorkflowDefinitionQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 
 func (_q *WorkflowDefinitionQuery) loadInstances(ctx context.Context, query *WorkflowInstanceQuery, nodes []*WorkflowDefinition, init func(*WorkflowDefinition), assign func(*WorkflowDefinition, *WorkflowInstance)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint32]*WorkflowDefinition)
+	nodeids := make(map[int64]*WorkflowDefinition)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -461,7 +461,7 @@ func (_q *WorkflowDefinitionQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *WorkflowDefinitionQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(workflowdefinition.Table, workflowdefinition.Columns, sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewQuerySpec(workflowdefinition.Table, workflowdefinition.Columns, sqlgraph.NewFieldSpec(workflowdefinition.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

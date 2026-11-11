@@ -70,14 +70,14 @@ func (_u *OvertimeApplicationUpdate) ClearDeletedAt() *OvertimeApplicationUpdate
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *OvertimeApplicationUpdate) SetCreatedBy(v uint32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) SetCreatedBy(v int64) *OvertimeApplicationUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *OvertimeApplicationUpdate) SetNillableCreatedBy(v *uint32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) SetNillableCreatedBy(v *int64) *OvertimeApplicationUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *OvertimeApplicationUpdate) SetNillableCreatedBy(v *uint32) *OvertimeAp
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *OvertimeApplicationUpdate) AddCreatedBy(v int32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) AddCreatedBy(v int64) *OvertimeApplicationUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *OvertimeApplicationUpdate) ClearCreatedBy() *OvertimeApplicationUpdate
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *OvertimeApplicationUpdate) SetUpdatedBy(v uint32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) SetUpdatedBy(v int64) *OvertimeApplicationUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *OvertimeApplicationUpdate) SetNillableUpdatedBy(v *uint32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) SetNillableUpdatedBy(v *int64) *OvertimeApplicationUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *OvertimeApplicationUpdate) SetNillableUpdatedBy(v *uint32) *OvertimeAp
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *OvertimeApplicationUpdate) AddUpdatedBy(v int32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) AddUpdatedBy(v int64) *OvertimeApplicationUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *OvertimeApplicationUpdate) ClearUpdatedBy() *OvertimeApplicationUpdate
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *OvertimeApplicationUpdate) SetDeletedBy(v uint32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) SetDeletedBy(v int64) *OvertimeApplicationUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *OvertimeApplicationUpdate) SetNillableDeletedBy(v *uint32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) SetNillableDeletedBy(v *int64) *OvertimeApplicationUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *OvertimeApplicationUpdate) SetNillableDeletedBy(v *uint32) *OvertimeAp
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *OvertimeApplicationUpdate) AddDeletedBy(v int32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) AddDeletedBy(v int64) *OvertimeApplicationUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -233,14 +233,14 @@ func (_u *OvertimeApplicationUpdate) ClearOvertimeStatus() *OvertimeApplicationU
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (_u *OvertimeApplicationUpdate) SetInstanceID(v uint32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) SetInstanceID(v int64) *OvertimeApplicationUpdate {
 	_u.mutation.ResetInstanceID()
 	_u.mutation.SetInstanceID(v)
 	return _u
 }
 
 // SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
-func (_u *OvertimeApplicationUpdate) SetNillableInstanceID(v *uint32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) SetNillableInstanceID(v *int64) *OvertimeApplicationUpdate {
 	if v != nil {
 		_u.SetInstanceID(*v)
 	}
@@ -248,7 +248,7 @@ func (_u *OvertimeApplicationUpdate) SetNillableInstanceID(v *uint32) *OvertimeA
 }
 
 // AddInstanceID adds value to the "instance_id" field.
-func (_u *OvertimeApplicationUpdate) AddInstanceID(v int32) *OvertimeApplicationUpdate {
+func (_u *OvertimeApplicationUpdate) AddInstanceID(v int64) *OvertimeApplicationUpdate {
 	_u.mutation.AddInstanceID(v)
 	return _u
 }
@@ -321,7 +321,7 @@ func (_u *OvertimeApplicationUpdate) sqlSave(ctx context.Context) (_node int, er
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(overtimeapplication.Table, overtimeapplication.Columns, sqlgraph.NewFieldSpec(overtimeapplication.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(overtimeapplication.Table, overtimeapplication.Columns, sqlgraph.NewFieldSpec(overtimeapplication.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -345,34 +345,34 @@ func (_u *OvertimeApplicationUpdate) sqlSave(ctx context.Context) (_node int, er
 		_spec.ClearField(overtimeapplication.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(overtimeapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(overtimeapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(overtimeapplication.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(overtimeapplication.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(overtimeapplication.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(overtimeapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(overtimeapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(overtimeapplication.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(overtimeapplication.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(overtimeapplication.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(overtimeapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(overtimeapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(overtimeapplication.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(overtimeapplication.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(overtimeapplication.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(overtimeapplication.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(overtimeapplication.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Reason(); ok {
 		_spec.SetField(overtimeapplication.FieldReason, field.TypeString, value)
@@ -396,13 +396,13 @@ func (_u *OvertimeApplicationUpdate) sqlSave(ctx context.Context) (_node int, er
 		_spec.ClearField(overtimeapplication.FieldOvertimeStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.InstanceID(); ok {
-		_spec.SetField(overtimeapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldInstanceID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedInstanceID(); ok {
-		_spec.AddField(overtimeapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.AddField(overtimeapplication.FieldInstanceID, field.TypeInt64, value)
 	}
 	if _u.mutation.InstanceIDCleared() {
-		_spec.ClearField(overtimeapplication.FieldInstanceID, field.TypeUint32)
+		_spec.ClearField(overtimeapplication.FieldInstanceID, field.TypeInt64)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -467,14 +467,14 @@ func (_u *OvertimeApplicationUpdateOne) ClearDeletedAt() *OvertimeApplicationUpd
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *OvertimeApplicationUpdateOne) SetCreatedBy(v uint32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) SetCreatedBy(v int64) *OvertimeApplicationUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *OvertimeApplicationUpdateOne) SetNillableCreatedBy(v *uint32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) SetNillableCreatedBy(v *int64) *OvertimeApplicationUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -482,7 +482,7 @@ func (_u *OvertimeApplicationUpdateOne) SetNillableCreatedBy(v *uint32) *Overtim
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *OvertimeApplicationUpdateOne) AddCreatedBy(v int32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) AddCreatedBy(v int64) *OvertimeApplicationUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -494,14 +494,14 @@ func (_u *OvertimeApplicationUpdateOne) ClearCreatedBy() *OvertimeApplicationUpd
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *OvertimeApplicationUpdateOne) SetUpdatedBy(v uint32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) SetUpdatedBy(v int64) *OvertimeApplicationUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *OvertimeApplicationUpdateOne) SetNillableUpdatedBy(v *uint32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) SetNillableUpdatedBy(v *int64) *OvertimeApplicationUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -509,7 +509,7 @@ func (_u *OvertimeApplicationUpdateOne) SetNillableUpdatedBy(v *uint32) *Overtim
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *OvertimeApplicationUpdateOne) AddUpdatedBy(v int32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) AddUpdatedBy(v int64) *OvertimeApplicationUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -521,14 +521,14 @@ func (_u *OvertimeApplicationUpdateOne) ClearUpdatedBy() *OvertimeApplicationUpd
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *OvertimeApplicationUpdateOne) SetDeletedBy(v uint32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) SetDeletedBy(v int64) *OvertimeApplicationUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *OvertimeApplicationUpdateOne) SetNillableDeletedBy(v *uint32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) SetNillableDeletedBy(v *int64) *OvertimeApplicationUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -536,7 +536,7 @@ func (_u *OvertimeApplicationUpdateOne) SetNillableDeletedBy(v *uint32) *Overtim
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *OvertimeApplicationUpdateOne) AddDeletedBy(v int32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) AddDeletedBy(v int64) *OvertimeApplicationUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -630,14 +630,14 @@ func (_u *OvertimeApplicationUpdateOne) ClearOvertimeStatus() *OvertimeApplicati
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (_u *OvertimeApplicationUpdateOne) SetInstanceID(v uint32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) SetInstanceID(v int64) *OvertimeApplicationUpdateOne {
 	_u.mutation.ResetInstanceID()
 	_u.mutation.SetInstanceID(v)
 	return _u
 }
 
 // SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
-func (_u *OvertimeApplicationUpdateOne) SetNillableInstanceID(v *uint32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) SetNillableInstanceID(v *int64) *OvertimeApplicationUpdateOne {
 	if v != nil {
 		_u.SetInstanceID(*v)
 	}
@@ -645,7 +645,7 @@ func (_u *OvertimeApplicationUpdateOne) SetNillableInstanceID(v *uint32) *Overti
 }
 
 // AddInstanceID adds value to the "instance_id" field.
-func (_u *OvertimeApplicationUpdateOne) AddInstanceID(v int32) *OvertimeApplicationUpdateOne {
+func (_u *OvertimeApplicationUpdateOne) AddInstanceID(v int64) *OvertimeApplicationUpdateOne {
 	_u.mutation.AddInstanceID(v)
 	return _u
 }
@@ -731,7 +731,7 @@ func (_u *OvertimeApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Ove
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(overtimeapplication.Table, overtimeapplication.Columns, sqlgraph.NewFieldSpec(overtimeapplication.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(overtimeapplication.Table, overtimeapplication.Columns, sqlgraph.NewFieldSpec(overtimeapplication.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "OvertimeApplication.id" for update`)}
@@ -772,34 +772,34 @@ func (_u *OvertimeApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Ove
 		_spec.ClearField(overtimeapplication.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(overtimeapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(overtimeapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(overtimeapplication.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(overtimeapplication.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(overtimeapplication.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(overtimeapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(overtimeapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(overtimeapplication.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(overtimeapplication.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(overtimeapplication.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(overtimeapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(overtimeapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(overtimeapplication.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(overtimeapplication.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(overtimeapplication.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(overtimeapplication.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(overtimeapplication.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Reason(); ok {
 		_spec.SetField(overtimeapplication.FieldReason, field.TypeString, value)
@@ -823,13 +823,13 @@ func (_u *OvertimeApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Ove
 		_spec.ClearField(overtimeapplication.FieldOvertimeStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.InstanceID(); ok {
-		_spec.SetField(overtimeapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldInstanceID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedInstanceID(); ok {
-		_spec.AddField(overtimeapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.AddField(overtimeapplication.FieldInstanceID, field.TypeInt64, value)
 	}
 	if _u.mutation.InstanceIDCleared() {
-		_spec.ClearField(overtimeapplication.FieldInstanceID, field.TypeUint32)
+		_spec.ClearField(overtimeapplication.FieldInstanceID, field.TypeInt64)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &OvertimeApplication{config: _u.config}

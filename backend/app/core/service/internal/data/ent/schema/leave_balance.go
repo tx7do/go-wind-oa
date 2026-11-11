@@ -30,10 +30,10 @@ func (LeaveBalance) Annotations() []schema.Annotation {
 // Fields of the LeaveBalance.
 func (LeaveBalance) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("user_id").
+		field.Int64("user_id").
 			Comment("用户ID"),
 
-		field.Uint32("leave_type_id").
+		field.Int64("leave_type_id").
 			Comment("请假类型ID"),
 
 		field.Int("year").
@@ -52,10 +52,10 @@ func (LeaveBalance) Fields() []ent.Field {
 // Mixin of the LeaveBalance.
 func (LeaveBalance) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[int64]{},
 	}
 }
 

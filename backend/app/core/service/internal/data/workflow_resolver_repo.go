@@ -38,7 +38,7 @@ func NewWorkflowResolverRepo(
 // ResolveOrgLeader 解析用户主组织单元的负责人（LEADER 审批人类型）。
 // 链路：user_org_unit（ACTIVE，is_primary 优先）→ org_unit.leader_id（指向 user）。
 // 无组织归属或组织未设负责人时返回明确错误——在提交/推进时即失败，避免流程挂起。
-func (r *WorkflowResolverRepo) ResolveOrgLeader(ctx context.Context, tenantID uint32, userID uint32) (uint32, error) {
+func (r *WorkflowResolverRepo) ResolveOrgLeader(ctx context.Context, tenantID int64, userID int64) (int64, error) {
 	links, err := r.entClient.Client().UserOrgUnit.Query().
 		Where(
 			userorgunit.UserIDEQ(userID),
@@ -73,8 +73,8 @@ func (r *WorkflowResolverRepo) ResolveOrgLeader(ctx context.Context, tenantID ui
 
 // ResolveUsernames 批量解析用户姓名（sys_users.username），供列表展示回填。
 // 查不到的用户不出现在结果里。
-func (r *WorkflowResolverRepo) ResolveUsernames(ctx context.Context, tenantID uint32, userIDs []uint32) (map[uint32]string, error) {
-	names := make(map[uint32]string, len(userIDs))
+func (r *WorkflowResolverRepo) ResolveUsernames(ctx context.Context, tenantID int64, userIDs []int64) (map[int64]string, error) {
+	names := make(map[int64]string, len(userIDs))
 	if len(userIDs) == 0 {
 		return names, nil
 	}
@@ -98,7 +98,7 @@ func (r *WorkflowResolverRepo) ResolveUsernames(ctx context.Context, tenantID ui
 
 // UserIsActive 校验目标用户存在且处于 Normal 状态（非禁用/过期/关闭）。
 // 用于转办目标校验，防止把待办转给不存在或不可用账号。
-func (r *WorkflowResolverRepo) UserIsActive(ctx context.Context, tenantID uint32, userID uint32) (bool, error) {
+func (r *WorkflowResolverRepo) UserIsActive(ctx context.Context, tenantID int64, userID int64) (bool, error) {
 	if userID == 0 {
 		return false, nil
 	}
@@ -118,7 +118,7 @@ func (r *WorkflowResolverRepo) UserIsActive(ctx context.Context, tenantID uint32
 
 // ResolvePositionHolders 解析指定职位的在职持有者（POSITION 审批人类型，可解析出多人，
 // 用于会签/或签的多人节点）。
-func (r *WorkflowResolverRepo) ResolvePositionHolders(ctx context.Context, tenantID uint32, positionID uint32) ([]uint32, error) {
+func (r *WorkflowResolverRepo) ResolvePositionHolders(ctx context.Context, tenantID int64, positionID int64) ([]int64, error) {
 	links, err := r.entClient.Client().UserPosition.Query().
 		Where(
 			userposition.PositionIDEQ(positionID),
@@ -130,7 +130,7 @@ func (r *WorkflowResolverRepo) ResolvePositionHolders(ctx context.Context, tenan
 		r.log.Errorf("query position holders failed: %s", err.Error())
 		return nil, oaV1.ErrorInternalServerError("query position holders failed")
 	}
-	userIDs := make([]uint32, 0, len(links))
+	userIDs := make([]int64, 0, len(links))
 	for _, link := range links {
 		if link.UserID != nil && *link.UserID != 0 {
 			userIDs = append(userIDs, *link.UserID)

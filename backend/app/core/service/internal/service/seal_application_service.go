@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	businessTypeSealApplication     = "SEAL_APPLICATION"
-	sealDefinitionCode              = "SEAL_APPLICATION"
-	sealDefinitionVersion           = int32(1)
+	businessTypeSealApplication = "SEAL_APPLICATION"
+	sealDefinitionCode          = "SEAL_APPLICATION"
+	sealDefinitionVersion       = int32(1)
 )
 
 type SealApplicationService struct {
@@ -51,8 +51,8 @@ func NewSealApplicationService(
 	return svc
 }
 
-func (s *SealApplicationService) fillApplicantNames(ctx context.Context, tid uint32, items []*oaV1.SealApplication) {
-	ids := make([]uint32, 0, len(items))
+func (s *SealApplicationService) fillApplicantNames(ctx context.Context, tid int64, items []*oaV1.SealApplication) {
+	ids := make([]int64, 0, len(items))
 	for _, it := range items {
 		if it.GetCreatedBy() != 0 {
 			ids = append(ids, it.GetCreatedBy())
@@ -108,7 +108,7 @@ func (s *SealApplicationService) SubmitSealApplication(ctx context.Context, req 
 	return &oaV1.SubmitSealApplicationResponse{Id: appID, InstanceId: resp.GetInstanceId()}, nil
 }
 
-func (s *SealApplicationService) ensureWorkflowDefinition(ctx context.Context, tid, uid uint32) {
+func (s *SealApplicationService) ensureWorkflowDefinition(ctx context.Context, tid, uid int64) {
 	if _, err := s.definitionRepo.GetByCodeVersion(ctx, sealDefinitionCode, sealDefinitionVersion); err == nil {
 		return
 	}
@@ -138,7 +138,7 @@ func (s *SealApplicationService) ListSealApplications(ctx context.Context, req *
 		return nil, err
 	}
 	s.fillApplicantNames(ctx, tid, items)
-	return &oaV1.ListSealApplicationsResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.ListSealApplicationsResponse{Items: items, Total: int64(total)}, nil
 }
 
 func (s *SealApplicationService) GetSealApplication(ctx context.Context, req *oaV1.GetSealApplicationRequest) (*oaV1.SealApplication, error) {
@@ -157,7 +157,7 @@ func (s *SealApplicationService) GetSealApplication(ctx context.Context, req *oa
 	return item, nil
 }
 
-func (s *SealApplicationService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID uint32, status oaV1.WorkflowInstance_InstanceStatus) {
+func (s *SealApplicationService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID int64, status oaV1.WorkflowInstance_InstanceStatus) {
 	entity, err := s.appRepo.GetEntity(ctx, tenantID, businessID)
 	if err != nil || entity == nil {
 		s.log.Errorf("seal hook load application %d failed: %v", businessID, err)

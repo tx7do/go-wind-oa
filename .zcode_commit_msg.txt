@@ -1,0 +1,6 @@
+feat!: ID 类型定版 int64——全链从 uint32 收敛到有符号 int64
+
+跟随上游 go-wind-admin 的 int64 定版：proto 字段/ent schema/手写代码/生成代码全链切换。
+- 上游 pin 同步：go-crud/entgo v0.2.6、viewer v0.0.9、pagination v0.1.0、audit v0.0.4
+- ID 形态字段全 int64；非 ID 保留原语义（计数/延迟/状态码/审批步骤号类 uint32，聚合 total/count int64）
+- 门禁：build/gofmt/vet 全绿；test 失败集与 HEAD 基线等价（既有环境性/上游遗留失败，零新增）

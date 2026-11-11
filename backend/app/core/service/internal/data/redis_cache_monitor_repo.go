@@ -67,7 +67,7 @@ func (r *RedisCacheMonitorRepo) GetInfo(ctx context.Context) (*redisCacheV1.Redi
 	if n, err := r.rdb.DBSize(ctx).Result(); err != nil {
 		r.log.Errorf("redis DBSIZE failed: %s", err.Error())
 	} else if n >= 0 {
-		info.DbSize = uint64(n)
+		info.DbSize = int64(n)
 	}
 
 	// SLOWLOG GET：最近慢日志条目。
@@ -96,12 +96,12 @@ func mapSlowLogEntries(in []redis.SlowLog) []*redisCacheV1.SlowLogEntry {
 			args[j] = sanitizeUTF8(a)
 		}
 		out = append(out, &redisCacheV1.SlowLogEntry{
-			Id:            s.ID,
-			CreatedAt:     timestamppb.New(s.Time),
-			DurationUsec:  s.Duration.Microseconds(),
-			Args:          args,
-			ClientAddr:    sanitizeUTF8(s.ClientAddr),
-			ClientName:    sanitizeUTF8(s.ClientName),
+			Id:           s.ID,
+			CreatedAt:    timestamppb.New(s.Time),
+			DurationUsec: s.Duration.Microseconds(),
+			Args:         args,
+			ClientAddr:   sanitizeUTF8(s.ClientAddr),
+			ClientName:   sanitizeUTF8(s.ClientName),
 		})
 	}
 	return out

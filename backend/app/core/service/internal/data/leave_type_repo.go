@@ -49,7 +49,7 @@ func leaveTypeToDTO(e *ent.LeaveType) *oaV1.LeaveType {
 	return dto
 }
 
-func (r *LeaveTypeRepo) Create(ctx context.Context, tid, uid uint32, code, name string) (*oaV1.LeaveType, error) {
+func (r *LeaveTypeRepo) Create(ctx context.Context, tid, uid int64, code, name string) (*oaV1.LeaveType, error) {
 	entity, err := r.entClient.Client().LeaveType.Create().
 		SetCode(code).
 		SetName(name).
@@ -64,7 +64,7 @@ func (r *LeaveTypeRepo) Create(ctx context.Context, tid, uid uint32, code, name 
 	return leaveTypeToDTO(entity), nil
 }
 
-func (r *LeaveTypeRepo) GetByID(ctx context.Context, tid, id uint32) (*oaV1.LeaveType, error) {
+func (r *LeaveTypeRepo) GetByID(ctx context.Context, tid, id int64) (*oaV1.LeaveType, error) {
 	entity, err := r.entClient.Client().LeaveType.Query().
 		Where(
 			leavetype.IDEQ(id),
@@ -81,7 +81,7 @@ func (r *LeaveTypeRepo) GetByID(ctx context.Context, tid, id uint32) (*oaV1.Leav
 	return leaveTypeToDTO(entity), nil
 }
 
-func (r *LeaveTypeRepo) List(ctx context.Context, tid uint32, paging *paginationV1.PagingRequest) (*oaV1.ListLeaveTypesResponse, error) {
+func (r *LeaveTypeRepo) List(ctx context.Context, tid int64, paging *paginationV1.PagingRequest) (*oaV1.ListLeaveTypesResponse, error) {
 	query := r.entClient.Client().LeaveType.Query().
 		Where(leavetype.TenantIDEQ(tid))
 
@@ -111,5 +111,5 @@ func (r *LeaveTypeRepo) List(ctx context.Context, tid uint32, paging *pagination
 	for _, e := range entities {
 		items = append(items, leaveTypeToDTO(e))
 	}
-	return &oaV1.ListLeaveTypesResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.ListLeaveTypesResponse{Items: items, Total: int64(total)}, nil
 }

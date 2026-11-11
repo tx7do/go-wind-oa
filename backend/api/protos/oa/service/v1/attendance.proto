@@ -70,7 +70,7 @@ message Holiday {
     WORKDAY = 1;  // 调休上班（该日照常结算，即使落在周末）
   }
 
-  optional uint32 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,
     (gnostic.openapi.v3.property) = { description: "ID" }
@@ -91,7 +91,7 @@ message Holiday {
     (gnostic.openapi.v3.property) = { description: "名称（如 国庆节/调休上班）" }
   ]; // 名称
 
-  optional uint32 tenant_id = 40 [
+  optional int64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
@@ -101,7 +101,7 @@ message Holiday {
 
 // 删除节假日设置 - 请求
 message DeleteHolidayRequest {
-  uint32 id = 1 [
+  int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "ID" }
   ]; // ID
@@ -118,12 +118,12 @@ message ListHolidaysRequest {
 // 查询节假日 - 回应
 message ListHolidaysResponse {
   repeated Holiday items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 地理围栏
 message Geofence {
-  optional uint32 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,
     (gnostic.openapi.v3.property) = { description: "ID" }
@@ -149,7 +149,7 @@ message Geofence {
     (gnostic.openapi.v3.property) = { description: "围栏半径（米）" }
   ]; // 围栏半径
 
-  optional uint32 tenant_id = 40 [
+  optional int64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
@@ -159,7 +159,7 @@ message Geofence {
 
 // 删除地理围栏 - 请求
 message DeleteGeofenceRequest {
-  uint32 id = 1 [
+  int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "ID" }
   ]; // ID
@@ -171,12 +171,12 @@ message ListGeofencesRequest {}
 // 查询地理围栏 - 回应
 message ListGeofencesResponse {
   repeated Geofence items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // Wi-Fi 指纹白名单
 message WifiFingerprint {
-  optional uint32 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,
     (gnostic.openapi.v3.property) = { description: "ID" }
@@ -192,7 +192,7 @@ message WifiFingerprint {
     (gnostic.openapi.v3.property) = { description: "BSSID（校验比对键）" }
   ]; // BSSID
 
-  optional uint32 tenant_id = 40 [
+  optional int64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
@@ -202,7 +202,7 @@ message WifiFingerprint {
 
 // 删除 Wi-Fi 指纹白名单 - 请求
 message DeleteWifiFingerprintRequest {
-  uint32 id = 1 [
+  int64 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = { description: "ID" }
   ]; // ID
@@ -214,7 +214,7 @@ message ListWifiFingerprintsRequest {}
 // 查询 Wi-Fi 指纹白名单 - 回应
 message ListWifiFingerprintsResponse {
   repeated WifiFingerprint items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 打卡记录（用户 x 工作日 唯一）
@@ -229,13 +229,13 @@ message AttendanceRecord {
     ON_LEAVE = 5;     // 请假（已通过的请假单覆盖当日）
   }
 
-  optional uint32 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,
     (gnostic.openapi.v3.property) = { description: "记录ID" }
   ]; // 记录ID
 
-  optional uint32 user_id = 2 [
+  optional int64 user_id = 2 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = { description: "用户ID" }
   ]; // 用户ID
@@ -295,13 +295,13 @@ message AttendanceRecord {
     (gnostic.openapi.v3.property) = { description: "当日结算结果" }
   ]; // 当日结算结果
 
-  optional uint32 tenant_id = 40 [
+  optional int64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
 
-  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}];
-  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}];
+  optional int64 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}];
+  optional int64 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}];
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];
   optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];
@@ -309,7 +309,7 @@ message AttendanceRecord {
 
 // 考勤设置（每租户一行）
 message AttendanceSetting {
-  optional uint32 id = 1 [
+  optional int64 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,
     (gnostic.openapi.v3.property) = { description: "设置ID" }
@@ -325,7 +325,7 @@ message AttendanceSetting {
     (gnostic.openapi.v3.property) = { description: "下班时间（HH:MM，默认 18:00），早于记早退" }
   ]; // 下班时间
 
-  optional uint32 tenant_id = 40 [
+  optional int64 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
@@ -372,7 +372,7 @@ message ListAttendanceRecordsRequest {
     (gnostic.openapi.v3.property) = { description: "工作日（日期，零点）" }
   ]; // 工作日
 
-  uint32 user_id = 2 [
+  int64 user_id = 2 [
     json_name = "userId",
     (gnostic.openapi.v3.property) = { description: "用户ID，0=全部" }
   ]; // 用户ID
@@ -391,7 +391,7 @@ message ListAttendanceRecordsRequest {
 // 查询记录 - 回应
 message ListAttendanceRecordsResponse {
   repeated AttendanceRecord items = 1;
-  uint64 total = 2;
+  int64 total = 2;
 }
 
 // 工作日结算 - 请求（admin）

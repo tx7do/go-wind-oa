@@ -70,14 +70,14 @@ func (_u *GeofenceUpdate) ClearDeletedAt() *GeofenceUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *GeofenceUpdate) SetCreatedBy(v uint32) *GeofenceUpdate {
+func (_u *GeofenceUpdate) SetCreatedBy(v int64) *GeofenceUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *GeofenceUpdate) SetNillableCreatedBy(v *uint32) *GeofenceUpdate {
+func (_u *GeofenceUpdate) SetNillableCreatedBy(v *int64) *GeofenceUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *GeofenceUpdate) SetNillableCreatedBy(v *uint32) *GeofenceUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *GeofenceUpdate) AddCreatedBy(v int32) *GeofenceUpdate {
+func (_u *GeofenceUpdate) AddCreatedBy(v int64) *GeofenceUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *GeofenceUpdate) ClearCreatedBy() *GeofenceUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *GeofenceUpdate) SetUpdatedBy(v uint32) *GeofenceUpdate {
+func (_u *GeofenceUpdate) SetUpdatedBy(v int64) *GeofenceUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *GeofenceUpdate) SetNillableUpdatedBy(v *uint32) *GeofenceUpdate {
+func (_u *GeofenceUpdate) SetNillableUpdatedBy(v *int64) *GeofenceUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *GeofenceUpdate) SetNillableUpdatedBy(v *uint32) *GeofenceUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *GeofenceUpdate) AddUpdatedBy(v int32) *GeofenceUpdate {
+func (_u *GeofenceUpdate) AddUpdatedBy(v int64) *GeofenceUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *GeofenceUpdate) ClearUpdatedBy() *GeofenceUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *GeofenceUpdate) SetDeletedBy(v uint32) *GeofenceUpdate {
+func (_u *GeofenceUpdate) SetDeletedBy(v int64) *GeofenceUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *GeofenceUpdate) SetNillableDeletedBy(v *uint32) *GeofenceUpdate {
+func (_u *GeofenceUpdate) SetNillableDeletedBy(v *int64) *GeofenceUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *GeofenceUpdate) SetNillableDeletedBy(v *uint32) *GeofenceUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *GeofenceUpdate) AddDeletedBy(v int32) *GeofenceUpdate {
+func (_u *GeofenceUpdate) AddDeletedBy(v int64) *GeofenceUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -279,7 +279,7 @@ func (_u *GeofenceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(geofence.Table, geofence.Columns, sqlgraph.NewFieldSpec(geofence.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(geofence.Table, geofence.Columns, sqlgraph.NewFieldSpec(geofence.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -303,34 +303,34 @@ func (_u *GeofenceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(geofence.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(geofence.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(geofence.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(geofence.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(geofence.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(geofence.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(geofence.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(geofence.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(geofence.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(geofence.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(geofence.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(geofence.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(geofence.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(geofence.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(geofence.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(geofence.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(geofence.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(geofence.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(geofence.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(geofence.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(geofence.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(geofence.FieldName, field.TypeString, value)
@@ -416,14 +416,14 @@ func (_u *GeofenceUpdateOne) ClearDeletedAt() *GeofenceUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *GeofenceUpdateOne) SetCreatedBy(v uint32) *GeofenceUpdateOne {
+func (_u *GeofenceUpdateOne) SetCreatedBy(v int64) *GeofenceUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *GeofenceUpdateOne) SetNillableCreatedBy(v *uint32) *GeofenceUpdateOne {
+func (_u *GeofenceUpdateOne) SetNillableCreatedBy(v *int64) *GeofenceUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -431,7 +431,7 @@ func (_u *GeofenceUpdateOne) SetNillableCreatedBy(v *uint32) *GeofenceUpdateOne 
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *GeofenceUpdateOne) AddCreatedBy(v int32) *GeofenceUpdateOne {
+func (_u *GeofenceUpdateOne) AddCreatedBy(v int64) *GeofenceUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -443,14 +443,14 @@ func (_u *GeofenceUpdateOne) ClearCreatedBy() *GeofenceUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *GeofenceUpdateOne) SetUpdatedBy(v uint32) *GeofenceUpdateOne {
+func (_u *GeofenceUpdateOne) SetUpdatedBy(v int64) *GeofenceUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *GeofenceUpdateOne) SetNillableUpdatedBy(v *uint32) *GeofenceUpdateOne {
+func (_u *GeofenceUpdateOne) SetNillableUpdatedBy(v *int64) *GeofenceUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -458,7 +458,7 @@ func (_u *GeofenceUpdateOne) SetNillableUpdatedBy(v *uint32) *GeofenceUpdateOne 
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *GeofenceUpdateOne) AddUpdatedBy(v int32) *GeofenceUpdateOne {
+func (_u *GeofenceUpdateOne) AddUpdatedBy(v int64) *GeofenceUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -470,14 +470,14 @@ func (_u *GeofenceUpdateOne) ClearUpdatedBy() *GeofenceUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *GeofenceUpdateOne) SetDeletedBy(v uint32) *GeofenceUpdateOne {
+func (_u *GeofenceUpdateOne) SetDeletedBy(v int64) *GeofenceUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *GeofenceUpdateOne) SetNillableDeletedBy(v *uint32) *GeofenceUpdateOne {
+func (_u *GeofenceUpdateOne) SetNillableDeletedBy(v *int64) *GeofenceUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -485,7 +485,7 @@ func (_u *GeofenceUpdateOne) SetNillableDeletedBy(v *uint32) *GeofenceUpdateOne 
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *GeofenceUpdateOne) AddDeletedBy(v int32) *GeofenceUpdateOne {
+func (_u *GeofenceUpdateOne) AddDeletedBy(v int64) *GeofenceUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -638,7 +638,7 @@ func (_u *GeofenceUpdateOne) sqlSave(ctx context.Context) (_node *Geofence, err 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(geofence.Table, geofence.Columns, sqlgraph.NewFieldSpec(geofence.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(geofence.Table, geofence.Columns, sqlgraph.NewFieldSpec(geofence.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Geofence.id" for update`)}
@@ -679,34 +679,34 @@ func (_u *GeofenceUpdateOne) sqlSave(ctx context.Context) (_node *Geofence, err 
 		_spec.ClearField(geofence.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(geofence.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(geofence.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(geofence.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(geofence.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(geofence.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(geofence.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(geofence.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(geofence.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(geofence.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(geofence.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(geofence.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(geofence.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(geofence.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(geofence.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(geofence.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(geofence.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(geofence.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(geofence.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(geofence.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(geofence.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(geofence.FieldName, field.TypeString, value)

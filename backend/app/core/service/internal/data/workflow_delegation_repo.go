@@ -51,7 +51,7 @@ func delegationToDTO(e *ent.WorkflowDelegation) *oaV1.WorkflowDelegation {
 
 // Upsert 创建或更新委托记录（按 delegator_user_id 租户内唯一）。
 func (r *WorkflowDelegationRepo) Upsert(
-	ctx context.Context, tid, uid, delegatorUserID, delegateUserID uint32,
+	ctx context.Context, tid, uid, delegatorUserID, delegateUserID int64,
 ) (*oaV1.WorkflowDelegation, error) {
 	builder := r.entClient.Client().WorkflowDelegation.Create().
 		SetTenantID(tid).
@@ -68,7 +68,7 @@ func (r *WorkflowDelegationRepo) Upsert(
 }
 
 func (r *WorkflowDelegationRepo) List(
-	ctx context.Context, tid uint32, paging *paginationV1.PagingRequest,
+	ctx context.Context, tid int64, paging *paginationV1.PagingRequest,
 ) (*oaV1.ListWorkflowDelegationResponse, error) {
 	query := r.entClient.Client().WorkflowDelegation.Query().
 		Where(workflowdelegation.TenantIDEQ(tid))
@@ -99,11 +99,11 @@ func (r *WorkflowDelegationRepo) List(
 	for _, e := range entities {
 		items = append(items, delegationToDTO(e))
 	}
-	return &oaV1.ListWorkflowDelegationResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.ListWorkflowDelegationResponse{Items: items, Total: int64(total)}, nil
 }
 
 func (r *WorkflowDelegationRepo) DeleteByID(
-	ctx context.Context, tid, id uint32,
+	ctx context.Context, tid, id int64,
 ) error {
 	n, err := r.entClient.Client().WorkflowDelegation.Delete().
 		Where(
@@ -124,8 +124,8 @@ func (r *WorkflowDelegationRepo) DeleteByID(
 // ResolveDelegate 返回 delegatorUserID 当前生效的代理人 ID。
 // 无委托记录时返回 (0, nil)。
 func (r *WorkflowDelegationRepo) ResolveDelegate(
-	ctx context.Context, tid, delegatorUserID uint32,
-) (uint32, error) {
+	ctx context.Context, tid, delegatorUserID int64,
+) (int64, error) {
 	entity, err := r.entClient.Client().WorkflowDelegation.Query().
 		Where(
 			workflowdelegation.TenantIDEQ(tid),

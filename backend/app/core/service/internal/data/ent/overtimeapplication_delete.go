@@ -40,7 +40,7 @@ func (_d *OvertimeApplicationDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *OvertimeApplicationDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(overtimeapplication.Table, sqlgraph.NewFieldSpec(overtimeapplication.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewDeleteSpec(overtimeapplication.Table, sqlgraph.NewFieldSpec(overtimeapplication.FieldID, field.TypeInt64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

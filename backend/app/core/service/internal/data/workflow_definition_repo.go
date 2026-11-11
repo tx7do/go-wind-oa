@@ -162,7 +162,7 @@ func (r *WorkflowDefinitionRepo) Create(ctx context.Context, req *oaV1.CreateWor
 }
 
 // UpdateStatus 切換定義狀態（啟用/禁用）。服務層已校驗 update_mask 僅含 definition_status。
-func (r *WorkflowDefinitionRepo) UpdateStatus(ctx context.Context, id uint32, newStatus *oaV1.WorkflowDefinition_DefinitionStatus) error {
+func (r *WorkflowDefinitionRepo) UpdateStatus(ctx context.Context, id int64, newStatus *oaV1.WorkflowDefinition_DefinitionStatus) error {
 	if id == 0 || newStatus == nil {
 		return oaV1.ErrorBadRequest("invalid parameter")
 	}

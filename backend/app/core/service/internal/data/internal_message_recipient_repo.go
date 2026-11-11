@@ -84,7 +84,7 @@ func (r *InternalMessageRecipientRepo) Count(ctx context.Context, whereCond []fu
 	return count, nil
 }
 
-func (r *InternalMessageRecipientRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *InternalMessageRecipientRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	// 强制按调用者 user_id 过滤——只能查询自己的收件箱记录
 	callerUserID, hasUser := viewerUserIDFromContext(ctx)
 	if !hasUser {
@@ -234,7 +234,7 @@ func (r *InternalMessageRecipientRepo) Update(ctx context.Context, req *internal
 	return err
 }
 
-func (r *InternalMessageRecipientRepo) Delete(ctx context.Context, id uint32) error {
+func (r *InternalMessageRecipientRepo) Delete(ctx context.Context, id int64) error {
 	if id == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
@@ -329,7 +329,7 @@ func (r *InternalMessageRecipientRepo) MarkNotificationsStatus(ctx context.Conte
 func (r *InternalMessageRecipientRepo) CleanByMessageID(
 	ctx context.Context,
 	tx *ent.Tx,
-	messageID uint32,
+	messageID int64,
 ) error {
 	if messageID == 0 {
 		return nil
@@ -377,7 +377,7 @@ func (r *InternalMessageRecipientRepo) DeleteNotificationFromInbox(ctx context.C
 
 // ListInboxMessageIDs 收件箱查询：按收件人过滤，排除已删除/已撤销，最新在前。
 // 供 app 端 ListMyMessages 组装消息内容。
-func (r *InternalMessageRecipientRepo) ListInboxMessageIDs(ctx context.Context, tenantID, recipientUserID uint32, limit int) ([]uint32, error) {
+func (r *InternalMessageRecipientRepo) ListInboxMessageIDs(ctx context.Context, tenantID, recipientUserID int64, limit int) ([]int64, error) {
 	entities, err := r.entClient.Client().InternalMessageRecipient.Query().
 		Where(
 			internalmessagerecipient.TenantIDEQ(tenantID),
@@ -394,7 +394,7 @@ func (r *InternalMessageRecipientRepo) ListInboxMessageIDs(ctx context.Context, 
 		r.log.Errorf("list inbox recipients failed: %s", err.Error())
 		return nil, internalMessageV1.ErrorInternalServerError("list inbox failed")
 	}
-	ids := make([]uint32, 0, len(entities))
+	ids := make([]int64, 0, len(entities))
 	for _, e := range entities {
 		if e.MessageID != nil && *e.MessageID != 0 {
 			ids = append(ids, *e.MessageID)

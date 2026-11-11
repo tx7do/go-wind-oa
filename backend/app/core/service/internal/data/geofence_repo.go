@@ -32,7 +32,7 @@ func NewGeofenceRepo(
 }
 
 // ListByTenant 列出本租户全部地理围栏。
-func (r *GeofenceRepo) ListByTenant(ctx context.Context, tid uint32) ([]*ent.Geofence, error) {
+func (r *GeofenceRepo) ListByTenant(ctx context.Context, tid int64) ([]*ent.Geofence, error) {
 	entities, err := r.entClient.Client().Geofence.Query().
 		Where(geofence.TenantIDEQ(tid)).
 		All(ctx)
@@ -44,7 +44,7 @@ func (r *GeofenceRepo) ListByTenant(ctx context.Context, tid uint32) ([]*ent.Geo
 }
 
 // ListByTenantDTO 同上，转 DTO。
-func (r *GeofenceRepo) ListByTenantDTO(ctx context.Context, tid uint32) ([]*oaV1.Geofence, error) {
+func (r *GeofenceRepo) ListByTenantDTO(ctx context.Context, tid int64) ([]*oaV1.Geofence, error) {
 	entities, err := r.ListByTenant(ctx, tid)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (r *GeofenceRepo) ListByTenantDTO(ctx context.Context, tid uint32) ([]*oaV1
 }
 
 // Upsert 按 id 存在则覆盖，否则创建。
-func (r *GeofenceRepo) Upsert(ctx context.Context, tid, uid uint32, id uint32, name string, latitude, longitude, radius float64) error {
+func (r *GeofenceRepo) Upsert(ctx context.Context, tid, uid int64, id int64, name string, latitude, longitude, radius float64) error {
 	if id == 0 {
 		if _, err := r.entClient.Client().Geofence.Create().
 			SetName(name).
@@ -89,7 +89,7 @@ func (r *GeofenceRepo) Upsert(ctx context.Context, tid, uid uint32, id uint32, n
 }
 
 // Delete 删除地理围栏。
-func (r *GeofenceRepo) Delete(ctx context.Context, tid, id uint32) error {
+func (r *GeofenceRepo) Delete(ctx context.Context, tid, id int64) error {
 	if _, err := r.entClient.Client().Geofence.Delete().
 		Where(geofence.IDEQ(id), geofence.TenantIDEQ(tid)).
 		Exec(ctx); err != nil {

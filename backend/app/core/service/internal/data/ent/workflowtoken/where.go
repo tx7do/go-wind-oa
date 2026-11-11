@@ -11,47 +11,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.WorkflowToken {
+func ID(id int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.WorkflowToken {
+func IDEQ(id int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.WorkflowToken {
+func IDNEQ(id int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.WorkflowToken {
+func IDIn(ids ...int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.WorkflowToken {
+func IDNotIn(ids ...int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.WorkflowToken {
+func IDGT(id int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.WorkflowToken {
+func IDGTE(id int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.WorkflowToken {
+func IDLT(id int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.WorkflowToken {
+func IDLTE(id int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldLTE(FieldID, id))
 }
 
@@ -76,12 +76,12 @@ func NodeID(v string) predicate.WorkflowToken {
 }
 
 // ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
-func ParentID(v uint32) predicate.WorkflowToken {
+func ParentID(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldEQ(FieldParentID, v))
 }
 
 // ChildInstanceID applies equality check predicate on the "child_instance_id" field. It's identical to ChildInstanceIDEQ.
-func ChildInstanceID(v uint32) predicate.WorkflowToken {
+func ChildInstanceID(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldEQ(FieldChildInstanceID, v))
 }
 
@@ -351,42 +351,42 @@ func TokenStatusNotNil() predicate.WorkflowToken {
 }
 
 // ParentIDEQ applies the EQ predicate on the "parent_id" field.
-func ParentIDEQ(v uint32) predicate.WorkflowToken {
+func ParentIDEQ(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldEQ(FieldParentID, v))
 }
 
 // ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
-func ParentIDNEQ(v uint32) predicate.WorkflowToken {
+func ParentIDNEQ(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldNEQ(FieldParentID, v))
 }
 
 // ParentIDIn applies the In predicate on the "parent_id" field.
-func ParentIDIn(vs ...uint32) predicate.WorkflowToken {
+func ParentIDIn(vs ...int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldIn(FieldParentID, vs...))
 }
 
 // ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
-func ParentIDNotIn(vs ...uint32) predicate.WorkflowToken {
+func ParentIDNotIn(vs ...int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldNotIn(FieldParentID, vs...))
 }
 
 // ParentIDGT applies the GT predicate on the "parent_id" field.
-func ParentIDGT(v uint32) predicate.WorkflowToken {
+func ParentIDGT(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldGT(FieldParentID, v))
 }
 
 // ParentIDGTE applies the GTE predicate on the "parent_id" field.
-func ParentIDGTE(v uint32) predicate.WorkflowToken {
+func ParentIDGTE(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldGTE(FieldParentID, v))
 }
 
 // ParentIDLT applies the LT predicate on the "parent_id" field.
-func ParentIDLT(v uint32) predicate.WorkflowToken {
+func ParentIDLT(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldLT(FieldParentID, v))
 }
 
 // ParentIDLTE applies the LTE predicate on the "parent_id" field.
-func ParentIDLTE(v uint32) predicate.WorkflowToken {
+func ParentIDLTE(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldLTE(FieldParentID, v))
 }
 
@@ -401,42 +401,42 @@ func ParentIDNotNil() predicate.WorkflowToken {
 }
 
 // ChildInstanceIDEQ applies the EQ predicate on the "child_instance_id" field.
-func ChildInstanceIDEQ(v uint32) predicate.WorkflowToken {
+func ChildInstanceIDEQ(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldEQ(FieldChildInstanceID, v))
 }
 
 // ChildInstanceIDNEQ applies the NEQ predicate on the "child_instance_id" field.
-func ChildInstanceIDNEQ(v uint32) predicate.WorkflowToken {
+func ChildInstanceIDNEQ(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldNEQ(FieldChildInstanceID, v))
 }
 
 // ChildInstanceIDIn applies the In predicate on the "child_instance_id" field.
-func ChildInstanceIDIn(vs ...uint32) predicate.WorkflowToken {
+func ChildInstanceIDIn(vs ...int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldIn(FieldChildInstanceID, vs...))
 }
 
 // ChildInstanceIDNotIn applies the NotIn predicate on the "child_instance_id" field.
-func ChildInstanceIDNotIn(vs ...uint32) predicate.WorkflowToken {
+func ChildInstanceIDNotIn(vs ...int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldNotIn(FieldChildInstanceID, vs...))
 }
 
 // ChildInstanceIDGT applies the GT predicate on the "child_instance_id" field.
-func ChildInstanceIDGT(v uint32) predicate.WorkflowToken {
+func ChildInstanceIDGT(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldGT(FieldChildInstanceID, v))
 }
 
 // ChildInstanceIDGTE applies the GTE predicate on the "child_instance_id" field.
-func ChildInstanceIDGTE(v uint32) predicate.WorkflowToken {
+func ChildInstanceIDGTE(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldGTE(FieldChildInstanceID, v))
 }
 
 // ChildInstanceIDLT applies the LT predicate on the "child_instance_id" field.
-func ChildInstanceIDLT(v uint32) predicate.WorkflowToken {
+func ChildInstanceIDLT(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldLT(FieldChildInstanceID, v))
 }
 
 // ChildInstanceIDLTE applies the LTE predicate on the "child_instance_id" field.
-func ChildInstanceIDLTE(v uint32) predicate.WorkflowToken {
+func ChildInstanceIDLTE(v int64) predicate.WorkflowToken {
 	return predicate.WorkflowToken(sql.FieldLTE(FieldChildInstanceID, v))
 }
 

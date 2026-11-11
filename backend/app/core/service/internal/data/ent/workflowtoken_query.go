@@ -109,8 +109,8 @@ func (_q *WorkflowTokenQuery) FirstX(ctx context.Context) *WorkflowToken {
 
 // FirstID returns the first WorkflowToken ID from the query.
 // Returns a *NotFoundError when no WorkflowToken ID was found.
-func (_q *WorkflowTokenQuery) FirstID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *WorkflowTokenQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -122,7 +122,7 @@ func (_q *WorkflowTokenQuery) FirstID(ctx context.Context) (id uint32, err error
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *WorkflowTokenQuery) FirstIDX(ctx context.Context) uint32 {
+func (_q *WorkflowTokenQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -160,8 +160,8 @@ func (_q *WorkflowTokenQuery) OnlyX(ctx context.Context) *WorkflowToken {
 // OnlyID is like Only, but returns the only WorkflowToken ID in the query.
 // Returns a *NotSingularError when more than one WorkflowToken ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *WorkflowTokenQuery) OnlyID(ctx context.Context) (id uint32, err error) {
-	var ids []uint32
+func (_q *WorkflowTokenQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -177,7 +177,7 @@ func (_q *WorkflowTokenQuery) OnlyID(ctx context.Context) (id uint32, err error)
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *WorkflowTokenQuery) OnlyIDX(ctx context.Context) uint32 {
+func (_q *WorkflowTokenQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -205,7 +205,7 @@ func (_q *WorkflowTokenQuery) AllX(ctx context.Context) []*WorkflowToken {
 }
 
 // IDs executes the query and returns a list of WorkflowToken IDs.
-func (_q *WorkflowTokenQuery) IDs(ctx context.Context) (ids []uint32, err error) {
+func (_q *WorkflowTokenQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -217,7 +217,7 @@ func (_q *WorkflowTokenQuery) IDs(ctx context.Context) (ids []uint32, err error)
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *WorkflowTokenQuery) IDsX(ctx context.Context) []uint32 {
+func (_q *WorkflowTokenQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -416,8 +416,8 @@ func (_q *WorkflowTokenQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 }
 
 func (_q *WorkflowTokenQuery) loadInstance(ctx context.Context, query *WorkflowInstanceQuery, nodes []*WorkflowToken, init func(*WorkflowToken), assign func(*WorkflowToken, *WorkflowInstance)) error {
-	ids := make([]uint32, 0, len(nodes))
-	nodeids := make(map[uint32][]*WorkflowToken)
+	ids := make([]int64, 0, len(nodes))
+	nodeids := make(map[int64][]*WorkflowToken)
 	for i := range nodes {
 		if nodes[i].instance_id == nil {
 			continue
@@ -461,7 +461,7 @@ func (_q *WorkflowTokenQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *WorkflowTokenQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(workflowtoken.Table, workflowtoken.Columns, sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewQuerySpec(workflowtoken.Table, workflowtoken.Columns, sqlgraph.NewFieldSpec(workflowtoken.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

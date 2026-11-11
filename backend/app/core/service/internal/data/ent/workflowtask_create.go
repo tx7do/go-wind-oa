@@ -66,13 +66,13 @@ func (_c *WorkflowTaskCreate) SetNillableDeletedAt(v *time.Time) *WorkflowTaskCr
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *WorkflowTaskCreate) SetCreatedBy(v uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetCreatedBy(v int64) *WorkflowTaskCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *WorkflowTaskCreate) SetNillableCreatedBy(v *uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetNillableCreatedBy(v *int64) *WorkflowTaskCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -80,13 +80,13 @@ func (_c *WorkflowTaskCreate) SetNillableCreatedBy(v *uint32) *WorkflowTaskCreat
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *WorkflowTaskCreate) SetUpdatedBy(v uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetUpdatedBy(v int64) *WorkflowTaskCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *WorkflowTaskCreate) SetNillableUpdatedBy(v *uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetNillableUpdatedBy(v *int64) *WorkflowTaskCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -94,13 +94,13 @@ func (_c *WorkflowTaskCreate) SetNillableUpdatedBy(v *uint32) *WorkflowTaskCreat
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *WorkflowTaskCreate) SetDeletedBy(v uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetDeletedBy(v int64) *WorkflowTaskCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *WorkflowTaskCreate) SetNillableDeletedBy(v *uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetNillableDeletedBy(v *int64) *WorkflowTaskCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -108,13 +108,13 @@ func (_c *WorkflowTaskCreate) SetNillableDeletedBy(v *uint32) *WorkflowTaskCreat
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *WorkflowTaskCreate) SetTenantID(v uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetTenantID(v int64) *WorkflowTaskCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *WorkflowTaskCreate) SetNillableTenantID(v *uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetNillableTenantID(v *int64) *WorkflowTaskCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -136,13 +136,13 @@ func (_c *WorkflowTaskCreate) SetNillableNodeID(v *string) *WorkflowTaskCreate {
 }
 
 // SetAssigneeUserID sets the "assignee_user_id" field.
-func (_c *WorkflowTaskCreate) SetAssigneeUserID(v uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetAssigneeUserID(v int64) *WorkflowTaskCreate {
 	_c.mutation.SetAssigneeUserID(v)
 	return _c
 }
 
 // SetNillableAssigneeUserID sets the "assignee_user_id" field if the given value is not nil.
-func (_c *WorkflowTaskCreate) SetNillableAssigneeUserID(v *uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetNillableAssigneeUserID(v *int64) *WorkflowTaskCreate {
 	if v != nil {
 		_c.SetAssigneeUserID(*v)
 	}
@@ -192,13 +192,13 @@ func (_c *WorkflowTaskCreate) SetNillableTaskStatus(v *workflowtask.TaskStatus) 
 }
 
 // SetTokenID sets the "token_id" field.
-func (_c *WorkflowTaskCreate) SetTokenID(v uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetTokenID(v int64) *WorkflowTaskCreate {
 	_c.mutation.SetTokenID(v)
 	return _c
 }
 
 // SetNillableTokenID sets the "token_id" field if the given value is not nil.
-func (_c *WorkflowTaskCreate) SetNillableTokenID(v *uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetNillableTokenID(v *int64) *WorkflowTaskCreate {
 	if v != nil {
 		_c.SetTokenID(*v)
 	}
@@ -290,19 +290,19 @@ func (_c *WorkflowTaskCreate) SetNillableCandidateGroups(v *string) *WorkflowTas
 }
 
 // SetID sets the "id" field.
-func (_c *WorkflowTaskCreate) SetID(v uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetID(v int64) *WorkflowTaskCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // SetInstanceID sets the "instance" edge to the WorkflowInstance entity by ID.
-func (_c *WorkflowTaskCreate) SetInstanceID(id uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetInstanceID(id int64) *WorkflowTaskCreate {
 	_c.mutation.SetInstanceID(id)
 	return _c
 }
 
 // SetNillableInstanceID sets the "instance" edge to the WorkflowInstance entity by ID if the given value is not nil.
-func (_c *WorkflowTaskCreate) SetNillableInstanceID(id *uint32) *WorkflowTaskCreate {
+func (_c *WorkflowTaskCreate) SetNillableInstanceID(id *int64) *WorkflowTaskCreate {
 	if id != nil {
 		_c = _c.SetInstanceID(*id)
 	}
@@ -390,7 +390,7 @@ func (_c *WorkflowTaskCreate) sqlSave(ctx context.Context) (*WorkflowTask, error
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -400,7 +400,7 @@ func (_c *WorkflowTaskCreate) sqlSave(ctx context.Context) (*WorkflowTask, error
 func (_c *WorkflowTaskCreate) createSpec() (*WorkflowTask, *sqlgraph.CreateSpec) {
 	var (
 		_node = &WorkflowTask{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(workflowtask.Table, sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(workflowtask.Table, sqlgraph.NewFieldSpec(workflowtask.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -420,19 +420,19 @@ func (_c *WorkflowTaskCreate) createSpec() (*WorkflowTask, *sqlgraph.CreateSpec)
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(workflowtask.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(workflowtask.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(workflowtask.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(workflowtask.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.NodeID(); ok {
@@ -440,7 +440,7 @@ func (_c *WorkflowTaskCreate) createSpec() (*WorkflowTask, *sqlgraph.CreateSpec)
 		_node.NodeID = &value
 	}
 	if value, ok := _c.mutation.AssigneeUserID(); ok {
-		_spec.SetField(workflowtask.FieldAssigneeUserID, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldAssigneeUserID, field.TypeInt64, value)
 		_node.AssigneeUserID = &value
 	}
 	if value, ok := _c.mutation.RemindedAt(); ok {
@@ -456,7 +456,7 @@ func (_c *WorkflowTaskCreate) createSpec() (*WorkflowTask, *sqlgraph.CreateSpec)
 		_node.TaskStatus = &value
 	}
 	if value, ok := _c.mutation.TokenID(); ok {
-		_spec.SetField(workflowtask.FieldTokenID, field.TypeUint32, value)
+		_spec.SetField(workflowtask.FieldTokenID, field.TypeInt64, value)
 		_node.TokenID = &value
 	}
 	if value, ok := _c.mutation.TaskName(); ok {
@@ -491,7 +491,7 @@ func (_c *WorkflowTaskCreate) createSpec() (*WorkflowTask, *sqlgraph.CreateSpec)
 			Columns: []string{workflowtask.InstanceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(workflowinstance.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -589,7 +589,7 @@ func (u *WorkflowTaskUpsert) ClearDeletedAt() *WorkflowTaskUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WorkflowTaskUpsert) SetCreatedBy(v uint32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) SetCreatedBy(v int64) *WorkflowTaskUpsert {
 	u.Set(workflowtask.FieldCreatedBy, v)
 	return u
 }
@@ -601,7 +601,7 @@ func (u *WorkflowTaskUpsert) UpdateCreatedBy() *WorkflowTaskUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WorkflowTaskUpsert) AddCreatedBy(v uint32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) AddCreatedBy(v int64) *WorkflowTaskUpsert {
 	u.Add(workflowtask.FieldCreatedBy, v)
 	return u
 }
@@ -613,7 +613,7 @@ func (u *WorkflowTaskUpsert) ClearCreatedBy() *WorkflowTaskUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WorkflowTaskUpsert) SetUpdatedBy(v uint32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) SetUpdatedBy(v int64) *WorkflowTaskUpsert {
 	u.Set(workflowtask.FieldUpdatedBy, v)
 	return u
 }
@@ -625,7 +625,7 @@ func (u *WorkflowTaskUpsert) UpdateUpdatedBy() *WorkflowTaskUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WorkflowTaskUpsert) AddUpdatedBy(v uint32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) AddUpdatedBy(v int64) *WorkflowTaskUpsert {
 	u.Add(workflowtask.FieldUpdatedBy, v)
 	return u
 }
@@ -637,7 +637,7 @@ func (u *WorkflowTaskUpsert) ClearUpdatedBy() *WorkflowTaskUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WorkflowTaskUpsert) SetDeletedBy(v uint32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) SetDeletedBy(v int64) *WorkflowTaskUpsert {
 	u.Set(workflowtask.FieldDeletedBy, v)
 	return u
 }
@@ -649,7 +649,7 @@ func (u *WorkflowTaskUpsert) UpdateDeletedBy() *WorkflowTaskUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WorkflowTaskUpsert) AddDeletedBy(v uint32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) AddDeletedBy(v int64) *WorkflowTaskUpsert {
 	u.Add(workflowtask.FieldDeletedBy, v)
 	return u
 }
@@ -679,7 +679,7 @@ func (u *WorkflowTaskUpsert) ClearNodeID() *WorkflowTaskUpsert {
 }
 
 // SetAssigneeUserID sets the "assignee_user_id" field.
-func (u *WorkflowTaskUpsert) SetAssigneeUserID(v uint32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) SetAssigneeUserID(v int64) *WorkflowTaskUpsert {
 	u.Set(workflowtask.FieldAssigneeUserID, v)
 	return u
 }
@@ -691,7 +691,7 @@ func (u *WorkflowTaskUpsert) UpdateAssigneeUserID() *WorkflowTaskUpsert {
 }
 
 // AddAssigneeUserID adds v to the "assignee_user_id" field.
-func (u *WorkflowTaskUpsert) AddAssigneeUserID(v uint32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) AddAssigneeUserID(v int64) *WorkflowTaskUpsert {
 	u.Add(workflowtask.FieldAssigneeUserID, v)
 	return u
 }
@@ -757,7 +757,7 @@ func (u *WorkflowTaskUpsert) ClearTaskStatus() *WorkflowTaskUpsert {
 }
 
 // SetTokenID sets the "token_id" field.
-func (u *WorkflowTaskUpsert) SetTokenID(v uint32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) SetTokenID(v int64) *WorkflowTaskUpsert {
 	u.Set(workflowtask.FieldTokenID, v)
 	return u
 }
@@ -769,7 +769,7 @@ func (u *WorkflowTaskUpsert) UpdateTokenID() *WorkflowTaskUpsert {
 }
 
 // AddTokenID adds v to the "token_id" field.
-func (u *WorkflowTaskUpsert) AddTokenID(v uint32) *WorkflowTaskUpsert {
+func (u *WorkflowTaskUpsert) AddTokenID(v int64) *WorkflowTaskUpsert {
 	u.Add(workflowtask.FieldTokenID, v)
 	return u
 }
@@ -985,14 +985,14 @@ func (u *WorkflowTaskUpsertOne) ClearDeletedAt() *WorkflowTaskUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WorkflowTaskUpsertOne) SetCreatedBy(v uint32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) SetCreatedBy(v int64) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WorkflowTaskUpsertOne) AddCreatedBy(v uint32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) AddCreatedBy(v int64) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1013,14 +1013,14 @@ func (u *WorkflowTaskUpsertOne) ClearCreatedBy() *WorkflowTaskUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WorkflowTaskUpsertOne) SetUpdatedBy(v uint32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) SetUpdatedBy(v int64) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WorkflowTaskUpsertOne) AddUpdatedBy(v uint32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) AddUpdatedBy(v int64) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1041,14 +1041,14 @@ func (u *WorkflowTaskUpsertOne) ClearUpdatedBy() *WorkflowTaskUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WorkflowTaskUpsertOne) SetDeletedBy(v uint32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) SetDeletedBy(v int64) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WorkflowTaskUpsertOne) AddDeletedBy(v uint32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) AddDeletedBy(v int64) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1090,14 +1090,14 @@ func (u *WorkflowTaskUpsertOne) ClearNodeID() *WorkflowTaskUpsertOne {
 }
 
 // SetAssigneeUserID sets the "assignee_user_id" field.
-func (u *WorkflowTaskUpsertOne) SetAssigneeUserID(v uint32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) SetAssigneeUserID(v int64) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetAssigneeUserID(v)
 	})
 }
 
 // AddAssigneeUserID adds v to the "assignee_user_id" field.
-func (u *WorkflowTaskUpsertOne) AddAssigneeUserID(v uint32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) AddAssigneeUserID(v int64) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddAssigneeUserID(v)
 	})
@@ -1181,14 +1181,14 @@ func (u *WorkflowTaskUpsertOne) ClearTaskStatus() *WorkflowTaskUpsertOne {
 }
 
 // SetTokenID sets the "token_id" field.
-func (u *WorkflowTaskUpsertOne) SetTokenID(v uint32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) SetTokenID(v int64) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetTokenID(v)
 	})
 }
 
 // AddTokenID adds v to the "token_id" field.
-func (u *WorkflowTaskUpsertOne) AddTokenID(v uint32) *WorkflowTaskUpsertOne {
+func (u *WorkflowTaskUpsertOne) AddTokenID(v int64) *WorkflowTaskUpsertOne {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddTokenID(v)
 	})
@@ -1350,7 +1350,7 @@ func (u *WorkflowTaskUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *WorkflowTaskUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *WorkflowTaskUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1359,7 +1359,7 @@ func (u *WorkflowTaskUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *WorkflowTaskUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *WorkflowTaskUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1416,7 +1416,7 @@ func (_c *WorkflowTaskCreateBulk) Save(ctx context.Context) ([]*WorkflowTask, er
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1597,14 +1597,14 @@ func (u *WorkflowTaskUpsertBulk) ClearDeletedAt() *WorkflowTaskUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WorkflowTaskUpsertBulk) SetCreatedBy(v uint32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) SetCreatedBy(v int64) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WorkflowTaskUpsertBulk) AddCreatedBy(v uint32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) AddCreatedBy(v int64) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1625,14 +1625,14 @@ func (u *WorkflowTaskUpsertBulk) ClearCreatedBy() *WorkflowTaskUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WorkflowTaskUpsertBulk) SetUpdatedBy(v uint32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) SetUpdatedBy(v int64) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WorkflowTaskUpsertBulk) AddUpdatedBy(v uint32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) AddUpdatedBy(v int64) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1653,14 +1653,14 @@ func (u *WorkflowTaskUpsertBulk) ClearUpdatedBy() *WorkflowTaskUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WorkflowTaskUpsertBulk) SetDeletedBy(v uint32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) SetDeletedBy(v int64) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WorkflowTaskUpsertBulk) AddDeletedBy(v uint32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) AddDeletedBy(v int64) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1702,14 +1702,14 @@ func (u *WorkflowTaskUpsertBulk) ClearNodeID() *WorkflowTaskUpsertBulk {
 }
 
 // SetAssigneeUserID sets the "assignee_user_id" field.
-func (u *WorkflowTaskUpsertBulk) SetAssigneeUserID(v uint32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) SetAssigneeUserID(v int64) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetAssigneeUserID(v)
 	})
 }
 
 // AddAssigneeUserID adds v to the "assignee_user_id" field.
-func (u *WorkflowTaskUpsertBulk) AddAssigneeUserID(v uint32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) AddAssigneeUserID(v int64) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddAssigneeUserID(v)
 	})
@@ -1793,14 +1793,14 @@ func (u *WorkflowTaskUpsertBulk) ClearTaskStatus() *WorkflowTaskUpsertBulk {
 }
 
 // SetTokenID sets the "token_id" field.
-func (u *WorkflowTaskUpsertBulk) SetTokenID(v uint32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) SetTokenID(v int64) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.SetTokenID(v)
 	})
 }
 
 // AddTokenID adds v to the "token_id" field.
-func (u *WorkflowTaskUpsertBulk) AddTokenID(v uint32) *WorkflowTaskUpsertBulk {
+func (u *WorkflowTaskUpsertBulk) AddTokenID(v int64) *WorkflowTaskUpsertBulk {
 	return u.Update(func(s *WorkflowTaskUpsert) {
 		s.AddTokenID(v)
 	})

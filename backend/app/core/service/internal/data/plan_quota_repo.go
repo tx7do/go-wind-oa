@@ -25,8 +25,8 @@ type PlanQuotaRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper           *mapper.CopierMapper[identityV1.PlanQuota, ent.PlanQuota]
-	quotaTypeConv    *mapper.EnumTypeConverter[identityV1.PlanQuota_QuotaType, planquota.QuotaType]
+	mapper        *mapper.CopierMapper[identityV1.PlanQuota, ent.PlanQuota]
+	quotaTypeConv *mapper.EnumTypeConverter[identityV1.PlanQuota_QuotaType, planquota.QuotaType]
 
 	repository *entCrud.Repository[
 		ent.PlanQuotaQuery, ent.PlanQuotaSelect,
@@ -121,12 +121,12 @@ func (r *PlanQuotaRepo) List(ctx context.Context, req *paginationV1.PagingReques
 	}
 
 	return &identityV1.ListPlanQuotaResponse{
-		Total: uint64(count),
+		Total: int64(count),
 		Items: dtos,
 	}, nil
 }
 
-func (r *PlanQuotaRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *PlanQuotaRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().PlanQuota.Query().
 		Where(planquota.IDEQ(id)).
 		Exist(ctx)
@@ -268,7 +268,7 @@ func (r *PlanQuotaRepo) Update(ctx context.Context, req *identityV1.UpdatePlanQu
 	return err
 }
 
-func (r *PlanQuotaRepo) Delete(ctx context.Context, id uint32) error {
+func (r *PlanQuotaRepo) Delete(ctx context.Context, id int64) error {
 	if id == 0 {
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}

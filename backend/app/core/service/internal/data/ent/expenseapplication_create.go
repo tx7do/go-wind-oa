@@ -66,13 +66,13 @@ func (_c *ExpenseApplicationCreate) SetNillableDeletedAt(v *time.Time) *ExpenseA
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *ExpenseApplicationCreate) SetCreatedBy(v uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetCreatedBy(v int64) *ExpenseApplicationCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *ExpenseApplicationCreate) SetNillableCreatedBy(v *uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetNillableCreatedBy(v *int64) *ExpenseApplicationCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -80,13 +80,13 @@ func (_c *ExpenseApplicationCreate) SetNillableCreatedBy(v *uint32) *ExpenseAppl
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *ExpenseApplicationCreate) SetUpdatedBy(v uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetUpdatedBy(v int64) *ExpenseApplicationCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *ExpenseApplicationCreate) SetNillableUpdatedBy(v *uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetNillableUpdatedBy(v *int64) *ExpenseApplicationCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -94,13 +94,13 @@ func (_c *ExpenseApplicationCreate) SetNillableUpdatedBy(v *uint32) *ExpenseAppl
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *ExpenseApplicationCreate) SetDeletedBy(v uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetDeletedBy(v int64) *ExpenseApplicationCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *ExpenseApplicationCreate) SetNillableDeletedBy(v *uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetNillableDeletedBy(v *int64) *ExpenseApplicationCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -108,13 +108,13 @@ func (_c *ExpenseApplicationCreate) SetNillableDeletedBy(v *uint32) *ExpenseAppl
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *ExpenseApplicationCreate) SetTenantID(v uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetTenantID(v int64) *ExpenseApplicationCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *ExpenseApplicationCreate) SetNillableTenantID(v *uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetNillableTenantID(v *int64) *ExpenseApplicationCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -164,13 +164,13 @@ func (_c *ExpenseApplicationCreate) SetNillableExpenseStatus(v *expenseapplicati
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (_c *ExpenseApplicationCreate) SetInstanceID(v uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetInstanceID(v int64) *ExpenseApplicationCreate {
 	_c.mutation.SetInstanceID(v)
 	return _c
 }
 
 // SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
-func (_c *ExpenseApplicationCreate) SetNillableInstanceID(v *uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetNillableInstanceID(v *int64) *ExpenseApplicationCreate {
 	if v != nil {
 		_c.SetInstanceID(*v)
 	}
@@ -178,20 +178,20 @@ func (_c *ExpenseApplicationCreate) SetNillableInstanceID(v *uint32) *ExpenseApp
 }
 
 // SetID sets the "id" field.
-func (_c *ExpenseApplicationCreate) SetID(v uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) SetID(v int64) *ExpenseApplicationCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // AddItemIDs adds the "items" edge to the ExpenseItem entity by IDs.
-func (_c *ExpenseApplicationCreate) AddItemIDs(ids ...uint32) *ExpenseApplicationCreate {
+func (_c *ExpenseApplicationCreate) AddItemIDs(ids ...int64) *ExpenseApplicationCreate {
 	_c.mutation.AddItemIDs(ids...)
 	return _c
 }
 
 // AddItems adds the "items" edges to the ExpenseItem entity.
 func (_c *ExpenseApplicationCreate) AddItems(v ...*ExpenseItem) *ExpenseApplicationCreate {
-	ids := make([]uint32, len(v))
+	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
@@ -293,7 +293,7 @@ func (_c *ExpenseApplicationCreate) sqlSave(ctx context.Context) (*ExpenseApplic
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -303,7 +303,7 @@ func (_c *ExpenseApplicationCreate) sqlSave(ctx context.Context) (*ExpenseApplic
 func (_c *ExpenseApplicationCreate) createSpec() (*ExpenseApplication, *sqlgraph.CreateSpec) {
 	var (
 		_node = &ExpenseApplication{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(expenseapplication.Table, sqlgraph.NewFieldSpec(expenseapplication.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(expenseapplication.Table, sqlgraph.NewFieldSpec(expenseapplication.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -323,19 +323,19 @@ func (_c *ExpenseApplicationCreate) createSpec() (*ExpenseApplication, *sqlgraph
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(expenseapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(expenseapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(expenseapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(expenseapplication.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Title(); ok {
@@ -351,7 +351,7 @@ func (_c *ExpenseApplicationCreate) createSpec() (*ExpenseApplication, *sqlgraph
 		_node.ExpenseStatus = &value
 	}
 	if value, ok := _c.mutation.InstanceID(); ok {
-		_spec.SetField(expenseapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.SetField(expenseapplication.FieldInstanceID, field.TypeInt64, value)
 		_node.InstanceID = &value
 	}
 	if nodes := _c.mutation.ItemsIDs(); len(nodes) > 0 {
@@ -362,7 +362,7 @@ func (_c *ExpenseApplicationCreate) createSpec() (*ExpenseApplication, *sqlgraph
 			Columns: []string{expenseapplication.ItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeUint32),
+				IDSpec: sqlgraph.NewFieldSpec(expenseitem.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -459,7 +459,7 @@ func (u *ExpenseApplicationUpsert) ClearDeletedAt() *ExpenseApplicationUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ExpenseApplicationUpsert) SetCreatedBy(v uint32) *ExpenseApplicationUpsert {
+func (u *ExpenseApplicationUpsert) SetCreatedBy(v int64) *ExpenseApplicationUpsert {
 	u.Set(expenseapplication.FieldCreatedBy, v)
 	return u
 }
@@ -471,7 +471,7 @@ func (u *ExpenseApplicationUpsert) UpdateCreatedBy() *ExpenseApplicationUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ExpenseApplicationUpsert) AddCreatedBy(v uint32) *ExpenseApplicationUpsert {
+func (u *ExpenseApplicationUpsert) AddCreatedBy(v int64) *ExpenseApplicationUpsert {
 	u.Add(expenseapplication.FieldCreatedBy, v)
 	return u
 }
@@ -483,7 +483,7 @@ func (u *ExpenseApplicationUpsert) ClearCreatedBy() *ExpenseApplicationUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ExpenseApplicationUpsert) SetUpdatedBy(v uint32) *ExpenseApplicationUpsert {
+func (u *ExpenseApplicationUpsert) SetUpdatedBy(v int64) *ExpenseApplicationUpsert {
 	u.Set(expenseapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -495,7 +495,7 @@ func (u *ExpenseApplicationUpsert) UpdateUpdatedBy() *ExpenseApplicationUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ExpenseApplicationUpsert) AddUpdatedBy(v uint32) *ExpenseApplicationUpsert {
+func (u *ExpenseApplicationUpsert) AddUpdatedBy(v int64) *ExpenseApplicationUpsert {
 	u.Add(expenseapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -507,7 +507,7 @@ func (u *ExpenseApplicationUpsert) ClearUpdatedBy() *ExpenseApplicationUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ExpenseApplicationUpsert) SetDeletedBy(v uint32) *ExpenseApplicationUpsert {
+func (u *ExpenseApplicationUpsert) SetDeletedBy(v int64) *ExpenseApplicationUpsert {
 	u.Set(expenseapplication.FieldDeletedBy, v)
 	return u
 }
@@ -519,7 +519,7 @@ func (u *ExpenseApplicationUpsert) UpdateDeletedBy() *ExpenseApplicationUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ExpenseApplicationUpsert) AddDeletedBy(v uint32) *ExpenseApplicationUpsert {
+func (u *ExpenseApplicationUpsert) AddDeletedBy(v int64) *ExpenseApplicationUpsert {
 	u.Add(expenseapplication.FieldDeletedBy, v)
 	return u
 }
@@ -579,7 +579,7 @@ func (u *ExpenseApplicationUpsert) ClearExpenseStatus() *ExpenseApplicationUpser
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *ExpenseApplicationUpsert) SetInstanceID(v uint32) *ExpenseApplicationUpsert {
+func (u *ExpenseApplicationUpsert) SetInstanceID(v int64) *ExpenseApplicationUpsert {
 	u.Set(expenseapplication.FieldInstanceID, v)
 	return u
 }
@@ -591,7 +591,7 @@ func (u *ExpenseApplicationUpsert) UpdateInstanceID() *ExpenseApplicationUpsert 
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *ExpenseApplicationUpsert) AddInstanceID(v uint32) *ExpenseApplicationUpsert {
+func (u *ExpenseApplicationUpsert) AddInstanceID(v int64) *ExpenseApplicationUpsert {
 	u.Add(expenseapplication.FieldInstanceID, v)
 	return u
 }
@@ -699,14 +699,14 @@ func (u *ExpenseApplicationUpsertOne) ClearDeletedAt() *ExpenseApplicationUpsert
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ExpenseApplicationUpsertOne) SetCreatedBy(v uint32) *ExpenseApplicationUpsertOne {
+func (u *ExpenseApplicationUpsertOne) SetCreatedBy(v int64) *ExpenseApplicationUpsertOne {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ExpenseApplicationUpsertOne) AddCreatedBy(v uint32) *ExpenseApplicationUpsertOne {
+func (u *ExpenseApplicationUpsertOne) AddCreatedBy(v int64) *ExpenseApplicationUpsertOne {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -727,14 +727,14 @@ func (u *ExpenseApplicationUpsertOne) ClearCreatedBy() *ExpenseApplicationUpsert
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ExpenseApplicationUpsertOne) SetUpdatedBy(v uint32) *ExpenseApplicationUpsertOne {
+func (u *ExpenseApplicationUpsertOne) SetUpdatedBy(v int64) *ExpenseApplicationUpsertOne {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ExpenseApplicationUpsertOne) AddUpdatedBy(v uint32) *ExpenseApplicationUpsertOne {
+func (u *ExpenseApplicationUpsertOne) AddUpdatedBy(v int64) *ExpenseApplicationUpsertOne {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -755,14 +755,14 @@ func (u *ExpenseApplicationUpsertOne) ClearUpdatedBy() *ExpenseApplicationUpsert
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ExpenseApplicationUpsertOne) SetDeletedBy(v uint32) *ExpenseApplicationUpsertOne {
+func (u *ExpenseApplicationUpsertOne) SetDeletedBy(v int64) *ExpenseApplicationUpsertOne {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ExpenseApplicationUpsertOne) AddDeletedBy(v uint32) *ExpenseApplicationUpsertOne {
+func (u *ExpenseApplicationUpsertOne) AddDeletedBy(v int64) *ExpenseApplicationUpsertOne {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -839,14 +839,14 @@ func (u *ExpenseApplicationUpsertOne) ClearExpenseStatus() *ExpenseApplicationUp
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *ExpenseApplicationUpsertOne) SetInstanceID(v uint32) *ExpenseApplicationUpsertOne {
+func (u *ExpenseApplicationUpsertOne) SetInstanceID(v int64) *ExpenseApplicationUpsertOne {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *ExpenseApplicationUpsertOne) AddInstanceID(v uint32) *ExpenseApplicationUpsertOne {
+func (u *ExpenseApplicationUpsertOne) AddInstanceID(v int64) *ExpenseApplicationUpsertOne {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.AddInstanceID(v)
 	})
@@ -882,7 +882,7 @@ func (u *ExpenseApplicationUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *ExpenseApplicationUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *ExpenseApplicationUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -891,7 +891,7 @@ func (u *ExpenseApplicationUpsertOne) ID(ctx context.Context) (id uint32, err er
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *ExpenseApplicationUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *ExpenseApplicationUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -948,7 +948,7 @@ func (_c *ExpenseApplicationCreateBulk) Save(ctx context.Context) ([]*ExpenseApp
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1129,14 +1129,14 @@ func (u *ExpenseApplicationUpsertBulk) ClearDeletedAt() *ExpenseApplicationUpser
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *ExpenseApplicationUpsertBulk) SetCreatedBy(v uint32) *ExpenseApplicationUpsertBulk {
+func (u *ExpenseApplicationUpsertBulk) SetCreatedBy(v int64) *ExpenseApplicationUpsertBulk {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *ExpenseApplicationUpsertBulk) AddCreatedBy(v uint32) *ExpenseApplicationUpsertBulk {
+func (u *ExpenseApplicationUpsertBulk) AddCreatedBy(v int64) *ExpenseApplicationUpsertBulk {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1157,14 +1157,14 @@ func (u *ExpenseApplicationUpsertBulk) ClearCreatedBy() *ExpenseApplicationUpser
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *ExpenseApplicationUpsertBulk) SetUpdatedBy(v uint32) *ExpenseApplicationUpsertBulk {
+func (u *ExpenseApplicationUpsertBulk) SetUpdatedBy(v int64) *ExpenseApplicationUpsertBulk {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *ExpenseApplicationUpsertBulk) AddUpdatedBy(v uint32) *ExpenseApplicationUpsertBulk {
+func (u *ExpenseApplicationUpsertBulk) AddUpdatedBy(v int64) *ExpenseApplicationUpsertBulk {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1185,14 +1185,14 @@ func (u *ExpenseApplicationUpsertBulk) ClearUpdatedBy() *ExpenseApplicationUpser
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *ExpenseApplicationUpsertBulk) SetDeletedBy(v uint32) *ExpenseApplicationUpsertBulk {
+func (u *ExpenseApplicationUpsertBulk) SetDeletedBy(v int64) *ExpenseApplicationUpsertBulk {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *ExpenseApplicationUpsertBulk) AddDeletedBy(v uint32) *ExpenseApplicationUpsertBulk {
+func (u *ExpenseApplicationUpsertBulk) AddDeletedBy(v int64) *ExpenseApplicationUpsertBulk {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1269,14 +1269,14 @@ func (u *ExpenseApplicationUpsertBulk) ClearExpenseStatus() *ExpenseApplicationU
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *ExpenseApplicationUpsertBulk) SetInstanceID(v uint32) *ExpenseApplicationUpsertBulk {
+func (u *ExpenseApplicationUpsertBulk) SetInstanceID(v int64) *ExpenseApplicationUpsertBulk {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *ExpenseApplicationUpsertBulk) AddInstanceID(v uint32) *ExpenseApplicationUpsertBulk {
+func (u *ExpenseApplicationUpsertBulk) AddInstanceID(v int64) *ExpenseApplicationUpsertBulk {
 	return u.Update(func(s *ExpenseApplicationUpsert) {
 		s.AddInstanceID(v)
 	})

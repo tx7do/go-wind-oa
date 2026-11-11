@@ -19,7 +19,7 @@ import (
 type PlanModuleService struct {
 	identityV1.UnimplementedPlanModuleServiceServer
 
-	log           *log.Helper
+	log            *log.Helper
 	planModuleRepo *data.PlanModuleRepo
 }
 
@@ -52,7 +52,7 @@ func (s *PlanModuleService) Create(ctx context.Context, req *identityV1.CreatePl
 		return nil, identityV1.ErrorUnauthorized("operator context missing")
 	}
 
-	req.Data.CreatedBy = trans.Ptr(uint32(operator.GetUserId()))
+	req.Data.CreatedBy = trans.Ptr(int64(operator.GetUserId()))
 
 	if err = s.planModuleRepo.Create(ctx, req); err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func (s *PlanModuleService) Update(ctx context.Context, req *identityV1.UpdatePl
 
 	req.Data.Id = trans.Ptr(req.GetId())
 
-	req.Data.UpdatedBy = trans.Ptr(uint32(operator.GetUserId()))
+	req.Data.UpdatedBy = trans.Ptr(int64(operator.GetUserId()))
 	if req.UpdateMask != nil {
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}

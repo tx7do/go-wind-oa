@@ -54,7 +54,7 @@ func (WorkflowInstance) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint32("business_id").
+		field.Int64("business_id").
 			Comment("业务单据ID").
 			Optional().
 			Nillable(),
@@ -69,12 +69,12 @@ func (WorkflowInstance) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint32("parent_instance_id").
+		field.Int64("parent_instance_id").
 			Comment("父流程实例ID（子流程场景，go-wind-flow ParentInstanceID）").
 			Optional().
 			Nillable(),
 
-		field.Uint32("parent_token_id").
+		field.Int64("parent_token_id").
 			Comment("父流程令牌ID（子流程场景，go-wind-flow ParentTokenID）").
 			Optional().
 			Nillable(),
@@ -89,10 +89,10 @@ func (WorkflowInstance) Fields() []ent.Field {
 // Mixin of the WorkflowInstance.
 func (WorkflowInstance) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[int64]{},
 	}
 }
 

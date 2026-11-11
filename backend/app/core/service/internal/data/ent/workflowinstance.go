@@ -18,7 +18,7 @@ type WorkflowInstance struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID uint32 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -26,13 +26,13 @@ type WorkflowInstance struct {
 	// 删除时间
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建者ID
-	CreatedBy *uint32 `json:"created_by,omitempty"`
+	CreatedBy *int64 `json:"created_by,omitempty"`
 	// 更新者ID
-	UpdatedBy *uint32 `json:"updated_by,omitempty"`
+	UpdatedBy *int64 `json:"updated_by,omitempty"`
 	// 删除者ID
-	DeletedBy *uint32 `json:"deleted_by,omitempty"`
+	DeletedBy *int64 `json:"deleted_by,omitempty"`
 	// 租户ID
-	TenantID *uint32 `json:"tenant_id,omitempty"`
+	TenantID *int64 `json:"tenant_id,omitempty"`
 	// 实例状态
 	InstanceStatus *workflowinstance.InstanceStatus `json:"instance_status,omitempty"`
 	// 申请表单数据（JSON 文本）
@@ -40,21 +40,21 @@ type WorkflowInstance struct {
 	// 业务单据类型（LEAVE/EXPENSE 等，审批终结时回调业务模块）
 	BusinessType *string `json:"business_type,omitempty"`
 	// 业务单据ID
-	BusinessID *uint32 `json:"business_id,omitempty"`
+	BusinessID *int64 `json:"business_id,omitempty"`
 	// 流程定义代码（go-wind-flow DefinitionKey）
 	DefinitionKey *string `json:"definition_key,omitempty"`
 	// 流程定义版本（go-wind-flow DefinitionVersion，在途实例锁定）
 	DefinitionVersion *int `json:"definition_version,omitempty"`
 	// 父流程实例ID（子流程场景，go-wind-flow ParentInstanceID）
-	ParentInstanceID *uint32 `json:"parent_instance_id,omitempty"`
+	ParentInstanceID *int64 `json:"parent_instance_id,omitempty"`
 	// 父流程令牌ID（子流程场景，go-wind-flow ParentTokenID）
-	ParentTokenID *uint32 `json:"parent_token_id,omitempty"`
+	ParentTokenID *int64 `json:"parent_token_id,omitempty"`
 	// 实例终结时间
 	EndedAt *time.Time `json:"ended_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WorkflowInstanceQuery when eager-loading is set.
 	Edges         WorkflowInstanceEdges `json:"edges"`
-	definition_id *uint32
+	definition_id *int64
 	selectValues  sql.SelectValues
 }
 
@@ -144,7 +144,7 @@ func (_m *WorkflowInstance) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = uint32(value.Int64)
+			_m.ID = int64(value.Int64)
 		case workflowinstance.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -170,29 +170,29 @@ func (_m *WorkflowInstance) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
-				_m.CreatedBy = new(uint32)
-				*_m.CreatedBy = uint32(value.Int64)
+				_m.CreatedBy = new(int64)
+				*_m.CreatedBy = value.Int64
 			}
 		case workflowinstance.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
 			} else if value.Valid {
-				_m.UpdatedBy = new(uint32)
-				*_m.UpdatedBy = uint32(value.Int64)
+				_m.UpdatedBy = new(int64)
+				*_m.UpdatedBy = value.Int64
 			}
 		case workflowinstance.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_by", values[i])
 			} else if value.Valid {
-				_m.DeletedBy = new(uint32)
-				*_m.DeletedBy = uint32(value.Int64)
+				_m.DeletedBy = new(int64)
+				*_m.DeletedBy = value.Int64
 			}
 		case workflowinstance.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				_m.TenantID = new(uint32)
-				*_m.TenantID = uint32(value.Int64)
+				_m.TenantID = new(int64)
+				*_m.TenantID = value.Int64
 			}
 		case workflowinstance.FieldInstanceStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -219,8 +219,8 @@ func (_m *WorkflowInstance) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field business_id", values[i])
 			} else if value.Valid {
-				_m.BusinessID = new(uint32)
-				*_m.BusinessID = uint32(value.Int64)
+				_m.BusinessID = new(int64)
+				*_m.BusinessID = value.Int64
 			}
 		case workflowinstance.FieldDefinitionKey:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -240,15 +240,15 @@ func (_m *WorkflowInstance) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_instance_id", values[i])
 			} else if value.Valid {
-				_m.ParentInstanceID = new(uint32)
-				*_m.ParentInstanceID = uint32(value.Int64)
+				_m.ParentInstanceID = new(int64)
+				*_m.ParentInstanceID = value.Int64
 			}
 		case workflowinstance.FieldParentTokenID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_token_id", values[i])
 			} else if value.Valid {
-				_m.ParentTokenID = new(uint32)
-				*_m.ParentTokenID = uint32(value.Int64)
+				_m.ParentTokenID = new(int64)
+				*_m.ParentTokenID = value.Int64
 			}
 		case workflowinstance.FieldEndedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -261,8 +261,8 @@ func (_m *WorkflowInstance) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field definition_id", value)
 			} else if value.Valid {
-				_m.definition_id = new(uint32)
-				*_m.definition_id = uint32(value.Int64)
+				_m.definition_id = new(int64)
+				*_m.definition_id = int64(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

@@ -82,7 +82,7 @@ func (r *UserCredentialRepo) init() {
 	r.mapper.AppendConverters(r.credentialTypeConverter.NewConverterPair())
 }
 
-func (r *UserCredentialRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *UserCredentialRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().UserCredential.Query().
 		Where(usercredential.IDEQ(id)).
 		Exist(ctx)
@@ -248,7 +248,7 @@ func (r *UserCredentialRepo) Update(ctx context.Context, req *authenticationV1.U
 	return err
 }
 
-func (r *UserCredentialRepo) Delete(ctx context.Context, id uint32) error {
+func (r *UserCredentialRepo) Delete(ctx context.Context, id int64) error {
 	builder := r.entClient.Client().UserCredential.Delete()
 	builder.Where(usercredential.IDEQ(id))
 	if affected, err := builder.Exec(ctx); err != nil {
@@ -268,7 +268,7 @@ func (r *UserCredentialRepo) Delete(ctx context.Context, id uint32) error {
 	}
 }
 
-func (r *UserCredentialRepo) DeleteByUserId(ctx context.Context, userId uint32) error {
+func (r *UserCredentialRepo) DeleteByUserId(ctx context.Context, userId int64) error {
 	builder := r.entClient.Client().UserCredential.Delete()
 	builder.Where(usercredential.UserIDEQ(userId))
 	if affected, err := builder.Exec(ctx); err != nil {
@@ -338,7 +338,7 @@ func (r *UserCredentialRepo) Get(ctx context.Context, req *authenticationV1.GetU
 }
 
 // maybeTenantFromViewer returns the viewer's tenant id if present and >0, plus whether a viewer context exists.
-func maybeTenantFromViewer(ctx context.Context) (tenantID uint32, hasTenant bool) {
+func maybeTenantFromViewer(ctx context.Context) (tenantID int64, hasTenant bool) {
 	vc, exist := viewer.FromContext(ctx)
 	if !exist {
 		return 0, false
@@ -347,12 +347,12 @@ func maybeTenantFromViewer(ctx context.Context) (tenantID uint32, hasTenant bool
 	if tid == 0 {
 		return 0, false
 	}
-	return uint32(tid), true
+	return int64(tid), true
 }
 
 // viewerUserIDFromContext 从 viewer context 提取操作人的用户 ID。
 // 用于强制按调用者身份过滤（如收件箱只能看到自己的消息）。
-func viewerUserIDFromContext(ctx context.Context) (uint32, bool) {
+func viewerUserIDFromContext(ctx context.Context) (int64, bool) {
 	vc, exist := viewer.FromContext(ctx)
 	if !exist || vc == nil {
 		return 0, false
@@ -361,7 +361,7 @@ func viewerUserIDFromContext(ctx context.Context) (uint32, bool) {
 	if uid == 0 {
 		return 0, false
 	}
-	return uint32(uid), true
+	return int64(uid), true
 }
 
 func (r *UserCredentialRepo) GetByIdentifier(ctx context.Context, req *authenticationV1.GetUserCredentialByIdentifierRequest) (*authenticationV1.UserCredential, error) {
@@ -410,7 +410,7 @@ func (r *UserCredentialRepo) performDummyVerify(plainCredential string) {
 // (tenant_id, identity_type, identifier) 在该 tenant 内唯一，无需跨租户消歧。
 // needDecrypt 为 true 时，plainCredential 应为 base64+AES 加密密文，会自动解密。
 // 返回匹配到的用户 ID，调用方可据此通过 ID 查找用户。
-func (r *UserCredentialRepo) FindUserCredential(ctx context.Context, tenantID uint32, identityType authenticationV1.UserCredential_IdentityType, identifier, plainCredential string, needDecrypt bool) (uint32, error) {
+func (r *UserCredentialRepo) FindUserCredential(ctx context.Context, tenantID int64, identityType authenticationV1.UserCredential_IdentityType, identifier, plainCredential string, needDecrypt bool) (int64, error) {
 	if needDecrypt {
 		bytesPass, err := base64.StdEncoding.DecodeString(plainCredential)
 		if err != nil {

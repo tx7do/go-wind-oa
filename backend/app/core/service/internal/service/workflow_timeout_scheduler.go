@@ -127,7 +127,7 @@ func (s *WorkflowTimeoutScheduler) driveEngineTimers(ctx context.Context, now ti
 
 func (s *WorkflowTimeoutScheduler) remindTask(ctx context.Context, task data.PendingTaskInfo) {
 	// 催办：向审批人发送站内信提醒。
-	s.sendNotify(ctx, []uint32{task.Assignee}, "您有待审批任务超时未处理", "请尽快登录系统处理待审批事项，超时未处理将自动升级至您的上级。")
+	s.sendNotify(ctx, []int64{task.Assignee}, "您有待审批任务超时未处理", "请尽快登录系统处理待审批事项，超时未处理将自动升级至您的上级。")
 	if err := s.taskRepo.MarkReminded(ctx, task.TaskID, task.TenantID); err != nil {
 		s.log.Errorf("mark reminded for task %d failed: %s", task.TaskID, err.Error())
 	}
@@ -139,13 +139,13 @@ func (s *WorkflowTimeoutScheduler) escalateTask(ctx context.Context, task data.P
 	if err != nil {
 		s.log.Errorf("escalation resolve leader for assignee %d failed: %s", task.Assignee, err.Error())
 		// 无上级可升级：发催办但不转办。记 reminded_at 防止每小时重发。
-		s.sendNotify(ctx, []uint32{task.Assignee}, "您有待审批任务严重超时", "该任务已超时较久但仍未处理，且系统无法找到您的上级进行升级，请立即处理。")
+		s.sendNotify(ctx, []int64{task.Assignee}, "您有待审批任务严重超时", "该任务已超时较久但仍未处理，且系统无法找到您的上级进行升级，请立即处理。")
 		s.markReminded(ctx, task)
 		return
 	}
 	if leaderID == task.Assignee {
 		// 审批人即自己的上级：无法升级，仅催办。记 reminded_at 防止每小时重发。
-		s.sendNotify(ctx, []uint32{task.Assignee}, "您有待审批任务严重超时", "该任务已超时较久，请立即处理。")
+		s.sendNotify(ctx, []int64{task.Assignee}, "您有待审批任务严重超时", "该任务已超时较久，请立即处理。")
 		s.markReminded(ctx, task)
 		return
 	}
@@ -167,8 +167,8 @@ func (s *WorkflowTimeoutScheduler) escalateTask(ctx context.Context, task data.P
 	}
 
 	// 通知上级有新待办，通知原审批人任务已升级。
-	s.sendNotify(ctx, []uint32{leaderID}, "您有被转办的任务（超时升级）", "因原审批人超时未处理，该任务已自动转办给您，请登录系统处理。")
-	s.sendNotify(ctx, []uint32{task.Assignee}, "您的待审批任务已自动升级", "因您超时未处理，该任务已自动转办给您的上级。")
+	s.sendNotify(ctx, []int64{leaderID}, "您有被转办的任务（超时升级）", "因原审批人超时未处理，该任务已自动转办给您，请登录系统处理。")
+	s.sendNotify(ctx, []int64{task.Assignee}, "您的待审批任务已自动升级", "因您超时未处理，该任务已自动转办给您的上级。")
 }
 
 func (s *WorkflowTimeoutScheduler) markReminded(ctx context.Context, task data.PendingTaskInfo) {
@@ -177,7 +177,7 @@ func (s *WorkflowTimeoutScheduler) markReminded(ctx context.Context, task data.P
 	}
 }
 
-func (s *WorkflowTimeoutScheduler) sendNotify(ctx context.Context, recipients []uint32, title, content string) {
+func (s *WorkflowTimeoutScheduler) sendNotify(ctx context.Context, recipients []int64, title, content string) {
 	if len(recipients) == 0 {
 		return
 	}

@@ -92,11 +92,11 @@ func parseKey(key string) (folder, filename, ext string) {
 // recordFile 记录文件元数据到数据库
 func (s *FileTransferService) recordFile(
 	ctx context.Context,
-	tenantID, userID uint32,
+	tenantID, userID int64,
 	sourceFileName string,
 	info minio.UploadInfo,
 	downloadUrl string,
-) (uint32, error) {
+) (int64, error) {
 
 	dir, fileName, ext := parseKey(info.Key)
 
@@ -172,10 +172,10 @@ func (s *FileTransferService) directUploadFile(ctx context.Context, req *storage
 	// 从 viewer 取操作者身份，而非信任请求体里的 tenantId/userId。
 	// 与 file_repo.go Update/Delete 的取值范式一致。
 	uid, hasUser := viewerUserIDFromContext(ctx)
-	tid := uint32(0)
+	tid := int64(0)
 	hasTenant := false
 	if vc, exist := viewer.FromContext(ctx); exist && vc != nil {
-		tid = uint32(vc.TenantID())
+		tid = int64(vc.TenantID())
 		hasTenant = tid != 0
 	}
 	if !hasTenant || !hasUser {

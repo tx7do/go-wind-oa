@@ -65,13 +65,13 @@ func (_c *OvertimeApplicationCreate) SetNillableDeletedAt(v *time.Time) *Overtim
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *OvertimeApplicationCreate) SetCreatedBy(v uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetCreatedBy(v int64) *OvertimeApplicationCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *OvertimeApplicationCreate) SetNillableCreatedBy(v *uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetNillableCreatedBy(v *int64) *OvertimeApplicationCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *OvertimeApplicationCreate) SetNillableCreatedBy(v *uint32) *OvertimeAp
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *OvertimeApplicationCreate) SetUpdatedBy(v uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetUpdatedBy(v int64) *OvertimeApplicationCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *OvertimeApplicationCreate) SetNillableUpdatedBy(v *uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetNillableUpdatedBy(v *int64) *OvertimeApplicationCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *OvertimeApplicationCreate) SetNillableUpdatedBy(v *uint32) *OvertimeAp
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *OvertimeApplicationCreate) SetDeletedBy(v uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetDeletedBy(v int64) *OvertimeApplicationCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *OvertimeApplicationCreate) SetNillableDeletedBy(v *uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetNillableDeletedBy(v *int64) *OvertimeApplicationCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *OvertimeApplicationCreate) SetNillableDeletedBy(v *uint32) *OvertimeAp
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *OvertimeApplicationCreate) SetTenantID(v uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetTenantID(v int64) *OvertimeApplicationCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *OvertimeApplicationCreate) SetNillableTenantID(v *uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetNillableTenantID(v *int64) *OvertimeApplicationCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -175,13 +175,13 @@ func (_c *OvertimeApplicationCreate) SetNillableOvertimeStatus(v *overtimeapplic
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (_c *OvertimeApplicationCreate) SetInstanceID(v uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetInstanceID(v int64) *OvertimeApplicationCreate {
 	_c.mutation.SetInstanceID(v)
 	return _c
 }
 
 // SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
-func (_c *OvertimeApplicationCreate) SetNillableInstanceID(v *uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetNillableInstanceID(v *int64) *OvertimeApplicationCreate {
 	if v != nil {
 		_c.SetInstanceID(*v)
 	}
@@ -189,7 +189,7 @@ func (_c *OvertimeApplicationCreate) SetNillableInstanceID(v *uint32) *OvertimeA
 }
 
 // SetID sets the "id" field.
-func (_c *OvertimeApplicationCreate) SetID(v uint32) *OvertimeApplicationCreate {
+func (_c *OvertimeApplicationCreate) SetID(v int64) *OvertimeApplicationCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -297,7 +297,7 @@ func (_c *OvertimeApplicationCreate) sqlSave(ctx context.Context) (*OvertimeAppl
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -307,7 +307,7 @@ func (_c *OvertimeApplicationCreate) sqlSave(ctx context.Context) (*OvertimeAppl
 func (_c *OvertimeApplicationCreate) createSpec() (*OvertimeApplication, *sqlgraph.CreateSpec) {
 	var (
 		_node = &OvertimeApplication{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(overtimeapplication.Table, sqlgraph.NewFieldSpec(overtimeapplication.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(overtimeapplication.Table, sqlgraph.NewFieldSpec(overtimeapplication.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -327,19 +327,19 @@ func (_c *OvertimeApplicationCreate) createSpec() (*OvertimeApplication, *sqlgra
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(overtimeapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(overtimeapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(overtimeapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(overtimeapplication.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Reason(); ok {
@@ -363,7 +363,7 @@ func (_c *OvertimeApplicationCreate) createSpec() (*OvertimeApplication, *sqlgra
 		_node.OvertimeStatus = &value
 	}
 	if value, ok := _c.mutation.InstanceID(); ok {
-		_spec.SetField(overtimeapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.SetField(overtimeapplication.FieldInstanceID, field.TypeInt64, value)
 		_node.InstanceID = &value
 	}
 	return _node, _spec
@@ -455,7 +455,7 @@ func (u *OvertimeApplicationUpsert) ClearDeletedAt() *OvertimeApplicationUpsert 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *OvertimeApplicationUpsert) SetCreatedBy(v uint32) *OvertimeApplicationUpsert {
+func (u *OvertimeApplicationUpsert) SetCreatedBy(v int64) *OvertimeApplicationUpsert {
 	u.Set(overtimeapplication.FieldCreatedBy, v)
 	return u
 }
@@ -467,7 +467,7 @@ func (u *OvertimeApplicationUpsert) UpdateCreatedBy() *OvertimeApplicationUpsert
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *OvertimeApplicationUpsert) AddCreatedBy(v uint32) *OvertimeApplicationUpsert {
+func (u *OvertimeApplicationUpsert) AddCreatedBy(v int64) *OvertimeApplicationUpsert {
 	u.Add(overtimeapplication.FieldCreatedBy, v)
 	return u
 }
@@ -479,7 +479,7 @@ func (u *OvertimeApplicationUpsert) ClearCreatedBy() *OvertimeApplicationUpsert 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *OvertimeApplicationUpsert) SetUpdatedBy(v uint32) *OvertimeApplicationUpsert {
+func (u *OvertimeApplicationUpsert) SetUpdatedBy(v int64) *OvertimeApplicationUpsert {
 	u.Set(overtimeapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -491,7 +491,7 @@ func (u *OvertimeApplicationUpsert) UpdateUpdatedBy() *OvertimeApplicationUpsert
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *OvertimeApplicationUpsert) AddUpdatedBy(v uint32) *OvertimeApplicationUpsert {
+func (u *OvertimeApplicationUpsert) AddUpdatedBy(v int64) *OvertimeApplicationUpsert {
 	u.Add(overtimeapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -503,7 +503,7 @@ func (u *OvertimeApplicationUpsert) ClearUpdatedBy() *OvertimeApplicationUpsert 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *OvertimeApplicationUpsert) SetDeletedBy(v uint32) *OvertimeApplicationUpsert {
+func (u *OvertimeApplicationUpsert) SetDeletedBy(v int64) *OvertimeApplicationUpsert {
 	u.Set(overtimeapplication.FieldDeletedBy, v)
 	return u
 }
@@ -515,7 +515,7 @@ func (u *OvertimeApplicationUpsert) UpdateDeletedBy() *OvertimeApplicationUpsert
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *OvertimeApplicationUpsert) AddDeletedBy(v uint32) *OvertimeApplicationUpsert {
+func (u *OvertimeApplicationUpsert) AddDeletedBy(v int64) *OvertimeApplicationUpsert {
 	u.Add(overtimeapplication.FieldDeletedBy, v)
 	return u
 }
@@ -599,7 +599,7 @@ func (u *OvertimeApplicationUpsert) ClearOvertimeStatus() *OvertimeApplicationUp
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *OvertimeApplicationUpsert) SetInstanceID(v uint32) *OvertimeApplicationUpsert {
+func (u *OvertimeApplicationUpsert) SetInstanceID(v int64) *OvertimeApplicationUpsert {
 	u.Set(overtimeapplication.FieldInstanceID, v)
 	return u
 }
@@ -611,7 +611,7 @@ func (u *OvertimeApplicationUpsert) UpdateInstanceID() *OvertimeApplicationUpser
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *OvertimeApplicationUpsert) AddInstanceID(v uint32) *OvertimeApplicationUpsert {
+func (u *OvertimeApplicationUpsert) AddInstanceID(v int64) *OvertimeApplicationUpsert {
 	u.Add(overtimeapplication.FieldInstanceID, v)
 	return u
 }
@@ -719,14 +719,14 @@ func (u *OvertimeApplicationUpsertOne) ClearDeletedAt() *OvertimeApplicationUpse
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *OvertimeApplicationUpsertOne) SetCreatedBy(v uint32) *OvertimeApplicationUpsertOne {
+func (u *OvertimeApplicationUpsertOne) SetCreatedBy(v int64) *OvertimeApplicationUpsertOne {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *OvertimeApplicationUpsertOne) AddCreatedBy(v uint32) *OvertimeApplicationUpsertOne {
+func (u *OvertimeApplicationUpsertOne) AddCreatedBy(v int64) *OvertimeApplicationUpsertOne {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -747,14 +747,14 @@ func (u *OvertimeApplicationUpsertOne) ClearCreatedBy() *OvertimeApplicationUpse
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *OvertimeApplicationUpsertOne) SetUpdatedBy(v uint32) *OvertimeApplicationUpsertOne {
+func (u *OvertimeApplicationUpsertOne) SetUpdatedBy(v int64) *OvertimeApplicationUpsertOne {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *OvertimeApplicationUpsertOne) AddUpdatedBy(v uint32) *OvertimeApplicationUpsertOne {
+func (u *OvertimeApplicationUpsertOne) AddUpdatedBy(v int64) *OvertimeApplicationUpsertOne {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -775,14 +775,14 @@ func (u *OvertimeApplicationUpsertOne) ClearUpdatedBy() *OvertimeApplicationUpse
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *OvertimeApplicationUpsertOne) SetDeletedBy(v uint32) *OvertimeApplicationUpsertOne {
+func (u *OvertimeApplicationUpsertOne) SetDeletedBy(v int64) *OvertimeApplicationUpsertOne {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *OvertimeApplicationUpsertOne) AddDeletedBy(v uint32) *OvertimeApplicationUpsertOne {
+func (u *OvertimeApplicationUpsertOne) AddDeletedBy(v int64) *OvertimeApplicationUpsertOne {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -887,14 +887,14 @@ func (u *OvertimeApplicationUpsertOne) ClearOvertimeStatus() *OvertimeApplicatio
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *OvertimeApplicationUpsertOne) SetInstanceID(v uint32) *OvertimeApplicationUpsertOne {
+func (u *OvertimeApplicationUpsertOne) SetInstanceID(v int64) *OvertimeApplicationUpsertOne {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *OvertimeApplicationUpsertOne) AddInstanceID(v uint32) *OvertimeApplicationUpsertOne {
+func (u *OvertimeApplicationUpsertOne) AddInstanceID(v int64) *OvertimeApplicationUpsertOne {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.AddInstanceID(v)
 	})
@@ -930,7 +930,7 @@ func (u *OvertimeApplicationUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *OvertimeApplicationUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *OvertimeApplicationUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -939,7 +939,7 @@ func (u *OvertimeApplicationUpsertOne) ID(ctx context.Context) (id uint32, err e
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *OvertimeApplicationUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *OvertimeApplicationUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -996,7 +996,7 @@ func (_c *OvertimeApplicationCreateBulk) Save(ctx context.Context) ([]*OvertimeA
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1177,14 +1177,14 @@ func (u *OvertimeApplicationUpsertBulk) ClearDeletedAt() *OvertimeApplicationUps
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *OvertimeApplicationUpsertBulk) SetCreatedBy(v uint32) *OvertimeApplicationUpsertBulk {
+func (u *OvertimeApplicationUpsertBulk) SetCreatedBy(v int64) *OvertimeApplicationUpsertBulk {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *OvertimeApplicationUpsertBulk) AddCreatedBy(v uint32) *OvertimeApplicationUpsertBulk {
+func (u *OvertimeApplicationUpsertBulk) AddCreatedBy(v int64) *OvertimeApplicationUpsertBulk {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1205,14 +1205,14 @@ func (u *OvertimeApplicationUpsertBulk) ClearCreatedBy() *OvertimeApplicationUps
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *OvertimeApplicationUpsertBulk) SetUpdatedBy(v uint32) *OvertimeApplicationUpsertBulk {
+func (u *OvertimeApplicationUpsertBulk) SetUpdatedBy(v int64) *OvertimeApplicationUpsertBulk {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *OvertimeApplicationUpsertBulk) AddUpdatedBy(v uint32) *OvertimeApplicationUpsertBulk {
+func (u *OvertimeApplicationUpsertBulk) AddUpdatedBy(v int64) *OvertimeApplicationUpsertBulk {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1233,14 +1233,14 @@ func (u *OvertimeApplicationUpsertBulk) ClearUpdatedBy() *OvertimeApplicationUps
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *OvertimeApplicationUpsertBulk) SetDeletedBy(v uint32) *OvertimeApplicationUpsertBulk {
+func (u *OvertimeApplicationUpsertBulk) SetDeletedBy(v int64) *OvertimeApplicationUpsertBulk {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *OvertimeApplicationUpsertBulk) AddDeletedBy(v uint32) *OvertimeApplicationUpsertBulk {
+func (u *OvertimeApplicationUpsertBulk) AddDeletedBy(v int64) *OvertimeApplicationUpsertBulk {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1345,14 +1345,14 @@ func (u *OvertimeApplicationUpsertBulk) ClearOvertimeStatus() *OvertimeApplicati
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *OvertimeApplicationUpsertBulk) SetInstanceID(v uint32) *OvertimeApplicationUpsertBulk {
+func (u *OvertimeApplicationUpsertBulk) SetInstanceID(v int64) *OvertimeApplicationUpsertBulk {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *OvertimeApplicationUpsertBulk) AddInstanceID(v uint32) *OvertimeApplicationUpsertBulk {
+func (u *OvertimeApplicationUpsertBulk) AddInstanceID(v int64) *OvertimeApplicationUpsertBulk {
 	return u.Update(func(s *OvertimeApplicationUpsert) {
 		s.AddInstanceID(v)
 	})

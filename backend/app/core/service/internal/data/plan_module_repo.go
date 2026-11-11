@@ -26,8 +26,8 @@ type PlanModuleRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper        *mapper.CopierMapper[identityV1.PlanModule, ent.PlanModule]
-	moduleConv    *mapper.EnumTypeConverter[identityV1.Module, planmodule.Module]
+	mapper     *mapper.CopierMapper[identityV1.PlanModule, ent.PlanModule]
+	moduleConv *mapper.EnumTypeConverter[identityV1.Module, planmodule.Module]
 
 	repository *entCrud.Repository[
 		ent.PlanModuleQuery, ent.PlanModuleSelect,
@@ -122,12 +122,12 @@ func (r *PlanModuleRepo) List(ctx context.Context, req *paginationV1.PagingReque
 	}
 
 	return &identityV1.ListPlanModuleResponse{
-		Total: uint64(count),
+		Total: int64(count),
 		Items: dtos,
 	}, nil
 }
 
-func (r *PlanModuleRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *PlanModuleRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().PlanModule.Query().
 		Where(planmodule.IDEQ(id)).
 		Exist(ctx)
@@ -267,7 +267,7 @@ func (r *PlanModuleRepo) Update(ctx context.Context, req *identityV1.UpdatePlanM
 	return err
 }
 
-func (r *PlanModuleRepo) Delete(ctx context.Context, id uint32) error {
+func (r *PlanModuleRepo) Delete(ctx context.Context, id int64) error {
 	if id == 0 {
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}
@@ -287,7 +287,7 @@ func (r *PlanModuleRepo) Delete(ctx context.Context, id uint32) error {
 
 // ListModulesByPlanId 返回指定套餐允许的模块集合。
 // 用于菜单树过滤和请求拦截的白名单判定。
-func (r *PlanModuleRepo) ListModulesByPlanId(ctx context.Context, planId uint32) (map[identityV1.Module]bool, error) {
+func (r *PlanModuleRepo) ListModulesByPlanId(ctx context.Context, planId int64) (map[identityV1.Module]bool, error) {
 	if planId == 0 {
 		return nil, nil
 	}

@@ -65,13 +65,13 @@ func (_c *HolidayCreate) SetNillableDeletedAt(v *time.Time) *HolidayCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *HolidayCreate) SetCreatedBy(v uint32) *HolidayCreate {
+func (_c *HolidayCreate) SetCreatedBy(v int64) *HolidayCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *HolidayCreate) SetNillableCreatedBy(v *uint32) *HolidayCreate {
+func (_c *HolidayCreate) SetNillableCreatedBy(v *int64) *HolidayCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *HolidayCreate) SetNillableCreatedBy(v *uint32) *HolidayCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *HolidayCreate) SetUpdatedBy(v uint32) *HolidayCreate {
+func (_c *HolidayCreate) SetUpdatedBy(v int64) *HolidayCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *HolidayCreate) SetNillableUpdatedBy(v *uint32) *HolidayCreate {
+func (_c *HolidayCreate) SetNillableUpdatedBy(v *int64) *HolidayCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *HolidayCreate) SetNillableUpdatedBy(v *uint32) *HolidayCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *HolidayCreate) SetDeletedBy(v uint32) *HolidayCreate {
+func (_c *HolidayCreate) SetDeletedBy(v int64) *HolidayCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *HolidayCreate) SetNillableDeletedBy(v *uint32) *HolidayCreate {
+func (_c *HolidayCreate) SetNillableDeletedBy(v *int64) *HolidayCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *HolidayCreate) SetNillableDeletedBy(v *uint32) *HolidayCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *HolidayCreate) SetTenantID(v uint32) *HolidayCreate {
+func (_c *HolidayCreate) SetTenantID(v int64) *HolidayCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *HolidayCreate) SetNillableTenantID(v *uint32) *HolidayCreate {
+func (_c *HolidayCreate) SetNillableTenantID(v *int64) *HolidayCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -155,7 +155,7 @@ func (_c *HolidayCreate) SetNillableName(v *string) *HolidayCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *HolidayCreate) SetID(v uint32) *HolidayCreate {
+func (_c *HolidayCreate) SetID(v int64) *HolidayCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -251,7 +251,7 @@ func (_c *HolidayCreate) sqlSave(ctx context.Context) (*Holiday, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -261,7 +261,7 @@ func (_c *HolidayCreate) sqlSave(ctx context.Context) (*Holiday, error) {
 func (_c *HolidayCreate) createSpec() (*Holiday, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Holiday{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(holiday.Table, sqlgraph.NewFieldSpec(holiday.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(holiday.Table, sqlgraph.NewFieldSpec(holiday.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -281,19 +281,19 @@ func (_c *HolidayCreate) createSpec() (*Holiday, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(holiday.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(holiday.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(holiday.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(holiday.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(holiday.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(holiday.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(holiday.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(holiday.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Date(); ok {
@@ -397,7 +397,7 @@ func (u *HolidayUpsert) ClearDeletedAt() *HolidayUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *HolidayUpsert) SetCreatedBy(v uint32) *HolidayUpsert {
+func (u *HolidayUpsert) SetCreatedBy(v int64) *HolidayUpsert {
 	u.Set(holiday.FieldCreatedBy, v)
 	return u
 }
@@ -409,7 +409,7 @@ func (u *HolidayUpsert) UpdateCreatedBy() *HolidayUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *HolidayUpsert) AddCreatedBy(v uint32) *HolidayUpsert {
+func (u *HolidayUpsert) AddCreatedBy(v int64) *HolidayUpsert {
 	u.Add(holiday.FieldCreatedBy, v)
 	return u
 }
@@ -421,7 +421,7 @@ func (u *HolidayUpsert) ClearCreatedBy() *HolidayUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *HolidayUpsert) SetUpdatedBy(v uint32) *HolidayUpsert {
+func (u *HolidayUpsert) SetUpdatedBy(v int64) *HolidayUpsert {
 	u.Set(holiday.FieldUpdatedBy, v)
 	return u
 }
@@ -433,7 +433,7 @@ func (u *HolidayUpsert) UpdateUpdatedBy() *HolidayUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *HolidayUpsert) AddUpdatedBy(v uint32) *HolidayUpsert {
+func (u *HolidayUpsert) AddUpdatedBy(v int64) *HolidayUpsert {
 	u.Add(holiday.FieldUpdatedBy, v)
 	return u
 }
@@ -445,7 +445,7 @@ func (u *HolidayUpsert) ClearUpdatedBy() *HolidayUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *HolidayUpsert) SetDeletedBy(v uint32) *HolidayUpsert {
+func (u *HolidayUpsert) SetDeletedBy(v int64) *HolidayUpsert {
 	u.Set(holiday.FieldDeletedBy, v)
 	return u
 }
@@ -457,7 +457,7 @@ func (u *HolidayUpsert) UpdateDeletedBy() *HolidayUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *HolidayUpsert) AddDeletedBy(v uint32) *HolidayUpsert {
+func (u *HolidayUpsert) AddDeletedBy(v int64) *HolidayUpsert {
 	u.Add(holiday.FieldDeletedBy, v)
 	return u
 }
@@ -607,14 +607,14 @@ func (u *HolidayUpsertOne) ClearDeletedAt() *HolidayUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *HolidayUpsertOne) SetCreatedBy(v uint32) *HolidayUpsertOne {
+func (u *HolidayUpsertOne) SetCreatedBy(v int64) *HolidayUpsertOne {
 	return u.Update(func(s *HolidayUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *HolidayUpsertOne) AddCreatedBy(v uint32) *HolidayUpsertOne {
+func (u *HolidayUpsertOne) AddCreatedBy(v int64) *HolidayUpsertOne {
 	return u.Update(func(s *HolidayUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -635,14 +635,14 @@ func (u *HolidayUpsertOne) ClearCreatedBy() *HolidayUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *HolidayUpsertOne) SetUpdatedBy(v uint32) *HolidayUpsertOne {
+func (u *HolidayUpsertOne) SetUpdatedBy(v int64) *HolidayUpsertOne {
 	return u.Update(func(s *HolidayUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *HolidayUpsertOne) AddUpdatedBy(v uint32) *HolidayUpsertOne {
+func (u *HolidayUpsertOne) AddUpdatedBy(v int64) *HolidayUpsertOne {
 	return u.Update(func(s *HolidayUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -663,14 +663,14 @@ func (u *HolidayUpsertOne) ClearUpdatedBy() *HolidayUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *HolidayUpsertOne) SetDeletedBy(v uint32) *HolidayUpsertOne {
+func (u *HolidayUpsertOne) SetDeletedBy(v int64) *HolidayUpsertOne {
 	return u.Update(func(s *HolidayUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *HolidayUpsertOne) AddDeletedBy(v uint32) *HolidayUpsertOne {
+func (u *HolidayUpsertOne) AddDeletedBy(v int64) *HolidayUpsertOne {
 	return u.Update(func(s *HolidayUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -755,7 +755,7 @@ func (u *HolidayUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *HolidayUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *HolidayUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -764,7 +764,7 @@ func (u *HolidayUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *HolidayUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *HolidayUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -821,7 +821,7 @@ func (_c *HolidayCreateBulk) Save(ctx context.Context) ([]*Holiday, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1002,14 +1002,14 @@ func (u *HolidayUpsertBulk) ClearDeletedAt() *HolidayUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *HolidayUpsertBulk) SetCreatedBy(v uint32) *HolidayUpsertBulk {
+func (u *HolidayUpsertBulk) SetCreatedBy(v int64) *HolidayUpsertBulk {
 	return u.Update(func(s *HolidayUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *HolidayUpsertBulk) AddCreatedBy(v uint32) *HolidayUpsertBulk {
+func (u *HolidayUpsertBulk) AddCreatedBy(v int64) *HolidayUpsertBulk {
 	return u.Update(func(s *HolidayUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1030,14 +1030,14 @@ func (u *HolidayUpsertBulk) ClearCreatedBy() *HolidayUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *HolidayUpsertBulk) SetUpdatedBy(v uint32) *HolidayUpsertBulk {
+func (u *HolidayUpsertBulk) SetUpdatedBy(v int64) *HolidayUpsertBulk {
 	return u.Update(func(s *HolidayUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *HolidayUpsertBulk) AddUpdatedBy(v uint32) *HolidayUpsertBulk {
+func (u *HolidayUpsertBulk) AddUpdatedBy(v int64) *HolidayUpsertBulk {
 	return u.Update(func(s *HolidayUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1058,14 +1058,14 @@ func (u *HolidayUpsertBulk) ClearUpdatedBy() *HolidayUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *HolidayUpsertBulk) SetDeletedBy(v uint32) *HolidayUpsertBulk {
+func (u *HolidayUpsertBulk) SetDeletedBy(v int64) *HolidayUpsertBulk {
 	return u.Update(func(s *HolidayUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *HolidayUpsertBulk) AddDeletedBy(v uint32) *HolidayUpsertBulk {
+func (u *HolidayUpsertBulk) AddDeletedBy(v int64) *HolidayUpsertBulk {
 	return u.Update(func(s *HolidayUpsert) {
 		s.AddDeletedBy(v)
 	})

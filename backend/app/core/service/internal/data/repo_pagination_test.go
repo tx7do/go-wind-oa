@@ -7,16 +7,16 @@ import (
 
 	stdsql "database/sql"
 
-	entCrud "github.com/tx7do/go-crud/entgo"
-	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	"github.com/go-kratos/kratos/v2/log"
 	entsql "entgo.io/ent/dialect/sql"
+	"github.com/go-kratos/kratos/v2/log"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	entCrud "github.com/tx7do/go-crud/entgo"
 
 	_ "modernc.org/sqlite"
 
 	"go-wind-oa/app/core/service/internal/data/ent"
-	_ "go-wind-oa/app/core/service/internal/data/ent/runtime"
 	entMigrate "go-wind-oa/app/core/service/internal/data/ent/migrate"
+	_ "go-wind-oa/app/core/service/internal/data/ent/runtime"
 	oaViewer "go-wind-oa/pkg/entgo/viewer"
 )
 
@@ -47,8 +47,8 @@ func newPagingTestLogger() *log.Helper {
 }
 
 // paginationV1PagingRequestForTest 构造带页码的分页请求
-func paginationV1PagingRequestForTest(page, pageSize uint32) *paginationV1.PagingRequest {
-	return &paginationV1.PagingRequest{Page: &page, PageSize: &pageSize}
+func paginationV1PagingRequestForTest(page, pageSize int64) *paginationV1.PagingRequest {
+	return &paginationV1.PagingRequest{Page: u32p(page), PageSize: u32p(pageSize)}
 }
 
 // ============ LeaveTypeRepo ============
@@ -128,7 +128,7 @@ func TestLeaveBalanceRepoListPaging(t *testing.T) {
 	const tid = 9002
 	const year = 2026
 
-	for _, u := range []uint32{1, 2, 3} {
+	for _, u := range []int64{1, 2, 3} {
 		if _, err := ec.Client().LeaveBalance.Create().
 			SetTenantID(tid).SetUserID(u).SetLeaveTypeID(1).
 			SetYear(year).SetTotalDays(5).SetUsedDays(0).
@@ -187,7 +187,7 @@ func TestWorkflowDelegationRepoListPaging(t *testing.T) {
 	ctx := oaViewer.NewSystemViewerContext(context.Background())
 	const tid = 9003
 
-	for i := uint32(0); i < 3; i++ {
+	for i := int64(0); i < 3; i++ {
 		if _, err := ec.Client().WorkflowDelegation.Create().
 			SetTenantID(tid).
 			SetDelegatorUserID(10 + i).
@@ -217,4 +217,9 @@ func TestWorkflowDelegationRepoListPaging(t *testing.T) {
 	if page1[0].GetDelegatorUserId() != 12 {
 		t.Fatalf("page1 order desc broken: delegator=%d", page1[0].GetDelegatorUserId())
 	}
+}
+
+func u32p(v int64) *uint32 {
+	x := uint32(v)
+	return &x
 }

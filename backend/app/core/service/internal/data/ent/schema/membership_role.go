@@ -29,12 +29,12 @@ func (MembershipRole) Annotations() []schema.Annotation {
 
 func (MembershipRole) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("membership_id").
+		field.Int64("membership_id").
 			Comment("membership ID").
 			Nillable(),
 
 		// 关联到角色（必填）
-		field.Uint32("role_id").
+		field.Int64("role_id").
 			Comment("角色ID").
 			Nillable(),
 
@@ -55,7 +55,7 @@ func (MembershipRole) Fields() []ent.Field {
 			Comment("分配时间（UTC）").
 			Optional().
 			Nillable(),
-		field.Uint32("assigned_by").
+		field.Int64("assigned_by").
 			Comment("分配者用户ID").
 			Optional().
 			Nillable(),
@@ -80,10 +80,10 @@ func (MembershipRole) Fields() []ent.Field {
 
 func (MembershipRole) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[int64]{},
 	}
 }
 

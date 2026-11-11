@@ -65,13 +65,13 @@ func (_c *SealApplicationCreate) SetNillableDeletedAt(v *time.Time) *SealApplica
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *SealApplicationCreate) SetCreatedBy(v uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetCreatedBy(v int64) *SealApplicationCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *SealApplicationCreate) SetNillableCreatedBy(v *uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetNillableCreatedBy(v *int64) *SealApplicationCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *SealApplicationCreate) SetNillableCreatedBy(v *uint32) *SealApplicatio
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *SealApplicationCreate) SetUpdatedBy(v uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetUpdatedBy(v int64) *SealApplicationCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *SealApplicationCreate) SetNillableUpdatedBy(v *uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetNillableUpdatedBy(v *int64) *SealApplicationCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *SealApplicationCreate) SetNillableUpdatedBy(v *uint32) *SealApplicatio
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *SealApplicationCreate) SetDeletedBy(v uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetDeletedBy(v int64) *SealApplicationCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *SealApplicationCreate) SetNillableDeletedBy(v *uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetNillableDeletedBy(v *int64) *SealApplicationCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *SealApplicationCreate) SetNillableDeletedBy(v *uint32) *SealApplicatio
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *SealApplicationCreate) SetTenantID(v uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetTenantID(v int64) *SealApplicationCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *SealApplicationCreate) SetNillableTenantID(v *uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetNillableTenantID(v *int64) *SealApplicationCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -191,13 +191,13 @@ func (_c *SealApplicationCreate) SetNillableSealStatus(v *sealapplication.SealSt
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (_c *SealApplicationCreate) SetInstanceID(v uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetInstanceID(v int64) *SealApplicationCreate {
 	_c.mutation.SetInstanceID(v)
 	return _c
 }
 
 // SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
-func (_c *SealApplicationCreate) SetNillableInstanceID(v *uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetNillableInstanceID(v *int64) *SealApplicationCreate {
 	if v != nil {
 		_c.SetInstanceID(*v)
 	}
@@ -205,7 +205,7 @@ func (_c *SealApplicationCreate) SetNillableInstanceID(v *uint32) *SealApplicati
 }
 
 // SetID sets the "id" field.
-func (_c *SealApplicationCreate) SetID(v uint32) *SealApplicationCreate {
+func (_c *SealApplicationCreate) SetID(v int64) *SealApplicationCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -326,7 +326,7 @@ func (_c *SealApplicationCreate) sqlSave(ctx context.Context) (*SealApplication,
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -336,7 +336,7 @@ func (_c *SealApplicationCreate) sqlSave(ctx context.Context) (*SealApplication,
 func (_c *SealApplicationCreate) createSpec() (*SealApplication, *sqlgraph.CreateSpec) {
 	var (
 		_node = &SealApplication{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(sealapplication.Table, sqlgraph.NewFieldSpec(sealapplication.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(sealapplication.Table, sqlgraph.NewFieldSpec(sealapplication.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -356,19 +356,19 @@ func (_c *SealApplicationCreate) createSpec() (*SealApplication, *sqlgraph.Creat
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(sealapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(sealapplication.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(sealapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(sealapplication.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(sealapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(sealapplication.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(sealapplication.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(sealapplication.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Purpose(); ok {
@@ -392,7 +392,7 @@ func (_c *SealApplicationCreate) createSpec() (*SealApplication, *sqlgraph.Creat
 		_node.SealStatus = &value
 	}
 	if value, ok := _c.mutation.InstanceID(); ok {
-		_spec.SetField(sealapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.SetField(sealapplication.FieldInstanceID, field.TypeInt64, value)
 		_node.InstanceID = &value
 	}
 	return _node, _spec
@@ -484,7 +484,7 @@ func (u *SealApplicationUpsert) ClearDeletedAt() *SealApplicationUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *SealApplicationUpsert) SetCreatedBy(v uint32) *SealApplicationUpsert {
+func (u *SealApplicationUpsert) SetCreatedBy(v int64) *SealApplicationUpsert {
 	u.Set(sealapplication.FieldCreatedBy, v)
 	return u
 }
@@ -496,7 +496,7 @@ func (u *SealApplicationUpsert) UpdateCreatedBy() *SealApplicationUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *SealApplicationUpsert) AddCreatedBy(v uint32) *SealApplicationUpsert {
+func (u *SealApplicationUpsert) AddCreatedBy(v int64) *SealApplicationUpsert {
 	u.Add(sealapplication.FieldCreatedBy, v)
 	return u
 }
@@ -508,7 +508,7 @@ func (u *SealApplicationUpsert) ClearCreatedBy() *SealApplicationUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *SealApplicationUpsert) SetUpdatedBy(v uint32) *SealApplicationUpsert {
+func (u *SealApplicationUpsert) SetUpdatedBy(v int64) *SealApplicationUpsert {
 	u.Set(sealapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -520,7 +520,7 @@ func (u *SealApplicationUpsert) UpdateUpdatedBy() *SealApplicationUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *SealApplicationUpsert) AddUpdatedBy(v uint32) *SealApplicationUpsert {
+func (u *SealApplicationUpsert) AddUpdatedBy(v int64) *SealApplicationUpsert {
 	u.Add(sealapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -532,7 +532,7 @@ func (u *SealApplicationUpsert) ClearUpdatedBy() *SealApplicationUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *SealApplicationUpsert) SetDeletedBy(v uint32) *SealApplicationUpsert {
+func (u *SealApplicationUpsert) SetDeletedBy(v int64) *SealApplicationUpsert {
 	u.Set(sealapplication.FieldDeletedBy, v)
 	return u
 }
@@ -544,7 +544,7 @@ func (u *SealApplicationUpsert) UpdateDeletedBy() *SealApplicationUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *SealApplicationUpsert) AddDeletedBy(v uint32) *SealApplicationUpsert {
+func (u *SealApplicationUpsert) AddDeletedBy(v int64) *SealApplicationUpsert {
 	u.Add(sealapplication.FieldDeletedBy, v)
 	return u
 }
@@ -634,7 +634,7 @@ func (u *SealApplicationUpsert) ClearSealStatus() *SealApplicationUpsert {
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *SealApplicationUpsert) SetInstanceID(v uint32) *SealApplicationUpsert {
+func (u *SealApplicationUpsert) SetInstanceID(v int64) *SealApplicationUpsert {
 	u.Set(sealapplication.FieldInstanceID, v)
 	return u
 }
@@ -646,7 +646,7 @@ func (u *SealApplicationUpsert) UpdateInstanceID() *SealApplicationUpsert {
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *SealApplicationUpsert) AddInstanceID(v uint32) *SealApplicationUpsert {
+func (u *SealApplicationUpsert) AddInstanceID(v int64) *SealApplicationUpsert {
 	u.Add(sealapplication.FieldInstanceID, v)
 	return u
 }
@@ -754,14 +754,14 @@ func (u *SealApplicationUpsertOne) ClearDeletedAt() *SealApplicationUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *SealApplicationUpsertOne) SetCreatedBy(v uint32) *SealApplicationUpsertOne {
+func (u *SealApplicationUpsertOne) SetCreatedBy(v int64) *SealApplicationUpsertOne {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *SealApplicationUpsertOne) AddCreatedBy(v uint32) *SealApplicationUpsertOne {
+func (u *SealApplicationUpsertOne) AddCreatedBy(v int64) *SealApplicationUpsertOne {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -782,14 +782,14 @@ func (u *SealApplicationUpsertOne) ClearCreatedBy() *SealApplicationUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *SealApplicationUpsertOne) SetUpdatedBy(v uint32) *SealApplicationUpsertOne {
+func (u *SealApplicationUpsertOne) SetUpdatedBy(v int64) *SealApplicationUpsertOne {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *SealApplicationUpsertOne) AddUpdatedBy(v uint32) *SealApplicationUpsertOne {
+func (u *SealApplicationUpsertOne) AddUpdatedBy(v int64) *SealApplicationUpsertOne {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -810,14 +810,14 @@ func (u *SealApplicationUpsertOne) ClearUpdatedBy() *SealApplicationUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *SealApplicationUpsertOne) SetDeletedBy(v uint32) *SealApplicationUpsertOne {
+func (u *SealApplicationUpsertOne) SetDeletedBy(v int64) *SealApplicationUpsertOne {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *SealApplicationUpsertOne) AddDeletedBy(v uint32) *SealApplicationUpsertOne {
+func (u *SealApplicationUpsertOne) AddDeletedBy(v int64) *SealApplicationUpsertOne {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -929,14 +929,14 @@ func (u *SealApplicationUpsertOne) ClearSealStatus() *SealApplicationUpsertOne {
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *SealApplicationUpsertOne) SetInstanceID(v uint32) *SealApplicationUpsertOne {
+func (u *SealApplicationUpsertOne) SetInstanceID(v int64) *SealApplicationUpsertOne {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *SealApplicationUpsertOne) AddInstanceID(v uint32) *SealApplicationUpsertOne {
+func (u *SealApplicationUpsertOne) AddInstanceID(v int64) *SealApplicationUpsertOne {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.AddInstanceID(v)
 	})
@@ -972,7 +972,7 @@ func (u *SealApplicationUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *SealApplicationUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *SealApplicationUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -981,7 +981,7 @@ func (u *SealApplicationUpsertOne) ID(ctx context.Context) (id uint32, err error
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *SealApplicationUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *SealApplicationUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1038,7 +1038,7 @@ func (_c *SealApplicationCreateBulk) Save(ctx context.Context) ([]*SealApplicati
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1219,14 +1219,14 @@ func (u *SealApplicationUpsertBulk) ClearDeletedAt() *SealApplicationUpsertBulk 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *SealApplicationUpsertBulk) SetCreatedBy(v uint32) *SealApplicationUpsertBulk {
+func (u *SealApplicationUpsertBulk) SetCreatedBy(v int64) *SealApplicationUpsertBulk {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *SealApplicationUpsertBulk) AddCreatedBy(v uint32) *SealApplicationUpsertBulk {
+func (u *SealApplicationUpsertBulk) AddCreatedBy(v int64) *SealApplicationUpsertBulk {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1247,14 +1247,14 @@ func (u *SealApplicationUpsertBulk) ClearCreatedBy() *SealApplicationUpsertBulk 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *SealApplicationUpsertBulk) SetUpdatedBy(v uint32) *SealApplicationUpsertBulk {
+func (u *SealApplicationUpsertBulk) SetUpdatedBy(v int64) *SealApplicationUpsertBulk {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *SealApplicationUpsertBulk) AddUpdatedBy(v uint32) *SealApplicationUpsertBulk {
+func (u *SealApplicationUpsertBulk) AddUpdatedBy(v int64) *SealApplicationUpsertBulk {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1275,14 +1275,14 @@ func (u *SealApplicationUpsertBulk) ClearUpdatedBy() *SealApplicationUpsertBulk 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *SealApplicationUpsertBulk) SetDeletedBy(v uint32) *SealApplicationUpsertBulk {
+func (u *SealApplicationUpsertBulk) SetDeletedBy(v int64) *SealApplicationUpsertBulk {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *SealApplicationUpsertBulk) AddDeletedBy(v uint32) *SealApplicationUpsertBulk {
+func (u *SealApplicationUpsertBulk) AddDeletedBy(v int64) *SealApplicationUpsertBulk {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1394,14 +1394,14 @@ func (u *SealApplicationUpsertBulk) ClearSealStatus() *SealApplicationUpsertBulk
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *SealApplicationUpsertBulk) SetInstanceID(v uint32) *SealApplicationUpsertBulk {
+func (u *SealApplicationUpsertBulk) SetInstanceID(v int64) *SealApplicationUpsertBulk {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *SealApplicationUpsertBulk) AddInstanceID(v uint32) *SealApplicationUpsertBulk {
+func (u *SealApplicationUpsertBulk) AddInstanceID(v int64) *SealApplicationUpsertBulk {
 	return u.Update(func(s *SealApplicationUpsert) {
 		s.AddInstanceID(v)
 	})

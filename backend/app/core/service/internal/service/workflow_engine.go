@@ -48,7 +48,7 @@ func NewWorkflowNotifier(ctx *bootstrap.Context, svc *InternalMessageService) *W
 }
 
 // newNotifyMessage 构造站内信通知请求。
-func newNotifyMessage(recipientUserIDs []uint32, title, content string) *internalMessageV1.SendMessageRequest {
+func newNotifyMessage(recipientUserIDs []int64, title, content string) *internalMessageV1.SendMessageRequest {
 	return &internalMessageV1.SendMessageRequest{
 		Type:          internalMessageV1.InternalMessage_NOTIFICATION,
 		TargetUserIds: recipientUserIDs,
@@ -58,7 +58,7 @@ func newNotifyMessage(recipientUserIDs []uint32, title, content string) *interna
 }
 
 // NotifyManyAsync 异步发送站内信通知（可多接收人）。fire-and-forget，失败不影响状态机。
-func (n *WorkflowNotifier) NotifyManyAsync(ctx context.Context, recipientUserIDs []uint32, title, content string) {
+func (n *WorkflowNotifier) NotifyManyAsync(ctx context.Context, recipientUserIDs []int64, title, content string) {
 	if n == nil || n.svc == nil || len(recipientUserIDs) == 0 {
 		return
 	}
@@ -99,9 +99,9 @@ func (p *workflowIdentityProvider) ResolveApprovers(ctx context.Context, req flo
 	tid := data.FromFlowIDOrZero(req.TenantID)
 	starter := data.FromFlowIDOrZero(req.StarterID)
 
-	var ids []uint32
-	seen := map[uint32]bool{}
-	appendID := func(uid uint32) {
+	var ids []int64
+	seen := map[int64]bool{}
+	appendID := func(uid int64) {
 		if uid != 0 && !seen[uid] {
 			seen[uid] = true
 			ids = append(ids, uid)
@@ -140,14 +140,14 @@ func (p *workflowIdentityProvider) ResolveApprovers(ctx context.Context, req flo
 
 	// 申请人剔除：办理人中的申请人本人自动跳过；剔除后为空则保留申请人
 	//（监听器会代其立即通过，等价旧引擎的「自动通过」分支）。
-	others := make([]uint32, 0, len(ids))
+	others := make([]int64, 0, len(ids))
 	for _, uid := range ids {
 		if uid != starter {
 			others = append(others, uid)
 		}
 	}
 	if len(others) == 0 && starter != 0 {
-		others = []uint32{starter}
+		others = []int64{starter}
 	}
 
 	out := make([]string, 0, len(others))
@@ -243,7 +243,7 @@ func (l *workflowFlowListener) notifyTaskCreated(ctx context.Context, ev *flow.E
 	if err != nil || task.Status != flow.TaskPending || task.Assignee == "" {
 		return
 	}
-	l.notifier.NotifyManyAsync(ctx, []uint32{data.FromFlowIDOrZero(task.Assignee)}, "您有新的待办任务", "请登录系统查看待审批事项")
+	l.notifier.NotifyManyAsync(ctx, []int64{data.FromFlowIDOrZero(task.Assignee)}, "您有新的待办任务", "请登录系统查看待审批事项")
 }
 
 // onInstanceEnded 实例终结：通知申请人 + 触发业务单据回调。
@@ -263,17 +263,17 @@ func (l *workflowFlowListener) onInstanceEnded(ctx context.Context, ev *flow.Eve
 	switch ev.Status {
 	case flow.InstanceApproved:
 		if starter != 0 {
-			l.notifier.NotifyManyAsync(ctx, []uint32{starter}, "您的申请已通过", "全部审批节点已通过")
+			l.notifier.NotifyManyAsync(ctx, []int64{starter}, "您的申请已通过", "全部审批节点已通过")
 		}
 		l.fireBusiness(ctx, tenantID, instanceID, businessID, inst.BusinessType, oaV1.WorkflowInstance_APPROVED)
 	case flow.InstanceRejected:
 		if starter != 0 {
-			l.notifier.NotifyManyAsync(ctx, []uint32{starter}, "您的申请已被驳回", "请登录系统查看详情")
+			l.notifier.NotifyManyAsync(ctx, []int64{starter}, "您的申请已被驳回", "请登录系统查看详情")
 		}
 		l.fireBusiness(ctx, tenantID, instanceID, businessID, inst.BusinessType, oaV1.WorkflowInstance_REJECTED)
 	case flow.InstanceAborted:
 		if starter != 0 {
-			l.notifier.NotifyManyAsync(ctx, []uint32{starter}, "您的申请已被系统终止", "流程定义异常，请联系管理员")
+			l.notifier.NotifyManyAsync(ctx, []int64{starter}, "您的申请已被系统终止", "流程定义异常，请联系管理员")
 		}
 		// ABORTED 按 fail-closed 对齐旧引擎：业务侧收到 REJECTED。
 		l.fireBusiness(ctx, tenantID, instanceID, businessID, inst.BusinessType, oaV1.WorkflowInstance_REJECTED)
@@ -286,7 +286,7 @@ func (l *workflowFlowListener) onInstanceEnded(ctx context.Context, ev *flow.Eve
 
 // fireBusinessEvent 触发业务单据终结回调，panic 隔离并记日志，失败不影响状态机。
 func (l *workflowFlowListener) fireBusiness(
-	ctx context.Context, tenantID, instanceID, businessID uint32,
+	ctx context.Context, tenantID, instanceID, businessID int64,
 	businessType string, status oaV1.WorkflowInstance_InstanceStatus,
 ) {
 	defer func() {

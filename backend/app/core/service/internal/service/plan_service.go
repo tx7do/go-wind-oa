@@ -52,7 +52,7 @@ func (s *PlanService) Create(ctx context.Context, req *identityV1.CreatePlanRequ
 		return nil, identityV1.ErrorUnauthorized("operator context missing")
 	}
 
-	req.Data.CreatedBy = trans.Ptr(uint32(operator.GetUserId()))
+	req.Data.CreatedBy = trans.Ptr(int64(operator.GetUserId()))
 
 	if err = s.planRepo.Create(ctx, req); err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func (s *PlanService) Update(ctx context.Context, req *identityV1.UpdatePlanRequ
 
 	req.Data.Id = trans.Ptr(req.GetId())
 
-	req.Data.UpdatedBy = trans.Ptr(uint32(operator.GetUserId()))
+	req.Data.UpdatedBy = trans.Ptr(int64(operator.GetUserId()))
 	if req.UpdateMask != nil {
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}

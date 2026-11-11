@@ -36,7 +36,7 @@ func (WorkflowTask) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint32("assignee_user_id").
+		field.Int64("assignee_user_id").
 			Comment("指派审批人ID").
 			Optional().
 			Nillable(),
@@ -63,7 +63,7 @@ func (WorkflowTask) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint32("token_id").
+		field.Int64("token_id").
 			Comment("执行令牌ID（go-wind-flow TokenID，会签/或签兄弟任务分组）").
 			Optional().
 			Nillable(),
@@ -103,10 +103,10 @@ func (WorkflowTask) Fields() []ent.Field {
 // Mixin of the WorkflowTask.
 func (WorkflowTask) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[int64]{},
 	}
 }
 

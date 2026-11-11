@@ -67,7 +67,7 @@ var (
 	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint32
+	DefaultTenantID int64
 	// DefaultSsid holds the default value on creation for the "ssid" field.
 	DefaultSsid string
 	// SsidValidator is a validator for the "ssid" field. It is called by the builders before save.
@@ -75,7 +75,7 @@ var (
 	// BssidValidator is a validator for the "bssid" field. It is called by the builders before save.
 	BssidValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(int64) error
 )
 
 // OrderOption defines the ordering options for the WifiFingerprint queries.

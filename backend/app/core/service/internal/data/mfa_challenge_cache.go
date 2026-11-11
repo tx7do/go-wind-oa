@@ -43,8 +43,8 @@ type MfaLoginChallengeContext struct {
 // StartEnrollMethod 生成 TOTP secret 后写入；ConfirmEnrollMethod 取出 secret 校验首码。
 type MfaEnrollChallengeContext struct {
 	Secret   string
-	TenantID uint32
-	UserID   uint32
+	TenantID int64
+	UserID   int64
 }
 
 // MfaChallengeCache MFA 操作上下文缓存。
@@ -174,7 +174,7 @@ func (c *MfaChallengeCache) TakeLoginChallengeAtomic(ctx context.Context, opId s
 
 // TryAcquireEnrollCooldown 注册频控：同一用户冷却期内只允许发起一次 StartEnroll。
 // 防止已登录用户循环 Start 塞满 Redis（每条 5 分钟 TTL）的低成本 DoS。
-func (c *MfaChallengeCache) TryAcquireEnrollCooldown(ctx context.Context, tenantID, userID uint32) bool {
+func (c *MfaChallengeCache) TryAcquireEnrollCooldown(ctx context.Context, tenantID, userID int64) bool {
 	key := fmt.Sprintf("mfa:enrollcd:%d:%d", tenantID, userID)
 	ok, err := c.rdb.SetNX(ctx, key, 1, mfaEnrollCooldown).Result()
 	if err != nil {
@@ -186,7 +186,7 @@ func (c *MfaChallengeCache) TryAcquireEnrollCooldown(ctx context.Context, tenant
 }
 
 // SetEnrollChallenge 写入注册上下文，返回 operation_id。
-func (c *MfaChallengeCache) SetEnrollChallenge(ctx context.Context, secret string, tenantID, userID uint32) (string, error) {
+func (c *MfaChallengeCache) SetEnrollChallenge(ctx context.Context, secret string, tenantID, userID int64) (string, error) {
 	opId := newOperationID()
 	envelope := MfaEnrollChallengeContext{
 		Secret:   secret,

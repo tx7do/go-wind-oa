@@ -56,8 +56,8 @@ func NewBusinessTripService(
 }
 
 // fillApplicantNames 批量回填申请人姓名（失败仅缺姓名，不影响列表）。
-func (s *BusinessTripService) fillApplicantNames(ctx context.Context, tid uint32, items []*oaV1.BusinessTripApplication) {
-	ids := make([]uint32, 0, len(items))
+func (s *BusinessTripService) fillApplicantNames(ctx context.Context, tid int64, items []*oaV1.BusinessTripApplication) {
+	ids := make([]int64, 0, len(items))
 	for _, it := range items {
 		if it.GetCreatedBy() != 0 {
 			ids = append(ids, it.GetCreatedBy())
@@ -125,7 +125,7 @@ func (s *BusinessTripService) SubmitBusinessTripApplication(ctx context.Context,
 
 // ensureWorkflowDefinition BUSINESS_TRIP 流程定义兜底：租户内不存在时按默认模板创建并启用
 // （提交给申请人主管 LEADER，会签）。并发首提撞唯一索引时忽略，回读校验。
-func (s *BusinessTripService) ensureWorkflowDefinition(ctx context.Context, tid, uid uint32) {
+func (s *BusinessTripService) ensureWorkflowDefinition(ctx context.Context, tid, uid int64) {
 	if _, err := s.definitionRepo.GetByCodeVersion(ctx, businessTripDefinitionCode, businessTripDefinitionVersion); err == nil {
 		return
 	}
@@ -155,7 +155,7 @@ func (s *BusinessTripService) ListBusinessTripApplications(ctx context.Context, 
 		return nil, err
 	}
 	s.fillApplicantNames(ctx, tid, items)
-	return &oaV1.ListBusinessTripApplicationsResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.ListBusinessTripApplicationsResponse{Items: items, Total: int64(total)}, nil
 }
 
 func (s *BusinessTripService) GetBusinessTripApplication(ctx context.Context, req *oaV1.GetBusinessTripApplicationRequest) (*oaV1.BusinessTripApplication, error) {
@@ -176,7 +176,7 @@ func (s *BusinessTripService) GetBusinessTripApplication(ctx context.Context, re
 
 // onInstanceTerminal 工作流终结回调。校验单据与实例关联（防伪造 business 字段），
 // 幂等（仅 PENDING 单据处理）：三态均仅同步单据状态，出差申请无额度副作用。
-func (s *BusinessTripService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID uint32, status oaV1.WorkflowInstance_InstanceStatus) {
+func (s *BusinessTripService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID int64, status oaV1.WorkflowInstance_InstanceStatus) {
 	entity, err := s.appRepo.GetEntity(ctx, tenantID, businessID)
 	if err != nil || entity == nil {
 		s.log.Errorf("business-trip hook load application %d failed: %v", businessID, err)

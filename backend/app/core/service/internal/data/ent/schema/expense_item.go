@@ -50,7 +50,7 @@ func (ExpenseItem) Fields() []ent.Field {
 			MaxLen(512).
 			Default(""),
 
-		field.Uint32("invoice_file_id").
+		field.Int64("invoice_file_id").
 			Comment("发票凭证文件ID（storage 域文件，OSS 存储）").
 			Optional().
 			Nillable(),
@@ -60,10 +60,10 @@ func (ExpenseItem) Fields() []ent.Field {
 // Mixin of the ExpenseItem.
 func (ExpenseItem) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[int64]{},
 	}
 }
 

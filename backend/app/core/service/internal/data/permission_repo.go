@@ -103,7 +103,7 @@ func (r *PermissionRepo) Count(ctx context.Context, req *paginationV1.PagingRequ
 	}
 
 	return &permissionV1.CountPermissionResponse{
-		Count: uint64(count),
+		Count: int64(count),
 	}, nil
 }
 
@@ -124,7 +124,7 @@ func clearFilterExprByFieldNames(expr *paginationV1.FilterExpr, fieldName string
 	}
 }
 
-func (r *PermissionRepo) List(ctx context.Context, req *paginationV1.PagingRequest, limitPermissionIDs []uint32) (*permissionV1.ListPermissionResponse, error) {
+func (r *PermissionRepo) List(ctx context.Context, req *paginationV1.PagingRequest, limitPermissionIDs []int64) (*permissionV1.ListPermissionResponse, error) {
 	if req == nil {
 		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
@@ -143,7 +143,7 @@ func (r *PermissionRepo) List(ctx context.Context, req *paginationV1.PagingReque
 
 		var strIDs []string
 		for _, id := range limitPermissionIDs {
-			strIDs = append(strIDs, strconv.FormatUint(uint64(id), 10))
+			strIDs = append(strIDs, strconv.FormatInt(int64(id), 10))
 		}
 
 		condition := &paginationV1.FilterCondition{
@@ -179,14 +179,14 @@ func (r *PermissionRepo) List(ctx context.Context, req *paginationV1.PagingReque
 
 	for _, dto := range ret.Items {
 		if hasMenuID {
-			menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []uint32{dto.GetId()})
+			menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []int64{dto.GetId()})
 			if err != nil {
 				return nil, err
 			}
 			dto.MenuIds = menuIDs
 		}
 		if hasApiID {
-			apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, []uint32{dto.GetId()})
+			apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, []int64{dto.GetId()})
 			if err != nil {
 				return nil, err
 			}
@@ -201,7 +201,7 @@ func (r *PermissionRepo) List(ctx context.Context, req *paginationV1.PagingReque
 }
 
 // GetPermissionCodesByIDs 通过权限ID列表获取权限代码列表
-func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []uint32) ([]string, error) {
+func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []int64) ([]string, error) {
 	q := r.entClient.Client().Permission.Query().
 		Where(
 			permission.IDIn(ids...),
@@ -218,7 +218,7 @@ func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []uint
 }
 
 // GetPermissionIDsByCodes 通过权限代码列表获取权限ID列表
-func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []string) ([]uint32, error) {
+func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []string) ([]int64, error) {
 	q := r.entClient.Client().Permission.Query().
 		Where(
 			permission.CodeIn(codes...),
@@ -231,15 +231,15 @@ func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []st
 		r.log.Errorf("query permission ids by codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by codes failed")
 	}
-	ids := make([]uint32, len(intIDs))
+	ids := make([]int64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint32(v)
+		ids[i] = int64(v)
 	}
 	return ids, nil
 }
 
 // GetPermissionIDsByCodesWithTx 通过权限代码列表获取权限ID列表
-func (r *PermissionRepo) GetPermissionIDsByCodesWithTx(ctx context.Context, tx *ent.Tx, codes []string) ([]uint32, error) {
+func (r *PermissionRepo) GetPermissionIDsByCodesWithTx(ctx context.Context, tx *ent.Tx, codes []string) ([]int64, error) {
 	q := tx.Permission.Query().
 		Where(
 			permission.CodeIn(codes...),
@@ -252,15 +252,15 @@ func (r *PermissionRepo) GetPermissionIDsByCodesWithTx(ctx context.Context, tx *
 		r.log.Errorf("query permission ids by codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by codes failed")
 	}
-	ids := make([]uint32, len(intIDs))
+	ids := make([]int64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint32(v)
+		ids[i] = int64(v)
 	}
 	return ids, nil
 }
 
 // IsExist 检查 Permission 是否存在
-func (r *PermissionRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+func (r *PermissionRepo) IsExist(ctx context.Context, id int64) (bool, error) {
 	exist, err := r.entClient.Client().Permission.Query().
 		Where(permission.IDEQ(id)).
 		Exist(ctx)
@@ -294,14 +294,14 @@ func (r *PermissionRepo) Get(ctx context.Context, req *permissionV1.GetPermissio
 	}
 
 	if hasPath("api_id", req.GetViewMask()) {
-		apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, []uint32{dto.GetId()})
+		apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, []int64{dto.GetId()})
 		if err != nil {
 			return nil, err
 		}
 		dto.ApiIds = apiIDs
 	}
 	if hasPath("menu_id", req.GetViewMask()) {
-		menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []uint32{dto.GetId()})
+		menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []int64{dto.GetId()})
 		if err != nil {
 			return nil, err
 		}
@@ -481,7 +481,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 	}
 
 	// 先解析受影响的权限 ID（用于级联清理），解析阶段使用非事务读
-	var permissionIDs []uint32
+	var permissionIDs []int64
 	switch req.QueryBy.(type) {
 	default:
 	case *permissionV1.DeletePermissionRequest_Id:
@@ -641,7 +641,7 @@ func (r *PermissionRepo) TruncateBizPermissions(ctx context.Context) error {
 }
 
 // ListPermissionIdsByCodes 通过权限代码列表获取权限ID列表
-func (r *PermissionRepo) ListPermissionIdsByCodes(ctx context.Context, codes []string) ([]uint32, error) {
+func (r *PermissionRepo) ListPermissionIdsByCodes(ctx context.Context, codes []string) ([]int64, error) {
 	q := r.entClient.Client().Permission.Query().
 		Where(
 			permission.CodeIn(codes...),
@@ -654,15 +654,15 @@ func (r *PermissionRepo) ListPermissionIdsByCodes(ctx context.Context, codes []s
 		r.log.Errorf("query permission ids by codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by codes failed")
 	}
-	ids := make([]uint32, len(intIDs))
+	ids := make([]int64, len(intIDs))
 	for i, v := range intIDs {
-		ids[i] = uint32(v)
+		ids[i] = int64(v)
 	}
 	return ids, nil
 }
 
 // ListPermissionCodesByIds 通过权限ID列表获取权限代码列表
-func (r *PermissionRepo) ListPermissionCodesByIds(ctx context.Context, ids []uint32) ([]string, error) {
+func (r *PermissionRepo) ListPermissionCodesByIds(ctx context.Context, ids []int64) ([]string, error) {
 	q := r.entClient.Client().Permission.Query().
 		Where(
 			permission.IDIn(ids...),
@@ -679,7 +679,7 @@ func (r *PermissionRepo) ListPermissionCodesByIds(ctx context.Context, ids []uin
 }
 
 // ListApiIDsByPermissionIDs 列出权限关联的API资源ID列表
-func (r *PermissionRepo) ListApiIDsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
+func (r *PermissionRepo) ListApiIDsByPermissionIDs(ctx context.Context, permissionIDs []int64) ([]int64, error) {
 	apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
@@ -688,7 +688,7 @@ func (r *PermissionRepo) ListApiIDsByPermissionIDs(ctx context.Context, permissi
 	return apiIDs, nil
 }
 
-func (r *PermissionRepo) ListApiIDsByPermissionCodes(ctx context.Context, permissionCodes []string) ([]uint32, error) {
+func (r *PermissionRepo) ListApiIDsByPermissionCodes(ctx context.Context, permissionCodes []string) ([]int64, error) {
 	permissionIDs, err := r.ListPermissionIdsByCodes(ctx, permissionCodes)
 	if err != nil {
 		return nil, err
@@ -703,7 +703,7 @@ func (r *PermissionRepo) ListApiIDsByPermissionCodes(ctx context.Context, permis
 }
 
 // ListMenuIDsByPermissionIDs 列出权限关联的菜单ID列表
-func (r *PermissionRepo) ListMenuIDsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
+func (r *PermissionRepo) ListMenuIDsByPermissionIDs(ctx context.Context, permissionIDs []int64) ([]int64, error) {
 	apiIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
@@ -712,7 +712,7 @@ func (r *PermissionRepo) ListMenuIDsByPermissionIDs(ctx context.Context, permiss
 	return apiIDs, nil
 }
 
-func (r *PermissionRepo) ListMenuIDsByPermissionCodes(ctx context.Context, permissionCodes []string) ([]uint32, error) {
+func (r *PermissionRepo) ListMenuIDsByPermissionCodes(ctx context.Context, permissionCodes []string) ([]int64, error) {
 	permissionIDs, err := r.ListPermissionIdsByCodes(ctx, permissionCodes)
 	if err != nil {
 		return nil, err

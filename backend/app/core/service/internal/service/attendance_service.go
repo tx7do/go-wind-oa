@@ -38,18 +38,18 @@ func NewAttendanceService(
 	wifiRepo *data.WifiFingerprintRepo,
 ) *AttendanceService {
 	return &AttendanceService{
-		log:           ctx.NewLoggerHelper("attendance/service/core-service"),
-		repo:          repo,
-		leaveApp:      leaveApp,
-		resolverRepo:  resolverRepo,
-		geofenceRepo:  geofenceRepo,
-		wifiRepo:      wifiRepo,
+		log:          ctx.NewLoggerHelper("attendance/service/core-service"),
+		repo:         repo,
+		leaveApp:     leaveApp,
+		resolverRepo: resolverRepo,
+		geofenceRepo: geofenceRepo,
+		wifiRepo:     wifiRepo,
 	}
 }
 
 // fillUserNames 批量回填用户姓名（失败仅缺姓名，不影响列表）。
-func (s *AttendanceService) fillUserNames(ctx context.Context, tid uint32, items []*oaV1.AttendanceRecord) {
-	ids := make([]uint32, 0, len(items))
+func (s *AttendanceService) fillUserNames(ctx context.Context, tid int64, items []*oaV1.AttendanceRecord) {
+	ids := make([]int64, 0, len(items))
 	for _, it := range items {
 		if it.GetUserId() != 0 {
 			ids = append(ids, it.GetUserId())
@@ -78,7 +78,7 @@ func isWeekend(t time.Time) bool {
 
 // isRestDay 该日是否休息日：节假日表优先（HOLIDAY=休息可落在工作日，
 // WORKDAY=调休上班可落在周末），无设置则按周末判定。
-func (s *AttendanceService) isRestDay(ctx context.Context, tid uint32, date time.Time) (bool, error) {
+func (s *AttendanceService) isRestDay(ctx context.Context, tid int64, date time.Time) (bool, error) {
 	h, err := s.repo.GetHolidayByDate(ctx, tid, date)
 	if err != nil {
 		return false, err
@@ -108,7 +108,7 @@ func parseHHMM(workDate time.Time, hhmm string) (time.Time, bool) {
 
 // computeDayResult 按考勤设置结算：请假覆盖优先，其次迟到、早退判定。
 func (s *AttendanceService) computeDayResult(
-	ctx context.Context, tid, userID uint32,
+	ctx context.Context, tid, userID int64,
 	workDate, checkInAt, checkOutAt time.Time,
 ) (oaV1.AttendanceRecord_DayResult, error) {
 	// 休息日（节假日/周末）打卡视为加班，不做迟到早退判定。
@@ -216,7 +216,7 @@ func (s *AttendanceService) GetMyAttendanceRecords(ctx context.Context, req *oaV
 		return nil, err
 	}
 	s.fillUserNames(ctx, tid, items)
-	return &oaV1.ListAttendanceRecordsResponse{Items: items, Total: uint64(len(items))}, nil
+	return &oaV1.ListAttendanceRecordsResponse{Items: items, Total: int64(len(items))}, nil
 }
 
 func (s *AttendanceService) ListAttendanceRecords(ctx context.Context, req *oaV1.ListAttendanceRecordsRequest) (*oaV1.ListAttendanceRecordsResponse, error) {
@@ -232,7 +232,7 @@ func (s *AttendanceService) ListAttendanceRecords(ctx context.Context, req *oaV1
 		return nil, err
 	}
 	s.fillUserNames(ctx, tid, items)
-	return &oaV1.ListAttendanceRecordsResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.ListAttendanceRecordsResponse{Items: items, Total: int64(total)}, nil
 }
 
 func (s *AttendanceService) GetAttendanceSetting(ctx context.Context, _ *emptypb.Empty) (*oaV1.AttendanceSetting, error) {
@@ -285,17 +285,17 @@ func (s *AttendanceService) RunDailySettlement(ctx context.Context, req *oaV1.Ru
 	if err != nil {
 		return nil, err
 	}
-	return &oaV1.RunDailySettlementResponse{SettledCount: settled}, nil
+	return &oaV1.RunDailySettlementResponse{SettledCount: uint32(settled)}, nil
 }
 
 // settleDateForTenant 单租户单日结算（定时任务与 RPC 共用）。operatorID 落
 // updated_by/created_by 审计字段。
-func (s *AttendanceService) settleDateForTenant(ctx context.Context, tid, operatorID uint32, workDate time.Time) (uint32, error) {
+func (s *AttendanceService) settleDateForTenant(ctx context.Context, tid, operatorID int64, workDate time.Time) (int64, error) {
 	userIDs, err := s.repo.ListUserIDs(ctx, tid)
 	if err != nil {
 		return 0, err
 	}
-	settled := uint32(0)
+	settled := int64(0)
 	for _, userID := range userIDs {
 		record, err := s.repo.GetByUserDate(ctx, tid, userID, workDate)
 		if err != nil {
@@ -377,14 +377,14 @@ func (s *AttendanceService) ListHolidays(ctx context.Context, req *oaV1.ListHoli
 	if err != nil {
 		return nil, err
 	}
-	return &oaV1.ListHolidaysResponse{Items: items, Total: uint64(len(items))}, nil
+	return &oaV1.ListHolidaysResponse{Items: items, Total: int64(len(items))}, nil
 }
 
 // ===================== 地理围栏 / Wi-Fi 指纹 =====================
 
 // validateLocation 打卡地点校验：本租户配了地理围栏则打卡点须落在任一围栏半径内；
 // 配了 Wi-Fi 指纹白名单则打卡 BSSID 须命中任一条。两类都未配则放行（保持现状）。
-func (s *AttendanceService) validateLocation(ctx context.Context, tid uint32, lat, lon float64, bssid string) error {
+func (s *AttendanceService) validateLocation(ctx context.Context, tid int64, lat, lon float64, bssid string) error {
 	geofences, err := s.geofenceRepo.ListByTenant(ctx, tid)
 	if err != nil {
 		return err
@@ -469,7 +469,7 @@ func (s *AttendanceService) ListGeofences(ctx context.Context, req *oaV1.ListGeo
 	if err != nil {
 		return nil, err
 	}
-	return &oaV1.ListGeofencesResponse{Items: items, Total: uint64(len(items))}, nil
+	return &oaV1.ListGeofencesResponse{Items: items, Total: int64(len(items))}, nil
 }
 
 // UpsertWifiFingerprint 设置 Wi-Fi 指纹白名单（按 id 存在则覆盖）。
@@ -509,5 +509,5 @@ func (s *AttendanceService) ListWifiFingerprints(ctx context.Context, req *oaV1.
 	if err != nil {
 		return nil, err
 	}
-	return &oaV1.ListWifiFingerprintsResponse{Items: items, Total: uint64(len(items))}, nil
+	return &oaV1.ListWifiFingerprintsResponse{Items: items, Total: int64(len(items))}, nil
 }

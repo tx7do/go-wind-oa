@@ -65,13 +65,13 @@ func (_c *LeaveBalanceCreate) SetNillableDeletedAt(v *time.Time) *LeaveBalanceCr
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *LeaveBalanceCreate) SetCreatedBy(v uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetCreatedBy(v int64) *LeaveBalanceCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *LeaveBalanceCreate) SetNillableCreatedBy(v *uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetNillableCreatedBy(v *int64) *LeaveBalanceCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *LeaveBalanceCreate) SetNillableCreatedBy(v *uint32) *LeaveBalanceCreat
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *LeaveBalanceCreate) SetUpdatedBy(v uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetUpdatedBy(v int64) *LeaveBalanceCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *LeaveBalanceCreate) SetNillableUpdatedBy(v *uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetNillableUpdatedBy(v *int64) *LeaveBalanceCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *LeaveBalanceCreate) SetNillableUpdatedBy(v *uint32) *LeaveBalanceCreat
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *LeaveBalanceCreate) SetDeletedBy(v uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetDeletedBy(v int64) *LeaveBalanceCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *LeaveBalanceCreate) SetNillableDeletedBy(v *uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetNillableDeletedBy(v *int64) *LeaveBalanceCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *LeaveBalanceCreate) SetNillableDeletedBy(v *uint32) *LeaveBalanceCreat
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *LeaveBalanceCreate) SetTenantID(v uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetTenantID(v int64) *LeaveBalanceCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *LeaveBalanceCreate) SetNillableTenantID(v *uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetNillableTenantID(v *int64) *LeaveBalanceCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -121,13 +121,13 @@ func (_c *LeaveBalanceCreate) SetNillableTenantID(v *uint32) *LeaveBalanceCreate
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *LeaveBalanceCreate) SetUserID(v uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetUserID(v int64) *LeaveBalanceCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
 
 // SetLeaveTypeID sets the "leave_type_id" field.
-func (_c *LeaveBalanceCreate) SetLeaveTypeID(v uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetLeaveTypeID(v int64) *LeaveBalanceCreate {
 	_c.mutation.SetLeaveTypeID(v)
 	return _c
 }
@@ -167,7 +167,7 @@ func (_c *LeaveBalanceCreate) SetNillableUsedDays(v *float64) *LeaveBalanceCreat
 }
 
 // SetID sets the "id" field.
-func (_c *LeaveBalanceCreate) SetID(v uint32) *LeaveBalanceCreate {
+func (_c *LeaveBalanceCreate) SetID(v int64) *LeaveBalanceCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -262,7 +262,7 @@ func (_c *LeaveBalanceCreate) sqlSave(ctx context.Context) (*LeaveBalance, error
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -272,7 +272,7 @@ func (_c *LeaveBalanceCreate) sqlSave(ctx context.Context) (*LeaveBalance, error
 func (_c *LeaveBalanceCreate) createSpec() (*LeaveBalance, *sqlgraph.CreateSpec) {
 	var (
 		_node = &LeaveBalance{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(leavebalance.Table, sqlgraph.NewFieldSpec(leavebalance.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(leavebalance.Table, sqlgraph.NewFieldSpec(leavebalance.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -292,27 +292,27 @@ func (_c *LeaveBalanceCreate) createSpec() (*LeaveBalance, *sqlgraph.CreateSpec)
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(leavebalance.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(leavebalance.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(leavebalance.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(leavebalance.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(leavebalance.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldUserID, field.TypeInt64, value)
 		_node.UserID = value
 	}
 	if value, ok := _c.mutation.LeaveTypeID(); ok {
-		_spec.SetField(leavebalance.FieldLeaveTypeID, field.TypeUint32, value)
+		_spec.SetField(leavebalance.FieldLeaveTypeID, field.TypeInt64, value)
 		_node.LeaveTypeID = value
 	}
 	if value, ok := _c.mutation.Year(); ok {
@@ -416,7 +416,7 @@ func (u *LeaveBalanceUpsert) ClearDeletedAt() *LeaveBalanceUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LeaveBalanceUpsert) SetCreatedBy(v uint32) *LeaveBalanceUpsert {
+func (u *LeaveBalanceUpsert) SetCreatedBy(v int64) *LeaveBalanceUpsert {
 	u.Set(leavebalance.FieldCreatedBy, v)
 	return u
 }
@@ -428,7 +428,7 @@ func (u *LeaveBalanceUpsert) UpdateCreatedBy() *LeaveBalanceUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LeaveBalanceUpsert) AddCreatedBy(v uint32) *LeaveBalanceUpsert {
+func (u *LeaveBalanceUpsert) AddCreatedBy(v int64) *LeaveBalanceUpsert {
 	u.Add(leavebalance.FieldCreatedBy, v)
 	return u
 }
@@ -440,7 +440,7 @@ func (u *LeaveBalanceUpsert) ClearCreatedBy() *LeaveBalanceUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LeaveBalanceUpsert) SetUpdatedBy(v uint32) *LeaveBalanceUpsert {
+func (u *LeaveBalanceUpsert) SetUpdatedBy(v int64) *LeaveBalanceUpsert {
 	u.Set(leavebalance.FieldUpdatedBy, v)
 	return u
 }
@@ -452,7 +452,7 @@ func (u *LeaveBalanceUpsert) UpdateUpdatedBy() *LeaveBalanceUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LeaveBalanceUpsert) AddUpdatedBy(v uint32) *LeaveBalanceUpsert {
+func (u *LeaveBalanceUpsert) AddUpdatedBy(v int64) *LeaveBalanceUpsert {
 	u.Add(leavebalance.FieldUpdatedBy, v)
 	return u
 }
@@ -464,7 +464,7 @@ func (u *LeaveBalanceUpsert) ClearUpdatedBy() *LeaveBalanceUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LeaveBalanceUpsert) SetDeletedBy(v uint32) *LeaveBalanceUpsert {
+func (u *LeaveBalanceUpsert) SetDeletedBy(v int64) *LeaveBalanceUpsert {
 	u.Set(leavebalance.FieldDeletedBy, v)
 	return u
 }
@@ -476,7 +476,7 @@ func (u *LeaveBalanceUpsert) UpdateDeletedBy() *LeaveBalanceUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LeaveBalanceUpsert) AddDeletedBy(v uint32) *LeaveBalanceUpsert {
+func (u *LeaveBalanceUpsert) AddDeletedBy(v int64) *LeaveBalanceUpsert {
 	u.Add(leavebalance.FieldDeletedBy, v)
 	return u
 }
@@ -488,7 +488,7 @@ func (u *LeaveBalanceUpsert) ClearDeletedBy() *LeaveBalanceUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *LeaveBalanceUpsert) SetUserID(v uint32) *LeaveBalanceUpsert {
+func (u *LeaveBalanceUpsert) SetUserID(v int64) *LeaveBalanceUpsert {
 	u.Set(leavebalance.FieldUserID, v)
 	return u
 }
@@ -500,13 +500,13 @@ func (u *LeaveBalanceUpsert) UpdateUserID() *LeaveBalanceUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *LeaveBalanceUpsert) AddUserID(v uint32) *LeaveBalanceUpsert {
+func (u *LeaveBalanceUpsert) AddUserID(v int64) *LeaveBalanceUpsert {
 	u.Add(leavebalance.FieldUserID, v)
 	return u
 }
 
 // SetLeaveTypeID sets the "leave_type_id" field.
-func (u *LeaveBalanceUpsert) SetLeaveTypeID(v uint32) *LeaveBalanceUpsert {
+func (u *LeaveBalanceUpsert) SetLeaveTypeID(v int64) *LeaveBalanceUpsert {
 	u.Set(leavebalance.FieldLeaveTypeID, v)
 	return u
 }
@@ -518,7 +518,7 @@ func (u *LeaveBalanceUpsert) UpdateLeaveTypeID() *LeaveBalanceUpsert {
 }
 
 // AddLeaveTypeID adds v to the "leave_type_id" field.
-func (u *LeaveBalanceUpsert) AddLeaveTypeID(v uint32) *LeaveBalanceUpsert {
+func (u *LeaveBalanceUpsert) AddLeaveTypeID(v int64) *LeaveBalanceUpsert {
 	u.Add(leavebalance.FieldLeaveTypeID, v)
 	return u
 }
@@ -674,14 +674,14 @@ func (u *LeaveBalanceUpsertOne) ClearDeletedAt() *LeaveBalanceUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LeaveBalanceUpsertOne) SetCreatedBy(v uint32) *LeaveBalanceUpsertOne {
+func (u *LeaveBalanceUpsertOne) SetCreatedBy(v int64) *LeaveBalanceUpsertOne {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LeaveBalanceUpsertOne) AddCreatedBy(v uint32) *LeaveBalanceUpsertOne {
+func (u *LeaveBalanceUpsertOne) AddCreatedBy(v int64) *LeaveBalanceUpsertOne {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -702,14 +702,14 @@ func (u *LeaveBalanceUpsertOne) ClearCreatedBy() *LeaveBalanceUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LeaveBalanceUpsertOne) SetUpdatedBy(v uint32) *LeaveBalanceUpsertOne {
+func (u *LeaveBalanceUpsertOne) SetUpdatedBy(v int64) *LeaveBalanceUpsertOne {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LeaveBalanceUpsertOne) AddUpdatedBy(v uint32) *LeaveBalanceUpsertOne {
+func (u *LeaveBalanceUpsertOne) AddUpdatedBy(v int64) *LeaveBalanceUpsertOne {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -730,14 +730,14 @@ func (u *LeaveBalanceUpsertOne) ClearUpdatedBy() *LeaveBalanceUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LeaveBalanceUpsertOne) SetDeletedBy(v uint32) *LeaveBalanceUpsertOne {
+func (u *LeaveBalanceUpsertOne) SetDeletedBy(v int64) *LeaveBalanceUpsertOne {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LeaveBalanceUpsertOne) AddDeletedBy(v uint32) *LeaveBalanceUpsertOne {
+func (u *LeaveBalanceUpsertOne) AddDeletedBy(v int64) *LeaveBalanceUpsertOne {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -758,14 +758,14 @@ func (u *LeaveBalanceUpsertOne) ClearDeletedBy() *LeaveBalanceUpsertOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *LeaveBalanceUpsertOne) SetUserID(v uint32) *LeaveBalanceUpsertOne {
+func (u *LeaveBalanceUpsertOne) SetUserID(v int64) *LeaveBalanceUpsertOne {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *LeaveBalanceUpsertOne) AddUserID(v uint32) *LeaveBalanceUpsertOne {
+func (u *LeaveBalanceUpsertOne) AddUserID(v int64) *LeaveBalanceUpsertOne {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.AddUserID(v)
 	})
@@ -779,14 +779,14 @@ func (u *LeaveBalanceUpsertOne) UpdateUserID() *LeaveBalanceUpsertOne {
 }
 
 // SetLeaveTypeID sets the "leave_type_id" field.
-func (u *LeaveBalanceUpsertOne) SetLeaveTypeID(v uint32) *LeaveBalanceUpsertOne {
+func (u *LeaveBalanceUpsertOne) SetLeaveTypeID(v int64) *LeaveBalanceUpsertOne {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.SetLeaveTypeID(v)
 	})
 }
 
 // AddLeaveTypeID adds v to the "leave_type_id" field.
-func (u *LeaveBalanceUpsertOne) AddLeaveTypeID(v uint32) *LeaveBalanceUpsertOne {
+func (u *LeaveBalanceUpsertOne) AddLeaveTypeID(v int64) *LeaveBalanceUpsertOne {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.AddLeaveTypeID(v)
 	})
@@ -878,7 +878,7 @@ func (u *LeaveBalanceUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *LeaveBalanceUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *LeaveBalanceUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -887,7 +887,7 @@ func (u *LeaveBalanceUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *LeaveBalanceUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *LeaveBalanceUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -944,7 +944,7 @@ func (_c *LeaveBalanceCreateBulk) Save(ctx context.Context) ([]*LeaveBalance, er
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1125,14 +1125,14 @@ func (u *LeaveBalanceUpsertBulk) ClearDeletedAt() *LeaveBalanceUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LeaveBalanceUpsertBulk) SetCreatedBy(v uint32) *LeaveBalanceUpsertBulk {
+func (u *LeaveBalanceUpsertBulk) SetCreatedBy(v int64) *LeaveBalanceUpsertBulk {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LeaveBalanceUpsertBulk) AddCreatedBy(v uint32) *LeaveBalanceUpsertBulk {
+func (u *LeaveBalanceUpsertBulk) AddCreatedBy(v int64) *LeaveBalanceUpsertBulk {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1153,14 +1153,14 @@ func (u *LeaveBalanceUpsertBulk) ClearCreatedBy() *LeaveBalanceUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LeaveBalanceUpsertBulk) SetUpdatedBy(v uint32) *LeaveBalanceUpsertBulk {
+func (u *LeaveBalanceUpsertBulk) SetUpdatedBy(v int64) *LeaveBalanceUpsertBulk {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LeaveBalanceUpsertBulk) AddUpdatedBy(v uint32) *LeaveBalanceUpsertBulk {
+func (u *LeaveBalanceUpsertBulk) AddUpdatedBy(v int64) *LeaveBalanceUpsertBulk {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1181,14 +1181,14 @@ func (u *LeaveBalanceUpsertBulk) ClearUpdatedBy() *LeaveBalanceUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LeaveBalanceUpsertBulk) SetDeletedBy(v uint32) *LeaveBalanceUpsertBulk {
+func (u *LeaveBalanceUpsertBulk) SetDeletedBy(v int64) *LeaveBalanceUpsertBulk {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LeaveBalanceUpsertBulk) AddDeletedBy(v uint32) *LeaveBalanceUpsertBulk {
+func (u *LeaveBalanceUpsertBulk) AddDeletedBy(v int64) *LeaveBalanceUpsertBulk {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1209,14 +1209,14 @@ func (u *LeaveBalanceUpsertBulk) ClearDeletedBy() *LeaveBalanceUpsertBulk {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *LeaveBalanceUpsertBulk) SetUserID(v uint32) *LeaveBalanceUpsertBulk {
+func (u *LeaveBalanceUpsertBulk) SetUserID(v int64) *LeaveBalanceUpsertBulk {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *LeaveBalanceUpsertBulk) AddUserID(v uint32) *LeaveBalanceUpsertBulk {
+func (u *LeaveBalanceUpsertBulk) AddUserID(v int64) *LeaveBalanceUpsertBulk {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.AddUserID(v)
 	})
@@ -1230,14 +1230,14 @@ func (u *LeaveBalanceUpsertBulk) UpdateUserID() *LeaveBalanceUpsertBulk {
 }
 
 // SetLeaveTypeID sets the "leave_type_id" field.
-func (u *LeaveBalanceUpsertBulk) SetLeaveTypeID(v uint32) *LeaveBalanceUpsertBulk {
+func (u *LeaveBalanceUpsertBulk) SetLeaveTypeID(v int64) *LeaveBalanceUpsertBulk {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.SetLeaveTypeID(v)
 	})
 }
 
 // AddLeaveTypeID adds v to the "leave_type_id" field.
-func (u *LeaveBalanceUpsertBulk) AddLeaveTypeID(v uint32) *LeaveBalanceUpsertBulk {
+func (u *LeaveBalanceUpsertBulk) AddLeaveTypeID(v int64) *LeaveBalanceUpsertBulk {
 	return u.Update(func(s *LeaveBalanceUpsert) {
 		s.AddLeaveTypeID(v)
 	})

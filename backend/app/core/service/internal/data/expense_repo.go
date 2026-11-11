@@ -108,10 +108,10 @@ func expenseApplicationToDTO(e *ent.ExpenseApplication) *oaV1.ExpenseApplication
 // CreateWithItems 创建申请单后逐条存明细（无事务，与既有无事务多步写入的风险面一致）。
 func (r *ExpenseApplicationRepo) CreateWithItems(
 	ctx context.Context,
-	tid, uid uint32,
+	tid, uid int64,
 	title string,
 	items []*oaV1.ExpenseItem,
-) (uint32, float64, error) {
+) (int64, float64, error) {
 	total := 0.0
 	for _, item := range items {
 		total += item.GetAmount()
@@ -151,7 +151,7 @@ func (r *ExpenseApplicationRepo) CreateWithItems(
 }
 
 // Get 按主键读取（WithItems 边加载明细）。
-func (r *ExpenseApplicationRepo) Get(ctx context.Context, tid, id uint32) (*oaV1.ExpenseApplication, error) {
+func (r *ExpenseApplicationRepo) Get(ctx context.Context, tid, id int64) (*oaV1.ExpenseApplication, error) {
 	entity, err := r.entClient.Client().ExpenseApplication.Query().
 		Where(
 			expenseapplication.IDEQ(id),
@@ -169,7 +169,7 @@ func (r *ExpenseApplicationRepo) Get(ctx context.Context, tid, id uint32) (*oaV1
 	return expenseApplicationToDTO(entity), nil
 }
 
-func (r *ExpenseApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint32, status oaV1.ExpenseApplication_ExpenseStatus) error {
+func (r *ExpenseApplicationRepo) UpdateStatus(ctx context.Context, tid, id int64, status oaV1.ExpenseApplication_ExpenseStatus) error {
 	if _, err := r.entClient.Client().ExpenseApplication.Update().
 		Where(
 			expenseapplication.IDEQ(id),
@@ -184,7 +184,7 @@ func (r *ExpenseApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint3
 	return nil
 }
 
-func (r *ExpenseApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID uint32) error {
+func (r *ExpenseApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID int64) error {
 	if _, err := r.entClient.Client().ExpenseApplication.Update().
 		Where(
 			expenseapplication.IDEQ(id),
@@ -203,7 +203,7 @@ func (r *ExpenseApplicationRepo) SetInstanceID(ctx context.Context, tid, id, ins
 // pageSize>0 时分页（page 从 1 起）并返回真实总数，否则全量（total=条数）。
 func (r *ExpenseApplicationRepo) List(
 	ctx context.Context,
-	tid, userID uint32,
+	tid, userID int64,
 	status *oaV1.ExpenseApplication_ExpenseStatus,
 	page, pageSize int32,
 ) ([]*oaV1.ExpenseApplication, int, error) {
@@ -240,7 +240,7 @@ func (r *ExpenseApplicationRepo) List(
 }
 
 // GetEntity 供工作流终结回调读取原始实体（校验关联与状态同步）。不存在返回 nil。
-func (r *ExpenseApplicationRepo) GetEntity(ctx context.Context, tid, id uint32) (*ent.ExpenseApplication, error) {
+func (r *ExpenseApplicationRepo) GetEntity(ctx context.Context, tid, id int64) (*ent.ExpenseApplication, error) {
 	entity, err := r.entClient.Client().ExpenseApplication.Query().
 		Where(
 			expenseapplication.IDEQ(id),

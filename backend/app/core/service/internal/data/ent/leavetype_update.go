@@ -70,14 +70,14 @@ func (_u *LeaveTypeUpdate) ClearDeletedAt() *LeaveTypeUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *LeaveTypeUpdate) SetCreatedBy(v uint32) *LeaveTypeUpdate {
+func (_u *LeaveTypeUpdate) SetCreatedBy(v int64) *LeaveTypeUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *LeaveTypeUpdate) SetNillableCreatedBy(v *uint32) *LeaveTypeUpdate {
+func (_u *LeaveTypeUpdate) SetNillableCreatedBy(v *int64) *LeaveTypeUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *LeaveTypeUpdate) SetNillableCreatedBy(v *uint32) *LeaveTypeUpdate {
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *LeaveTypeUpdate) AddCreatedBy(v int32) *LeaveTypeUpdate {
+func (_u *LeaveTypeUpdate) AddCreatedBy(v int64) *LeaveTypeUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *LeaveTypeUpdate) ClearCreatedBy() *LeaveTypeUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *LeaveTypeUpdate) SetUpdatedBy(v uint32) *LeaveTypeUpdate {
+func (_u *LeaveTypeUpdate) SetUpdatedBy(v int64) *LeaveTypeUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *LeaveTypeUpdate) SetNillableUpdatedBy(v *uint32) *LeaveTypeUpdate {
+func (_u *LeaveTypeUpdate) SetNillableUpdatedBy(v *int64) *LeaveTypeUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *LeaveTypeUpdate) SetNillableUpdatedBy(v *uint32) *LeaveTypeUpdate {
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *LeaveTypeUpdate) AddUpdatedBy(v int32) *LeaveTypeUpdate {
+func (_u *LeaveTypeUpdate) AddUpdatedBy(v int64) *LeaveTypeUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *LeaveTypeUpdate) ClearUpdatedBy() *LeaveTypeUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *LeaveTypeUpdate) SetDeletedBy(v uint32) *LeaveTypeUpdate {
+func (_u *LeaveTypeUpdate) SetDeletedBy(v int64) *LeaveTypeUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *LeaveTypeUpdate) SetNillableDeletedBy(v *uint32) *LeaveTypeUpdate {
+func (_u *LeaveTypeUpdate) SetNillableDeletedBy(v *int64) *LeaveTypeUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *LeaveTypeUpdate) SetNillableDeletedBy(v *uint32) *LeaveTypeUpdate {
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *LeaveTypeUpdate) AddDeletedBy(v int32) *LeaveTypeUpdate {
+func (_u *LeaveTypeUpdate) AddDeletedBy(v int64) *LeaveTypeUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -255,7 +255,7 @@ func (_u *LeaveTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(leavetype.Table, leavetype.Columns, sqlgraph.NewFieldSpec(leavetype.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(leavetype.Table, leavetype.Columns, sqlgraph.NewFieldSpec(leavetype.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -279,34 +279,34 @@ func (_u *LeaveTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(leavetype.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(leavetype.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(leavetype.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(leavetype.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(leavetype.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(leavetype.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(leavetype.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(leavetype.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(leavetype.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(leavetype.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(leavetype.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(leavetype.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(leavetype.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(leavetype.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(leavetype.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(leavetype.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(leavetype.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(leavetype.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(leavetype.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(leavetype.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(leavetype.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(leavetype.FieldRemark, field.TypeString, value)
@@ -383,14 +383,14 @@ func (_u *LeaveTypeUpdateOne) ClearDeletedAt() *LeaveTypeUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *LeaveTypeUpdateOne) SetCreatedBy(v uint32) *LeaveTypeUpdateOne {
+func (_u *LeaveTypeUpdateOne) SetCreatedBy(v int64) *LeaveTypeUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *LeaveTypeUpdateOne) SetNillableCreatedBy(v *uint32) *LeaveTypeUpdateOne {
+func (_u *LeaveTypeUpdateOne) SetNillableCreatedBy(v *int64) *LeaveTypeUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -398,7 +398,7 @@ func (_u *LeaveTypeUpdateOne) SetNillableCreatedBy(v *uint32) *LeaveTypeUpdateOn
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *LeaveTypeUpdateOne) AddCreatedBy(v int32) *LeaveTypeUpdateOne {
+func (_u *LeaveTypeUpdateOne) AddCreatedBy(v int64) *LeaveTypeUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -410,14 +410,14 @@ func (_u *LeaveTypeUpdateOne) ClearCreatedBy() *LeaveTypeUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *LeaveTypeUpdateOne) SetUpdatedBy(v uint32) *LeaveTypeUpdateOne {
+func (_u *LeaveTypeUpdateOne) SetUpdatedBy(v int64) *LeaveTypeUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *LeaveTypeUpdateOne) SetNillableUpdatedBy(v *uint32) *LeaveTypeUpdateOne {
+func (_u *LeaveTypeUpdateOne) SetNillableUpdatedBy(v *int64) *LeaveTypeUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -425,7 +425,7 @@ func (_u *LeaveTypeUpdateOne) SetNillableUpdatedBy(v *uint32) *LeaveTypeUpdateOn
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *LeaveTypeUpdateOne) AddUpdatedBy(v int32) *LeaveTypeUpdateOne {
+func (_u *LeaveTypeUpdateOne) AddUpdatedBy(v int64) *LeaveTypeUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -437,14 +437,14 @@ func (_u *LeaveTypeUpdateOne) ClearUpdatedBy() *LeaveTypeUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *LeaveTypeUpdateOne) SetDeletedBy(v uint32) *LeaveTypeUpdateOne {
+func (_u *LeaveTypeUpdateOne) SetDeletedBy(v int64) *LeaveTypeUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *LeaveTypeUpdateOne) SetNillableDeletedBy(v *uint32) *LeaveTypeUpdateOne {
+func (_u *LeaveTypeUpdateOne) SetNillableDeletedBy(v *int64) *LeaveTypeUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -452,7 +452,7 @@ func (_u *LeaveTypeUpdateOne) SetNillableDeletedBy(v *uint32) *LeaveTypeUpdateOn
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *LeaveTypeUpdateOne) AddDeletedBy(v int32) *LeaveTypeUpdateOne {
+func (_u *LeaveTypeUpdateOne) AddDeletedBy(v int64) *LeaveTypeUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -581,7 +581,7 @@ func (_u *LeaveTypeUpdateOne) sqlSave(ctx context.Context) (_node *LeaveType, er
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(leavetype.Table, leavetype.Columns, sqlgraph.NewFieldSpec(leavetype.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(leavetype.Table, leavetype.Columns, sqlgraph.NewFieldSpec(leavetype.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "LeaveType.id" for update`)}
@@ -622,34 +622,34 @@ func (_u *LeaveTypeUpdateOne) sqlSave(ctx context.Context) (_node *LeaveType, er
 		_spec.ClearField(leavetype.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(leavetype.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(leavetype.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(leavetype.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(leavetype.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(leavetype.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(leavetype.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(leavetype.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(leavetype.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(leavetype.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(leavetype.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(leavetype.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(leavetype.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(leavetype.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(leavetype.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(leavetype.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(leavetype.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(leavetype.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(leavetype.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(leavetype.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(leavetype.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(leavetype.FieldRemark, field.TypeString, value)

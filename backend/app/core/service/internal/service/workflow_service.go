@@ -68,13 +68,13 @@ func NewWorkflowService(
 }
 
 // callerFromContext 从 viewer context 取 (tenantID, userID)，二者任一为 0 即 fail-closed。
-func callerFromContext(ctx context.Context) (uint32, uint32, bool) {
+func callerFromContext(ctx context.Context) (int64, int64, bool) {
 	vc, exist := viewer.FromContext(ctx)
 	if !exist || vc == nil {
 		return 0, 0, false
 	}
-	tid := uint32(vc.TenantID())
-	uid := uint32(vc.UserID())
+	tid := int64(vc.TenantID())
+	uid := int64(vc.UserID())
 	if uid == 0 {
 		return 0, 0, false
 	}
@@ -170,7 +170,7 @@ func (s *WorkflowService) SubmitApply(ctx context.Context, req *oaV1.SubmitApply
 	}
 
 	// 3. 引擎启动实例：实例/令牌/任务/日志一次事务落库，推进到首个阻塞点。
-	var instanceID uint32
+	var instanceID int64
 	err = s.flowStore.WithTx(ctx, func(ctx context.Context) error {
 		inst, _, err := s.engine.Start(ctx, flow.StartRequest{
 			TenantID:     data.FlowIDOf(tid),
@@ -232,10 +232,10 @@ func (s *WorkflowService) AuditTask(ctx context.Context, req *oaV1.AuditTaskRequ
 
 	case oaV1.AuditAction_FORWARD:
 		forwardTo := req.GetForwardTo()
-		if forwardTo == 0 || forwardTo == uid {
+		if forwardTo == 0 || int64(forwardTo) == uid {
 			return nil, oaV1.ErrorBadRequest("invalid forward target")
 		}
-		active, err := s.resolverRepo.UserIsActive(ctx, tid, forwardTo)
+		active, err := s.resolverRepo.UserIsActive(ctx, tid, int64(forwardTo))
 		if err != nil {
 			return nil, err
 		}
@@ -251,7 +251,7 @@ func (s *WorkflowService) AuditTask(ctx context.Context, req *oaV1.AuditTaskRequ
 			return nil, oaV1.ErrorForbidden("not your pending task")
 		}
 		err = s.flowStore.WithTx(ctx, func(ctx context.Context) error {
-			if ferr := s.engine.ForwardTask(ctx, data.FlowIDOf(req.GetTaskId()), data.FlowIDOf(uid), data.FlowIDOf(forwardTo)); ferr != nil {
+			if ferr := s.engine.ForwardTask(ctx, data.FlowIDOf(req.GetTaskId()), data.FlowIDOf(uid), data.FlowIDOf(int64(forwardTo))); ferr != nil {
 				return ferr
 			}
 			return s.flowStore.AppendAuditLog(ctx, tid, uid, fwInstanceID, nodeID, workflowlog.LogActionForward, "")
@@ -259,15 +259,15 @@ func (s *WorkflowService) AuditTask(ctx context.Context, req *oaV1.AuditTaskRequ
 		if err != nil {
 			return nil, s.mapFlowError(err)
 		}
-		s.notifier.NotifyManyAsync(ctx, []uint32{forwardTo}, "您有被转办的任务", "请登录系统查看待审批事项")
+		s.notifier.NotifyManyAsync(ctx, []int64{int64(forwardTo)}, "您有被转办的任务", "请登录系统查看待审批事项")
 		return &emptypb.Empty{}, nil
 
 	case oaV1.AuditAction_ADD_APPROVER:
 		additional := req.GetAdditionalApprover()
-		if additional == 0 || additional == uid {
+		if additional == 0 || int64(additional) == uid {
 			return nil, oaV1.ErrorBadRequest("invalid additional approver")
 		}
-		active, err := s.resolverRepo.UserIsActive(ctx, tid, additional)
+		active, err := s.resolverRepo.UserIsActive(ctx, tid, int64(additional))
 		if err != nil {
 			return nil, err
 		}
@@ -281,11 +281,11 @@ func (s *WorkflowService) AuditTask(ctx context.Context, req *oaV1.AuditTaskRequ
 		if !pending {
 			return nil, oaV1.ErrorForbidden("not your pending task")
 		}
-		var newAssignees []uint32
+		var newAssignees []int64
 		err = s.flowStore.WithTx(ctx, func(ctx context.Context) error {
 			created, aerr := s.engine.AddTaskApprovers(
 				ctx, data.FlowIDOf(req.GetTaskId()), data.FlowIDOf(uid),
-				[]string{data.FlowIDOf(additional)},
+				[]string{data.FlowIDOf(int64(additional))},
 			)
 			if aerr != nil {
 				return aerr
@@ -393,7 +393,7 @@ func (s *WorkflowService) GetMyTasks(ctx context.Context, req *oaV1.GetMyTasksRe
 	if err != nil {
 		return nil, err
 	}
-	return &oaV1.GetMyTasksResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.GetMyTasksResponse{Items: items, Total: int64(total)}, nil
 }
 
 func (s *WorkflowService) GetTask(ctx context.Context, req *oaV1.GetTaskRequest) (*oaV1.GetTaskResponse, error) {

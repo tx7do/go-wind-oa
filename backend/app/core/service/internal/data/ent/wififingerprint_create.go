@@ -65,13 +65,13 @@ func (_c *WifiFingerprintCreate) SetNillableDeletedAt(v *time.Time) *WifiFingerp
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *WifiFingerprintCreate) SetCreatedBy(v uint32) *WifiFingerprintCreate {
+func (_c *WifiFingerprintCreate) SetCreatedBy(v int64) *WifiFingerprintCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *WifiFingerprintCreate) SetNillableCreatedBy(v *uint32) *WifiFingerprintCreate {
+func (_c *WifiFingerprintCreate) SetNillableCreatedBy(v *int64) *WifiFingerprintCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *WifiFingerprintCreate) SetNillableCreatedBy(v *uint32) *WifiFingerprin
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *WifiFingerprintCreate) SetUpdatedBy(v uint32) *WifiFingerprintCreate {
+func (_c *WifiFingerprintCreate) SetUpdatedBy(v int64) *WifiFingerprintCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *WifiFingerprintCreate) SetNillableUpdatedBy(v *uint32) *WifiFingerprintCreate {
+func (_c *WifiFingerprintCreate) SetNillableUpdatedBy(v *int64) *WifiFingerprintCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *WifiFingerprintCreate) SetNillableUpdatedBy(v *uint32) *WifiFingerprin
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *WifiFingerprintCreate) SetDeletedBy(v uint32) *WifiFingerprintCreate {
+func (_c *WifiFingerprintCreate) SetDeletedBy(v int64) *WifiFingerprintCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *WifiFingerprintCreate) SetNillableDeletedBy(v *uint32) *WifiFingerprintCreate {
+func (_c *WifiFingerprintCreate) SetNillableDeletedBy(v *int64) *WifiFingerprintCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *WifiFingerprintCreate) SetNillableDeletedBy(v *uint32) *WifiFingerprin
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *WifiFingerprintCreate) SetTenantID(v uint32) *WifiFingerprintCreate {
+func (_c *WifiFingerprintCreate) SetTenantID(v int64) *WifiFingerprintCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *WifiFingerprintCreate) SetNillableTenantID(v *uint32) *WifiFingerprintCreate {
+func (_c *WifiFingerprintCreate) SetNillableTenantID(v *int64) *WifiFingerprintCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -141,7 +141,7 @@ func (_c *WifiFingerprintCreate) SetBssid(v string) *WifiFingerprintCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *WifiFingerprintCreate) SetID(v uint32) *WifiFingerprintCreate {
+func (_c *WifiFingerprintCreate) SetID(v int64) *WifiFingerprintCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -233,7 +233,7 @@ func (_c *WifiFingerprintCreate) sqlSave(ctx context.Context) (*WifiFingerprint,
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -243,7 +243,7 @@ func (_c *WifiFingerprintCreate) sqlSave(ctx context.Context) (*WifiFingerprint,
 func (_c *WifiFingerprintCreate) createSpec() (*WifiFingerprint, *sqlgraph.CreateSpec) {
 	var (
 		_node = &WifiFingerprint{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(wififingerprint.Table, sqlgraph.NewFieldSpec(wififingerprint.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(wififingerprint.Table, sqlgraph.NewFieldSpec(wififingerprint.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -263,19 +263,19 @@ func (_c *WifiFingerprintCreate) createSpec() (*WifiFingerprint, *sqlgraph.Creat
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(wififingerprint.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(wififingerprint.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(wififingerprint.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(wififingerprint.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(wififingerprint.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(wififingerprint.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(wififingerprint.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(wififingerprint.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Ssid(); ok {
@@ -375,7 +375,7 @@ func (u *WifiFingerprintUpsert) ClearDeletedAt() *WifiFingerprintUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WifiFingerprintUpsert) SetCreatedBy(v uint32) *WifiFingerprintUpsert {
+func (u *WifiFingerprintUpsert) SetCreatedBy(v int64) *WifiFingerprintUpsert {
 	u.Set(wififingerprint.FieldCreatedBy, v)
 	return u
 }
@@ -387,7 +387,7 @@ func (u *WifiFingerprintUpsert) UpdateCreatedBy() *WifiFingerprintUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WifiFingerprintUpsert) AddCreatedBy(v uint32) *WifiFingerprintUpsert {
+func (u *WifiFingerprintUpsert) AddCreatedBy(v int64) *WifiFingerprintUpsert {
 	u.Add(wififingerprint.FieldCreatedBy, v)
 	return u
 }
@@ -399,7 +399,7 @@ func (u *WifiFingerprintUpsert) ClearCreatedBy() *WifiFingerprintUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WifiFingerprintUpsert) SetUpdatedBy(v uint32) *WifiFingerprintUpsert {
+func (u *WifiFingerprintUpsert) SetUpdatedBy(v int64) *WifiFingerprintUpsert {
 	u.Set(wififingerprint.FieldUpdatedBy, v)
 	return u
 }
@@ -411,7 +411,7 @@ func (u *WifiFingerprintUpsert) UpdateUpdatedBy() *WifiFingerprintUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WifiFingerprintUpsert) AddUpdatedBy(v uint32) *WifiFingerprintUpsert {
+func (u *WifiFingerprintUpsert) AddUpdatedBy(v int64) *WifiFingerprintUpsert {
 	u.Add(wififingerprint.FieldUpdatedBy, v)
 	return u
 }
@@ -423,7 +423,7 @@ func (u *WifiFingerprintUpsert) ClearUpdatedBy() *WifiFingerprintUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WifiFingerprintUpsert) SetDeletedBy(v uint32) *WifiFingerprintUpsert {
+func (u *WifiFingerprintUpsert) SetDeletedBy(v int64) *WifiFingerprintUpsert {
 	u.Set(wififingerprint.FieldDeletedBy, v)
 	return u
 }
@@ -435,7 +435,7 @@ func (u *WifiFingerprintUpsert) UpdateDeletedBy() *WifiFingerprintUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WifiFingerprintUpsert) AddDeletedBy(v uint32) *WifiFingerprintUpsert {
+func (u *WifiFingerprintUpsert) AddDeletedBy(v int64) *WifiFingerprintUpsert {
 	u.Add(wififingerprint.FieldDeletedBy, v)
 	return u
 }
@@ -567,14 +567,14 @@ func (u *WifiFingerprintUpsertOne) ClearDeletedAt() *WifiFingerprintUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WifiFingerprintUpsertOne) SetCreatedBy(v uint32) *WifiFingerprintUpsertOne {
+func (u *WifiFingerprintUpsertOne) SetCreatedBy(v int64) *WifiFingerprintUpsertOne {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WifiFingerprintUpsertOne) AddCreatedBy(v uint32) *WifiFingerprintUpsertOne {
+func (u *WifiFingerprintUpsertOne) AddCreatedBy(v int64) *WifiFingerprintUpsertOne {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -595,14 +595,14 @@ func (u *WifiFingerprintUpsertOne) ClearCreatedBy() *WifiFingerprintUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WifiFingerprintUpsertOne) SetUpdatedBy(v uint32) *WifiFingerprintUpsertOne {
+func (u *WifiFingerprintUpsertOne) SetUpdatedBy(v int64) *WifiFingerprintUpsertOne {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WifiFingerprintUpsertOne) AddUpdatedBy(v uint32) *WifiFingerprintUpsertOne {
+func (u *WifiFingerprintUpsertOne) AddUpdatedBy(v int64) *WifiFingerprintUpsertOne {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -623,14 +623,14 @@ func (u *WifiFingerprintUpsertOne) ClearUpdatedBy() *WifiFingerprintUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WifiFingerprintUpsertOne) SetDeletedBy(v uint32) *WifiFingerprintUpsertOne {
+func (u *WifiFingerprintUpsertOne) SetDeletedBy(v int64) *WifiFingerprintUpsertOne {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WifiFingerprintUpsertOne) AddDeletedBy(v uint32) *WifiFingerprintUpsertOne {
+func (u *WifiFingerprintUpsertOne) AddDeletedBy(v int64) *WifiFingerprintUpsertOne {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -694,7 +694,7 @@ func (u *WifiFingerprintUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *WifiFingerprintUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *WifiFingerprintUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -703,7 +703,7 @@ func (u *WifiFingerprintUpsertOne) ID(ctx context.Context) (id uint32, err error
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *WifiFingerprintUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *WifiFingerprintUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -760,7 +760,7 @@ func (_c *WifiFingerprintCreateBulk) Save(ctx context.Context) ([]*WifiFingerpri
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -941,14 +941,14 @@ func (u *WifiFingerprintUpsertBulk) ClearDeletedAt() *WifiFingerprintUpsertBulk 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *WifiFingerprintUpsertBulk) SetCreatedBy(v uint32) *WifiFingerprintUpsertBulk {
+func (u *WifiFingerprintUpsertBulk) SetCreatedBy(v int64) *WifiFingerprintUpsertBulk {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *WifiFingerprintUpsertBulk) AddCreatedBy(v uint32) *WifiFingerprintUpsertBulk {
+func (u *WifiFingerprintUpsertBulk) AddCreatedBy(v int64) *WifiFingerprintUpsertBulk {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -969,14 +969,14 @@ func (u *WifiFingerprintUpsertBulk) ClearCreatedBy() *WifiFingerprintUpsertBulk 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *WifiFingerprintUpsertBulk) SetUpdatedBy(v uint32) *WifiFingerprintUpsertBulk {
+func (u *WifiFingerprintUpsertBulk) SetUpdatedBy(v int64) *WifiFingerprintUpsertBulk {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *WifiFingerprintUpsertBulk) AddUpdatedBy(v uint32) *WifiFingerprintUpsertBulk {
+func (u *WifiFingerprintUpsertBulk) AddUpdatedBy(v int64) *WifiFingerprintUpsertBulk {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -997,14 +997,14 @@ func (u *WifiFingerprintUpsertBulk) ClearUpdatedBy() *WifiFingerprintUpsertBulk 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *WifiFingerprintUpsertBulk) SetDeletedBy(v uint32) *WifiFingerprintUpsertBulk {
+func (u *WifiFingerprintUpsertBulk) SetDeletedBy(v int64) *WifiFingerprintUpsertBulk {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *WifiFingerprintUpsertBulk) AddDeletedBy(v uint32) *WifiFingerprintUpsertBulk {
+func (u *WifiFingerprintUpsertBulk) AddDeletedBy(v int64) *WifiFingerprintUpsertBulk {
 	return u.Update(func(s *WifiFingerprintUpsert) {
 		s.AddDeletedBy(v)
 	})

@@ -23,7 +23,7 @@ type PlanModuleService struct {
 
 func NewPlanModuleService(ctx *bootstrap.Context, planModuleServiceClient identityV1.PlanModuleServiceClient) *PlanModuleService {
 	return &PlanModuleService{
-		log:                    ctx.NewLoggerHelper("plan-module/service/admin-service"),
+		log:                     ctx.NewLoggerHelper("plan-module/service/admin-service"),
 		planModuleServiceClient: planModuleServiceClient,
 	}
 }

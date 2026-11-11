@@ -50,12 +50,12 @@ func (WorkflowToken) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint32("parent_id").
+		field.Int64("parent_id").
 			Comment("fork 产生的子令牌指向分叉源令牌").
 			Optional().
 			Nillable(),
 
-		field.Uint32("child_instance_id").
+		field.Int64("child_instance_id").
 			Comment("阻塞于子流程节点时记录的子流程实例ID").
 			Optional().
 			Nillable(),
@@ -75,7 +75,7 @@ func (WorkflowToken) Fields() []ent.Field {
 // Mixin of the WorkflowToken.
 func (WorkflowToken) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
 	}
 }

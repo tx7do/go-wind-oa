@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.LeaveBalance {
+func ID(id int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.LeaveBalance {
+func IDEQ(id int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.LeaveBalance {
+func IDNEQ(id int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.LeaveBalance {
+func IDIn(ids ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.LeaveBalance {
+func IDNotIn(ids ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.LeaveBalance {
+func IDGT(id int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.LeaveBalance {
+func IDGTE(id int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.LeaveBalance {
+func IDLT(id int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.LeaveBalance {
+func IDLTE(id int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,32 +70,32 @@ func DeletedAt(v time.Time) predicate.LeaveBalance {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint32) predicate.LeaveBalance {
+func CreatedBy(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint32) predicate.LeaveBalance {
+func UpdatedBy(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint32) predicate.LeaveBalance {
+func DeletedBy(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.LeaveBalance {
+func TenantID(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldTenantID, v))
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v uint32) predicate.LeaveBalance {
+func UserID(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldUserID, v))
 }
 
 // LeaveTypeID applies equality check predicate on the "leave_type_id" field. It's identical to LeaveTypeIDEQ.
-func LeaveTypeID(v uint32) predicate.LeaveBalance {
+func LeaveTypeID(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldLeaveTypeID, v))
 }
 
@@ -265,42 +265,42 @@ func DeletedAtNotNil() predicate.LeaveBalance {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint32) predicate.LeaveBalance {
+func CreatedByEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint32) predicate.LeaveBalance {
+func CreatedByNEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint32) predicate.LeaveBalance {
+func CreatedByIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint32) predicate.LeaveBalance {
+func CreatedByNotIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint32) predicate.LeaveBalance {
+func CreatedByGT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint32) predicate.LeaveBalance {
+func CreatedByGTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint32) predicate.LeaveBalance {
+func CreatedByLT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint32) predicate.LeaveBalance {
+func CreatedByLTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -315,42 +315,42 @@ func CreatedByNotNil() predicate.LeaveBalance {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint32) predicate.LeaveBalance {
+func UpdatedByEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint32) predicate.LeaveBalance {
+func UpdatedByNEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint32) predicate.LeaveBalance {
+func UpdatedByIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint32) predicate.LeaveBalance {
+func UpdatedByNotIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint32) predicate.LeaveBalance {
+func UpdatedByGT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint32) predicate.LeaveBalance {
+func UpdatedByGTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint32) predicate.LeaveBalance {
+func UpdatedByLT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint32) predicate.LeaveBalance {
+func UpdatedByLTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -365,42 +365,42 @@ func UpdatedByNotNil() predicate.LeaveBalance {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint32) predicate.LeaveBalance {
+func DeletedByEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint32) predicate.LeaveBalance {
+func DeletedByNEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint32) predicate.LeaveBalance {
+func DeletedByIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint32) predicate.LeaveBalance {
+func DeletedByNotIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint32) predicate.LeaveBalance {
+func DeletedByGT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint32) predicate.LeaveBalance {
+func DeletedByGTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint32) predicate.LeaveBalance {
+func DeletedByLT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint32) predicate.LeaveBalance {
+func DeletedByLTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -415,42 +415,42 @@ func DeletedByNotNil() predicate.LeaveBalance {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.LeaveBalance {
+func TenantIDEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.LeaveBalance {
+func TenantIDNEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.LeaveBalance {
+func TenantIDIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.LeaveBalance {
+func TenantIDNotIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.LeaveBalance {
+func TenantIDGT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.LeaveBalance {
+func TenantIDGTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.LeaveBalance {
+func TenantIDLT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.LeaveBalance {
+func TenantIDLTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -465,82 +465,82 @@ func TenantIDNotNil() predicate.LeaveBalance {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v uint32) predicate.LeaveBalance {
+func UserIDEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldUserID, v))
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v uint32) predicate.LeaveBalance {
+func UserIDNEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNEQ(FieldUserID, v))
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...uint32) predicate.LeaveBalance {
+func UserIDIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldIn(FieldUserID, vs...))
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...uint32) predicate.LeaveBalance {
+func UserIDNotIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNotIn(FieldUserID, vs...))
 }
 
 // UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v uint32) predicate.LeaveBalance {
+func UserIDGT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGT(FieldUserID, v))
 }
 
 // UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v uint32) predicate.LeaveBalance {
+func UserIDGTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGTE(FieldUserID, v))
 }
 
 // UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v uint32) predicate.LeaveBalance {
+func UserIDLT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLT(FieldUserID, v))
 }
 
 // UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v uint32) predicate.LeaveBalance {
+func UserIDLTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLTE(FieldUserID, v))
 }
 
 // LeaveTypeIDEQ applies the EQ predicate on the "leave_type_id" field.
-func LeaveTypeIDEQ(v uint32) predicate.LeaveBalance {
+func LeaveTypeIDEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldEQ(FieldLeaveTypeID, v))
 }
 
 // LeaveTypeIDNEQ applies the NEQ predicate on the "leave_type_id" field.
-func LeaveTypeIDNEQ(v uint32) predicate.LeaveBalance {
+func LeaveTypeIDNEQ(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNEQ(FieldLeaveTypeID, v))
 }
 
 // LeaveTypeIDIn applies the In predicate on the "leave_type_id" field.
-func LeaveTypeIDIn(vs ...uint32) predicate.LeaveBalance {
+func LeaveTypeIDIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldIn(FieldLeaveTypeID, vs...))
 }
 
 // LeaveTypeIDNotIn applies the NotIn predicate on the "leave_type_id" field.
-func LeaveTypeIDNotIn(vs ...uint32) predicate.LeaveBalance {
+func LeaveTypeIDNotIn(vs ...int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldNotIn(FieldLeaveTypeID, vs...))
 }
 
 // LeaveTypeIDGT applies the GT predicate on the "leave_type_id" field.
-func LeaveTypeIDGT(v uint32) predicate.LeaveBalance {
+func LeaveTypeIDGT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGT(FieldLeaveTypeID, v))
 }
 
 // LeaveTypeIDGTE applies the GTE predicate on the "leave_type_id" field.
-func LeaveTypeIDGTE(v uint32) predicate.LeaveBalance {
+func LeaveTypeIDGTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldGTE(FieldLeaveTypeID, v))
 }
 
 // LeaveTypeIDLT applies the LT predicate on the "leave_type_id" field.
-func LeaveTypeIDLT(v uint32) predicate.LeaveBalance {
+func LeaveTypeIDLT(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLT(FieldLeaveTypeID, v))
 }
 
 // LeaveTypeIDLTE applies the LTE predicate on the "leave_type_id" field.
-func LeaveTypeIDLTE(v uint32) predicate.LeaveBalance {
+func LeaveTypeIDLTE(v int64) predicate.LeaveBalance {
 	return predicate.LeaveBalance(sql.FieldLTE(FieldLeaveTypeID, v))
 }
 

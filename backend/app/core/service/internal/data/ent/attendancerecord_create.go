@@ -65,13 +65,13 @@ func (_c *AttendanceRecordCreate) SetNillableDeletedAt(v *time.Time) *Attendance
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *AttendanceRecordCreate) SetCreatedBy(v uint32) *AttendanceRecordCreate {
+func (_c *AttendanceRecordCreate) SetCreatedBy(v int64) *AttendanceRecordCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *AttendanceRecordCreate) SetNillableCreatedBy(v *uint32) *AttendanceRecordCreate {
+func (_c *AttendanceRecordCreate) SetNillableCreatedBy(v *int64) *AttendanceRecordCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *AttendanceRecordCreate) SetNillableCreatedBy(v *uint32) *AttendanceRec
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *AttendanceRecordCreate) SetUpdatedBy(v uint32) *AttendanceRecordCreate {
+func (_c *AttendanceRecordCreate) SetUpdatedBy(v int64) *AttendanceRecordCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *AttendanceRecordCreate) SetNillableUpdatedBy(v *uint32) *AttendanceRecordCreate {
+func (_c *AttendanceRecordCreate) SetNillableUpdatedBy(v *int64) *AttendanceRecordCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *AttendanceRecordCreate) SetNillableUpdatedBy(v *uint32) *AttendanceRec
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *AttendanceRecordCreate) SetDeletedBy(v uint32) *AttendanceRecordCreate {
+func (_c *AttendanceRecordCreate) SetDeletedBy(v int64) *AttendanceRecordCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *AttendanceRecordCreate) SetNillableDeletedBy(v *uint32) *AttendanceRecordCreate {
+func (_c *AttendanceRecordCreate) SetNillableDeletedBy(v *int64) *AttendanceRecordCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *AttendanceRecordCreate) SetNillableDeletedBy(v *uint32) *AttendanceRec
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *AttendanceRecordCreate) SetTenantID(v uint32) *AttendanceRecordCreate {
+func (_c *AttendanceRecordCreate) SetTenantID(v int64) *AttendanceRecordCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *AttendanceRecordCreate) SetNillableTenantID(v *uint32) *AttendanceRecordCreate {
+func (_c *AttendanceRecordCreate) SetNillableTenantID(v *int64) *AttendanceRecordCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -121,7 +121,7 @@ func (_c *AttendanceRecordCreate) SetNillableTenantID(v *uint32) *AttendanceReco
 }
 
 // SetUserID sets the "user_id" field.
-func (_c *AttendanceRecordCreate) SetUserID(v uint32) *AttendanceRecordCreate {
+func (_c *AttendanceRecordCreate) SetUserID(v int64) *AttendanceRecordCreate {
 	_c.mutation.SetUserID(v)
 	return _c
 }
@@ -259,7 +259,7 @@ func (_c *AttendanceRecordCreate) SetNillableDayResult(v *attendancerecord.DayRe
 }
 
 // SetID sets the "id" field.
-func (_c *AttendanceRecordCreate) SetID(v uint32) *AttendanceRecordCreate {
+func (_c *AttendanceRecordCreate) SetID(v int64) *AttendanceRecordCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -356,7 +356,7 @@ func (_c *AttendanceRecordCreate) sqlSave(ctx context.Context) (*AttendanceRecor
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -366,7 +366,7 @@ func (_c *AttendanceRecordCreate) sqlSave(ctx context.Context) (*AttendanceRecor
 func (_c *AttendanceRecordCreate) createSpec() (*AttendanceRecord, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AttendanceRecord{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(attendancerecord.Table, sqlgraph.NewFieldSpec(attendancerecord.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(attendancerecord.Table, sqlgraph.NewFieldSpec(attendancerecord.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -386,23 +386,23 @@ func (_c *AttendanceRecordCreate) createSpec() (*AttendanceRecord, *sqlgraph.Cre
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(attendancerecord.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(attendancerecord.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(attendancerecord.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(attendancerecord.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
-		_spec.SetField(attendancerecord.FieldUserID, field.TypeUint32, value)
+		_spec.SetField(attendancerecord.FieldUserID, field.TypeInt64, value)
 		_node.UserID = value
 	}
 	if value, ok := _c.mutation.WorkDate(); ok {
@@ -534,7 +534,7 @@ func (u *AttendanceRecordUpsert) ClearDeletedAt() *AttendanceRecordUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AttendanceRecordUpsert) SetCreatedBy(v uint32) *AttendanceRecordUpsert {
+func (u *AttendanceRecordUpsert) SetCreatedBy(v int64) *AttendanceRecordUpsert {
 	u.Set(attendancerecord.FieldCreatedBy, v)
 	return u
 }
@@ -546,7 +546,7 @@ func (u *AttendanceRecordUpsert) UpdateCreatedBy() *AttendanceRecordUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AttendanceRecordUpsert) AddCreatedBy(v uint32) *AttendanceRecordUpsert {
+func (u *AttendanceRecordUpsert) AddCreatedBy(v int64) *AttendanceRecordUpsert {
 	u.Add(attendancerecord.FieldCreatedBy, v)
 	return u
 }
@@ -558,7 +558,7 @@ func (u *AttendanceRecordUpsert) ClearCreatedBy() *AttendanceRecordUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AttendanceRecordUpsert) SetUpdatedBy(v uint32) *AttendanceRecordUpsert {
+func (u *AttendanceRecordUpsert) SetUpdatedBy(v int64) *AttendanceRecordUpsert {
 	u.Set(attendancerecord.FieldUpdatedBy, v)
 	return u
 }
@@ -570,7 +570,7 @@ func (u *AttendanceRecordUpsert) UpdateUpdatedBy() *AttendanceRecordUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AttendanceRecordUpsert) AddUpdatedBy(v uint32) *AttendanceRecordUpsert {
+func (u *AttendanceRecordUpsert) AddUpdatedBy(v int64) *AttendanceRecordUpsert {
 	u.Add(attendancerecord.FieldUpdatedBy, v)
 	return u
 }
@@ -582,7 +582,7 @@ func (u *AttendanceRecordUpsert) ClearUpdatedBy() *AttendanceRecordUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AttendanceRecordUpsert) SetDeletedBy(v uint32) *AttendanceRecordUpsert {
+func (u *AttendanceRecordUpsert) SetDeletedBy(v int64) *AttendanceRecordUpsert {
 	u.Set(attendancerecord.FieldDeletedBy, v)
 	return u
 }
@@ -594,7 +594,7 @@ func (u *AttendanceRecordUpsert) UpdateDeletedBy() *AttendanceRecordUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AttendanceRecordUpsert) AddDeletedBy(v uint32) *AttendanceRecordUpsert {
+func (u *AttendanceRecordUpsert) AddDeletedBy(v int64) *AttendanceRecordUpsert {
 	u.Add(attendancerecord.FieldDeletedBy, v)
 	return u
 }
@@ -606,7 +606,7 @@ func (u *AttendanceRecordUpsert) ClearDeletedBy() *AttendanceRecordUpsert {
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AttendanceRecordUpsert) SetUserID(v uint32) *AttendanceRecordUpsert {
+func (u *AttendanceRecordUpsert) SetUserID(v int64) *AttendanceRecordUpsert {
 	u.Set(attendancerecord.FieldUserID, v)
 	return u
 }
@@ -618,7 +618,7 @@ func (u *AttendanceRecordUpsert) UpdateUserID() *AttendanceRecordUpsert {
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AttendanceRecordUpsert) AddUserID(v uint32) *AttendanceRecordUpsert {
+func (u *AttendanceRecordUpsert) AddUserID(v int64) *AttendanceRecordUpsert {
 	u.Add(attendancerecord.FieldUserID, v)
 	return u
 }
@@ -918,14 +918,14 @@ func (u *AttendanceRecordUpsertOne) ClearDeletedAt() *AttendanceRecordUpsertOne 
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AttendanceRecordUpsertOne) SetCreatedBy(v uint32) *AttendanceRecordUpsertOne {
+func (u *AttendanceRecordUpsertOne) SetCreatedBy(v int64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AttendanceRecordUpsertOne) AddCreatedBy(v uint32) *AttendanceRecordUpsertOne {
+func (u *AttendanceRecordUpsertOne) AddCreatedBy(v int64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -946,14 +946,14 @@ func (u *AttendanceRecordUpsertOne) ClearCreatedBy() *AttendanceRecordUpsertOne 
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AttendanceRecordUpsertOne) SetUpdatedBy(v uint32) *AttendanceRecordUpsertOne {
+func (u *AttendanceRecordUpsertOne) SetUpdatedBy(v int64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AttendanceRecordUpsertOne) AddUpdatedBy(v uint32) *AttendanceRecordUpsertOne {
+func (u *AttendanceRecordUpsertOne) AddUpdatedBy(v int64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -974,14 +974,14 @@ func (u *AttendanceRecordUpsertOne) ClearUpdatedBy() *AttendanceRecordUpsertOne 
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AttendanceRecordUpsertOne) SetDeletedBy(v uint32) *AttendanceRecordUpsertOne {
+func (u *AttendanceRecordUpsertOne) SetDeletedBy(v int64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AttendanceRecordUpsertOne) AddDeletedBy(v uint32) *AttendanceRecordUpsertOne {
+func (u *AttendanceRecordUpsertOne) AddDeletedBy(v int64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1002,14 +1002,14 @@ func (u *AttendanceRecordUpsertOne) ClearDeletedBy() *AttendanceRecordUpsertOne 
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AttendanceRecordUpsertOne) SetUserID(v uint32) *AttendanceRecordUpsertOne {
+func (u *AttendanceRecordUpsertOne) SetUserID(v int64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AttendanceRecordUpsertOne) AddUserID(v uint32) *AttendanceRecordUpsertOne {
+func (u *AttendanceRecordUpsertOne) AddUserID(v int64) *AttendanceRecordUpsertOne {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.AddUserID(v)
 	})
@@ -1269,7 +1269,7 @@ func (u *AttendanceRecordUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AttendanceRecordUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *AttendanceRecordUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1278,7 +1278,7 @@ func (u *AttendanceRecordUpsertOne) ID(ctx context.Context) (id uint32, err erro
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AttendanceRecordUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *AttendanceRecordUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1335,7 +1335,7 @@ func (_c *AttendanceRecordCreateBulk) Save(ctx context.Context) ([]*AttendanceRe
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1516,14 +1516,14 @@ func (u *AttendanceRecordUpsertBulk) ClearDeletedAt() *AttendanceRecordUpsertBul
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *AttendanceRecordUpsertBulk) SetCreatedBy(v uint32) *AttendanceRecordUpsertBulk {
+func (u *AttendanceRecordUpsertBulk) SetCreatedBy(v int64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *AttendanceRecordUpsertBulk) AddCreatedBy(v uint32) *AttendanceRecordUpsertBulk {
+func (u *AttendanceRecordUpsertBulk) AddCreatedBy(v int64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1544,14 +1544,14 @@ func (u *AttendanceRecordUpsertBulk) ClearCreatedBy() *AttendanceRecordUpsertBul
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *AttendanceRecordUpsertBulk) SetUpdatedBy(v uint32) *AttendanceRecordUpsertBulk {
+func (u *AttendanceRecordUpsertBulk) SetUpdatedBy(v int64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *AttendanceRecordUpsertBulk) AddUpdatedBy(v uint32) *AttendanceRecordUpsertBulk {
+func (u *AttendanceRecordUpsertBulk) AddUpdatedBy(v int64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1572,14 +1572,14 @@ func (u *AttendanceRecordUpsertBulk) ClearUpdatedBy() *AttendanceRecordUpsertBul
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *AttendanceRecordUpsertBulk) SetDeletedBy(v uint32) *AttendanceRecordUpsertBulk {
+func (u *AttendanceRecordUpsertBulk) SetDeletedBy(v int64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *AttendanceRecordUpsertBulk) AddDeletedBy(v uint32) *AttendanceRecordUpsertBulk {
+func (u *AttendanceRecordUpsertBulk) AddDeletedBy(v int64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1600,14 +1600,14 @@ func (u *AttendanceRecordUpsertBulk) ClearDeletedBy() *AttendanceRecordUpsertBul
 }
 
 // SetUserID sets the "user_id" field.
-func (u *AttendanceRecordUpsertBulk) SetUserID(v uint32) *AttendanceRecordUpsertBulk {
+func (u *AttendanceRecordUpsertBulk) SetUserID(v int64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.SetUserID(v)
 	})
 }
 
 // AddUserID adds v to the "user_id" field.
-func (u *AttendanceRecordUpsertBulk) AddUserID(v uint32) *AttendanceRecordUpsertBulk {
+func (u *AttendanceRecordUpsertBulk) AddUserID(v int64) *AttendanceRecordUpsertBulk {
 	return u.Update(func(s *AttendanceRecordUpsert) {
 		s.AddUserID(v)
 	})

@@ -16,9 +16,9 @@ import (
 )
 
 const (
-	businessTypeOvertime       = "OVERTIME"
-	overtimeDefinitionCode     = "OVERTIME"
-	overtimeDefinitionVersion  = int32(1)
+	businessTypeOvertime      = "OVERTIME"
+	overtimeDefinitionCode    = "OVERTIME"
+	overtimeDefinitionVersion = int32(1)
 )
 
 type OvertimeService struct {
@@ -52,8 +52,8 @@ func NewOvertimeService(
 	return svc
 }
 
-func (s *OvertimeService) fillApplicantNames(ctx context.Context, tid uint32, items []*oaV1.OvertimeApplication) {
-	ids := make([]uint32, 0, len(items))
+func (s *OvertimeService) fillApplicantNames(ctx context.Context, tid int64, items []*oaV1.OvertimeApplication) {
+	ids := make([]int64, 0, len(items))
 	for _, it := range items {
 		if it.GetCreatedBy() != 0 {
 			ids = append(ids, it.GetCreatedBy())
@@ -115,7 +115,7 @@ func (s *OvertimeService) SubmitOvertimeApplication(ctx context.Context, req *oa
 	return &oaV1.SubmitOvertimeApplicationResponse{Id: appID, InstanceId: resp.GetInstanceId()}, nil
 }
 
-func (s *OvertimeService) ensureWorkflowDefinition(ctx context.Context, tid, uid uint32) {
+func (s *OvertimeService) ensureWorkflowDefinition(ctx context.Context, tid, uid int64) {
 	if _, err := s.definitionRepo.GetByCodeVersion(ctx, overtimeDefinitionCode, overtimeDefinitionVersion); err == nil {
 		return
 	}
@@ -145,7 +145,7 @@ func (s *OvertimeService) ListOvertimeApplications(ctx context.Context, req *oaV
 		return nil, err
 	}
 	s.fillApplicantNames(ctx, tid, items)
-	return &oaV1.ListOvertimeApplicationsResponse{Items: items, Total: uint64(total)}, nil
+	return &oaV1.ListOvertimeApplicationsResponse{Items: items, Total: int64(total)}, nil
 }
 
 func (s *OvertimeService) GetOvertimeApplication(ctx context.Context, req *oaV1.GetOvertimeApplicationRequest) (*oaV1.OvertimeApplication, error) {
@@ -164,7 +164,7 @@ func (s *OvertimeService) GetOvertimeApplication(ctx context.Context, req *oaV1.
 	return item, nil
 }
 
-func (s *OvertimeService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID uint32, status oaV1.WorkflowInstance_InstanceStatus) {
+func (s *OvertimeService) onInstanceTerminal(ctx context.Context, tenantID, instanceID, businessID int64, status oaV1.WorkflowInstance_InstanceStatus) {
 	entity, err := s.appRepo.GetEntity(ctx, tenantID, businessID)
 	if err != nil || entity == nil {
 		s.log.Errorf("overtime hook load application %d failed: %v", businessID, err)

@@ -70,14 +70,14 @@ func (_u *WifiFingerprintUpdate) ClearDeletedAt() *WifiFingerprintUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *WifiFingerprintUpdate) SetCreatedBy(v uint32) *WifiFingerprintUpdate {
+func (_u *WifiFingerprintUpdate) SetCreatedBy(v int64) *WifiFingerprintUpdate {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *WifiFingerprintUpdate) SetNillableCreatedBy(v *uint32) *WifiFingerprintUpdate {
+func (_u *WifiFingerprintUpdate) SetNillableCreatedBy(v *int64) *WifiFingerprintUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -85,7 +85,7 @@ func (_u *WifiFingerprintUpdate) SetNillableCreatedBy(v *uint32) *WifiFingerprin
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *WifiFingerprintUpdate) AddCreatedBy(v int32) *WifiFingerprintUpdate {
+func (_u *WifiFingerprintUpdate) AddCreatedBy(v int64) *WifiFingerprintUpdate {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -97,14 +97,14 @@ func (_u *WifiFingerprintUpdate) ClearCreatedBy() *WifiFingerprintUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *WifiFingerprintUpdate) SetUpdatedBy(v uint32) *WifiFingerprintUpdate {
+func (_u *WifiFingerprintUpdate) SetUpdatedBy(v int64) *WifiFingerprintUpdate {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *WifiFingerprintUpdate) SetNillableUpdatedBy(v *uint32) *WifiFingerprintUpdate {
+func (_u *WifiFingerprintUpdate) SetNillableUpdatedBy(v *int64) *WifiFingerprintUpdate {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -112,7 +112,7 @@ func (_u *WifiFingerprintUpdate) SetNillableUpdatedBy(v *uint32) *WifiFingerprin
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *WifiFingerprintUpdate) AddUpdatedBy(v int32) *WifiFingerprintUpdate {
+func (_u *WifiFingerprintUpdate) AddUpdatedBy(v int64) *WifiFingerprintUpdate {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -124,14 +124,14 @@ func (_u *WifiFingerprintUpdate) ClearUpdatedBy() *WifiFingerprintUpdate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *WifiFingerprintUpdate) SetDeletedBy(v uint32) *WifiFingerprintUpdate {
+func (_u *WifiFingerprintUpdate) SetDeletedBy(v int64) *WifiFingerprintUpdate {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *WifiFingerprintUpdate) SetNillableDeletedBy(v *uint32) *WifiFingerprintUpdate {
+func (_u *WifiFingerprintUpdate) SetNillableDeletedBy(v *int64) *WifiFingerprintUpdate {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -139,7 +139,7 @@ func (_u *WifiFingerprintUpdate) SetNillableDeletedBy(v *uint32) *WifiFingerprin
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *WifiFingerprintUpdate) AddDeletedBy(v int32) *WifiFingerprintUpdate {
+func (_u *WifiFingerprintUpdate) AddDeletedBy(v int64) *WifiFingerprintUpdate {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -235,7 +235,7 @@ func (_u *WifiFingerprintUpdate) sqlSave(ctx context.Context) (_node int, err er
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(wififingerprint.Table, wififingerprint.Columns, sqlgraph.NewFieldSpec(wififingerprint.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(wififingerprint.Table, wififingerprint.Columns, sqlgraph.NewFieldSpec(wififingerprint.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -259,34 +259,34 @@ func (_u *WifiFingerprintUpdate) sqlSave(ctx context.Context) (_node int, err er
 		_spec.ClearField(wififingerprint.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(wififingerprint.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(wififingerprint.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(wififingerprint.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(wififingerprint.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(wififingerprint.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(wififingerprint.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(wififingerprint.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(wififingerprint.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(wififingerprint.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(wififingerprint.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(wififingerprint.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(wififingerprint.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(wififingerprint.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(wififingerprint.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(wififingerprint.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(wififingerprint.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(wififingerprint.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(wififingerprint.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(wififingerprint.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(wififingerprint.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Ssid(); ok {
 		_spec.SetField(wififingerprint.FieldSsid, field.TypeString, value)
@@ -357,14 +357,14 @@ func (_u *WifiFingerprintUpdateOne) ClearDeletedAt() *WifiFingerprintUpdateOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_u *WifiFingerprintUpdateOne) SetCreatedBy(v uint32) *WifiFingerprintUpdateOne {
+func (_u *WifiFingerprintUpdateOne) SetCreatedBy(v int64) *WifiFingerprintUpdateOne {
 	_u.mutation.ResetCreatedBy()
 	_u.mutation.SetCreatedBy(v)
 	return _u
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *WifiFingerprintUpdateOne) SetNillableCreatedBy(v *uint32) *WifiFingerprintUpdateOne {
+func (_u *WifiFingerprintUpdateOne) SetNillableCreatedBy(v *int64) *WifiFingerprintUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
@@ -372,7 +372,7 @@ func (_u *WifiFingerprintUpdateOne) SetNillableCreatedBy(v *uint32) *WifiFingerp
 }
 
 // AddCreatedBy adds value to the "created_by" field.
-func (_u *WifiFingerprintUpdateOne) AddCreatedBy(v int32) *WifiFingerprintUpdateOne {
+func (_u *WifiFingerprintUpdateOne) AddCreatedBy(v int64) *WifiFingerprintUpdateOne {
 	_u.mutation.AddCreatedBy(v)
 	return _u
 }
@@ -384,14 +384,14 @@ func (_u *WifiFingerprintUpdateOne) ClearCreatedBy() *WifiFingerprintUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_u *WifiFingerprintUpdateOne) SetUpdatedBy(v uint32) *WifiFingerprintUpdateOne {
+func (_u *WifiFingerprintUpdateOne) SetUpdatedBy(v int64) *WifiFingerprintUpdateOne {
 	_u.mutation.ResetUpdatedBy()
 	_u.mutation.SetUpdatedBy(v)
 	return _u
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_u *WifiFingerprintUpdateOne) SetNillableUpdatedBy(v *uint32) *WifiFingerprintUpdateOne {
+func (_u *WifiFingerprintUpdateOne) SetNillableUpdatedBy(v *int64) *WifiFingerprintUpdateOne {
 	if v != nil {
 		_u.SetUpdatedBy(*v)
 	}
@@ -399,7 +399,7 @@ func (_u *WifiFingerprintUpdateOne) SetNillableUpdatedBy(v *uint32) *WifiFingerp
 }
 
 // AddUpdatedBy adds value to the "updated_by" field.
-func (_u *WifiFingerprintUpdateOne) AddUpdatedBy(v int32) *WifiFingerprintUpdateOne {
+func (_u *WifiFingerprintUpdateOne) AddUpdatedBy(v int64) *WifiFingerprintUpdateOne {
 	_u.mutation.AddUpdatedBy(v)
 	return _u
 }
@@ -411,14 +411,14 @@ func (_u *WifiFingerprintUpdateOne) ClearUpdatedBy() *WifiFingerprintUpdateOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_u *WifiFingerprintUpdateOne) SetDeletedBy(v uint32) *WifiFingerprintUpdateOne {
+func (_u *WifiFingerprintUpdateOne) SetDeletedBy(v int64) *WifiFingerprintUpdateOne {
 	_u.mutation.ResetDeletedBy()
 	_u.mutation.SetDeletedBy(v)
 	return _u
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_u *WifiFingerprintUpdateOne) SetNillableDeletedBy(v *uint32) *WifiFingerprintUpdateOne {
+func (_u *WifiFingerprintUpdateOne) SetNillableDeletedBy(v *int64) *WifiFingerprintUpdateOne {
 	if v != nil {
 		_u.SetDeletedBy(*v)
 	}
@@ -426,7 +426,7 @@ func (_u *WifiFingerprintUpdateOne) SetNillableDeletedBy(v *uint32) *WifiFingerp
 }
 
 // AddDeletedBy adds value to the "deleted_by" field.
-func (_u *WifiFingerprintUpdateOne) AddDeletedBy(v int32) *WifiFingerprintUpdateOne {
+func (_u *WifiFingerprintUpdateOne) AddDeletedBy(v int64) *WifiFingerprintUpdateOne {
 	_u.mutation.AddDeletedBy(v)
 	return _u
 }
@@ -535,7 +535,7 @@ func (_u *WifiFingerprintUpdateOne) sqlSave(ctx context.Context) (_node *WifiFin
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(wififingerprint.Table, wififingerprint.Columns, sqlgraph.NewFieldSpec(wififingerprint.FieldID, field.TypeUint32))
+	_spec := sqlgraph.NewUpdateSpec(wififingerprint.Table, wififingerprint.Columns, sqlgraph.NewFieldSpec(wififingerprint.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "WifiFingerprint.id" for update`)}
@@ -576,34 +576,34 @@ func (_u *WifiFingerprintUpdateOne) sqlSave(ctx context.Context) (_node *WifiFin
 		_spec.ClearField(wififingerprint.FieldDeletedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
-		_spec.SetField(wififingerprint.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(wififingerprint.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
-		_spec.AddField(wififingerprint.FieldCreatedBy, field.TypeUint32, value)
+		_spec.AddField(wififingerprint.FieldCreatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.CreatedByCleared() {
-		_spec.ClearField(wififingerprint.FieldCreatedBy, field.TypeUint32)
+		_spec.ClearField(wififingerprint.FieldCreatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.UpdatedBy(); ok {
-		_spec.SetField(wififingerprint.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(wififingerprint.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedUpdatedBy(); ok {
-		_spec.AddField(wififingerprint.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.AddField(wififingerprint.FieldUpdatedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.UpdatedByCleared() {
-		_spec.ClearField(wififingerprint.FieldUpdatedBy, field.TypeUint32)
+		_spec.ClearField(wififingerprint.FieldUpdatedBy, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DeletedBy(); ok {
-		_spec.SetField(wififingerprint.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(wififingerprint.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedDeletedBy(); ok {
-		_spec.AddField(wififingerprint.FieldDeletedBy, field.TypeUint32, value)
+		_spec.AddField(wififingerprint.FieldDeletedBy, field.TypeInt64, value)
 	}
 	if _u.mutation.DeletedByCleared() {
-		_spec.ClearField(wififingerprint.FieldDeletedBy, field.TypeUint32)
+		_spec.ClearField(wififingerprint.FieldDeletedBy, field.TypeInt64)
 	}
 	if _u.mutation.TenantIDCleared() {
-		_spec.ClearField(wififingerprint.FieldTenantID, field.TypeUint32)
+		_spec.ClearField(wififingerprint.FieldTenantID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Ssid(); ok {
 		_spec.SetField(wififingerprint.FieldSsid, field.TypeString, value)

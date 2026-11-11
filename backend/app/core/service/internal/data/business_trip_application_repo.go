@@ -87,11 +87,11 @@ func businessTripApplicationToDTO(e *ent.BusinessTripApplication) *oaV1.Business
 
 func (r *BusinessTripApplicationRepo) Create(
 	ctx context.Context,
-	tid, uid uint32,
+	tid, uid int64,
 	title, destination string,
 	startDate, endDate time.Time,
 	itinerary string,
-) (uint32, error) {
+) (int64, error) {
 	entity, err := r.entClient.Client().BusinessTripApplication.Create().
 		SetTitle(title).
 		SetDestination(destination).
@@ -111,7 +111,7 @@ func (r *BusinessTripApplicationRepo) Create(
 }
 
 // Get 按主键读取。
-func (r *BusinessTripApplicationRepo) Get(ctx context.Context, tid, id uint32) (*oaV1.BusinessTripApplication, error) {
+func (r *BusinessTripApplicationRepo) Get(ctx context.Context, tid, id int64) (*oaV1.BusinessTripApplication, error) {
 	entity, err := r.entClient.Client().BusinessTripApplication.Query().
 		Where(
 			businesstripapplication.IDEQ(id),
@@ -128,7 +128,7 @@ func (r *BusinessTripApplicationRepo) Get(ctx context.Context, tid, id uint32) (
 	return businessTripApplicationToDTO(entity), nil
 }
 
-func (r *BusinessTripApplicationRepo) UpdateStatus(ctx context.Context, tid, id uint32, status oaV1.BusinessTripApplication_BusinessTripStatus) error {
+func (r *BusinessTripApplicationRepo) UpdateStatus(ctx context.Context, tid, id int64, status oaV1.BusinessTripApplication_BusinessTripStatus) error {
 	if _, err := r.entClient.Client().BusinessTripApplication.Update().
 		Where(
 			businesstripapplication.IDEQ(id),
@@ -143,7 +143,7 @@ func (r *BusinessTripApplicationRepo) UpdateStatus(ctx context.Context, tid, id 
 	return nil
 }
 
-func (r *BusinessTripApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID uint32) error {
+func (r *BusinessTripApplicationRepo) SetInstanceID(ctx context.Context, tid, id, instanceID int64) error {
 	if _, err := r.entClient.Client().BusinessTripApplication.Update().
 		Where(
 			businesstripapplication.IDEQ(id),
@@ -162,7 +162,7 @@ func (r *BusinessTripApplicationRepo) SetInstanceID(ctx context.Context, tid, id
 // pageSize>0 时分页（page 从 1 起）并返回真实总数，否则全量（total=条数）。
 func (r *BusinessTripApplicationRepo) List(
 	ctx context.Context,
-	tid, userID uint32,
+	tid, userID int64,
 	status *oaV1.BusinessTripApplication_BusinessTripStatus,
 	page, pageSize int32,
 ) ([]*oaV1.BusinessTripApplication, int, error) {
@@ -199,7 +199,7 @@ func (r *BusinessTripApplicationRepo) List(
 }
 
 // GetEntity 供工作流终结回调读取原始实体（校验关联与状态同步）。不存在返回 nil。
-func (r *BusinessTripApplicationRepo) GetEntity(ctx context.Context, tid, id uint32) (*ent.BusinessTripApplication, error) {
+func (r *BusinessTripApplicationRepo) GetEntity(ctx context.Context, tid, id int64) (*ent.BusinessTripApplication, error) {
 	entity, err := r.entClient.Client().BusinessTripApplication.Query().
 		Where(
 			businesstripapplication.IDEQ(id),

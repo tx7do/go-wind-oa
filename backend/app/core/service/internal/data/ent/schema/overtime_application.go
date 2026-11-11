@@ -63,7 +63,7 @@ func (OvertimeApplication) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint32("instance_id").
+		field.Int64("instance_id").
 			Comment("关联工作流实例ID").
 			Optional().
 			Nillable(),
@@ -73,10 +73,10 @@ func (OvertimeApplication) Fields() []ent.Field {
 // Mixin of the OvertimeApplication.
 func (OvertimeApplication) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.AutoIncrementId{},
+		mixin.AutoIncrementId64{},
 		mixin.TimeAt{},
-		mixin.OperatorID{},
-		mixin.TenantID[uint32]{},
+		mixin.OperatorID64{},
+		mixin.TenantID[int64]{},
 	}
 }
 

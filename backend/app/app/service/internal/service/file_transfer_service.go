@@ -86,11 +86,11 @@ func parseKey(key string) (folder, filename, ext string) {
 // recordFile 记录文件元数据到数据库，返回落库的文件记录 ID
 func (s *FileTransferService) recordFile(
 	ctx context.Context,
-	tenantID, userID uint32,
+	tenantID, userID int64,
 	sourceFileName string,
 	info minio.UploadInfo,
 	downloadUrl string,
-) (uint32, error) {
+) (int64, error) {
 
 	dir, fileName, ext := parseKey(info.Key)
 

@@ -65,13 +65,13 @@ func (_c *BusinessTripApplicationCreate) SetNillableDeletedAt(v *time.Time) *Bus
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *BusinessTripApplicationCreate) SetCreatedBy(v uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetCreatedBy(v int64) *BusinessTripApplicationCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *BusinessTripApplicationCreate) SetNillableCreatedBy(v *uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetNillableCreatedBy(v *int64) *BusinessTripApplicationCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *BusinessTripApplicationCreate) SetNillableCreatedBy(v *uint32) *Busine
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *BusinessTripApplicationCreate) SetUpdatedBy(v uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetUpdatedBy(v int64) *BusinessTripApplicationCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *BusinessTripApplicationCreate) SetNillableUpdatedBy(v *uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetNillableUpdatedBy(v *int64) *BusinessTripApplicationCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *BusinessTripApplicationCreate) SetNillableUpdatedBy(v *uint32) *Busine
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *BusinessTripApplicationCreate) SetDeletedBy(v uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetDeletedBy(v int64) *BusinessTripApplicationCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *BusinessTripApplicationCreate) SetNillableDeletedBy(v *uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetNillableDeletedBy(v *int64) *BusinessTripApplicationCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *BusinessTripApplicationCreate) SetNillableDeletedBy(v *uint32) *Busine
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *BusinessTripApplicationCreate) SetTenantID(v uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetTenantID(v int64) *BusinessTripApplicationCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *BusinessTripApplicationCreate) SetNillableTenantID(v *uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetNillableTenantID(v *int64) *BusinessTripApplicationCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -189,13 +189,13 @@ func (_c *BusinessTripApplicationCreate) SetNillableTripStatus(v *businesstripap
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (_c *BusinessTripApplicationCreate) SetInstanceID(v uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetInstanceID(v int64) *BusinessTripApplicationCreate {
 	_c.mutation.SetInstanceID(v)
 	return _c
 }
 
 // SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
-func (_c *BusinessTripApplicationCreate) SetNillableInstanceID(v *uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetNillableInstanceID(v *int64) *BusinessTripApplicationCreate {
 	if v != nil {
 		_c.SetInstanceID(*v)
 	}
@@ -203,7 +203,7 @@ func (_c *BusinessTripApplicationCreate) SetNillableInstanceID(v *uint32) *Busin
 }
 
 // SetID sets the "id" field.
-func (_c *BusinessTripApplicationCreate) SetID(v uint32) *BusinessTripApplicationCreate {
+func (_c *BusinessTripApplicationCreate) SetID(v int64) *BusinessTripApplicationCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -326,7 +326,7 @@ func (_c *BusinessTripApplicationCreate) sqlSave(ctx context.Context) (*Business
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -336,7 +336,7 @@ func (_c *BusinessTripApplicationCreate) sqlSave(ctx context.Context) (*Business
 func (_c *BusinessTripApplicationCreate) createSpec() (*BusinessTripApplication, *sqlgraph.CreateSpec) {
 	var (
 		_node = &BusinessTripApplication{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(businesstripapplication.Table, sqlgraph.NewFieldSpec(businesstripapplication.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(businesstripapplication.Table, sqlgraph.NewFieldSpec(businesstripapplication.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -356,19 +356,19 @@ func (_c *BusinessTripApplicationCreate) createSpec() (*BusinessTripApplication,
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(businesstripapplication.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(businesstripapplication.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(businesstripapplication.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(businesstripapplication.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(businesstripapplication.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(businesstripapplication.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(businesstripapplication.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(businesstripapplication.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Title(); ok {
@@ -396,7 +396,7 @@ func (_c *BusinessTripApplicationCreate) createSpec() (*BusinessTripApplication,
 		_node.TripStatus = &value
 	}
 	if value, ok := _c.mutation.InstanceID(); ok {
-		_spec.SetField(businesstripapplication.FieldInstanceID, field.TypeUint32, value)
+		_spec.SetField(businesstripapplication.FieldInstanceID, field.TypeInt64, value)
 		_node.InstanceID = &value
 	}
 	return _node, _spec
@@ -488,7 +488,7 @@ func (u *BusinessTripApplicationUpsert) ClearDeletedAt() *BusinessTripApplicatio
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *BusinessTripApplicationUpsert) SetCreatedBy(v uint32) *BusinessTripApplicationUpsert {
+func (u *BusinessTripApplicationUpsert) SetCreatedBy(v int64) *BusinessTripApplicationUpsert {
 	u.Set(businesstripapplication.FieldCreatedBy, v)
 	return u
 }
@@ -500,7 +500,7 @@ func (u *BusinessTripApplicationUpsert) UpdateCreatedBy() *BusinessTripApplicati
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *BusinessTripApplicationUpsert) AddCreatedBy(v uint32) *BusinessTripApplicationUpsert {
+func (u *BusinessTripApplicationUpsert) AddCreatedBy(v int64) *BusinessTripApplicationUpsert {
 	u.Add(businesstripapplication.FieldCreatedBy, v)
 	return u
 }
@@ -512,7 +512,7 @@ func (u *BusinessTripApplicationUpsert) ClearCreatedBy() *BusinessTripApplicatio
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *BusinessTripApplicationUpsert) SetUpdatedBy(v uint32) *BusinessTripApplicationUpsert {
+func (u *BusinessTripApplicationUpsert) SetUpdatedBy(v int64) *BusinessTripApplicationUpsert {
 	u.Set(businesstripapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -524,7 +524,7 @@ func (u *BusinessTripApplicationUpsert) UpdateUpdatedBy() *BusinessTripApplicati
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *BusinessTripApplicationUpsert) AddUpdatedBy(v uint32) *BusinessTripApplicationUpsert {
+func (u *BusinessTripApplicationUpsert) AddUpdatedBy(v int64) *BusinessTripApplicationUpsert {
 	u.Add(businesstripapplication.FieldUpdatedBy, v)
 	return u
 }
@@ -536,7 +536,7 @@ func (u *BusinessTripApplicationUpsert) ClearUpdatedBy() *BusinessTripApplicatio
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *BusinessTripApplicationUpsert) SetDeletedBy(v uint32) *BusinessTripApplicationUpsert {
+func (u *BusinessTripApplicationUpsert) SetDeletedBy(v int64) *BusinessTripApplicationUpsert {
 	u.Set(businesstripapplication.FieldDeletedBy, v)
 	return u
 }
@@ -548,7 +548,7 @@ func (u *BusinessTripApplicationUpsert) UpdateDeletedBy() *BusinessTripApplicati
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *BusinessTripApplicationUpsert) AddDeletedBy(v uint32) *BusinessTripApplicationUpsert {
+func (u *BusinessTripApplicationUpsert) AddDeletedBy(v int64) *BusinessTripApplicationUpsert {
 	u.Add(businesstripapplication.FieldDeletedBy, v)
 	return u
 }
@@ -638,7 +638,7 @@ func (u *BusinessTripApplicationUpsert) ClearTripStatus() *BusinessTripApplicati
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *BusinessTripApplicationUpsert) SetInstanceID(v uint32) *BusinessTripApplicationUpsert {
+func (u *BusinessTripApplicationUpsert) SetInstanceID(v int64) *BusinessTripApplicationUpsert {
 	u.Set(businesstripapplication.FieldInstanceID, v)
 	return u
 }
@@ -650,7 +650,7 @@ func (u *BusinessTripApplicationUpsert) UpdateInstanceID() *BusinessTripApplicat
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *BusinessTripApplicationUpsert) AddInstanceID(v uint32) *BusinessTripApplicationUpsert {
+func (u *BusinessTripApplicationUpsert) AddInstanceID(v int64) *BusinessTripApplicationUpsert {
 	u.Add(businesstripapplication.FieldInstanceID, v)
 	return u
 }
@@ -758,14 +758,14 @@ func (u *BusinessTripApplicationUpsertOne) ClearDeletedAt() *BusinessTripApplica
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *BusinessTripApplicationUpsertOne) SetCreatedBy(v uint32) *BusinessTripApplicationUpsertOne {
+func (u *BusinessTripApplicationUpsertOne) SetCreatedBy(v int64) *BusinessTripApplicationUpsertOne {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *BusinessTripApplicationUpsertOne) AddCreatedBy(v uint32) *BusinessTripApplicationUpsertOne {
+func (u *BusinessTripApplicationUpsertOne) AddCreatedBy(v int64) *BusinessTripApplicationUpsertOne {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -786,14 +786,14 @@ func (u *BusinessTripApplicationUpsertOne) ClearCreatedBy() *BusinessTripApplica
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *BusinessTripApplicationUpsertOne) SetUpdatedBy(v uint32) *BusinessTripApplicationUpsertOne {
+func (u *BusinessTripApplicationUpsertOne) SetUpdatedBy(v int64) *BusinessTripApplicationUpsertOne {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *BusinessTripApplicationUpsertOne) AddUpdatedBy(v uint32) *BusinessTripApplicationUpsertOne {
+func (u *BusinessTripApplicationUpsertOne) AddUpdatedBy(v int64) *BusinessTripApplicationUpsertOne {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -814,14 +814,14 @@ func (u *BusinessTripApplicationUpsertOne) ClearUpdatedBy() *BusinessTripApplica
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *BusinessTripApplicationUpsertOne) SetDeletedBy(v uint32) *BusinessTripApplicationUpsertOne {
+func (u *BusinessTripApplicationUpsertOne) SetDeletedBy(v int64) *BusinessTripApplicationUpsertOne {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *BusinessTripApplicationUpsertOne) AddDeletedBy(v uint32) *BusinessTripApplicationUpsertOne {
+func (u *BusinessTripApplicationUpsertOne) AddDeletedBy(v int64) *BusinessTripApplicationUpsertOne {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -933,14 +933,14 @@ func (u *BusinessTripApplicationUpsertOne) ClearTripStatus() *BusinessTripApplic
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *BusinessTripApplicationUpsertOne) SetInstanceID(v uint32) *BusinessTripApplicationUpsertOne {
+func (u *BusinessTripApplicationUpsertOne) SetInstanceID(v int64) *BusinessTripApplicationUpsertOne {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *BusinessTripApplicationUpsertOne) AddInstanceID(v uint32) *BusinessTripApplicationUpsertOne {
+func (u *BusinessTripApplicationUpsertOne) AddInstanceID(v int64) *BusinessTripApplicationUpsertOne {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.AddInstanceID(v)
 	})
@@ -976,7 +976,7 @@ func (u *BusinessTripApplicationUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *BusinessTripApplicationUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *BusinessTripApplicationUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -985,7 +985,7 @@ func (u *BusinessTripApplicationUpsertOne) ID(ctx context.Context) (id uint32, e
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *BusinessTripApplicationUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *BusinessTripApplicationUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1042,7 +1042,7 @@ func (_c *BusinessTripApplicationCreateBulk) Save(ctx context.Context) ([]*Busin
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -1223,14 +1223,14 @@ func (u *BusinessTripApplicationUpsertBulk) ClearDeletedAt() *BusinessTripApplic
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *BusinessTripApplicationUpsertBulk) SetCreatedBy(v uint32) *BusinessTripApplicationUpsertBulk {
+func (u *BusinessTripApplicationUpsertBulk) SetCreatedBy(v int64) *BusinessTripApplicationUpsertBulk {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *BusinessTripApplicationUpsertBulk) AddCreatedBy(v uint32) *BusinessTripApplicationUpsertBulk {
+func (u *BusinessTripApplicationUpsertBulk) AddCreatedBy(v int64) *BusinessTripApplicationUpsertBulk {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1251,14 +1251,14 @@ func (u *BusinessTripApplicationUpsertBulk) ClearCreatedBy() *BusinessTripApplic
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *BusinessTripApplicationUpsertBulk) SetUpdatedBy(v uint32) *BusinessTripApplicationUpsertBulk {
+func (u *BusinessTripApplicationUpsertBulk) SetUpdatedBy(v int64) *BusinessTripApplicationUpsertBulk {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *BusinessTripApplicationUpsertBulk) AddUpdatedBy(v uint32) *BusinessTripApplicationUpsertBulk {
+func (u *BusinessTripApplicationUpsertBulk) AddUpdatedBy(v int64) *BusinessTripApplicationUpsertBulk {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1279,14 +1279,14 @@ func (u *BusinessTripApplicationUpsertBulk) ClearUpdatedBy() *BusinessTripApplic
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *BusinessTripApplicationUpsertBulk) SetDeletedBy(v uint32) *BusinessTripApplicationUpsertBulk {
+func (u *BusinessTripApplicationUpsertBulk) SetDeletedBy(v int64) *BusinessTripApplicationUpsertBulk {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *BusinessTripApplicationUpsertBulk) AddDeletedBy(v uint32) *BusinessTripApplicationUpsertBulk {
+func (u *BusinessTripApplicationUpsertBulk) AddDeletedBy(v int64) *BusinessTripApplicationUpsertBulk {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -1398,14 +1398,14 @@ func (u *BusinessTripApplicationUpsertBulk) ClearTripStatus() *BusinessTripAppli
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (u *BusinessTripApplicationUpsertBulk) SetInstanceID(v uint32) *BusinessTripApplicationUpsertBulk {
+func (u *BusinessTripApplicationUpsertBulk) SetInstanceID(v int64) *BusinessTripApplicationUpsertBulk {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.SetInstanceID(v)
 	})
 }
 
 // AddInstanceID adds v to the "instance_id" field.
-func (u *BusinessTripApplicationUpsertBulk) AddInstanceID(v uint32) *BusinessTripApplicationUpsertBulk {
+func (u *BusinessTripApplicationUpsertBulk) AddInstanceID(v int64) *BusinessTripApplicationUpsertBulk {
 	return u.Update(func(s *BusinessTripApplicationUpsert) {
 		s.AddInstanceID(v)
 	})

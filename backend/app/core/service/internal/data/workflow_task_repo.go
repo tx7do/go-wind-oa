@@ -53,12 +53,12 @@ func (r *WorkflowTaskRepo) init() {
 
 func (r *WorkflowTaskRepo) Create(
 	ctx context.Context,
-	tenantID uint32,
-	creatorUserID uint32,
-	instanceID uint32,
+	tenantID int64,
+	creatorUserID int64,
+	instanceID int64,
 	nodeID string,
-	assigneeUserID uint32,
-) (uint32, error) {
+	assigneeUserID int64,
+) (int64, error) {
 	builder := r.entClient.Client().WorkflowTask.Create().
 		SetInstanceID(instanceID).
 		SetNodeID(nodeID).
@@ -79,7 +79,7 @@ func (r *WorkflowTaskRepo) Create(
 // GetState 直读 entity 的 TaskStatus/AssigneeUserID/NodeID 字段（绕过 mapper），并经
 // WithInstance 边加载读取父实例的 ID。
 // 返回值供状态机校验：assignee==caller && taskPending && instance 活跃。
-func (r *WorkflowTaskRepo) GetState(ctx context.Context, id uint32, tenantID uint32) (uint32, bool, uint32, string, error) {
+func (r *WorkflowTaskRepo) GetState(ctx context.Context, id int64, tenantID int64) (int64, bool, int64, string, error) {
 	entity, err := r.entClient.Client().WorkflowTask.Query().
 		Where(
 			workflowtask.IDEQ(id),
@@ -108,8 +108,8 @@ func (r *WorkflowTaskRepo) GetState(ctx context.Context, id uint32, tenantID uin
 
 func (r *WorkflowTaskRepo) UpdateStatus(
 	ctx context.Context,
-	id uint32,
-	tenantID uint32,
+	id int64,
+	tenantID int64,
 	newStatus *oaV1.WorkflowTask_TaskStatus,
 ) error {
 	builder := r.entClient.Client().WorkflowTask.Update()
@@ -129,9 +129,9 @@ func (r *WorkflowTaskRepo) UpdateStatus(
 
 func (r *WorkflowTaskRepo) UpdateAssignee(
 	ctx context.Context,
-	id uint32,
-	tenantID uint32,
-	newAssignee uint32,
+	id int64,
+	tenantID int64,
+	newAssignee int64,
 ) error {
 	builder := r.entClient.Client().WorkflowTask.Update()
 	builder.Where(
@@ -151,8 +151,8 @@ func (r *WorkflowTaskRepo) UpdateAssignee(
 // MarkReminded 记录超时催办时间；非空后调度器不再重复催办同一待办。
 func (r *WorkflowTaskRepo) MarkReminded(
 	ctx context.Context,
-	id uint32,
-	tenantID uint32,
+	id int64,
+	tenantID int64,
 ) error {
 	return r.markTimeoutStamp(ctx, id, tenantID, true)
 }
@@ -160,16 +160,16 @@ func (r *WorkflowTaskRepo) MarkReminded(
 // MarkEscalated 记录超时升级时间；非空后调度器不再对同一待办重复升级。
 func (r *WorkflowTaskRepo) MarkEscalated(
 	ctx context.Context,
-	id uint32,
-	tenantID uint32,
+	id int64,
+	tenantID int64,
 ) error {
 	return r.markTimeoutStamp(ctx, id, tenantID, false)
 }
 
 func (r *WorkflowTaskRepo) markTimeoutStamp(
 	ctx context.Context,
-	id uint32,
-	tenantID uint32,
+	id int64,
+	tenantID int64,
 	reminded bool,
 ) error {
 	builder := r.entClient.Client().WorkflowTask.Update()
@@ -193,7 +193,7 @@ func (r *WorkflowTaskRepo) markTimeoutStamp(
 
 // ListPendingByAssignee “待办”列表。三重谓词：指派审批人 + 任务状态=PENDING + 租户。
 // pageSize>0 时分页并返回真实总数。
-func (r *WorkflowTaskRepo) ListPendingByAssignee(ctx context.Context, tenantID uint32, assigneeUserID uint32, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {
+func (r *WorkflowTaskRepo) ListPendingByAssignee(ctx context.Context, tenantID int64, assigneeUserID int64, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {
 	query := r.entClient.Client().WorkflowTask.Query().
 		Where(
 			workflowtask.AssigneeUserIDEQ(assigneeUserID),
@@ -237,7 +237,7 @@ func (r *WorkflowTaskRepo) ListPendingByAssignee(ctx context.Context, tenantID u
 
 // GetDetailByAssignee 任务详情。三重谓词 + IDEQ。返回 task DTO（经 mapper）+ 父实例 ID
 // （从 WithInstance 边加载取，供服务层查询审批历史）。task DTO 本身不暴露 instance_id 字段。
-func (r *WorkflowTaskRepo) GetDetailByAssignee(ctx context.Context, id uint32, tenantID uint32, assigneeUserID uint32) (*oaV1.WorkflowTask, uint32, error) {
+func (r *WorkflowTaskRepo) GetDetailByAssignee(ctx context.Context, id int64, tenantID int64, assigneeUserID int64) (*oaV1.WorkflowTask, int64, error) {
 	entity, err := r.entClient.Client().WorkflowTask.Query().
 		Where(
 			workflowtask.IDEQ(id),
@@ -267,8 +267,8 @@ func (r *WorkflowTaskRepo) GetDetailByAssignee(ctx context.Context, id uint32, t
 // instance_id 列由边持有（无独立谓词），经 HasInstanceWith 过滤。
 func (r *WorkflowTaskRepo) ListNodeTaskStatuses(
 	ctx context.Context,
-	tenantID uint32,
-	instanceID uint32,
+	tenantID int64,
+	instanceID int64,
 	nodeID string,
 ) ([]workflowtask.TaskStatus, error) {
 	entities, err := r.entClient.Client().WorkflowTask.Query().
@@ -298,10 +298,10 @@ func (r *WorkflowTaskRepo) ListNodeTaskStatuses(
 // 其余、会签驳回后取消其余、撤回时取消全部）。excludeTaskID==0 表示不排除任何任务。
 func (r *WorkflowTaskRepo) CancelPendingByInstanceNode(
 	ctx context.Context,
-	tenantID uint32,
-	instanceID uint32,
+	tenantID int64,
+	instanceID int64,
 	nodeID string,
-	excludeTaskID uint32,
+	excludeTaskID int64,
 ) error {
 	predicates := []predicate.WorkflowTask{
 		workflowtask.HasInstanceWith(workflowinstance.IDEQ(instanceID)),
@@ -328,8 +328,8 @@ func (r *WorkflowTaskRepo) CancelPendingByInstanceNode(
 // CreateWithTx 事务内建任务。builder 源自 tx。
 func (r *WorkflowTaskRepo) CreateWithTx(
 	ctx context.Context, tx *ent.Tx,
-	tenantID uint32, creatorUserID uint32, instanceID uint32, nodeID string, assigneeUserID uint32,
-) (uint32, error) {
+	tenantID int64, creatorUserID int64, instanceID int64, nodeID string, assigneeUserID int64,
+) (int64, error) {
 	builder := tx.WorkflowTask.Create().
 		SetInstanceID(instanceID).
 		SetNodeID(nodeID).
@@ -349,7 +349,7 @@ func (r *WorkflowTaskRepo) CreateWithTx(
 
 // UpdateStatusWithTx 事务内更新任务状态。
 func (r *WorkflowTaskRepo) UpdateStatusWithTx(
-	ctx context.Context, tx *ent.Tx, id uint32, tenantID uint32, newStatus *oaV1.WorkflowTask_TaskStatus,
+	ctx context.Context, tx *ent.Tx, id int64, tenantID int64, newStatus *oaV1.WorkflowTask_TaskStatus,
 ) error {
 	builder := tx.WorkflowTask.Update()
 	builder.Where(
@@ -368,7 +368,7 @@ func (r *WorkflowTaskRepo) UpdateStatusWithTx(
 
 // UpdateAssigneeWithTx 事务内更新任务指派人（转办）。
 func (r *WorkflowTaskRepo) UpdateAssigneeWithTx(
-	ctx context.Context, tx *ent.Tx, id uint32, tenantID uint32, newAssignee uint32,
+	ctx context.Context, tx *ent.Tx, id int64, tenantID int64, newAssignee int64,
 ) error {
 	builder := tx.WorkflowTask.Update()
 	builder.Where(
@@ -387,7 +387,7 @@ func (r *WorkflowTaskRepo) UpdateAssigneeWithTx(
 
 // CancelPendingByInstanceNodeWithTx 事务内取消同实例同节点 PENDING 任务。
 func (r *WorkflowTaskRepo) CancelPendingByInstanceNodeWithTx(
-	ctx context.Context, tx *ent.Tx, tenantID uint32, instanceID uint32, nodeID string, excludeTaskID uint32,
+	ctx context.Context, tx *ent.Tx, tenantID int64, instanceID int64, nodeID string, excludeTaskID int64,
 ) error {
 	predicates := []predicate.WorkflowTask{
 		workflowtask.HasInstanceWith(workflowinstance.IDEQ(instanceID)),
@@ -412,9 +412,9 @@ func (r *WorkflowTaskRepo) CancelPendingByInstanceNodeWithTx(
 }
 func (r *WorkflowTaskRepo) ListPendingAssigneesByInstance(
 	ctx context.Context,
-	tenantID uint32,
-	instanceID uint32,
-) ([]uint32, error) {
+	tenantID int64,
+	instanceID int64,
+) ([]int64, error) {
 	entities, err := r.entClient.Client().WorkflowTask.Query().
 		Where(
 			workflowtask.HasInstanceWith(workflowinstance.IDEQ(instanceID)),
@@ -426,7 +426,7 @@ func (r *WorkflowTaskRepo) ListPendingAssigneesByInstance(
 		r.log.Errorf("list pending assignees failed: %s", err.Error())
 		return nil, oaV1.ErrorInternalServerError("list pending assignees failed")
 	}
-	assignees := make([]uint32, 0, len(entities))
+	assignees := make([]int64, 0, len(entities))
 	for _, e := range entities {
 		if e.AssigneeUserID != nil && *e.AssigneeUserID != 0 {
 			assignees = append(assignees, *e.AssigneeUserID)
@@ -438,8 +438,8 @@ func (r *WorkflowTaskRepo) ListPendingAssigneesByInstance(
 // HasPendingByInstance 判断实例是否存在 PENDING 任务（用于活跃节点判定）。
 func (r *WorkflowTaskRepo) HasPendingByInstance(
 	ctx context.Context,
-	tenantID uint32,
-	instanceID uint32,
+	tenantID int64,
+	instanceID int64,
 ) (bool, error) {
 	count, err := r.entClient.Client().WorkflowTask.Query().
 		Where(
@@ -460,10 +460,10 @@ func (r *WorkflowTaskRepo) HasPendingByInstance(
 
 // PendingTaskInfo 待办任务的超时检查信息。
 type PendingTaskInfo struct {
-	TaskID      uint32
-	InstanceID  uint32
-	TenantID    uint32
-	Assignee    uint32
+	TaskID      int64
+	InstanceID  int64
+	TenantID    int64
+	Assignee    int64
 	NodeID      string
 	CreatedAt   time.Time
 	RemindedAt  *time.Time
@@ -518,8 +518,8 @@ func (r *WorkflowTaskRepo) ListAllPendingWithAge(
 // CancelAllPendingByInstance 取消实例全部待办任务（撤回场景，跨所有节点）。
 func (r *WorkflowTaskRepo) CancelAllPendingByInstance(
 	ctx context.Context,
-	tenantID uint32,
-	instanceID uint32,
+	tenantID int64,
+	instanceID int64,
 ) error {
 	builder := r.entClient.Client().WorkflowTask.Update()
 	builder.Where(
@@ -539,7 +539,7 @@ func (r *WorkflowTaskRepo) CancelAllPendingByInstance(
 
 // CancelAllPendingByInstanceWithTx 事务内取消实例全部待办任务。
 func (r *WorkflowTaskRepo) CancelAllPendingByInstanceWithTx(
-	ctx context.Context, tx *ent.Tx, tenantID uint32, instanceID uint32,
+	ctx context.Context, tx *ent.Tx, tenantID int64, instanceID int64,
 ) error {
 	builder := tx.WorkflowTask.Update()
 	builder.Where(
@@ -565,8 +565,8 @@ func (r *WorkflowTaskRepo) CancelAllPendingByInstanceWithTx(
 // 会污染会签/或签收敛判定，故建新任务前先清除。
 func (r *WorkflowTaskRepo) CancelAllByInstanceNode(
 	ctx context.Context,
-	tenantID uint32,
-	instanceID uint32,
+	tenantID int64,
+	instanceID int64,
 	nodeID string,
 ) error {
 	builder := r.entClient.Client().WorkflowTask.Update()
@@ -590,7 +590,7 @@ func (r *WorkflowTaskRepo) CancelAllByInstanceNode(
 
 // CancelAllByInstanceNodeWithTx 事务内清除指定节点的全部任务。
 func (r *WorkflowTaskRepo) CancelAllByInstanceNodeWithTx(
-	ctx context.Context, tx *ent.Tx, tenantID uint32, instanceID uint32, nodeID string,
+	ctx context.Context, tx *ent.Tx, tenantID int64, instanceID int64, nodeID string,
 ) error {
 	builder := tx.WorkflowTask.Update()
 	builder.Where(

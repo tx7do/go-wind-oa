@@ -62,7 +62,7 @@ func Server() middleware.Middleware {
 			// 诊断完成后删除此块。
 			if tdbg, _ := transport.FromServerContext(ctx); tdbg != nil {
 				if op := tdbg.Operation(); strings.Contains(op, "/oa/") {
-					vtid, vuid := uint64(0), uint64(0)
+					vtid, vuid := int64(0), int64(0)
 					if vc, exist := viewer.FromContext(ctx); exist && vc != nil {
 						vtid = vc.TenantID()
 						vuid = vc.UserID()

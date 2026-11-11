@@ -54,13 +54,13 @@ func (r *WorkflowInstanceRepo) init() {
 
 func (r *WorkflowInstanceRepo) Create(
 	ctx context.Context,
-	tenantID uint32,
-	creatorUserID uint32,
-	definitionID uint32,
+	tenantID int64,
+	creatorUserID int64,
+	definitionID int64,
 	formData string,
 	businessType string,
-	businessID uint32,
-) (uint32, error) {
+	businessID int64,
+) (int64, error) {
 	builder := r.entClient.Client().WorkflowInstance.Create().
 		SetDefinitionID(definitionID).
 		SetInstanceStatus(workflowinstance.InstanceStatusPending).
@@ -86,8 +86,8 @@ func (r *WorkflowInstanceRepo) Create(
 // CreateWithTx 事务内建实例。builder 源自 tx。
 func (r *WorkflowInstanceRepo) CreateWithTx(
 	ctx context.Context, tx *ent.Tx,
-	tenantID uint32, creatorUserID uint32, definitionID uint32, formData string, businessType string, businessID uint32,
-) (uint32, error) {
+	tenantID int64, creatorUserID int64, definitionID int64, formData string, businessType string, businessID int64,
+) (int64, error) {
 	builder := tx.WorkflowInstance.Create().
 		SetDefinitionID(definitionID).
 		SetInstanceStatus(workflowinstance.InstanceStatusPending).
@@ -112,7 +112,7 @@ func (r *WorkflowInstanceRepo) CreateWithTx(
 
 // GetState 直读 entity 的 InstanceStatus 字段（绕过 mapper）。
 // 仅返回是否处于 PENDING（活跃），供状态机校验。终结态（APPROVED/REJECTED）返回 false。
-func (r *WorkflowInstanceRepo) GetState(ctx context.Context, id uint32, tenantID uint32) (bool, error) {
+func (r *WorkflowInstanceRepo) GetState(ctx context.Context, id int64, tenantID int64) (bool, error) {
 	entity, err := r.entClient.Client().WorkflowInstance.Query().
 		Where(
 			workflowinstance.IDEQ(id),
@@ -135,8 +135,8 @@ func (r *WorkflowInstanceRepo) GetState(ctx context.Context, id uint32, tenantID
 // UpdateStatus 切换实例状态（活跃↔终结态）。
 func (r *WorkflowInstanceRepo) UpdateStatus(
 	ctx context.Context,
-	id uint32,
-	tenantID uint32,
+	id int64,
+	tenantID int64,
 	newStatus *oaV1.WorkflowInstance_InstanceStatus,
 ) error {
 	builder := r.entClient.Client().WorkflowInstance.Update()
@@ -180,7 +180,7 @@ func (r *WorkflowInstanceRepo) Txn(ctx context.Context, fn func(tx *ent.Tx) erro
 // UpdateStatusWithTx 事务内切换实例状态。builder 源自 tx 而非 client。
 func (r *WorkflowInstanceRepo) UpdateStatusWithTx(
 	ctx context.Context, tx *ent.Tx,
-	id uint32, tenantID uint32,
+	id int64, tenantID int64,
 	newStatus *oaV1.WorkflowInstance_InstanceStatus,
 ) error {
 	builder := tx.WorkflowInstance.Update()
@@ -197,7 +197,7 @@ func (r *WorkflowInstanceRepo) UpdateStatusWithTx(
 	}
 	return nil
 }
-func (r *WorkflowInstanceRepo) GetMeta(ctx context.Context, id uint32, tenantID uint32) (uint32, string, uint32, error) {
+func (r *WorkflowInstanceRepo) GetMeta(ctx context.Context, id int64, tenantID int64) (int64, string, int64, error) {
 	entity, err := r.entClient.Client().WorkflowInstance.Query().
 		Where(
 			workflowinstance.IDEQ(id),
@@ -219,7 +219,7 @@ func (r *WorkflowInstanceRepo) GetMeta(ctx context.Context, id uint32, tenantID 
 	if entity.BusinessType != nil {
 		businessType = *entity.BusinessType
 	}
-	businessID := uint32(0)
+	businessID := int64(0)
 	if entity.BusinessID != nil {
 		businessID = *entity.BusinessID
 	}
@@ -228,7 +228,7 @@ func (r *WorkflowInstanceRepo) GetMeta(ctx context.Context, id uint32, tenantID 
 
 // GetFormData 读取实例的申请表单数据（JSON 文本），供审批人查看申请内容。
 // 引擎保留键（flow:* 前缀，如包容网关汇合计数）属内部状态，展示前剔除。
-func (r *WorkflowInstanceRepo) GetFormData(ctx context.Context, id uint32, tenantID uint32) (string, error) {
+func (r *WorkflowInstanceRepo) GetFormData(ctx context.Context, id int64, tenantID int64) (string, error) {
 	entity, err := r.entClient.Client().WorkflowInstance.Query().
 		Where(
 			workflowinstance.IDEQ(id),
@@ -276,7 +276,7 @@ func stripFlowReservedKeys(formData string) string {
 }
 
 // ListByCreator “我的申请”列表。按创建者+租户查询实例。pageSize>0 时分页并返回真实总数。
-func (r *WorkflowInstanceRepo) ListByCreator(ctx context.Context, tenantID uint32, creatorUserID uint32, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {
+func (r *WorkflowInstanceRepo) ListByCreator(ctx context.Context, tenantID int64, creatorUserID int64, page, pageSize int32) ([]*oaV1.MyTaskItem, int, error) {
 	query := r.entClient.Client().WorkflowInstance.Query().
 		Where(
 			workflowinstance.CreatedByEQ(creatorUserID),
@@ -302,8 +302,8 @@ func (r *WorkflowInstanceRepo) ListByCreator(ctx context.Context, tenantID uint3
 	// 挂起推断：go-wind-flow 中父实例在子流程运行期间保持 PENDING（令牌停在
 	// callActivity）。对仍在途的实例反查令牌表，挂有子流程的展示为 SUSPENDED，
 	// 与旧引擎的状态语义对齐。
-	suspended := map[uint32]bool{}
-	var pendingIDs []uint32
+	suspended := map[int64]bool{}
+	var pendingIDs []int64
 	for _, e := range entities {
 		if e.InstanceStatus != nil && *e.InstanceStatus == workflowinstance.InstanceStatusPending && e.ID != 0 {
 			pendingIDs = append(pendingIDs, e.ID)

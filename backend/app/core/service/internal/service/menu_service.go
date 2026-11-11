@@ -15,8 +15,8 @@ import (
 	"github.com/tx7do/go-utils/trans"
 
 	"go-wind-oa/pkg/constants"
-	"go-wind-oa/pkg/metadata"
 	appViewer "go-wind-oa/pkg/entgo/viewer"
+	"go-wind-oa/pkg/metadata"
 )
 
 type MenuService struct {
@@ -62,7 +62,7 @@ func (s *MenuService) Count(ctx context.Context, req *paginationV1.PagingRequest
 	}
 
 	return &permissionV1.CountMenuResponse{
-		Count: uint64(count),
+		Count: int64(count),
 	}, nil
 }
 
@@ -135,7 +135,7 @@ func (s *MenuService) SyncMenus(ctx context.Context, req *permissionV1.SyncMenus
 	}
 
 	// 递归插入树形菜单
-	count, err := s.syncMenuTree(ctx, req.Items, nil, uint32(operator.GetUserId()))
+	count, err := s.syncMenuTree(ctx, req.Items, nil, int64(operator.GetUserId()))
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (s *MenuService) SyncMenus(ctx context.Context, req *permissionV1.SyncMenus
 }
 
 // syncMenuTree 递归插入菜单树：先插入父节点拿到 ID，再设置子节点的 parent_id
-func (s *MenuService) syncMenuTree(ctx context.Context, menus []*permissionV1.Menu, parentId *uint32, operatorId uint32) (int, error) {
+func (s *MenuService) syncMenuTree(ctx context.Context, menus []*permissionV1.Menu, parentId *int64, operatorId int64) (int, error) {
 	count := 0
 	for _, m := range menus {
 		if m == nil {

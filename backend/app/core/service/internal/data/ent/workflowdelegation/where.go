@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint32) predicate.WorkflowDelegation {
+func ID(id int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint32) predicate.WorkflowDelegation {
+func IDEQ(id int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint32) predicate.WorkflowDelegation {
+func IDNEQ(id int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint32) predicate.WorkflowDelegation {
+func IDIn(ids ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint32) predicate.WorkflowDelegation {
+func IDNotIn(ids ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint32) predicate.WorkflowDelegation {
+func IDGT(id int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint32) predicate.WorkflowDelegation {
+func IDGTE(id int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint32) predicate.WorkflowDelegation {
+func IDLT(id int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint32) predicate.WorkflowDelegation {
+func IDLTE(id int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLTE(FieldID, id))
 }
 
@@ -70,32 +70,32 @@ func DeletedAt(v time.Time) predicate.WorkflowDelegation {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uint32) predicate.WorkflowDelegation {
+func CreatedBy(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v uint32) predicate.WorkflowDelegation {
+func UpdatedBy(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // DeletedBy applies equality check predicate on the "deleted_by" field. It's identical to DeletedByEQ.
-func DeletedBy(v uint32) predicate.WorkflowDelegation {
+func DeletedBy(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
-func TenantID(v uint32) predicate.WorkflowDelegation {
+func TenantID(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldTenantID, v))
 }
 
 // DelegatorUserID applies equality check predicate on the "delegator_user_id" field. It's identical to DelegatorUserIDEQ.
-func DelegatorUserID(v uint32) predicate.WorkflowDelegation {
+func DelegatorUserID(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldDelegatorUserID, v))
 }
 
 // DelegateUserID applies equality check predicate on the "delegate_user_id" field. It's identical to DelegateUserIDEQ.
-func DelegateUserID(v uint32) predicate.WorkflowDelegation {
+func DelegateUserID(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldDelegateUserID, v))
 }
 
@@ -250,42 +250,42 @@ func DeletedAtNotNil() predicate.WorkflowDelegation {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uint32) predicate.WorkflowDelegation {
+func CreatedByEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uint32) predicate.WorkflowDelegation {
+func CreatedByNEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNEQ(FieldCreatedBy, v))
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uint32) predicate.WorkflowDelegation {
+func CreatedByIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uint32) predicate.WorkflowDelegation {
+func CreatedByNotIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v uint32) predicate.WorkflowDelegation {
+func CreatedByGT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGT(FieldCreatedBy, v))
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v uint32) predicate.WorkflowDelegation {
+func CreatedByGTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGTE(FieldCreatedBy, v))
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v uint32) predicate.WorkflowDelegation {
+func CreatedByLT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLT(FieldCreatedBy, v))
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v uint32) predicate.WorkflowDelegation {
+func CreatedByLTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLTE(FieldCreatedBy, v))
 }
 
@@ -300,42 +300,42 @@ func CreatedByNotNil() predicate.WorkflowDelegation {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v uint32) predicate.WorkflowDelegation {
+func UpdatedByEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v uint32) predicate.WorkflowDelegation {
+func UpdatedByNEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNEQ(FieldUpdatedBy, v))
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...uint32) predicate.WorkflowDelegation {
+func UpdatedByIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...uint32) predicate.WorkflowDelegation {
+func UpdatedByNotIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNotIn(FieldUpdatedBy, vs...))
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v uint32) predicate.WorkflowDelegation {
+func UpdatedByGT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGT(FieldUpdatedBy, v))
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v uint32) predicate.WorkflowDelegation {
+func UpdatedByGTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGTE(FieldUpdatedBy, v))
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v uint32) predicate.WorkflowDelegation {
+func UpdatedByLT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLT(FieldUpdatedBy, v))
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v uint32) predicate.WorkflowDelegation {
+func UpdatedByLTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLTE(FieldUpdatedBy, v))
 }
 
@@ -350,42 +350,42 @@ func UpdatedByNotNil() predicate.WorkflowDelegation {
 }
 
 // DeletedByEQ applies the EQ predicate on the "deleted_by" field.
-func DeletedByEQ(v uint32) predicate.WorkflowDelegation {
+func DeletedByEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldDeletedBy, v))
 }
 
 // DeletedByNEQ applies the NEQ predicate on the "deleted_by" field.
-func DeletedByNEQ(v uint32) predicate.WorkflowDelegation {
+func DeletedByNEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNEQ(FieldDeletedBy, v))
 }
 
 // DeletedByIn applies the In predicate on the "deleted_by" field.
-func DeletedByIn(vs ...uint32) predicate.WorkflowDelegation {
+func DeletedByIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByNotIn applies the NotIn predicate on the "deleted_by" field.
-func DeletedByNotIn(vs ...uint32) predicate.WorkflowDelegation {
+func DeletedByNotIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNotIn(FieldDeletedBy, vs...))
 }
 
 // DeletedByGT applies the GT predicate on the "deleted_by" field.
-func DeletedByGT(v uint32) predicate.WorkflowDelegation {
+func DeletedByGT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGT(FieldDeletedBy, v))
 }
 
 // DeletedByGTE applies the GTE predicate on the "deleted_by" field.
-func DeletedByGTE(v uint32) predicate.WorkflowDelegation {
+func DeletedByGTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGTE(FieldDeletedBy, v))
 }
 
 // DeletedByLT applies the LT predicate on the "deleted_by" field.
-func DeletedByLT(v uint32) predicate.WorkflowDelegation {
+func DeletedByLT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLT(FieldDeletedBy, v))
 }
 
 // DeletedByLTE applies the LTE predicate on the "deleted_by" field.
-func DeletedByLTE(v uint32) predicate.WorkflowDelegation {
+func DeletedByLTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLTE(FieldDeletedBy, v))
 }
 
@@ -400,42 +400,42 @@ func DeletedByNotNil() predicate.WorkflowDelegation {
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
-func TenantIDEQ(v uint32) predicate.WorkflowDelegation {
+func TenantIDEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldTenantID, v))
 }
 
 // TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
-func TenantIDNEQ(v uint32) predicate.WorkflowDelegation {
+func TenantIDNEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNEQ(FieldTenantID, v))
 }
 
 // TenantIDIn applies the In predicate on the "tenant_id" field.
-func TenantIDIn(vs ...uint32) predicate.WorkflowDelegation {
+func TenantIDIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldIn(FieldTenantID, vs...))
 }
 
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
-func TenantIDNotIn(vs ...uint32) predicate.WorkflowDelegation {
+func TenantIDNotIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
 // TenantIDGT applies the GT predicate on the "tenant_id" field.
-func TenantIDGT(v uint32) predicate.WorkflowDelegation {
+func TenantIDGT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGT(FieldTenantID, v))
 }
 
 // TenantIDGTE applies the GTE predicate on the "tenant_id" field.
-func TenantIDGTE(v uint32) predicate.WorkflowDelegation {
+func TenantIDGTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGTE(FieldTenantID, v))
 }
 
 // TenantIDLT applies the LT predicate on the "tenant_id" field.
-func TenantIDLT(v uint32) predicate.WorkflowDelegation {
+func TenantIDLT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLT(FieldTenantID, v))
 }
 
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
-func TenantIDLTE(v uint32) predicate.WorkflowDelegation {
+func TenantIDLTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLTE(FieldTenantID, v))
 }
 
@@ -450,42 +450,42 @@ func TenantIDNotNil() predicate.WorkflowDelegation {
 }
 
 // DelegatorUserIDEQ applies the EQ predicate on the "delegator_user_id" field.
-func DelegatorUserIDEQ(v uint32) predicate.WorkflowDelegation {
+func DelegatorUserIDEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldDelegatorUserID, v))
 }
 
 // DelegatorUserIDNEQ applies the NEQ predicate on the "delegator_user_id" field.
-func DelegatorUserIDNEQ(v uint32) predicate.WorkflowDelegation {
+func DelegatorUserIDNEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNEQ(FieldDelegatorUserID, v))
 }
 
 // DelegatorUserIDIn applies the In predicate on the "delegator_user_id" field.
-func DelegatorUserIDIn(vs ...uint32) predicate.WorkflowDelegation {
+func DelegatorUserIDIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldIn(FieldDelegatorUserID, vs...))
 }
 
 // DelegatorUserIDNotIn applies the NotIn predicate on the "delegator_user_id" field.
-func DelegatorUserIDNotIn(vs ...uint32) predicate.WorkflowDelegation {
+func DelegatorUserIDNotIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNotIn(FieldDelegatorUserID, vs...))
 }
 
 // DelegatorUserIDGT applies the GT predicate on the "delegator_user_id" field.
-func DelegatorUserIDGT(v uint32) predicate.WorkflowDelegation {
+func DelegatorUserIDGT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGT(FieldDelegatorUserID, v))
 }
 
 // DelegatorUserIDGTE applies the GTE predicate on the "delegator_user_id" field.
-func DelegatorUserIDGTE(v uint32) predicate.WorkflowDelegation {
+func DelegatorUserIDGTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGTE(FieldDelegatorUserID, v))
 }
 
 // DelegatorUserIDLT applies the LT predicate on the "delegator_user_id" field.
-func DelegatorUserIDLT(v uint32) predicate.WorkflowDelegation {
+func DelegatorUserIDLT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLT(FieldDelegatorUserID, v))
 }
 
 // DelegatorUserIDLTE applies the LTE predicate on the "delegator_user_id" field.
-func DelegatorUserIDLTE(v uint32) predicate.WorkflowDelegation {
+func DelegatorUserIDLTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLTE(FieldDelegatorUserID, v))
 }
 
@@ -500,42 +500,42 @@ func DelegatorUserIDNotNil() predicate.WorkflowDelegation {
 }
 
 // DelegateUserIDEQ applies the EQ predicate on the "delegate_user_id" field.
-func DelegateUserIDEQ(v uint32) predicate.WorkflowDelegation {
+func DelegateUserIDEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldEQ(FieldDelegateUserID, v))
 }
 
 // DelegateUserIDNEQ applies the NEQ predicate on the "delegate_user_id" field.
-func DelegateUserIDNEQ(v uint32) predicate.WorkflowDelegation {
+func DelegateUserIDNEQ(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNEQ(FieldDelegateUserID, v))
 }
 
 // DelegateUserIDIn applies the In predicate on the "delegate_user_id" field.
-func DelegateUserIDIn(vs ...uint32) predicate.WorkflowDelegation {
+func DelegateUserIDIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldIn(FieldDelegateUserID, vs...))
 }
 
 // DelegateUserIDNotIn applies the NotIn predicate on the "delegate_user_id" field.
-func DelegateUserIDNotIn(vs ...uint32) predicate.WorkflowDelegation {
+func DelegateUserIDNotIn(vs ...int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldNotIn(FieldDelegateUserID, vs...))
 }
 
 // DelegateUserIDGT applies the GT predicate on the "delegate_user_id" field.
-func DelegateUserIDGT(v uint32) predicate.WorkflowDelegation {
+func DelegateUserIDGT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGT(FieldDelegateUserID, v))
 }
 
 // DelegateUserIDGTE applies the GTE predicate on the "delegate_user_id" field.
-func DelegateUserIDGTE(v uint32) predicate.WorkflowDelegation {
+func DelegateUserIDGTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldGTE(FieldDelegateUserID, v))
 }
 
 // DelegateUserIDLT applies the LT predicate on the "delegate_user_id" field.
-func DelegateUserIDLT(v uint32) predicate.WorkflowDelegation {
+func DelegateUserIDLT(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLT(FieldDelegateUserID, v))
 }
 
 // DelegateUserIDLTE applies the LTE predicate on the "delegate_user_id" field.
-func DelegateUserIDLTE(v uint32) predicate.WorkflowDelegation {
+func DelegateUserIDLTE(v int64) predicate.WorkflowDelegation {
 	return predicate.WorkflowDelegation(sql.FieldLTE(FieldDelegateUserID, v))
 }
 

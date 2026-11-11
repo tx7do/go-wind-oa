@@ -81,7 +81,7 @@ var (
 	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
-	DefaultTenantID uint32
+	DefaultTenantID int64
 	// DefaultReason holds the default value on creation for the "reason" field.
 	DefaultReason string
 	// ReasonValidator is a validator for the "reason" field. It is called by the builders before save.
@@ -91,7 +91,7 @@ var (
 	// DestinationValidator is a validator for the "destination" field. It is called by the builders before save.
 	DestinationValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(uint32) error
+	IDValidator func(int64) error
 )
 
 // OutingStatus defines the type for the "outing_status" enum field.

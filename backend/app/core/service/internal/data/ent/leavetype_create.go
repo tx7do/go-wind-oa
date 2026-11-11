@@ -65,13 +65,13 @@ func (_c *LeaveTypeCreate) SetNillableDeletedAt(v *time.Time) *LeaveTypeCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (_c *LeaveTypeCreate) SetCreatedBy(v uint32) *LeaveTypeCreate {
+func (_c *LeaveTypeCreate) SetCreatedBy(v int64) *LeaveTypeCreate {
 	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_c *LeaveTypeCreate) SetNillableCreatedBy(v *uint32) *LeaveTypeCreate {
+func (_c *LeaveTypeCreate) SetNillableCreatedBy(v *int64) *LeaveTypeCreate {
 	if v != nil {
 		_c.SetCreatedBy(*v)
 	}
@@ -79,13 +79,13 @@ func (_c *LeaveTypeCreate) SetNillableCreatedBy(v *uint32) *LeaveTypeCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (_c *LeaveTypeCreate) SetUpdatedBy(v uint32) *LeaveTypeCreate {
+func (_c *LeaveTypeCreate) SetUpdatedBy(v int64) *LeaveTypeCreate {
 	_c.mutation.SetUpdatedBy(v)
 	return _c
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (_c *LeaveTypeCreate) SetNillableUpdatedBy(v *uint32) *LeaveTypeCreate {
+func (_c *LeaveTypeCreate) SetNillableUpdatedBy(v *int64) *LeaveTypeCreate {
 	if v != nil {
 		_c.SetUpdatedBy(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *LeaveTypeCreate) SetNillableUpdatedBy(v *uint32) *LeaveTypeCreate {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (_c *LeaveTypeCreate) SetDeletedBy(v uint32) *LeaveTypeCreate {
+func (_c *LeaveTypeCreate) SetDeletedBy(v int64) *LeaveTypeCreate {
 	_c.mutation.SetDeletedBy(v)
 	return _c
 }
 
 // SetNillableDeletedBy sets the "deleted_by" field if the given value is not nil.
-func (_c *LeaveTypeCreate) SetNillableDeletedBy(v *uint32) *LeaveTypeCreate {
+func (_c *LeaveTypeCreate) SetNillableDeletedBy(v *int64) *LeaveTypeCreate {
 	if v != nil {
 		_c.SetDeletedBy(*v)
 	}
@@ -107,13 +107,13 @@ func (_c *LeaveTypeCreate) SetNillableDeletedBy(v *uint32) *LeaveTypeCreate {
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (_c *LeaveTypeCreate) SetTenantID(v uint32) *LeaveTypeCreate {
+func (_c *LeaveTypeCreate) SetTenantID(v int64) *LeaveTypeCreate {
 	_c.mutation.SetTenantID(v)
 	return _c
 }
 
 // SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (_c *LeaveTypeCreate) SetNillableTenantID(v *uint32) *LeaveTypeCreate {
+func (_c *LeaveTypeCreate) SetNillableTenantID(v *int64) *LeaveTypeCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
 	}
@@ -147,7 +147,7 @@ func (_c *LeaveTypeCreate) SetName(v string) *LeaveTypeCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *LeaveTypeCreate) SetID(v uint32) *LeaveTypeCreate {
+func (_c *LeaveTypeCreate) SetID(v int64) *LeaveTypeCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
@@ -235,7 +235,7 @@ func (_c *LeaveTypeCreate) sqlSave(ctx context.Context) (*LeaveType, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int64(id)
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -245,7 +245,7 @@ func (_c *LeaveTypeCreate) sqlSave(ctx context.Context) (*LeaveType, error) {
 func (_c *LeaveTypeCreate) createSpec() (*LeaveType, *sqlgraph.CreateSpec) {
 	var (
 		_node = &LeaveType{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(leavetype.Table, sqlgraph.NewFieldSpec(leavetype.FieldID, field.TypeUint32))
+		_spec = sqlgraph.NewCreateSpec(leavetype.Table, sqlgraph.NewFieldSpec(leavetype.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
@@ -265,19 +265,19 @@ func (_c *LeaveTypeCreate) createSpec() (*LeaveType, *sqlgraph.CreateSpec) {
 		_node.DeletedAt = &value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
-		_spec.SetField(leavetype.FieldCreatedBy, field.TypeUint32, value)
+		_spec.SetField(leavetype.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = &value
 	}
 	if value, ok := _c.mutation.UpdatedBy(); ok {
-		_spec.SetField(leavetype.FieldUpdatedBy, field.TypeUint32, value)
+		_spec.SetField(leavetype.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
 	}
 	if value, ok := _c.mutation.DeletedBy(); ok {
-		_spec.SetField(leavetype.FieldDeletedBy, field.TypeUint32, value)
+		_spec.SetField(leavetype.FieldDeletedBy, field.TypeInt64, value)
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
-		_spec.SetField(leavetype.FieldTenantID, field.TypeUint32, value)
+		_spec.SetField(leavetype.FieldTenantID, field.TypeInt64, value)
 		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -381,7 +381,7 @@ func (u *LeaveTypeUpsert) ClearDeletedAt() *LeaveTypeUpsert {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LeaveTypeUpsert) SetCreatedBy(v uint32) *LeaveTypeUpsert {
+func (u *LeaveTypeUpsert) SetCreatedBy(v int64) *LeaveTypeUpsert {
 	u.Set(leavetype.FieldCreatedBy, v)
 	return u
 }
@@ -393,7 +393,7 @@ func (u *LeaveTypeUpsert) UpdateCreatedBy() *LeaveTypeUpsert {
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LeaveTypeUpsert) AddCreatedBy(v uint32) *LeaveTypeUpsert {
+func (u *LeaveTypeUpsert) AddCreatedBy(v int64) *LeaveTypeUpsert {
 	u.Add(leavetype.FieldCreatedBy, v)
 	return u
 }
@@ -405,7 +405,7 @@ func (u *LeaveTypeUpsert) ClearCreatedBy() *LeaveTypeUpsert {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LeaveTypeUpsert) SetUpdatedBy(v uint32) *LeaveTypeUpsert {
+func (u *LeaveTypeUpsert) SetUpdatedBy(v int64) *LeaveTypeUpsert {
 	u.Set(leavetype.FieldUpdatedBy, v)
 	return u
 }
@@ -417,7 +417,7 @@ func (u *LeaveTypeUpsert) UpdateUpdatedBy() *LeaveTypeUpsert {
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LeaveTypeUpsert) AddUpdatedBy(v uint32) *LeaveTypeUpsert {
+func (u *LeaveTypeUpsert) AddUpdatedBy(v int64) *LeaveTypeUpsert {
 	u.Add(leavetype.FieldUpdatedBy, v)
 	return u
 }
@@ -429,7 +429,7 @@ func (u *LeaveTypeUpsert) ClearUpdatedBy() *LeaveTypeUpsert {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LeaveTypeUpsert) SetDeletedBy(v uint32) *LeaveTypeUpsert {
+func (u *LeaveTypeUpsert) SetDeletedBy(v int64) *LeaveTypeUpsert {
 	u.Set(leavetype.FieldDeletedBy, v)
 	return u
 }
@@ -441,7 +441,7 @@ func (u *LeaveTypeUpsert) UpdateDeletedBy() *LeaveTypeUpsert {
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LeaveTypeUpsert) AddDeletedBy(v uint32) *LeaveTypeUpsert {
+func (u *LeaveTypeUpsert) AddDeletedBy(v int64) *LeaveTypeUpsert {
 	u.Add(leavetype.FieldDeletedBy, v)
 	return u
 }
@@ -591,14 +591,14 @@ func (u *LeaveTypeUpsertOne) ClearDeletedAt() *LeaveTypeUpsertOne {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LeaveTypeUpsertOne) SetCreatedBy(v uint32) *LeaveTypeUpsertOne {
+func (u *LeaveTypeUpsertOne) SetCreatedBy(v int64) *LeaveTypeUpsertOne {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LeaveTypeUpsertOne) AddCreatedBy(v uint32) *LeaveTypeUpsertOne {
+func (u *LeaveTypeUpsertOne) AddCreatedBy(v int64) *LeaveTypeUpsertOne {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -619,14 +619,14 @@ func (u *LeaveTypeUpsertOne) ClearCreatedBy() *LeaveTypeUpsertOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LeaveTypeUpsertOne) SetUpdatedBy(v uint32) *LeaveTypeUpsertOne {
+func (u *LeaveTypeUpsertOne) SetUpdatedBy(v int64) *LeaveTypeUpsertOne {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LeaveTypeUpsertOne) AddUpdatedBy(v uint32) *LeaveTypeUpsertOne {
+func (u *LeaveTypeUpsertOne) AddUpdatedBy(v int64) *LeaveTypeUpsertOne {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -647,14 +647,14 @@ func (u *LeaveTypeUpsertOne) ClearUpdatedBy() *LeaveTypeUpsertOne {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LeaveTypeUpsertOne) SetDeletedBy(v uint32) *LeaveTypeUpsertOne {
+func (u *LeaveTypeUpsertOne) SetDeletedBy(v int64) *LeaveTypeUpsertOne {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LeaveTypeUpsertOne) AddDeletedBy(v uint32) *LeaveTypeUpsertOne {
+func (u *LeaveTypeUpsertOne) AddDeletedBy(v int64) *LeaveTypeUpsertOne {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.AddDeletedBy(v)
 	})
@@ -739,7 +739,7 @@ func (u *LeaveTypeUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *LeaveTypeUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *LeaveTypeUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -748,7 +748,7 @@ func (u *LeaveTypeUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *LeaveTypeUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *LeaveTypeUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -805,7 +805,7 @@ func (_c *LeaveTypeCreateBulk) Save(ctx context.Context) ([]*LeaveType, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -986,14 +986,14 @@ func (u *LeaveTypeUpsertBulk) ClearDeletedAt() *LeaveTypeUpsertBulk {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (u *LeaveTypeUpsertBulk) SetCreatedBy(v uint32) *LeaveTypeUpsertBulk {
+func (u *LeaveTypeUpsertBulk) SetCreatedBy(v int64) *LeaveTypeUpsertBulk {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.SetCreatedBy(v)
 	})
 }
 
 // AddCreatedBy adds v to the "created_by" field.
-func (u *LeaveTypeUpsertBulk) AddCreatedBy(v uint32) *LeaveTypeUpsertBulk {
+func (u *LeaveTypeUpsertBulk) AddCreatedBy(v int64) *LeaveTypeUpsertBulk {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.AddCreatedBy(v)
 	})
@@ -1014,14 +1014,14 @@ func (u *LeaveTypeUpsertBulk) ClearCreatedBy() *LeaveTypeUpsertBulk {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (u *LeaveTypeUpsertBulk) SetUpdatedBy(v uint32) *LeaveTypeUpsertBulk {
+func (u *LeaveTypeUpsertBulk) SetUpdatedBy(v int64) *LeaveTypeUpsertBulk {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.SetUpdatedBy(v)
 	})
 }
 
 // AddUpdatedBy adds v to the "updated_by" field.
-func (u *LeaveTypeUpsertBulk) AddUpdatedBy(v uint32) *LeaveTypeUpsertBulk {
+func (u *LeaveTypeUpsertBulk) AddUpdatedBy(v int64) *LeaveTypeUpsertBulk {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.AddUpdatedBy(v)
 	})
@@ -1042,14 +1042,14 @@ func (u *LeaveTypeUpsertBulk) ClearUpdatedBy() *LeaveTypeUpsertBulk {
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (u *LeaveTypeUpsertBulk) SetDeletedBy(v uint32) *LeaveTypeUpsertBulk {
+func (u *LeaveTypeUpsertBulk) SetDeletedBy(v int64) *LeaveTypeUpsertBulk {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.SetDeletedBy(v)
 	})
 }
 
 // AddDeletedBy adds v to the "deleted_by" field.
-func (u *LeaveTypeUpsertBulk) AddDeletedBy(v uint32) *LeaveTypeUpsertBulk {
+func (u *LeaveTypeUpsertBulk) AddDeletedBy(v int64) *LeaveTypeUpsertBulk {
 	return u.Update(func(s *LeaveTypeUpsert) {
 		s.AddDeletedBy(v)
 	})

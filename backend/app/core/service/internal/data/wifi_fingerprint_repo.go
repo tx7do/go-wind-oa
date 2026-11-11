@@ -32,7 +32,7 @@ func NewWifiFingerprintRepo(
 }
 
 // ListByTenant 列出本租户全部 Wi-Fi 指纹白名单。
-func (r *WifiFingerprintRepo) ListByTenant(ctx context.Context, tid uint32) ([]*ent.WifiFingerprint, error) {
+func (r *WifiFingerprintRepo) ListByTenant(ctx context.Context, tid int64) ([]*ent.WifiFingerprint, error) {
 	entities, err := r.entClient.Client().WifiFingerprint.Query().
 		Where(wififingerprint.TenantIDEQ(tid)).
 		All(ctx)
@@ -44,7 +44,7 @@ func (r *WifiFingerprintRepo) ListByTenant(ctx context.Context, tid uint32) ([]*
 }
 
 // ListByTenantDTO 同上，转 DTO。
-func (r *WifiFingerprintRepo) ListByTenantDTO(ctx context.Context, tid uint32) ([]*oaV1.WifiFingerprint, error) {
+func (r *WifiFingerprintRepo) ListByTenantDTO(ctx context.Context, tid int64) ([]*oaV1.WifiFingerprint, error) {
 	entities, err := r.ListByTenant(ctx, tid)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (r *WifiFingerprintRepo) ListByTenantDTO(ctx context.Context, tid uint32) (
 }
 
 // Upsert 按 id 存在则覆盖，否则创建。
-func (r *WifiFingerprintRepo) Upsert(ctx context.Context, tid, uid uint32, id uint32, ssid, bssid string) error {
+func (r *WifiFingerprintRepo) Upsert(ctx context.Context, tid, uid int64, id int64, ssid, bssid string) error {
 	if id == 0 {
 		if _, err := r.entClient.Client().WifiFingerprint.Create().
 			SetSsid(ssid).
@@ -85,7 +85,7 @@ func (r *WifiFingerprintRepo) Upsert(ctx context.Context, tid, uid uint32, id ui
 }
 
 // Delete 删除 Wi-Fi 指纹白名单。
-func (r *WifiFingerprintRepo) Delete(ctx context.Context, tid, id uint32) error {
+func (r *WifiFingerprintRepo) Delete(ctx context.Context, tid, id int64) error {
 	if _, err := r.entClient.Client().WifiFingerprint.Delete().
 		Where(wififingerprint.IDEQ(id), wififingerprint.TenantIDEQ(tid)).
 		Exec(ctx); err != nil {

@@ -115,7 +115,7 @@ func main() {
 	}
 
 	// 用户-角色（登录要求用户至少有一个角色码）。
-	for _, uid := range []uint32{leader.ID, employee.ID} {
+	for _, uid := range []int64{leader.ID, employee.ID} {
 		if _, err := client.UserRole.Create().
 			SetUserID(uid).
 			SetRoleID(role.ID).
@@ -130,7 +130,7 @@ func main() {
 	}
 
 	// 用户-组织（LEADER 寻人链路：user_org_unit → org_unit.leader_id）。
-	for _, uid := range []uint32{leader.ID, employee.ID} {
+	for _, uid := range []int64{leader.ID, employee.ID} {
 		if _, err := client.UserOrgUnit.Create().
 			SetUserID(uid).
 			SetOrgUnitID(org.ID).
@@ -190,7 +190,7 @@ func main() {
 	printPassword(*password)
 }
 
-func createUser(ctx context.Context, client *ent.Client, tid uint32, username, realname, email, passwordHash string, now time.Time) *ent.User {
+func createUser(ctx context.Context, client *ent.Client, tid int64, username, realname, email, passwordHash string, now time.Time) *ent.User {
 	u, err := client.User.Create().
 		SetUsername(username).
 		SetNickname(realname).
